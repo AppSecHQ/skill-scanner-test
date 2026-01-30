@@ -1,0 +1,95 @@
+# CLAUDE.md - Skill Scanner Project
+
+This file provides guidance to Claude Code when working on this security research project.
+
+## Project Overview
+
+This project scans the top N most-installed AI agent skills from skills.sh using Cisco's skill-scanner tool to identify security vulnerabilities, prompt injection risks, and malicious patterns.
+
+## Objective
+
+Produce a comprehensive security assessment report of popular AI agent skills to identify:
+- Prompt injection vulnerabilities
+- Data exfiltration patterns
+- Malicious code patterns
+- Other security concerns
+
+## Approach
+
+**IMPORTANT: Iterative execution with user checkpoints**
+
+1. Perform a complete end-to-end test on the **#1 top skill first** (all phases: identify, clone, scan, document)
+2. **Get explicit confirmation from the user** before proceeding to skill #2
+3. Only after user approval, continue with subsequent skills
+
+This approach validates the entire workflow before scaling up.
+
+## Directory Structure
+
+```
+skill-scanner/
+├── CLAUDE.md              # This file - project instructions
+├── PROJECT-PLAN.md        # Detailed execution plan
+├── skills/                # Cloned skill repositories
+│   └── skill-inventory.md # Inventory of top 25 skills with metadata
+└── results/               # Scan output files
+    ├── <skill>-scan.json  # Raw JSON scan results
+    ├── <skill>-scan.md    # Human-readable scan results
+    └── summary-report.md  # Consolidated findings report
+```
+
+## Key Resources
+
+- **Scanner tool**: https://github.com/cisco-ai-defense/skill-scanner
+- **Skills directory**: https://skills.sh/
+- **Install command**: `pip install cisco-ai-skill-scanner`
+
+## Execution Phases
+
+### Phase 1: Environment Setup
+1. Install `cisco-ai-skill-scanner` via pip
+2. Verify installation with `skill-scanner --help`
+
+### Phase 2: Identify Top Skills
+1. Scrape or browse https://skills.sh/ to identify top skills by install count
+2. Document each skill in `skills/skill-inventory.md` with:
+   - Skill name
+   - GitHub repo URL
+   - Install count
+   - Brief description
+
+### Phase 3: Clone Skills
+Clone each skill repository into the `skills/` directory:
+```bash
+git clone https://github.com/<owner>/<repo> skills/<skill-name>
+```
+
+### Phase 4: Run Security Scans
+For each skill, generate both JSON and Markdown reports:
+```bash
+skill-scanner scan skills/<skill-name> --output-format json --output results/<skill-name>-scan.json
+skill-scanner scan skills/<skill-name> --output-format markdown --output results/<skill-name>-scan.md
+```
+
+### Phase 5: Compile Results
+Create `results/summary-report.md` containing:
+1. Executive Summary (totals, severity breakdown)
+2. Findings by Skill (table format)
+3. Top 5 Risks with details and recommendations
+4. Observed vulnerability patterns
+5. Methodology notes and limitations
+
+## Important Notes
+
+- If API keys are required for LLM analysis, use static analysis only
+- Document any rate limiting or access issues
+- Note any unavailable/private repos and proceed with others
+- Focus on actionable findings
+- Handle monorepos by scanning relevant subdirectories
+
+## Deliverables
+
+1. `skills/skill-inventory.md` - Skill metadata list
+2. `results/<skill>-scan.json` - Raw scan results per skill
+3. `results/<skill>-scan.md` - Readable results per skill
+4. `results/summary-report.md` - Final consolidated report
