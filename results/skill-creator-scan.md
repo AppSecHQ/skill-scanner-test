@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
-**Skill:** vercel-react-best-practices
-**Directory:** /workspace/skills/vercel-labs-agent-skills/skills/react-best-practices
+**Skill:** skill-creator
+**Directory:** /workspace/skills/anthropics-skills/skills/skill-creator
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.01s
-**Timestamp:** 2026-01-30T22:09:32.943812
+**Scan Duration:** 0.48s
+**Timestamp:** 2026-01-30T22:13:06.516639
 
 ## Summary
 
