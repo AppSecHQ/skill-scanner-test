@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
-**Skill:** find-skills
-**Directory:** /Users/brian.levine/claude-projects/skill-scanner-test/skills/vercel-labs-skills/skills/find-skills
+**Skill:** birthday-reminder
+**Directory:** /Users/brian.levine/claude-projects/skill-scanner-test/skills/clawhub-birthday-reminder
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.00s
-**Timestamp:** 2026-01-31T17:35:16.650665
+**Scan Duration:** 1.75s
+**Timestamp:** 2026-01-31T17:33:20.702924
 
 ## Summary
 

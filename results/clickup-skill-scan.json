@@ -1,0 +1,270 @@
+{
+  "skill_name": "clickup",
+  "skill_path": "/Users/brian.levine/claude-projects/skill-scanner-test/skills/clawhub-clickup-skill",
+  "skill_directory": "/Users/brian.levine/claude-projects/skill-scanner-test/skills/clawhub-clickup-skill",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 14,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {}
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_70b6cb93b5",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import requests",
+      "file_path": "scripts/clickup_client.py",
+      "line_number": 11,
+      "snippet": "import requests",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+requests",
+        "matched_text": "import requests",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION"
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_5e7d0135e0",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.getenv(\"CLICKUP_API_TOKEN",
+      "file_path": "scripts/clickup_client.py",
+      "line_number": 19,
+      "snippet": "self.api_token = api_token or os.getenv(\"CLICKUP_API_TOKEN\")",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.getenv\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.getenv(\"CLICKUP_API_TOKEN",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION"
+      }
+    },
+    {
+      "id": "RESOURCE_ABUSE_INFINITE_LOOP_086b61c91c",
+      "rule_id": "RESOURCE_ABUSE_INFINITE_LOOP",
+      "category": "resource_abuse",
+      "severity": "HIGH",
+      "title": "Infinite loop without clear exit condition",
+      "description": "Pattern detected: while True:",
+      "file_path": "scripts/clickup_client.py",
+      "line_number": 427,
+      "snippet": "while True:",
+      "remediation": "Add proper exit conditions or limits to loops",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "while\\s+True\\s*:",
+        "matched_text": "while True:",
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "scanner_category": "RESOURCE ABUSE"
+      }
+    },
+    {
+      "id": "TOOL_MISMATCH_NETWORK_c66b5c7695",
+      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Undeclared network usage",
+      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Declare network usage in compatibility field or remove network calls",
+      "analyzer": "static",
+      "metadata": {}
+    },
+    {
+      "id": "YARA_credential_harvesting_038117ac19",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export CLICKUP_API_TOKEN",
+      "file_path": "SKILL.md",
+      "line_number": 23,
+      "snippet": "export CLICKUP_API_TOKEN=\"pk_your_token_here\"",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING"
+      }
+    },
+    {
+      "id": "ENV_VAR_EXFILTRATION_88291d721e",
+      "rule_id": "BEHAVIOR_ENV_VAR_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Environment variable access with network calls detected",
+      "description": "Script accesses environment variables and makes network calls in skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable harvesting or network transmission",
+      "analyzer": "behavioral",
+      "metadata": {
+        "has_network": true,
+        "has_env_access": true,
+        "suspicious_urls": [
+          "https://api.clickup.com/api/v3",
+          "https://app.clickup.com/",
+          "https://app.clickup.com/",
+          "https://app.clickup.com/docs/",
+          "https://api.clickup.com/api/v2"
+        ]
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_9c2e70ea99",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {}
+    },
+    {
+      "id": "SUSPICIOUS_URL_9c048bcaa2",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://api.clickup.com/api/v3",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://api.clickup.com/api/v3"
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_91ca6cfe09",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://app.clickup.com/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://app.clickup.com/"
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_91ca6cfe09",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://app.clickup.com/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://app.clickup.com/"
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_32bbcfe4f7",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://app.clickup.com/docs/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://app.clickup.com/docs/"
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_a2030c5d95",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://api.clickup.com/api/v2",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://api.clickup.com/api/v2"
+      }
+    },
+    {
+      "id": "CROSSFILE_ENV_VAR_EXFILTRATION_1220dc84d3",
+      "rule_id": "BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Cross-file env var exfiltration: 1 files",
+      "description": "Environment variable access with network calls in scripts/clickup_client.py",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review data flow across files: scripts/clickup_client.py",
+      "analyzer": "behavioral",
+      "metadata": {
+        "files_involved": [
+          "scripts/clickup_client.py"
+        ],
+        "threat_type": "env_var_exfiltration",
+        "evidence": {
+          "env_var_files": [
+            "scripts/clickup_client.py"
+          ],
+          "network_files": [
+            "scripts/clickup_client.py"
+          ]
+        }
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.8421909809112549,
+  "duration_ms": 842,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "trigger_analyzer"
+  ],
+  "timestamp": "2026-01-31T17:34:55.509055"
+}

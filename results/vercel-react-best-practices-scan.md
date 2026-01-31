@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** vercel-react-best-practices
-**Directory:** /workspace/skills/vercel-labs-agent-skills/skills/react-best-practices
+**Directory:** /Users/brian.levine/claude-projects/skill-scanner-test/skills/vercel-labs-agent-skills/skills/react-best-practices
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
 **Scan Duration:** 0.01s
-**Timestamp:** 2026-01-30T22:09:32.943812
+**Timestamp:** 2026-01-31T17:35:13.689902
 
 ## Summary
 
