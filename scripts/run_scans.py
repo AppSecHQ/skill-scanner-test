@@ -5,6 +5,8 @@ Module 2: Clone repositories and run security scans
 
 import io
 import json
+import logging
+import re
 import subprocess
 import sys
 import zipfile
@@ -12,6 +14,10 @@ from pathlib import Path
 from typing import Optional
 
 import requests
+
+from http_utils import get_retry_session
+
+logger = logging.getLogger(__name__)
 
 
 def get_unique_repos(skills: list[dict]) -> dict[str, list[dict]]:
@@ -35,9 +41,32 @@ def repo_to_dirname(repo: str) -> str:
     return repo.replace("/", "-")
 
 
+def safe_extract(zf: zipfile.ZipFile, dest: Path) -> None:
+    """
+    Extract ZIP file safely, preventing path traversal (Zip Slip) attacks.
+
+    Validates that every member path resolves to a location inside the
+    destination directory before extracting anything.
+
+    Args:
+        zf: An open ZipFile object
+        dest: Destination directory (must already exist)
+
+    Raises:
+        ValueError: If any member would extract outside dest
+    """
+    dest = dest.resolve()
+    for member in zf.namelist():
+        member_path = (dest / member).resolve()
+        if not member_path.is_relative_to(dest):
+            raise ValueError(
+                f"Attempted path traversal in ZIP: {member!r}"
+            )
+    zf.extractall(dest)
+
+
 def sanitize_filename(name: str) -> str:
     """Sanitize a string for use as a filename."""
-    import re
     # Replace problematic characters with dashes
     sanitized = re.sub(r'[<>:"/\\|?*()[\]{}]', '-', name)
     # Replace multiple dashes with single dash
@@ -62,7 +91,7 @@ def clone_repo(repo: str, dest: Path, shallow: bool = True) -> bool:
         True if successful or already exists, False on error
     """
     if dest.exists():
-        print(f"  [skip] {repo} already cloned")
+        logger.info("Repo %s already cloned, skipping", repo)
         return True
 
     url = f"https://github.com/{repo}.git"
@@ -71,11 +100,11 @@ def clone_repo(repo: str, dest: Path, shallow: bool = True) -> bool:
         cmd.extend(["--depth=1"])
     cmd.extend([url, str(dest)])
 
-    print(f"  [clone] {repo}...")
+    logger.info("Cloning %s...", repo)
     result = subprocess.run(cmd, capture_output=True, text=True)
 
     if result.returncode != 0:
-        print(f"  [error] Failed to clone {repo}: {result.stderr}")
+        logger.error("Failed to clone %s: %s", repo, result.stderr)
         return False
 
     return True
@@ -93,28 +122,32 @@ def download_clawhub_skill(slug: str, dest: Path) -> bool:
         True if successful or already exists, False on error
     """
     if dest.exists():
-        print(f"  [skip] {slug} already downloaded")
+        logger.info("Skill %s already downloaded, skipping", slug)
         return True
 
     url = f"https://auth.clawdhub.com/api/v1/download?slug={slug}"
 
-    print(f"  [download] {slug}...")
+    logger.info("Downloading %s...", slug)
     try:
-        response = requests.get(url, timeout=60)
+        session = get_retry_session()
+        response = session.get(url, timeout=60)
         response.raise_for_status()
 
         # Extract ZIP to destination
         dest.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(io.BytesIO(response.content)) as zf:
-            zf.extractall(dest)
+            safe_extract(zf, dest)
 
         return True
 
     except requests.RequestException as e:
-        print(f"  [error] Failed to download {slug}: {e}")
+        logger.error("Failed to download %s: %s", slug, e)
         return False
     except zipfile.BadZipFile as e:
-        print(f"  [error] Invalid ZIP for {slug}: {e}")
+        logger.error("Invalid ZIP for %s: %s", slug, e)
+        return False
+    except ValueError as e:
+        logger.error("Unsafe ZIP for %s: %s", slug, e)
         return False
 
 
@@ -165,6 +198,9 @@ def find_skill_path(repo_dir: Path, skill_name: str) -> Optional[Path]:
     return None
 
 
+SCAN_TIMEOUT_SECONDS = 300  # 5 minutes per scan
+
+
 def run_scan(
     skill_path: Path,
     output_dir: Path,
@@ -206,22 +242,33 @@ def run_scan(
 
     # Run JSON scan
     json_cmd = cmd + ["--format", "json", "-o", str(json_output)]
-    result = subprocess.run(json_cmd, capture_output=True, text=True)
+    try:
+        result = subprocess.run(
+            json_cmd, capture_output=True, text=True, timeout=SCAN_TIMEOUT_SECONDS
+        )
+    except subprocess.TimeoutExpired:
+        logger.error("Scan timed out after %ds", SCAN_TIMEOUT_SECONDS)
+        return None
 
     if result.returncode != 0:
-        print(f"    [error] Scan failed: {result.stderr}")
+        logger.error("Scan failed: %s", result.stderr)
         return None
 
     # Run Markdown scan
     md_cmd = cmd + ["--format", "markdown", "-o", str(md_output)]
-    subprocess.run(md_cmd, capture_output=True, text=True)
+    try:
+        subprocess.run(
+            md_cmd, capture_output=True, text=True, timeout=SCAN_TIMEOUT_SECONDS
+        )
+    except subprocess.TimeoutExpired:
+        logger.warning("Markdown scan timed out after %ds", SCAN_TIMEOUT_SECONDS)
 
     # Load and return results
     try:
         with open(json_output) as f:
             return json.load(f)
     except (json.JSONDecodeError, FileNotFoundError) as e:
-        print(f"    [error] Failed to read results: {e}")
+        logger.error("Failed to read scan results: %s", e)
         return None
 
 
@@ -259,20 +306,20 @@ def scan_skills(
     # Clone GitHub repos (skills.sh)
     if github_skills:
         repos = get_unique_repos(github_skills)
-        print(f"\nCloning {len(repos)} unique GitHub repositories...")
+        logger.info("Cloning %d unique GitHub repositories...", len(repos))
         for repo in repos:
             repo_dir = skills_dir / repo_to_dirname(repo)
             clone_repo(repo, repo_dir)
 
     # Download clawhub skills
     if clawhub_skills:
-        print(f"\nDownloading {len(clawhub_skills)} skills from clawhub...")
+        logger.info("Downloading %d skills from clawhub...", len(clawhub_skills))
         for skill in clawhub_skills:
             skill_dir = skills_dir / f"clawhub-{skill['id']}"
             download_clawhub_skill(skill["id"], skill_dir)
 
     # Scan all skills
-    print(f"\nScanning {len(skills)} skills...")
+    logger.info("Scanning %d skills...", len(skills))
     results = []
 
     for skill in skills:
@@ -286,7 +333,7 @@ def scan_skills(
         else:
             # GitHub-based (skills.sh)
             if not skill.get("repo"):
-                print(f"  [{skill['rank']:2}] {skill['name']} - [skip] No repo")
+                logger.warning("[%2d] %s - skipping, no repo", skill["rank"], skill["name"])
                 results.append({
                     "skill_name": skill["name"],
                     "is_safe": None,
@@ -299,7 +346,7 @@ def scan_skills(
             skill_path = find_skill_path(repo_dir, skill["name"])
 
         if skill_path is None:
-            print(f"  [{skill['rank']:2}] {skill['name']} - [skip] SKILL.md not found")
+            logger.warning("[%2d] %s - skipping, SKILL.md not found", skill["rank"], skill["name"])
             results.append({
                 "skill_name": skill["name"],
                 "is_safe": None,
@@ -308,8 +355,6 @@ def scan_skills(
                 "max_severity": "UNKNOWN",
             })
             continue
-
-        print(f"  [{skill['rank']:2}] {skill['name']}...", end=" ", flush=True)
 
         # Sanitize skill name for use in filenames
         safe_name = sanitize_filename(skill["name"])
@@ -324,10 +369,10 @@ def scan_skills(
 
         if result:
             status = "SAFE" if result.get("is_safe") else f"ISSUES ({result.get('findings_count', 0)})"
-            print(status)
+            logger.info("[%2d] %s - %s", skill["rank"], skill["name"], status)
             results.append(result)
         else:
-            print("[error]")
+            logger.error("[%2d] %s - scan failed", skill["rank"], skill["name"])
             results.append({
                 "skill_name": skill["name"],
                 "is_safe": None,
@@ -401,13 +446,13 @@ def scan_adhoc_repos(
         try:
             repo = parse_repo_arg(repo_arg)
         except ValueError as e:
-            print(f"  [error] {e}")
+            logger.error("Invalid repo argument: %s", e)
             continue
 
         repo_dir = skills_dir / repo_to_dirname(repo)
 
         # Clone the repo
-        print(f"\nProcessing {repo}...")
+        logger.info("Processing %s...", repo)
         if not clone_repo(repo, repo_dir):
             results.append({
                 "skill_name": repo,
@@ -422,7 +467,7 @@ def scan_adhoc_repos(
         skill_files = list(repo_dir.rglob("SKILL.md"))
 
         if not skill_files:
-            print(f"  [warning] No SKILL.md files found in {repo}")
+            logger.warning("No SKILL.md files found in %s", repo)
             results.append({
                 "skill_name": repo,
                 "is_safe": None,
@@ -432,7 +477,7 @@ def scan_adhoc_repos(
             })
             continue
 
-        print(f"  Found {len(skill_files)} skill(s) in {repo}")
+        logger.info("Found %d skill(s) in %s", len(skill_files), repo)
 
         # Scan each skill
         for skill_md in skill_files:
@@ -445,8 +490,6 @@ def scan_adhoc_repos(
             else:
                 skill_name = str(rel_path).replace("/", "-")
 
-            print(f"    Scanning {skill_name}...", end=" ", flush=True)
-
             result = run_scan(
                 skill_path=skill_path,
                 output_dir=output_dir,
@@ -457,10 +500,10 @@ def scan_adhoc_repos(
 
             if result:
                 status = "SAFE" if result.get("is_safe") else f"ISSUES ({result.get('findings_count', 0)})"
-                print(status)
+                logger.info("Scanning %s - %s", skill_name, status)
                 results.append(result)
             else:
-                print("[error]")
+                logger.error("Scan failed for %s", skill_name)
                 results.append({
                     "skill_name": skill_name,
                     "is_safe": None,
@@ -475,6 +518,12 @@ def scan_adhoc_repos(
 if __name__ == "__main__":
     import argparse
     from fetch_skills import load_inventory
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)-7s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     parser = argparse.ArgumentParser(description="Run security scans on skills")
     parser.add_argument("-i", "--inventory", type=Path, required=True, help="Path to skill-inventory.json")
@@ -494,4 +543,4 @@ if __name__ == "__main__":
     )
 
     safe = sum(1 for r in results if r.get("is_safe") is True)
-    print(f"\nDone: {safe}/{len(results)} skills safe")
+    logger.info("Done: %d/%d skills safe", safe, len(results))

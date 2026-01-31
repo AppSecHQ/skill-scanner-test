@@ -4,9 +4,12 @@ Module 3: Aggregate scan results and generate summary report
 """
 
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 def aggregate_results(results_dir: Path) -> dict:
@@ -37,7 +40,13 @@ def aggregate_results(results_dir: Path) -> dict:
         try:
             with open(json_file) as f:
                 result = json.load(f)
-        except (json.JSONDecodeError, FileNotFoundError):
+        except json.JSONDecodeError as e:
+            logger.warning("Skipping corrupted file %s: %s", json_file, e)
+            findings["error_skills"] += 1
+            continue
+        except FileNotFoundError:
+            logger.warning("File not found: %s", json_file)
+            findings["error_skills"] += 1
             continue
 
         findings["total_skills"] += 1
@@ -205,7 +214,7 @@ def generate_markdown_report(findings: dict, output_path: Path) -> None:
     with open(output_path, "w") as f:
         f.write(report)
 
-    print(f"Report saved to {output_path}")
+    logger.info("Report saved to %s", output_path)
 
 
 def _pct(num: int, total: int) -> str:
@@ -220,11 +229,17 @@ def generate_json_summary(findings: dict, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(findings, f, indent=2)
-    print(f"JSON summary saved to {output_path}")
+    logger.info("JSON summary saved to %s", output_path)
 
 
 if __name__ == "__main__":
     import argparse
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)-7s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     parser = argparse.ArgumentParser(description="Generate summary report from scan results")
     parser.add_argument("-i", "--input", type=Path, required=True, help="Directory with *-scan.json files")
@@ -238,5 +253,5 @@ if __name__ == "__main__":
     if args.json:
         generate_json_summary(findings, args.json)
 
-    print(f"\nSummary: {findings['safe_skills']}/{findings['total_skills']} skills safe")
-    print(f"Total findings: {findings['total_findings']}")
+    logger.info("Summary: %d/%d skills safe", findings['safe_skills'], findings['total_skills'])
+    logger.info("Total findings: %d", findings['total_findings'])

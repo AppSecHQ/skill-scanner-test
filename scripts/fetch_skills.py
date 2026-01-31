@@ -4,8 +4,13 @@ Module 1: Fetch top skills from skill registries (skills.sh, clawhub.ai)
 """
 
 import json
+import logging
 import requests
 from pathlib import Path
+
+from http_utils import get_retry_session
+
+logger = logging.getLogger(__name__)
 
 VALID_SOURCES = ["skills.sh", "clawhub"]
 
@@ -24,7 +29,8 @@ def _fetch_skillssh(n: int, offset: int, reverse: bool) -> list[dict]:
     """
     url = "https://skills.sh/api/skills"
 
-    response = requests.get(url, timeout=30)
+    session = get_retry_session()
+    response = session.get(url, timeout=30)
     response.raise_for_status()
 
     data = response.json()
@@ -69,13 +75,14 @@ def _fetch_clawhub(n: int, offset: int, reverse: bool) -> list[dict]:
     # Fetch all skills (paginated)
     all_skills = []
     cursor = None
+    session = get_retry_session()
 
     while True:
         url = base_url
         if cursor:
             url = f"{base_url}?cursor={cursor}"
 
-        response = requests.get(url, timeout=30)
+        response = session.get(url, timeout=30)
         response.raise_for_status()
 
         data = response.json()
@@ -155,7 +162,7 @@ def save_inventory(skills: list[dict], output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:
         json.dump(skills, f, indent=2)
-    print(f"Saved {len(skills)} skills to {output_path}")
+    logger.info("Saved %d skills to %s", len(skills), output_path)
 
 
 def load_inventory(input_path: Path) -> list[dict]:
@@ -166,6 +173,12 @@ def load_inventory(input_path: Path) -> list[dict]:
 
 if __name__ == "__main__":
     import argparse
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)-7s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     parser = argparse.ArgumentParser(description="Fetch top skills from skill registries")
     parser.add_argument("-n", "--count", type=int, default=25, help="Number of skills")
@@ -181,7 +194,7 @@ if __name__ == "__main__":
 
     label = "Bottom" if args.reverse else "Top"
     range_str = f"{args.offset + 1}-{args.offset + len(skills)}" if args.offset else f"1-{len(skills)}"
-    print(f"\n{label} skills from {args.source} (ranks {range_str}):")
+    logger.info("%s skills from %s (ranks %s):", label, args.source, range_str)
     for s in skills[:10]:
         repo_info = f" - {s['repo']}" if s['repo'] else ""
-        print(f"  {s['rank']:2}. {s['name']} ({s['installs']:,} installs){repo_info}")
+        logger.info("  %2d. %s (%s installs)%s", s['rank'], s['name'], f"{s['installs']:,}", repo_info)

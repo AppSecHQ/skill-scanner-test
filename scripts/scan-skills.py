@@ -13,6 +13,7 @@ Usage:
 """
 
 import argparse
+import logging
 import sys
 from pathlib import Path
 
@@ -23,6 +24,22 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from fetch_skills import fetch_top_skills, save_inventory, load_inventory, VALID_SOURCES
 from run_scans import scan_skills, get_unique_repos, scan_adhoc_repos
 from generate_report import aggregate_results, generate_markdown_report, generate_json_summary
+
+LOG_FORMAT = "%(asctime)s [%(levelname)-7s] %(name)s: %(message)s"
+LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+logger = logging.getLogger(__name__)
+
+
+def setup_logging(verbose: bool = False) -> None:
+    """Configure logging for the pipeline."""
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        level=level,
+        format=LOG_FORMAT,
+        datefmt=LOG_DATE_FORMAT,
+        handlers=[logging.StreamHandler()],
+    )
 
 
 def main():
@@ -134,6 +151,9 @@ Examples:
 
     args = parser.parse_args()
 
+    # Configure logging based on verbosity
+    setup_logging(verbose=args.verbose)
+
     # Setup directories
     args.output.mkdir(parents=True, exist_ok=True)
     args.skills_dir.mkdir(parents=True, exist_ok=True)
@@ -162,57 +182,57 @@ Examples:
 
     if args.repo_only:
         if not args.repos:
-            print("Error: --repo-only requires at least one --repo argument")
+            logger.error("--repo-only requires at least one --repo argument")
             sys.exit(1)
-        print("=" * 60)
-        print("STEP 1: Skipped (--repo-only mode)")
-        print("=" * 60)
-        print(f"Will scan {len(args.repos)} ad-hoc repo(s)")
+        logger.info("=" * 60)
+        logger.info("STEP 1: Skipped (--repo-only mode)")
+        logger.info("=" * 60)
+        logger.info("Will scan %d ad-hoc repo(s)", len(args.repos))
     else:
-        print("=" * 60)
-        print("STEP 1: Fetch Skills")
-        print("=" * 60)
+        logger.info("=" * 60)
+        logger.info("STEP 1: Fetch Skills")
+        logger.info("=" * 60)
 
         if args.skip_fetch:
             if not inventory_path.exists():
-                print(f"Error: --skip-fetch specified but {inventory_path} not found")
+                logger.error("--skip-fetch specified but %s not found", inventory_path)
                 sys.exit(1)
             skills = load_inventory(inventory_path)
-            print(f"Loaded {len(skills)} skills from {inventory_path}")
+            logger.info("Loaded %d skills from %s", len(skills), inventory_path)
         else:
             label = "bottom" if args.reverse else "top"
             range_desc = f"{args.offset + 1}-{args.offset + args.count}" if args.offset else f"top {args.count}"
-            print(f"Fetching {label} {args.count} skills from {args.source} (ranks {range_desc})...")
+            logger.info("Fetching %s %d skills from %s (ranks %s)...", label, args.count, args.source, range_desc)
             try:
                 skills = fetch_top_skills(args.count, offset=args.offset, reverse=args.reverse, source=args.source)
                 save_inventory(skills, inventory_path)
             except Exception as e:
-                print(f"Error fetching skills: {e}")
+                logger.error("Error fetching skills: %s", e)
                 sys.exit(1)
 
         # Display skills
         label = "Bottom" if args.reverse else "Top"
-        print(f"\n{label} {len(skills)} skills from {args.source}:")
+        logger.info("%s %d skills from %s:", label, len(skills), args.source)
         for s in skills[:10]:
             repo_info = f" - {s['repo']}" if s.get('repo') else ""
-            print(f"  {s['rank']:2}. {s['name']} ({s['installs']:,} installs){repo_info}")
+            logger.info("  %2d. %s (%s installs)%s", s['rank'], s['name'], f"{s['installs']:,}", repo_info)
         if len(skills) > 10:
-            print(f"  ... and {len(skills) - 10} more")
+            logger.info("  ... and %d more", len(skills) - 10)
 
         if args.repos:
-            print(f"\nPlus {len(args.repos)} ad-hoc repo(s)")
+            logger.info("Plus %d ad-hoc repo(s)", len(args.repos))
 
     if args.list_only:
-        print("\n--list-only specified, exiting.")
+        logger.info("--list-only specified, exiting.")
         return
 
     # =========================================================================
     # Step 2: Clone and Scan
     # =========================================================================
     if not args.skip_scan:
-        print("\n" + "=" * 60)
-        print("STEP 2: Clone Repositories & Run Scans")
-        print("=" * 60)
+        logger.info("=" * 60)
+        logger.info("STEP 2: Clone Repositories & Run Scans")
+        logger.info("=" * 60)
 
         all_results = []
 
@@ -224,14 +244,14 @@ Examples:
 
             if github_skills:
                 repos = get_unique_repos(github_skills)
-                print(f"\n{len(repos)} unique GitHub repositories to clone:")
+                logger.info("%d unique GitHub repositories to clone:", len(repos))
                 for repo in list(repos.keys())[:5]:
-                    print(f"  - {repo} ({len(repos[repo])} skills)")
+                    logger.info("  - %s (%d skills)", repo, len(repos[repo]))
                 if len(repos) > 5:
-                    print(f"  ... and {len(repos) - 5} more")
+                    logger.info("  ... and %d more", len(repos) - 5)
 
             if clawhub_skills:
-                print(f"\n{len(clawhub_skills)} skills to download from clawhub.ai")
+                logger.info("%d skills to download from clawhub.ai", len(clawhub_skills))
 
             results = scan_skills(
                 skills=skills,
@@ -244,9 +264,9 @@ Examples:
 
         # Scan ad-hoc repos (if any)
         if args.repos:
-            print(f"\nScanning {len(args.repos)} ad-hoc repo(s):")
+            logger.info("Scanning %d ad-hoc repo(s):", len(args.repos))
             for repo in args.repos:
-                print(f"  - {repo}")
+                logger.info("  - %s", repo)
 
             adhoc_results = scan_adhoc_repos(
                 repos=args.repos,
@@ -261,14 +281,14 @@ Examples:
         safe = sum(1 for r in all_results if r.get("is_safe") is True)
         unsafe = sum(1 for r in all_results if r.get("is_safe") is False)
         errors = sum(1 for r in all_results if r.get("is_safe") is None)
-        print(f"\nScan complete: {safe} safe, {unsafe} with issues, {errors} errors")
+        logger.info("Scan complete: %d safe, %d with issues, %d errors", safe, unsafe, errors)
 
     # =========================================================================
     # Step 3: Generate Report
     # =========================================================================
-    print("\n" + "=" * 60)
-    print("STEP 3: Generate Report")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("STEP 3: Generate Report")
+    logger.info("=" * 60)
 
     findings = aggregate_results(args.output)
 
@@ -282,34 +302,31 @@ Examples:
     # =========================================================================
     # Final Summary
     # =========================================================================
-    print("\n" + "=" * 60)
-    print("SUMMARY")
-    print("=" * 60)
-    print(f"""
-Skills scanned:  {findings['total_skills']}
-Safe:            {findings['safe_skills']} ({findings['safe_skills']/max(findings['total_skills'],1)*100:.0f}%)
-With issues:     {findings['unsafe_skills']}
-Errors:          {findings['error_skills']}
-
-Total findings:  {findings['total_findings']}
-  CRITICAL:      {findings['severity_counts']['CRITICAL']}
-  HIGH:          {findings['severity_counts']['HIGH']}
-  MEDIUM:        {findings['severity_counts']['MEDIUM']}
-  LOW:           {findings['severity_counts']['LOW']}
-
-Output files:
-  {report_path}
-  {json_path}
-  {args.output}/*-scan.json
-  {args.output}/*-scan.md
-""")
+    logger.info("=" * 60)
+    logger.info("SUMMARY")
+    logger.info("=" * 60)
+    pct = findings['safe_skills'] / max(findings['total_skills'], 1) * 100
+    logger.info("Skills scanned:  %d", findings['total_skills'])
+    logger.info("Safe:            %d (%.0f%%)", findings['safe_skills'], pct)
+    logger.info("With issues:     %d", findings['unsafe_skills'])
+    logger.info("Errors:          %d", findings['error_skills'])
+    logger.info("Total findings:  %d", findings['total_findings'])
+    logger.info("  CRITICAL:      %d", findings['severity_counts']['CRITICAL'])
+    logger.info("  HIGH:          %d", findings['severity_counts']['HIGH'])
+    logger.info("  MEDIUM:        %d", findings['severity_counts']['MEDIUM'])
+    logger.info("  LOW:           %d", findings['severity_counts']['LOW'])
+    logger.info("Output files:")
+    logger.info("  %s", report_path)
+    logger.info("  %s", json_path)
+    logger.info("  %s/*-scan.json", args.output)
+    logger.info("  %s/*-scan.md", args.output)
 
     # Exit with error code if critical/high findings
     if findings['severity_counts']['CRITICAL'] > 0:
-        print("WARNING: Critical findings detected!")
+        logger.warning("Critical findings detected!")
         sys.exit(2)
     elif findings['severity_counts']['HIGH'] > 0:
-        print("WARNING: High severity findings detected!")
+        logger.warning("High severity findings detected!")
         sys.exit(1)
 
 
