@@ -1,4 +1,4 @@
-# Skill Scanner
+# Skill Scanner Test
 
 An exploration project using automated security scanning of AI agent skills and plugins in public skill directories.
 
