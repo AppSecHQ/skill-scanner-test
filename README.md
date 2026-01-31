@@ -1,8 +1,8 @@
 # Skill Scanner
 
-An exploration project using automated security scanning of AI agent skills and plugins across public skill directories.
+An exploration project using automated security scanning of AI agent skills and plugins in public skill directories.
 
-AI agent skills, installable packages that extend what coding assistants and AI agents can do, are a growing attack surface. Skills can contain prompt injection, data exfiltration, command injection, and other vulnerabilities, whether introduced intentionally or by accident. This project aims to systematically scan popular skills and publish the results.
+AI agent skills -- installable packages that extend what coding assistants and AI agents can do -- are a growing attack surface. Skills can contain prompt injection, data exfiltration, command injection, and other vulnerabilities, whether introduced intentionally or by accident. This project aims to sample and systematically scan public skills, using various 3rd-party scanners, and publish the results.  
 
 ## Status
 
@@ -15,7 +15,7 @@ This is early-stage and evolving. The current implementation:
 This could be expanded along both axes -- adding more scanners and targeting more skill directories.
 
 - Additional scanners (custom rules, alternative tools)
-- Additional skill directories (e.g., [CHub](https://clawhub.ai/), others as they emerge)
+- Additional skill directories (e.g., [clawhub](https://clawhub.ai/), others)
 - Broader coverage of existing directories
 - Automation for continuous scanning
 
@@ -67,4 +67,4 @@ Requires Python 3.10+.
 
 - [Cisco AI Defense skill-scanner](https://github.com/cisco-ai-defense/skill-scanner)
 - [skills.sh](https://skills.sh/)
-- 
+- [Agent Skills in the Wild: An Empirical Study of Security Vulnerabilities at Scale](https://arxiv.org/abs/2601.10338) -- large-scale security analysis of 31k+ skills from skills.rest and skillsmp.com
