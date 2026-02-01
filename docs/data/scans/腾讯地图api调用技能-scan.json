@@ -1,0 +1,160 @@
+{
+  "skill_name": "tencent-map",
+  "skill_path": "./skills/clawhub-qqmap",
+  "skill_directory": "./skills/clawhub-qqmap",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 4,
+  "findings": [
+    {
+      "id": "llm_finding_tencent-map_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Hardcoded API Key Exposure Risk via Environment Variable",
+      "description": "The skill requires the TENCENT_MAP_KEY environment variable to function. While using environment variables is better than hardcoding, the skill makes multiple external API calls to 'apis.map.qq.com' with this key. If the key is compromised or if the skill is used in an untrusted environment, the API key could be exposed through network traffic or logs. The skill does not implement any key validation, rotation, or protection mechanisms.",
+      "file_path": "scripts/tencent_map.sh",
+      "line_number": null,
+      "snippet": "API_KEY=\"$TENCENT_MAP_KEY\"\n\nif [ -z \"$API_KEY\" ]; then\n    echo '{\"error\": \"TENCENT_MAP_KEY\u73af\u5883\u53d8\u91cf\u672a\u8bbe\u7f6e\"}'\n    exit 1\nfi",
+      "remediation": "1. Implement API key validation before use. 2. Add rate limiting to prevent key abuse. 3. Consider using a secure credential management system instead of plain environment variables. 4. Add logging controls to prevent key exposure in logs. 5. Document key rotation procedures.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Tencent Maps API integration skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) Command injection vulnerabilities due to unvalidated user input in URL construction, (2) Unrestricted external API calls that could be abused for data exfiltration, (3) API key exposure risks, and (4) Unsafe processing of external API responses. While the skill's stated purpose (map API integration) is legitimate, the implementation lacks essential security controls including input validation, output sanitization, resource limits, and user confirmation for external data transmission. The skill requires immediate security improvements before it can be safely used, particularly around input validation and command injection prevention.",
+        "primary_threats": [
+          "Command Injection",
+          "Data Exfiltration",
+          "API Key Exposure",
+          "Unsafe External API Calls",
+          "Missing Input Validation",
+          "Resource Exhaustion Risk"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Using environment variables for API keys is standard practice. The risk is elevated because keys are in URL query parameters (which get logged), but this may be required by Tencent's API design. Not a critical flaw but could be improved.",
+        "meta_exploitability": "Low - requires access to logs or network traffic to capture key",
+        "meta_impact": "Medium - API key compromise could lead to quota exhaustion or unauthorized API usage"
+      }
+    },
+    {
+      "id": "llm_finding_tencent-map_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Command Injection via Unvalidated User Input in URL Construction",
+      "description": "The script constructs URLs by directly interpolating user-provided parameters (keyword, region, addresses) into curl commands without proper sanitization or URL encoding. An attacker could inject shell metacharacters or malicious payloads through these parameters, potentially leading to command injection. For example, a keyword containing backticks, semicolons, or other shell special characters could execute arbitrary commands.",
+      "file_path": "scripts/tencent_map.sh",
+      "line_number": null,
+      "snippet": "KEYWORD=\"$1\"\nREGION=\"${2:-\u5e7f\u5dde}\"\nPAGE_INDEX=\"${3:-1}\"\nPAGE_SIZE=\"${4:-20}\"\n\nURL=\"${BASE_URL}/place/v1/search?boundary=region(${REGION},0)&keyword=${KEYWORD}&page_index=${PAGE_INDEX}&page_size=${PAGE_SIZE}&key=${API_KEY}&output=json\"",
+      "remediation": "1. Implement strict input validation for all user-provided parameters. 2. Use proper URL encoding for all query parameters before constructing URLs. 3. Validate that numeric parameters (page_index, page_size, coordinates) are actually numbers. 4. Sanitize string inputs to remove or escape shell metacharacters. 5. Consider using a safer method than direct string interpolation, such as curl's --data-urlencode option.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Tencent Maps API integration skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) Command injection vulnerabilities due to unvalidated user input in URL construction, (2) Unrestricted external API calls that could be abused for data exfiltration, (3) API key exposure risks, and (4) Unsafe processing of external API responses. While the skill's stated purpose (map API integration) is legitimate, the implementation lacks essential security controls including input validation, output sanitization, resource limits, and user confirmation for external data transmission. The skill requires immediate security improvements before it can be safely used, particularly around input validation and command injection prevention.",
+        "primary_threats": [
+          "Command Injection",
+          "Data Exfiltration",
+          "API Key Exposure",
+          "Unsafe External API Calls",
+          "Missing Input Validation",
+          "Resource Exhaustion Risk"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified command injection risk. The code directly interpolates user input into shell variables used in curl URLs without any sanitization. This is a textbook command injection vulnerability in bash scripts.",
+        "meta_exploitability": "Easy - no authentication required, direct user input to shell command",
+        "meta_impact": "Critical - arbitrary command execution on the host system with agent's privileges"
+      }
+    },
+    {
+      "id": "llm_finding_tencent-map_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Unrestricted External Network Calls to Third-Party API",
+      "description": "The skill makes unrestricted HTTP requests to 'apis.map.qq.com' (Tencent Maps API) with user-controlled parameters. While this is the stated purpose of the skill, there are no safeguards against data exfiltration through these API calls. User-provided search terms, addresses, and location data are transmitted to external servers without user confirmation or data minimization controls. An attacker could use this to exfiltrate sensitive location information or probe internal network details.",
+      "file_path": "scripts/tencent_map.sh",
+      "line_number": 14,
+      "snippet": "BASE_URL=\"https://apis.map.qq.com/ws\"\n\n# Multiple curl calls throughout the script:\ncurl -s \"$URL\"",
+      "remediation": "1. Implement user confirmation before making external API calls with sensitive data. 2. Add data minimization controls to limit what information is sent. 3. Implement request logging for audit purposes. 4. Add rate limiting to prevent abuse. 5. Consider implementing a whitelist of allowed API endpoints. 6. Validate that responses come from expected domains.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Tencent Maps API integration skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) Command injection vulnerabilities due to unvalidated user input in URL construction, (2) Unrestricted external API calls that could be abused for data exfiltration, (3) API key exposure risks, and (4) Unsafe processing of external API responses. While the skill's stated purpose (map API integration) is legitimate, the implementation lacks essential security controls including input validation, output sanitization, resource limits, and user confirmation for external data transmission. The skill requires immediate security improvements before it can be safely used, particularly around input validation and command injection prevention.",
+        "primary_threats": [
+          "Command Injection",
+          "Data Exfiltration",
+          "API Key Exposure",
+          "Unsafe External API Calls",
+          "Missing Input Validation",
+          "Resource Exhaustion Risk"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is the legitimate purpose of the skill (map API integration), but lacks user confirmation controls. The severity is reduced because the external domain (apis.map.qq.com) is the documented Tencent Maps API, not an arbitrary attacker-controlled server.",
+        "meta_exploitability": "Medium - requires social engineering to trick user into searching for sensitive data",
+        "meta_impact": "Medium - potential location data exposure, but limited to what user explicitly searches for"
+      }
+    },
+    {
+      "id": "llm_finding_tencent-map_4",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Missing Resource Limits and Error Handling for API Calls",
+      "description": "The script lacks proper resource limits, timeouts, and error handling for external API calls. There are no timeouts on curl commands, no limits on response sizes, and minimal error handling. This could lead to resource exhaustion if the API is slow to respond, returns extremely large responses, or if an attacker triggers many concurrent requests.",
+      "file_path": "scripts/tencent_map.sh",
+      "line_number": 38,
+      "snippet": "RESPONSE=$(curl -s \"$URL\")\n\n# No timeout, no max response size, no retry limits",
+      "remediation": "1. Add timeout parameters to all curl commands (e.g., --max-time 30). 2. Implement maximum response size limits (e.g., --max-filesize). 3. Add retry limits and exponential backoff. 4. Implement proper error handling for network failures. 5. Add resource monitoring to detect abuse patterns. 6. Consider implementing circuit breaker patterns for API failures.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Tencent Maps API integration skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) Command injection vulnerabilities due to unvalidated user input in URL construction, (2) Unrestricted external API calls that could be abused for data exfiltration, (3) API key exposure risks, and (4) Unsafe processing of external API responses. While the skill's stated purpose (map API integration) is legitimate, the implementation lacks essential security controls including input validation, output sanitization, resource limits, and user confirmation for external data transmission. The skill requires immediate security improvements before it can be safely used, particularly around input validation and command injection prevention.",
+        "primary_threats": [
+          "Command Injection",
+          "Data Exfiltration",
+          "API Key Exposure",
+          "Unsafe External API Calls",
+          "Missing Input Validation",
+          "Resource Exhaustion Risk"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The code clearly lacks timeout parameters. This is a best practice issue that could lead to resource exhaustion in edge cases.",
+        "meta_exploitability": "Low - requires control over API response or network conditions",
+        "meta_impact": "Low - script hangs or memory exhaustion, but no data loss or security breach"
+      }
+    }
+  ],
+  "scan_duration_seconds": 42.51675319671631,
+  "duration_ms": 42516,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-01T17:37:56.897769"
+}

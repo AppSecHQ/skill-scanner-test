@@ -1,0 +1,84 @@
+{
+  "skill_name": "near-email",
+  "skill_path": "./skills/clawhub-near-email-skill",
+  "skill_directory": "./skills/clawhub-near-email-skill",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "llm_finding_near-email_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Endpoint and Contract Address Without Verification",
+      "description": "The skill hardcodes external API endpoints (api.outlayer.fastnear.com) and contract addresses (outlayer.near) without any verification mechanism. While these appear to be legitimate NEAR blockchain services, there is no cryptographic verification of the endpoint authenticity or contract code hash validation. An attacker could potentially perform DNS hijacking or BGP hijacking to redirect API calls to malicious servers, enabling data interception or manipulation.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "API Base: https://api.outlayer.fastnear.com\nContract: outlayer.near\nNo verification of contract code hash or API certificate pinning mentioned.",
+      "remediation": "1. Implement certificate pinning for HTTPS API calls\n2. Verify contract code hash before transactions\n3. Add documentation about verifying the outlayer.near contract on NEAR blockchain explorer\n4. Consider adding integrity checks for API responses",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The near-email skill is a legitimate blockchain integration tool with MODERATE security concerns. The primary risks stem from its design as a public blockchain email system rather than malicious intent. The skill correctly warns users about public storage of email content, but lacks technical safeguards to prevent accidental sensitive data exposure. The hardcoded external dependencies (API endpoints and contract addresses) present a medium-severity supply chain risk without verification mechanisms. Missing optional metadata fields reduce transparency. No evidence of prompt injection, command injection, credential theft, or deliberate data exfiltration was found. The skill appears to function as described, but users should be aware of the public nature of blockchain storage and the trust placed in external services.",
+        "primary_threats": [
+          "Data exposure via public blockchain storage",
+          "Hardcoded external dependencies without verification",
+          "Missing security metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a supply chain security concern. While outlayer.near appears legitimate, the lack of verification creates a trust dependency. The risk is real but requires attacker control of DNS/infrastructure.",
+        "meta_exploitability": "Difficult - Requires DNS hijacking, BGP hijacking, or compromise of fastnear.com infrastructure. Not trivial but possible for sophisticated attackers.",
+        "meta_impact": "Medium - Could enable MITM attacks, data interception, or malicious contract execution if infrastructure is compromised."
+      }
+    },
+    {
+      "id": "llm_finding_near-email_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Public Blockchain Storage of Email Content",
+      "description": "The skill's send_email_plaintext function stores email content publicly on the NEAR blockchain, which is immutable and permanently accessible. While the documentation warns users about this, the skill does not implement technical safeguards to prevent accidental exposure of sensitive information. Users might inadvertently send private data (credentials, personal information, business secrets) that becomes permanently public.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Warning in documentation: 'send_email_plaintext stores email content PUBLICLY on the NEAR blockchain. Use only for automated notifications'\nNo code-level validation to prevent sensitive data patterns (API keys, passwords, SSNs, etc.)",
+      "remediation": "1. Implement content scanning to detect and block common sensitive data patterns (regex for API keys, SSNs, credit cards)\n2. Add explicit user confirmation prompts before sending plaintext emails\n3. Provide encrypted alternative (send_email) as the default method\n4. Add rate limiting to prevent bulk data exfiltration via email",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The near-email skill is a legitimate blockchain integration tool with MODERATE security concerns. The primary risks stem from its design as a public blockchain email system rather than malicious intent. The skill correctly warns users about public storage of email content, but lacks technical safeguards to prevent accidental sensitive data exposure. The hardcoded external dependencies (API endpoints and contract addresses) present a medium-severity supply chain risk without verification mechanisms. Missing optional metadata fields reduce transparency. No evidence of prompt injection, command injection, credential theft, or deliberate data exfiltration was found. The skill appears to function as described, but users should be aware of the public nature of blockchain storage and the trust placed in external services.",
+        "primary_threats": [
+          "Data exposure via public blockchain storage",
+          "Hardcoded external dependencies without verification",
+          "Missing security metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a legitimate architectural risk. The skill correctly documents the public nature of blockchain storage, but lacks technical enforcement. Users relying solely on documentation may accidentally expose sensitive data.",
+        "meta_exploitability": "Easy - User error is the primary attack vector. No authentication required to read public blockchain data.",
+        "meta_impact": "Medium-High - Permanent exposure of sensitive data (credentials, PII, business secrets) that cannot be deleted from blockchain."
+      }
+    }
+  ],
+  "scan_duration_seconds": 29.785468101501465,
+  "duration_ms": 29785,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-01T18:35:53.833921"
+}
