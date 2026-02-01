@@ -8,23 +8,42 @@ AI agent skills -- installable packages that extend what coding assistants and A
 
 This is early-stage and evolving. The current implementation:
 
-- **Scanner:** [Cisco AI Defense skill-scanner](https://github.com/cisco-ai-defense/skill-scanner) (static + behavioral + trigger analysis)
+- **Scanner:** [Cisco AI Defense skill-scanner](https://github.com/cisco-ai-defense/skill-scanner) (static + behavioral + trigger + LLM analysis)
 - **Skill registries:** [skills.sh](https://skills.sh/) and [clawhub.ai](https://clawhub.ai/)
 - **Coverage:** 22 skills scanned so far
 - **Test suite:** 77 tests passing
 
 This could be expanded along both axes -- adding more scanners and targeting more skill directories.
 
+<!-- BEGIN SCAN RESULTS -->
 ## Scan Results
 
 | Metric | Count |
 |--------|-------|
 | Total Skills Scanned | 22 |
-| Safe Skills | 13 (59%) |
-| Skills with Issues | 9 (41%) |
+| Safe Skills | 12 (55%) |
+| Skills with Issues | 10 (45%) |
+| Total Findings | 80 |
 
-- The most common issues are policy violations (missing license metadata) and data exfiltration patterns, with the highest-severity findings in skills from clawhub.ai.
-- [Summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
+| Severity | Count |
+|----------|-------|
+| CRITICAL | 10 |
+| HIGH | 9 |
+| MEDIUM | 22 |
+| LOW | 39 |
+
+| Category | Count |
+|----------|-------|
+| data_exfiltration | 32 |
+| policy_violation | 18 |
+| social_engineering | 8 |
+| hardcoded_secrets | 8 |
+| command_injection | 7 |
+| unauthorized_tool_use | 4 |
+| resource_abuse | 3 |
+
+- See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
+<!-- END SCAN RESULTS -->
 
 ## Getting Started
 
@@ -51,6 +70,12 @@ python scripts/scan-skills.py --source clawhub -n 10
 
 # Scan skills 11-25 (pagination)
 python scripts/scan-skills.py -n 15 --offset 10
+
+# Enable LLM semantic analysis (requires SKILL_SCANNER_LLM_API_KEY)
+python scripts/scan-skills.py -n 25 --use-llm
+
+# Enable LLM + meta-analysis for false positive filtering
+python scripts/scan-skills.py -n 25 --use-llm --enable-meta
 ```
 
 ### Scan a specific repo
@@ -115,8 +140,8 @@ Cloned skill repositories are kept in `skills/` locally but excluded from versio
 
 ## Known Limitations
 
-- Only static analysis -- no runtime verification
-- LLM-based semantic analysis unavailable without API keys (pass `--use-llm` if you have a key set)
+- No runtime verification -- analysis is static and semantic only
+- LLM and meta-analysis require an API key (`SKILL_SCANNER_LLM_API_KEY`); without one, scans fall back to static/behavioral/trigger only
 - Limited to skills with public source repos
 - Scanner coverage depends on the rule sets of the underlying tools
 

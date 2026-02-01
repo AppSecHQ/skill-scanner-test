@@ -248,6 +248,63 @@ def _pct(num: int, total: int) -> str:
     return f"{num / total * 100:.0f}%"
 
 
+BEGIN_MARKER = "<!-- BEGIN SCAN RESULTS -->"
+END_MARKER = "<!-- END SCAN RESULTS -->"
+
+
+def update_readme(findings: dict, readme_path: Path) -> bool:
+    """
+    Update the Scan Results section of README.md between marker comments.
+
+    Returns True if the README was updated, False if markers not found or file missing.
+    """
+    if not readme_path.exists():
+        logger.warning("README not found at %s, skipping update", readme_path)
+        return False
+
+    text = readme_path.read_text()
+    begin = text.find(BEGIN_MARKER)
+    end = text.find(END_MARKER)
+    if begin == -1 or end == -1:
+        logger.warning("Scan results markers not found in %s, skipping update", readme_path)
+        return False
+
+    sc = findings["severity_counts"]
+    cats = findings["findings_by_category"]
+
+    section = f"""{BEGIN_MARKER}
+## Scan Results
+
+| Metric | Count |
+|--------|-------|
+| Total Skills Scanned | {findings['total_skills']} |
+| Safe Skills | {findings['safe_skills']} ({_pct(findings['safe_skills'], findings['total_skills'])}) |
+| Skills with Issues | {findings['unsafe_skills']} ({_pct(findings['unsafe_skills'], findings['total_skills'])}) |
+| Total Findings | {findings['total_findings']} |
+
+| Severity | Count |
+|----------|-------|
+| CRITICAL | {sc['CRITICAL']} |
+| HIGH | {sc['HIGH']} |
+| MEDIUM | {sc['MEDIUM']} |
+| LOW | {sc['LOW']} |
+
+| Category | Count |
+|----------|-------|
+"""
+    for category, count in sorted(cats.items(), key=lambda x: -x[1]):
+        section += f"| {category} | {count} |\n"
+
+    section += f"""
+- See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
+{END_MARKER}"""
+
+    updated = text[:begin] + section + text[end + len(END_MARKER):]
+    readme_path.write_text(updated)
+    logger.info("README updated at %s", readme_path)
+    return True
+
+
 def generate_json_summary(findings: dict, output_path: Path) -> None:
     """Save aggregated findings as JSON."""
     output_path.parent.mkdir(parents=True, exist_ok=True)

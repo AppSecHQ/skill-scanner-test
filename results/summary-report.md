@@ -1,6 +1,6 @@
 # AI Agent Skills Security Scan Report
 
-**Generated:** 2026-02-01T07:42:17.628091
+**Generated:** 2026-02-01T07:51:12.758246
 **Scanner:** cisco-ai-skill-scanner
 **Analyzers:** behavioral, llm, static, trigger
 
@@ -156,7 +156,7 @@ Script contains suspicious URL that may be used for data exfiltration
 
 - **Scanner:** cisco-ai-skill-scanner
 - **Analyzers:** behavioral_analyzer, llm_analyzer, static_analyzer, trigger_analyzer
-- **Scan Date:** 2026-02-01T07:42:17.628091
+- **Scan Date:** 2026-02-01T07:51:12.758246
 
 ### Limitations
 

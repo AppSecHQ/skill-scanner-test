@@ -23,7 +23,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 from fetch_skills import fetch_top_skills, save_inventory, load_inventory, VALID_SOURCES
 from run_scans import scan_skills, get_unique_repos, scan_adhoc_repos
-from generate_report import aggregate_results, generate_markdown_report, generate_json_summary
+from generate_report import aggregate_results, generate_markdown_report, generate_json_summary, update_readme
 from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT
 
 logger = logging.getLogger(__name__)
@@ -303,6 +303,10 @@ Examples:
 
     generate_markdown_report(findings, report_path)
     generate_json_summary(findings, json_path)
+
+    # Update README scan results section
+    readme_path = Path("README.md")
+    update_readme(findings, readme_path)
 
     # =========================================================================
     # Final Summary
