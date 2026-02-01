@@ -300,7 +300,7 @@ function renderTableRows(skills, tbody) {
 
     html += `<tr data-name="${escapeHtml(skill.name.toLowerCase())}" data-source="${escapeHtml(skill.source)}">
       <td>
-        <a href="#/skill/${encodeURIComponent(slug)}" style="color:var(--text);text-decoration:none;font-weight:500;">${escapeHtml(skill.name)}</a>
+        <a href="#/skill/${encodeURIComponent(slug)}" style="color:var(--accent-light);text-decoration:none;font-weight:500;">${escapeHtml(skill.name)}</a>
         <span class="badge ${severityClass(maxSev)}">${maxSev === 'SAFE' ? 'SAFE' : maxSev}</span>
       </td>
       <td style="color:var(--muted);">${escapeHtml(skill.source)}</td>
