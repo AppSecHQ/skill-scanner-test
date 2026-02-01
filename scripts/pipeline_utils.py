@@ -62,8 +62,8 @@ atexit.register(close_session)
 
 
 def shorten_path(path_str: str) -> str:
-    """Replace the home directory prefix with ~ to avoid absolute paths in reports."""
-    home = str(Path.home())
-    if path_str.startswith(home):
-        return "~" + path_str[len(home):]
+    """Convert an absolute path to ./ relative to the current working directory."""
+    cwd = str(Path.cwd())
+    if path_str.startswith(cwd):
+        return "." + path_str[len(cwd):]
     return path_str

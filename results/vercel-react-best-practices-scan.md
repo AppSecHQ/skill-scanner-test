@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** vercel-react-best-practices
-**Directory:** ~/skill-scanner-test/skills/vercel-labs-agent-skills/skills/react-best-practices
+**Directory:** ./skills/vercel-labs-agent-skills/skills/react-best-practices
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
 **Scan Duration:** 0.01s

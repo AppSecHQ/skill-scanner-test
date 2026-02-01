@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** find-skills
-**Directory:** ~/skill-scanner-test/skills/vercel-labs-skills/skills/find-skills
+**Directory:** ./skills/vercel-labs-skills/skills/find-skills
 **Status:** [OK] SAFE
 **Max Severity:** LOW
 **Scan Duration:** 0.00s

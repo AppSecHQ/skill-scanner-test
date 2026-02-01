@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** clickup
-**Directory:** ~/skill-scanner-test/skills/clawhub-clickup-skill
+**Directory:** ./skills/clawhub-clickup-skill
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
 **Scan Duration:** 0.84s
