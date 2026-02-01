@@ -2,68 +2,40 @@
   "skill_name": "video-transcript",
   "skill_path": "./skills/clawhub-video-transcript",
   "skill_directory": "./skills/clawhub-video-transcript",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 6,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {}
-    },
-    {
-      "id": "YARA_credential_harvesting_595e6831ec",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export TRANSCRIPT_API_KEY",
-      "file_path": "SKILL.md",
-      "line_number": 9,
-      "snippet": "- Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING"
-      }
-    },
     {
       "id": "llm_finding_video-transcript_0",
       "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "Hardcoded API Key in Environment Variable Instructions",
-      "description": "The skill instructs users to store the TRANSCRIPT_API_KEY in their shell environment (~/.zshenv). While this is a common practice, the skill makes API calls to an external service (transcriptapi.com) using this credential. If the API key is compromised or if the external service is malicious, it could lead to unauthorized usage of the user's credits or potential data exposure. The skill does not implement any validation or security checks on the API key usage.",
+      "title": "Hardcoded API Key Requirement Without Validation",
+      "description": "The skill requires users to store a TRANSCRIPT_API_KEY in their shell environment (~/.zshenv) but provides no validation, sanitization, or security guidance. Users are instructed to echo their API key directly into shell configuration files, which could expose credentials if the file has incorrect permissions or is accidentally committed to version control.",
       "file_path": "SKILL.md",
       "line_number": null,
       "snippet": "Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
-      "remediation": "1. Add warnings about API key security and rotation practices. 2. Recommend using more secure credential storage mechanisms. 3. Implement rate limiting or usage monitoring guidance. 4. Warn users to review transcriptapi.com's privacy policy before use.",
+      "remediation": "Provide security guidance: (1) Verify file permissions (chmod 600 ~/.zshenv), (2) Warn against committing credentials to git, (3) Suggest using a secrets manager or encrypted credential store, (4) Add validation to check if the key format is correct before making API calls.",
       "analyzer": "llm",
       "metadata": {
         "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The video-transcript skill is a straightforward wrapper around the TranscriptAPI.com service for extracting YouTube video transcripts. The skill itself does not contain malicious code or direct security threats like command injection or data exfiltration. However, it has MEDIUM severity concerns related to external data transmission and credential management. The skill sends video URLs to a third-party service without explicit privacy warnings, and instructs users to store API credentials in environment variables without security guidance. A referenced file (videos.py) is missing from the package. The skill lacks optional metadata fields that would improve transparency. Overall, this skill is functional but needs better security disclosures and documentation about its external dependencies and data handling practices.",
+        "overall_assessment": "This skill provides legitimate functionality for extracting video transcripts via an external API service. The primary security concerns are around credential management (API key storage in shell config without security guidance) and data privacy (sending video URLs to third-party service without user consent or disclosure). The skill does not contain malicious code, prompt injection attempts, or data exfiltration patterns. However, it lacks important security best practices around credential handling and privacy transparency. The missing metadata fields and referenced file are minor documentation issues. Overall risk level is MODERATE - the skill is functional and non-malicious, but needs security and privacy improvements.",
         "primary_threats": [
-          "External Data Transmission",
-          "Credential Management",
-          "Missing Documentation"
+          "Credential exposure risk (insecure API key storage guidance)",
+          "Data privacy concerns (external API transmission without disclosure)",
+          "Missing security metadata (no allowed-tools, license, compatibility)"
         ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
         "aisubtech": "AISubtech-8.2.3",
         "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The current guidance lacks basic security practices for credential storage. While not actively malicious, it creates unnecessary risk for users unfamiliar with secure credential management.",
+        "meta_exploitability": "Medium - requires user error (wrong permissions, git commit)",
+        "meta_impact": "Medium - API key exposure could lead to quota theft or service abuse"
       }
     },
     {
@@ -71,90 +43,42 @@
       "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "External Data Transmission to Third-Party Service",
-      "description": "The skill sends video URLs (which may contain sensitive or private video identifiers) to an external third-party API (transcriptapi.com) without explicit user consent warnings. Users may unknowingly share private or unlisted video URLs with this external service. The skill does not disclose what data transcriptapi.com collects, logs, or retains about the requests.",
+      "title": "External API Data Transmission Without User Consent",
+      "description": "The skill sends user-provided video URLs to an external third-party API (transcriptapi.com) without explicit user consent or privacy disclosure. Video URLs may contain sensitive information (unlisted videos, private shares, user viewing history). The skill does not disclose what data TranscriptAPI.com collects, logs, or retains.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": "curl -s \"https://transcriptapi.com/api/v2/youtube/transcript?video_url=VIDEO_URL&format=text&include_timestamp=true&send_metadata=true\" -H \"Authorization: Bearer $TRANSCRIPT_API_KEY\"",
-      "remediation": "1. Add explicit disclosure that video URLs are sent to transcriptapi.com. 2. Warn users not to use this skill with private/sensitive videos without reviewing the service's privacy policy. 3. Include a link to transcriptapi.com's terms of service and privacy policy. 4. Consider adding a confirmation step before sending data to external services.",
+      "snippet": "curl -s \"https://transcriptapi.com/api/v2/youtube/transcript?video_url=VIDEO_URL...\" -H \"Authorization: Bearer $TRANSCRIPT_API_KEY\"",
+      "remediation": "Add privacy disclosure: (1) Inform users that video URLs are sent to transcriptapi.com, (2) Link to TranscriptAPI's privacy policy, (3) Warn about sharing unlisted/private video URLs, (4) Consider adding a confirmation prompt before sending data to external services.",
       "analyzer": "llm",
       "metadata": {
         "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The video-transcript skill is a straightforward wrapper around the TranscriptAPI.com service for extracting YouTube video transcripts. The skill itself does not contain malicious code or direct security threats like command injection or data exfiltration. However, it has MEDIUM severity concerns related to external data transmission and credential management. The skill sends video URLs to a third-party service without explicit privacy warnings, and instructs users to store API credentials in environment variables without security guidance. A referenced file (videos.py) is missing from the package. The skill lacks optional metadata fields that would improve transparency. Overall, this skill is functional but needs better security disclosures and documentation about its external dependencies and data handling practices.",
+        "overall_assessment": "This skill provides legitimate functionality for extracting video transcripts via an external API service. The primary security concerns are around credential management (API key storage in shell config without security guidance) and data privacy (sending video URLs to third-party service without user consent or disclosure). The skill does not contain malicious code, prompt injection attempts, or data exfiltration patterns. However, it lacks important security best practices around credential handling and privacy transparency. The missing metadata fields and referenced file are minor documentation issues. Overall risk level is MODERATE - the skill is functional and non-malicious, but needs security and privacy improvements.",
         "primary_threats": [
-          "External Data Transmission",
-          "Credential Management",
-          "Missing Documentation"
+          "Credential exposure risk (insecure API key storage guidance)",
+          "Data privacy concerns (external API transmission without disclosure)",
+          "Missing security metadata (no allowed-tools, license, compatibility)"
         ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
         "aisubtech": "AISubtech-8.2.3",
         "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
-      }
-    },
-    {
-      "id": "llm_finding_video-transcript_2",
-      "rule_id": "LLM_DATA_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "LOW",
-      "title": "Missing Referenced File (videos.py)",
-      "description": "The skill instructions reference a file 'videos.py' that is not included in the skill package. This could indicate incomplete packaging, a missing dependency, or potentially a reference to an external file that should be present. While not immediately exploitable, missing referenced files can lead to skill malfunction or confusion.",
-      "file_path": null,
-      "line_number": null,
-      "snippet": "Files referenced in instructions: videos.py (not found)",
-      "remediation": "1. Include the videos.py file in the skill package if it's required. 2. Remove the reference if the file is not needed. 3. Clarify the purpose of videos.py in the documentation.",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The video-transcript skill is a straightforward wrapper around the TranscriptAPI.com service for extracting YouTube video transcripts. The skill itself does not contain malicious code or direct security threats like command injection or data exfiltration. However, it has MEDIUM severity concerns related to external data transmission and credential management. The skill sends video URLs to a third-party service without explicit privacy warnings, and instructs users to store API credentials in environment variables without security guidance. A referenced file (videos.py) is missing from the package. The skill lacks optional metadata fields that would improve transparency. Overall, this skill is functional but needs better security disclosures and documentation about its external dependencies and data handling practices.",
-        "primary_threats": [
-          "External Data Transmission",
-          "Credential Management",
-          "Missing Documentation"
-        ],
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "aisubtech": "AISubtech-8.2.3",
-        "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
-      }
-    },
-    {
-      "id": "llm_finding_video-transcript_3",
-      "rule_id": "LLM_SOCIAL_ENGINEERING",
-      "category": "social_engineering",
-      "severity": "LOW",
-      "title": "Missing Optional Metadata Fields",
-      "description": "The skill manifest is missing several optional but recommended fields: 'license', 'compatibility', and 'allowed-tools'. While these are not required, their absence makes it harder for users to understand the skill's requirements, licensing terms, and which agent tools it expects to use. The skill appears to use Bash for making curl requests but does not declare this in allowed-tools.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": "license: Not specified, compatibility: Not specified, allowed-tools: Not specified",
-      "remediation": "1. Add 'license' field (e.g., MIT, Apache-2.0). 2. Add 'compatibility' field specifying which environments this works in. 3. Add 'allowed-tools: [Bash]' to declare the skill's tool usage. 4. Consider adding version information for better package management.",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The video-transcript skill is a straightforward wrapper around the TranscriptAPI.com service for extracting YouTube video transcripts. The skill itself does not contain malicious code or direct security threats like command injection or data exfiltration. However, it has MEDIUM severity concerns related to external data transmission and credential management. The skill sends video URLs to a third-party service without explicit privacy warnings, and instructs users to store API credentials in environment variables without security guidance. A referenced file (videos.py) is missing from the package. The skill lacks optional metadata fields that would improve transparency. Overall, this skill is functional but needs better security disclosures and documentation about its external dependencies and data handling practices.",
-        "primary_threats": [
-          "External Data Transmission",
-          "Credential Management",
-          "Missing Documentation"
-        ],
-        "aitech": "AITech-2.1",
-        "aitech_name": "Social Engineering",
-        "aisubtech": null,
-        "aisubtech_name": null,
-        "scanner_category": "SOCIAL ENGINEERING"
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that video URLs are transmitted to external API without privacy disclosure. This is a legitimate privacy concern for unlisted/private videos.",
+        "meta_exploitability": "Easy - automatic on skill use",
+        "meta_impact": "Medium - privacy exposure of video viewing patterns, potential leak of unlisted video URLs"
       }
     }
   ],
-  "scan_duration_seconds": 26.674955129623413,
-  "duration_ms": 26674,
+  "scan_duration_seconds": 28.95065426826477,
+  "duration_ms": 28950,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer"
+    "trigger_analyzer",
+    "meta_analyzer"
   ],
-  "timestamp": "2026-02-01T07:16:36.155593"
+  "timestamp": "2026-02-01T08:54:06.007544"
 }

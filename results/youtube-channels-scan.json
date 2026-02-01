@@ -2,135 +2,50 @@
   "skill_name": "youtube-channels",
   "skill_path": "./skills/clawhub-youtube-channels",
   "skill_directory": "./skills/clawhub-youtube-channels",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 5,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
   "findings": [
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {}
-    },
-    {
-      "id": "YARA_credential_harvesting_595e6831ec",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export TRANSCRIPT_API_KEY",
-      "file_path": "SKILL.md",
-      "line_number": 9,
-      "snippet": "- Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING"
-      }
-    },
     {
       "id": "llm_finding_youtube-channels_0",
       "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "Hardcoded API Key Requirement with External Service Dependency",
-      "description": "The skill requires users to obtain and store a TRANSCRIPT_API_KEY from an external third-party service (transcriptapi.com). While the skill itself doesn't contain hardcoded secrets, it creates a dependency on an external commercial API service that requires user registration and credential management. The instructions guide users to store the API key in shell configuration files (~/.zshenv), which could be exposed if the user's environment is compromised. Additionally, all API calls transmit this credential to an external service, creating a potential data exposure vector if the external service is compromised or malicious.",
+      "title": "Hardcoded API Key Exposure Risk in Setup Instructions",
+      "description": "The SKILL.md instructions guide users to store their TRANSCRIPT_API_KEY in ~/.zshenv using echo append, which could lead to accidental exposure or misconfiguration. While the skill itself doesn't contain hardcoded secrets, the setup pattern encourages storing sensitive credentials in shell configuration files that may be inadvertently committed to version control or exposed through other means. The instructions also demonstrate the API key in curl commands, which could lead to shell history exposure.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": "TRANSCRIPT_API_KEY required. Get one free (100 credits, no card):\n- [transcriptapi.com/signup](https://transcriptapi.com/signup) \u2192 Dashboard \u2192 API Keys\n- Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
-      "remediation": "1. Clearly document the third-party dependency and data sharing implications in the skill description. 2. Warn users that their API key will be transmitted to transcriptapi.com with every request. 3. Consider implementing key validation or rotation mechanisms. 4. Advise users on secure credential storage practices beyond shell config files (e.g., using credential managers). 5. Add transparency about what data is sent to the external service.",
+      "snippet": "Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`\nAuth: `-H \"Authorization: Bearer $TRANSCRIPT_API_KEY\"`",
+      "remediation": "Recommend using more secure credential storage methods such as: (1) dedicated credential managers (e.g., pass, 1Password CLI), (2) encrypted environment variable stores, (3) warning users about shell history exposure when using API keys in curl commands, (4) suggesting .env files with proper .gitignore configuration instead of shell config files.",
       "analyzer": "llm",
       "metadata": {
         "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The youtube-channels skill presents MEDIUM security risk primarily due to external API dependency and incomplete transparency. The skill requires users to register with and transmit credentials to a third-party commercial service (transcriptapi.com), creating potential data exposure vectors. While the skill itself contains no malicious code (no script files present, only curl examples in documentation), it lacks critical manifest metadata (license, compatibility, allowed-tools) that would help users assess security implications. The skill facilitates transmission of user queries to an external service without explicit privacy warnings. No prompt injection, command injection, or data exfiltration attempts were detected in the instruction body. The skill appears to function as documented - providing YouTube channel information via an external API - but needs improved transparency about third-party dependencies, data sharing, and credential management.",
+        "overall_assessment": "The youtube-channels skill is a relatively safe wrapper around the TranscriptAPI.com service with no critical security vulnerabilities. The skill contains no executable scripts, no data exfiltration code, no prompt injection attempts, and no malicious behavior. The primary concerns are around credential management practices in the setup instructions (MEDIUM severity) and missing optional metadata transparency (LOW severity). The skill accurately describes its functionality and doesn't attempt to deceive users about its purpose. The external API dependency and credit-based pricing model should be more prominently disclosed, but this represents a transparency issue rather than a security threat. No executable code means no command injection, eval/exec risks, or tool exploitation vectors. Overall, this skill demonstrates good security hygiene with room for improvement in credential handling guidance and metadata completeness.",
         "primary_threats": [
-          "External API Dependency",
-          "Missing Metadata Transparency",
-          "Credential Management Risk",
-          "Third-Party Data Transmission"
+          "Credential exposure risk in setup instructions",
+          "Missing transparency metadata"
         ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
         "aisubtech": "AISubtech-8.2.3",
         "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
-      }
-    },
-    {
-      "id": "llm_finding_youtube-channels_1",
-      "rule_id": "LLM_SOCIAL_ENGINEERING",
-      "category": "social_engineering",
-      "severity": "MEDIUM",
-      "title": "Incomplete Manifest Metadata - Missing Critical Fields",
-      "description": "The skill manifest is missing several important optional fields that help users assess security and compatibility: 'license' (not specified), 'compatibility' (not specified), and 'allowed-tools' (not specified). While these fields are optional per the agent skills specification, their absence makes it difficult for users to understand the skill's intended operating environment, licensing terms, and tool usage restrictions. The skill makes external API calls but doesn't declare this in compatibility information. The absence of 'allowed-tools' means there are no declared restrictions on what agent tools this skill might use.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": "YAML Manifest Details:\n- license: Not specified\n- compatibility: Not specified\n- allowed-tools: Not specified",
-      "remediation": "1. Add 'license' field to clarify usage terms (e.g., 'license: MIT'). 2. Add 'compatibility' field noting external API dependency and network requirements (e.g., 'compatibility: Requires internet access and TRANSCRIPT_API_KEY environment variable'). 3. Add 'allowed-tools' field to explicitly declare which agent tools are needed (e.g., 'allowed-tools: [Bash]' since the examples show curl commands). 4. This improves transparency and helps users make informed decisions about skill usage.",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The youtube-channels skill presents MEDIUM security risk primarily due to external API dependency and incomplete transparency. The skill requires users to register with and transmit credentials to a third-party commercial service (transcriptapi.com), creating potential data exposure vectors. While the skill itself contains no malicious code (no script files present, only curl examples in documentation), it lacks critical manifest metadata (license, compatibility, allowed-tools) that would help users assess security implications. The skill facilitates transmission of user queries to an external service without explicit privacy warnings. No prompt injection, command injection, or data exfiltration attempts were detected in the instruction body. The skill appears to function as documented - providing YouTube channel information via an external API - but needs improved transparency about third-party dependencies, data sharing, and credential management.",
-        "primary_threats": [
-          "External API Dependency",
-          "Missing Metadata Transparency",
-          "Credential Management Risk",
-          "Third-Party Data Transmission"
-        ],
-        "aitech": "AITech-2.1",
-        "aitech_name": "Social Engineering",
-        "aisubtech": null,
-        "aisubtech_name": null,
-        "scanner_category": "SOCIAL ENGINEERING"
-      }
-    },
-    {
-      "id": "llm_finding_youtube-channels_2",
-      "rule_id": "LLM_DATA_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "LOW",
-      "title": "External API Data Transmission Without Explicit User Consent Flow",
-      "description": "The skill facilitates transmission of user queries (YouTube channel handles, URLs, IDs) to an external third-party API (transcriptapi.com) without implementing an explicit user consent or confirmation mechanism. While the skill's description mentions working with YouTube channels, it doesn't explicitly warn users that their search queries and channel interests will be transmitted to a third-party service. This creates a minor privacy concern as user behavior and interests are shared with an external entity.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": "All API endpoints send user input to transcriptapi.com:\ncurl -s \"https://transcriptapi.com/api/v2/youtube/channel/resolve?input=@mkbhd\"\ncurl -s \"https://transcriptapi.com/api/v2/youtube/channel/latest?channel_id=UC_CHANNEL_ID\"\ncurl -s \"https://transcriptapi.com/api/v2/youtube/channel/videos?channel_id=UC_CHANNEL_ID\"",
-      "remediation": "1. Add a privacy notice in the skill description explaining that queries are sent to transcriptapi.com. 2. Include information about transcriptapi.com's data handling practices or link to their privacy policy. 3. Consider adding a confirmation step for first-time use. 4. Document what data is transmitted (channel IDs, handles, continuation tokens) and what is received (video metadata, statistics).",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The youtube-channels skill presents MEDIUM security risk primarily due to external API dependency and incomplete transparency. The skill requires users to register with and transmit credentials to a third-party commercial service (transcriptapi.com), creating potential data exposure vectors. While the skill itself contains no malicious code (no script files present, only curl examples in documentation), it lacks critical manifest metadata (license, compatibility, allowed-tools) that would help users assess security implications. The skill facilitates transmission of user queries to an external service without explicit privacy warnings. No prompt injection, command injection, or data exfiltration attempts were detected in the instruction body. The skill appears to function as documented - providing YouTube channel information via an external API - but needs improved transparency about third-party dependencies, data sharing, and credential management.",
-        "primary_threats": [
-          "External API Dependency",
-          "Missing Metadata Transparency",
-          "Credential Management Risk",
-          "Third-Party Data Transmission"
-        ],
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "aisubtech": "AISubtech-8.2.3",
-        "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a real security anti-pattern. While not an active vulnerability in the skill code itself, the documented setup process creates credential exposure risks through shell history and potential dotfile repository commits.",
+        "meta_exploitability": "Medium - Requires user to follow insecure setup instructions, but shell history exposure is automatic",
+        "meta_impact": "Medium - API key exposure could lead to unauthorized API usage and billing charges"
       }
     }
   ],
-  "scan_duration_seconds": 33.91683793067932,
-  "duration_ms": 33916,
+  "scan_duration_seconds": 23.775794982910156,
+  "duration_ms": 23775,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer"
+    "trigger_analyzer",
+    "meta_analyzer"
   ],
-  "timestamp": "2026-02-01T07:15:09.765364"
+  "timestamp": "2026-02-01T08:50:07.378740"
 }

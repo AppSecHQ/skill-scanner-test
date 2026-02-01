@@ -2,129 +2,50 @@
   "skill_name": "youtube-full",
   "skill_path": "./skills/clawhub-youtube-full",
   "skill_directory": "./skills/clawhub-youtube-full",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 5,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
   "findings": [
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {}
-    },
-    {
-      "id": "YARA_credential_harvesting_595e6831ec",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export TRANSCRIPT_API_KEY",
-      "file_path": "SKILL.md",
-      "line_number": 9,
-      "snippet": "- Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING"
-      }
-    },
     {
       "id": "llm_finding_youtube-full_0",
       "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "Hardcoded API Key Exposure Risk in Setup Instructions",
-      "description": "The SKILL.md instructions guide users to store their TRANSCRIPT_API_KEY in ~/.zshenv using echo and export commands. While this is a common practice, the instructions do not warn users about the security implications of storing API keys in shell configuration files, which are often readable by other processes and may be inadvertently committed to version control or exposed through system backups. The skill also requires the API key to be passed in Authorization headers via curl commands, which could be logged in shell history.",
-      "file_path": null,
-      "line_number": null,
-      "snippet": "Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`\nAuth: `-H \"Authorization: Bearer $TRANSCRIPT_API_KEY\"`",
-      "remediation": "Add security warnings about API key storage. Recommend using more secure credential management tools (e.g., password managers, encrypted credential stores). Advise users to set HISTIGNORE to prevent API keys from being logged in shell history. Consider recommending environment-specific credential management solutions.",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The youtube-full skill is a straightforward API wrapper for TranscriptAPI.com that provides YouTube data access through curl commands. The skill itself does not contain malicious code, prompt injection attempts, or data exfiltration logic. However, it has moderate security concerns around API key management practices and lacks recommended metadata fields. The primary risk is the guidance for storing API keys in shell configuration files without adequate security warnings. The skill is functional and appears legitimate in its purpose, but would benefit from improved security guidance and more complete metadata documentation.",
-        "primary_threats": [
-          "API Key Exposure Risk",
-          "Missing Security Metadata"
-        ],
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "aisubtech": "AISubtech-8.2.3",
-        "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
-      }
-    },
-    {
-      "id": "llm_finding_youtube-full_1",
-      "rule_id": "LLM_SOCIAL_ENGINEERING",
-      "category": "social_engineering",
-      "severity": "LOW",
-      "title": "Missing Optional Metadata Fields",
-      "description": "The skill manifest is missing several optional but recommended fields: 'license', 'compatibility', and 'allowed-tools'. While these fields are not required per the agent skills specification, their absence makes it harder for users to understand the skill's requirements, compatibility, and security posture. The skill makes external API calls but does not declare this in compatibility information.",
+      "title": "Hardcoded API Key Storage in Shell Configuration",
+      "description": "The skill instructs users to store the API key directly in shell configuration files (~/.zshenv) using echo commands. This creates a persistent credential that could be exposed through shell history, backup files, or if the configuration file is inadvertently shared. While the API key is required for functionality, the storage method lacks security best practices such as file permission warnings or encrypted credential storage recommendations.",
       "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": "license: Not specified\ncompatibility: Not specified\nallowed-tools: Not specified",
-      "remediation": "Add 'license' field (e.g., MIT, Apache-2.0). Add 'compatibility' field noting that this skill requires network access and works with Bash tool. Add 'allowed-tools: [Bash]' to explicitly declare that this skill uses the Bash tool for curl commands. This improves transparency and helps users understand the skill's requirements.",
+      "line_number": 12,
+      "snippet": "Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
+      "remediation": "Recommend secure credential storage methods: (1) Warn users to set restrictive permissions (chmod 600 ~/.zshenv), (2) Suggest using dedicated credential managers or encrypted environment variable storage, (3) Advise clearing shell history after manual key entry, (4) Consider recommending .env files with proper .gitignore configuration instead of shell config files.",
       "analyzer": "llm",
       "metadata": {
         "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The youtube-full skill is a straightforward API wrapper for TranscriptAPI.com that provides YouTube data access through curl commands. The skill itself does not contain malicious code, prompt injection attempts, or data exfiltration logic. However, it has moderate security concerns around API key management practices and lacks recommended metadata fields. The primary risk is the guidance for storing API keys in shell configuration files without adequate security warnings. The skill is functional and appears legitimate in its purpose, but would benefit from improved security guidance and more complete metadata documentation.",
+        "overall_assessment": "The youtube-full skill is a straightforward API wrapper for TranscriptAPI.com services with MODERATE security concerns. The skill provides legitimate YouTube data access functionality (transcripts, search, channels, playlists) through a third-party API service. Primary security concern is the recommended credential storage method which could expose API keys through shell configuration files. The skill contains no executable scripts (only curl examples in documentation), no data exfiltration patterns, no prompt injection attempts, and no malicious code. The functionality matches the description accurately. The main risk is credential exposure through insecure storage practices recommended in the setup instructions. Missing optional metadata reduces transparency but does not constitute a security threat.",
         "primary_threats": [
-          "API Key Exposure Risk",
-          "Missing Security Metadata"
-        ],
-        "aitech": "AITech-2.1",
-        "aitech_name": "Social Engineering",
-        "aisubtech": null,
-        "aisubtech_name": null,
-        "scanner_category": "SOCIAL ENGINEERING"
-      }
-    },
-    {
-      "id": "llm_finding_youtube-full_2",
-      "rule_id": "LLM_DATA_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "LOW",
-      "title": "External API Dependency Without Error Handling Guidance",
-      "description": "The skill relies entirely on external API calls to transcriptapi.com but provides no guidance on error handling, rate limiting, or what to do if the API is unavailable. Users are instructed to make curl requests directly without any validation of responses or handling of failure cases. This could lead to confusing behavior or exposure of error messages containing sensitive information.",
-      "file_path": null,
-      "line_number": null,
-      "snippet": "All examples show direct curl commands without error handling:\n`curl -s \"https://transcriptapi.com/api/v2/youtube/transcript...\" -H \"Authorization: Bearer $TRANSCRIPT_API_KEY\"`",
-      "remediation": "Add guidance on checking HTTP response codes before processing output. Recommend validating API responses and handling common error cases (401 Unauthorized, 429 Rate Limited, 500 Server Error). Suggest wrapping curl commands with error checking (e.g., checking $? or using curl's --fail flag).",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The youtube-full skill is a straightforward API wrapper for TranscriptAPI.com that provides YouTube data access through curl commands. The skill itself does not contain malicious code, prompt injection attempts, or data exfiltration logic. However, it has moderate security concerns around API key management practices and lacks recommended metadata fields. The primary risk is the guidance for storing API keys in shell configuration files without adequate security warnings. The skill is functional and appears legitimate in its purpose, but would benefit from improved security guidance and more complete metadata documentation.",
-        "primary_threats": [
-          "API Key Exposure Risk",
-          "Missing Security Metadata"
+          "Credential exposure through insecure storage recommendations",
+          "Missing transparency metadata"
         ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
         "aisubtech": "AISubtech-8.2.3",
         "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified insecure credential storage practice. The recommendation to echo credentials directly into shell config files is a documented security anti-pattern that exposes secrets through shell history and backup files.",
+        "meta_exploitability": "Medium - Requires access to user's shell history or dotfiles, but these are commonly exposed through backup systems, git repositories, or shared configurations",
+        "meta_impact": "Medium - API key exposure could lead to unauthorized API usage and credit consumption, but impact is limited to the TranscriptAPI.com service"
       }
     }
   ],
-  "scan_duration_seconds": 22.742491960525513,
-  "duration_ms": 22742,
+  "scan_duration_seconds": 20.605623722076416,
+  "duration_ms": 20605,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer"
+    "trigger_analyzer",
+    "meta_analyzer"
   ],
-  "timestamp": "2026-02-01T07:11:31.872583"
+  "timestamp": "2026-02-01T08:40:54.861779"
 }

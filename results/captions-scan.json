@@ -2,186 +2,50 @@
   "skill_name": "captions",
   "skill_path": "./skills/clawhub-captions",
   "skill_directory": "./skills/clawhub-captions",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 7,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
   "findings": [
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {}
-    },
-    {
-      "id": "YARA_credential_harvesting_595e6831ec",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export TRANSCRIPT_API_KEY",
-      "file_path": "SKILL.md",
-      "line_number": 9,
-      "snippet": "- Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING"
-      }
-    },
     {
       "id": "llm_finding_captions_0",
       "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
-      "severity": "LOW",
-      "title": "Missing License Declaration",
-      "description": "The skill does not specify a license in the YAML manifest. While not a direct security threat, this creates legal ambiguity about usage rights and redistribution, which can impact trust and adoption.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": "license: Not specified",
-      "remediation": "Add a license field to the YAML frontmatter (e.g., 'license: MIT', 'license: Apache-2.0', or 'license: Proprietary').",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The 'captions' skill is a straightforward YouTube caption extraction tool that uses an external API (TranscriptAPI.com) via curl commands. The skill has a legitimate, well-documented purpose with no evidence of malicious intent. The primary security concerns are minor: missing optional metadata fields (license, compatibility, allowed-tools) and standard API key handling practices that could be improved with additional security guidance. No prompt injection, data exfiltration, command injection, or other critical threats were detected. The skill operates as described, making authenticated API calls to a third-party service to retrieve publicly available YouTube captions. The referenced files (YouTube.py, video.py) appear to be documentation artifacts rather than actual dependencies. Overall, this is a LOW-RISK skill suitable for use with minor documentation improvements recommended.",
-        "primary_threats": [
-          "Missing metadata (license, compatibility, allowed-tools)",
-          "API key handling guidance could be strengthened",
-          "Referenced files not found in package"
-        ],
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "aisubtech": "AISubtech-8.2.3",
-        "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
-      }
-    },
-    {
-      "id": "llm_finding_captions_1",
-      "rule_id": "LLM_DATA_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "LOW",
-      "title": "Missing Compatibility Declaration",
-      "description": "The skill does not specify compatibility information (e.g., which Claude environments it works in). This is informational metadata that helps users understand where the skill can be used.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": "compatibility: Not specified",
-      "remediation": "Add a compatibility field to the YAML frontmatter (e.g., 'compatibility: Works in Claude.ai, Claude Code, API').",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The 'captions' skill is a straightforward YouTube caption extraction tool that uses an external API (TranscriptAPI.com) via curl commands. The skill has a legitimate, well-documented purpose with no evidence of malicious intent. The primary security concerns are minor: missing optional metadata fields (license, compatibility, allowed-tools) and standard API key handling practices that could be improved with additional security guidance. No prompt injection, data exfiltration, command injection, or other critical threats were detected. The skill operates as described, making authenticated API calls to a third-party service to retrieve publicly available YouTube captions. The referenced files (YouTube.py, video.py) appear to be documentation artifacts rather than actual dependencies. Overall, this is a LOW-RISK skill suitable for use with minor documentation improvements recommended.",
-        "primary_threats": [
-          "Missing metadata (license, compatibility, allowed-tools)",
-          "API key handling guidance could be strengthened",
-          "Referenced files not found in package"
-        ],
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "aisubtech": "AISubtech-8.2.3",
-        "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
-      }
-    },
-    {
-      "id": "llm_finding_captions_2",
-      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
-      "category": "unauthorized_tool_use",
-      "severity": "LOW",
-      "title": "Missing allowed-tools Declaration",
-      "description": "The skill does not specify allowed-tools in the YAML manifest. This is an optional field per the agent skills spec, but declaring it helps users understand which agent tools the skill requires (Bash for curl commands in this case).",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": "allowed-tools: Not specified",
-      "remediation": "Add 'allowed-tools: [Bash]' to the YAML frontmatter to document that this skill uses Bash commands for API calls.",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The 'captions' skill is a straightforward YouTube caption extraction tool that uses an external API (TranscriptAPI.com) via curl commands. The skill has a legitimate, well-documented purpose with no evidence of malicious intent. The primary security concerns are minor: missing optional metadata fields (license, compatibility, allowed-tools) and standard API key handling practices that could be improved with additional security guidance. No prompt injection, data exfiltration, command injection, or other critical threats were detected. The skill operates as described, making authenticated API calls to a third-party service to retrieve publicly available YouTube captions. The referenced files (YouTube.py, video.py) appear to be documentation artifacts rather than actual dependencies. Overall, this is a LOW-RISK skill suitable for use with minor documentation improvements recommended.",
-        "primary_threats": [
-          "Missing metadata (license, compatibility, allowed-tools)",
-          "API key handling guidance could be strengthened",
-          "Referenced files not found in package"
-        ],
-        "aitech": "AITech-12.1",
-        "aitech_name": "Tool Exploitation",
-        "aisubtech": "AISubtech-12.1.2",
-        "aisubtech_name": "Tool Poisoning",
-        "scanner_category": "SUSPICIOUS CODE EXECUTION"
-      }
-    },
-    {
-      "id": "llm_finding_captions_3",
-      "rule_id": "LLM_RESOURCE_ABUSE",
-      "category": "resource_abuse",
-      "severity": "LOW",
-      "title": "Referenced Files Not Found in Package",
-      "description": "The instructions reference 'YouTube.py' and 'video.py' files that are not included in the skill package. These appear to be documentation artifacts or broken references rather than actual dependencies, but could cause confusion.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": "Files referenced in instructions: YouTube.py, video.py (both not found)",
-      "remediation": "Remove references to YouTube.py and video.py from the instructions if they are not part of the skill package, or include these files if they are intended to be present.",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The 'captions' skill is a straightforward YouTube caption extraction tool that uses an external API (TranscriptAPI.com) via curl commands. The skill has a legitimate, well-documented purpose with no evidence of malicious intent. The primary security concerns are minor: missing optional metadata fields (license, compatibility, allowed-tools) and standard API key handling practices that could be improved with additional security guidance. No prompt injection, data exfiltration, command injection, or other critical threats were detected. The skill operates as described, making authenticated API calls to a third-party service to retrieve publicly available YouTube captions. The referenced files (YouTube.py, video.py) appear to be documentation artifacts rather than actual dependencies. Overall, this is a LOW-RISK skill suitable for use with minor documentation improvements recommended.",
-        "primary_threats": [
-          "Missing metadata (license, compatibility, allowed-tools)",
-          "API key handling guidance could be strengthened",
-          "Referenced files not found in package"
-        ],
-        "aitech": "AITech-13.3",
-        "aitech_name": "Availability Disruption",
-        "aisubtech": "AISubtech-13.3.2",
-        "aisubtech_name": "Compute Exhaustion",
-        "scanner_category": "RESOURCE ABUSE"
-      }
-    },
-    {
-      "id": "llm_finding_captions_4",
-      "rule_id": "LLM_DATA_EXFILTRATION",
-      "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "API Key Exposure Risk via Environment Variable",
-      "description": "The skill requires storing the TRANSCRIPT_API_KEY in ~/.zshenv, which is a shell configuration file that may be readable by other processes or accidentally committed to version control. While environment variables are a standard practice, the instructions could emphasize security best practices.",
+      "title": "API Key Required Without Security Guidance",
+      "description": "The skill requires TRANSCRIPT_API_KEY environment variable but provides no security guidance on key protection, rotation, or scope limitations. Users are instructed to store the key in ~/.zshenv which persists it in plaintext. No warnings about key exposure risks or best practices for credential management.",
       "file_path": "SKILL.md",
       "line_number": null,
       "snippet": "Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
-      "remediation": "Add a security note warning users to: (1) Never commit ~/.zshenv to version control, (2) Ensure proper file permissions (chmod 600 ~/.zshenv), (3) Consider using a secrets manager for production use. Also recommend adding ~/.zshenv to .gitignore.",
+      "remediation": "Add security guidance: (1) Warn users about plaintext storage risks, (2) Recommend using secure credential managers, (3) Advise on key rotation practices, (4) Document key scope and permissions, (5) Warn against committing keys to version control",
       "analyzer": "llm",
       "metadata": {
         "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The 'captions' skill is a straightforward YouTube caption extraction tool that uses an external API (TranscriptAPI.com) via curl commands. The skill has a legitimate, well-documented purpose with no evidence of malicious intent. The primary security concerns are minor: missing optional metadata fields (license, compatibility, allowed-tools) and standard API key handling practices that could be improved with additional security guidance. No prompt injection, data exfiltration, command injection, or other critical threats were detected. The skill operates as described, making authenticated API calls to a third-party service to retrieve publicly available YouTube captions. The referenced files (YouTube.py, video.py) appear to be documentation artifacts rather than actual dependencies. Overall, this is a LOW-RISK skill suitable for use with minor documentation improvements recommended.",
+        "overall_assessment": "The 'captions' skill is a straightforward YouTube caption extraction tool with LOW to MEDIUM security risk. It acts as a simple wrapper around the TranscriptAPI.com service using curl commands. The primary concern is the lack of security guidance around API key management - users are instructed to store credentials in plaintext without warnings about exposure risks. The skill has no code execution, no data exfiltration, no prompt injection attempts, and no malicious behavior. The missing optional metadata fields (license, compatibility, allowed-tools) reduce transparency but don't pose security threats. Referenced files (video.py, YouTube.py) appear to be documentation artifacts rather than actual dependencies. Overall, this is a legitimate utility skill that would benefit from improved security documentation around credential handling.",
         "primary_threats": [
-          "Missing metadata (license, compatibility, allowed-tools)",
-          "API key handling guidance could be strengthened",
-          "Referenced files not found in package"
+          "Inadequate credential security guidance",
+          "Missing security best practices documentation"
         ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
         "aisubtech": "AISubtech-8.2.3",
         "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified lack of security guidance. While the skill itself doesn't expose credentials, the documentation could lead users to insecure practices. This is a documentation quality issue, not an active security threat.",
+        "meta_exploitability": "Low - Requires user to follow insecure documentation and then have their environment compromised",
+        "meta_impact": "Medium - If user's environment is compromised, API key could be stolen, leading to unauthorized API usage and potential billing charges"
       }
     }
   ],
-  "scan_duration_seconds": 22.846530199050903,
-  "duration_ms": 22846,
+  "scan_duration_seconds": 22.99629545211792,
+  "duration_ms": 22996,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer"
+    "trigger_analyzer",
+    "meta_analyzer"
   ],
-  "timestamp": "2026-02-01T07:19:18.402952"
+  "timestamp": "2026-02-01T09:03:09.161831"
 }

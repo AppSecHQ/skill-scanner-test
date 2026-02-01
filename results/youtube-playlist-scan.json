@@ -2,132 +2,85 @@
   "skill_name": "youtube-playlist",
   "skill_path": "./skills/clawhub-youtube-playlist",
   "skill_directory": "./skills/clawhub-youtube-playlist",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 5,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {}
-    },
-    {
-      "id": "YARA_credential_harvesting_595e6831ec",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export TRANSCRIPT_API_KEY",
-      "file_path": "SKILL.md",
-      "line_number": 9,
-      "snippet": "- Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING"
-      }
-    },
     {
       "id": "llm_finding_youtube-playlist_0",
       "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "API Key Required Without Security Guidance",
-      "description": "The skill requires TRANSCRIPT_API_KEY environment variable but provides no security guidance on key protection, rotation, or scope limitations. Users are instructed to store the key in ~/.zshenv which persists it in plaintext. No warnings about key exposure risks or best practices for credential management.",
+      "title": "Hardcoded API Key Requirement Without Validation",
+      "description": "The skill requires users to store a TRANSCRIPT_API_KEY in their shell environment (~/.zshenv) but provides no validation, sanitization, or secure storage guidance. Users are instructed to echo sensitive credentials directly into shell configuration files, which may be committed to version control or exposed through insecure backups. The skill also transmits this key in Authorization headers to a third-party service (transcriptapi.com) without any verification of the service's legitimacy or security posture.",
       "file_path": "SKILL.md",
       "line_number": null,
       "snippet": "Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
-      "remediation": "Add security warnings about: (1) Not committing keys to version control, (2) Using restricted-scope API keys if available, (3) Regular key rotation, (4) Risks of plaintext storage in shell config files. Consider recommending more secure credential storage methods.",
+      "remediation": "1. Provide guidance on secure credential storage (e.g., using system keychains, encrypted credential managers). 2. Warn users about the risks of storing credentials in plaintext shell files. 3. Implement validation to ensure the API key format is correct before transmission. 4. Document the third-party service's security practices and data handling policies.",
       "analyzer": "llm",
       "metadata": {
         "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The youtube-playlist skill is a relatively safe wrapper around the TranscriptAPI.com service for browsing YouTube playlists and fetching transcripts. The skill uses only Bash curl commands to interact with an external API and does not contain executable scripts, prompt injection attempts, or data exfiltration code. The primary security concerns are: (1) API key management lacks security guidance, instructing users to store credentials in plaintext shell config files without warnings about exposure risks, (2) Missing optional manifest metadata reduces transparency about operational scope, and (3) Documentation references non-existent files. No critical threats were identified - the skill does not attempt to override instructions, exfiltrate data beyond its stated purpose, or execute malicious code. The external API dependency is clearly documented and matches the skill's stated purpose.",
+        "overall_assessment": "MODERATE RISK - This skill integrates with a third-party commercial API service (transcriptapi.com) and requires users to store API credentials in plaintext shell configuration files. The primary security concerns are: (1) insecure credential storage guidance that could lead to key exposure, (2) undisclosed third-party data transmission that sends user YouTube activity to an external service without explicit consent, (3) missing metadata fields that prevent users from making informed security decisions, and (4) missing referenced files suggesting incomplete packaging. The skill does not contain direct prompt injection, command injection, or data exfiltration code, but the reliance on external services and credential handling practices create meaningful privacy and security risks. The skill would benefit from secure credential management guidance, explicit data privacy disclosures, and complete metadata documentation.",
         "primary_threats": [
-          "API credential exposure risk",
-          "Missing security guidance",
-          "Incomplete documentation"
+          "Data Exposure via Third-Party API",
+          "Insecure Credential Storage",
+          "Missing Security Metadata",
+          "Incomplete Package Integrity"
         ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
         "aisubtech": "AISubtech-8.2.3",
         "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified insecure credential storage guidance. The documentation explicitly instructs users to echo credentials into shell config files, which is a well-known security anti-pattern.",
+        "meta_exploitability": "Medium - Requires user to follow insecure instructions, then credentials could be exposed through backup systems, version control, or unauthorized file access",
+        "meta_impact": "Medium - API key exposure could lead to unauthorized API usage, quota exhaustion, or account compromise"
       }
     },
     {
       "id": "llm_finding_youtube-playlist_1",
       "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
-      "severity": "LOW",
-      "title": "Missing Optional Metadata Fields",
-      "description": "The skill manifest is missing optional fields that help users understand security boundaries: 'allowed-tools' (which agent tools can be used), 'compatibility' (environment requirements), and 'license' (usage terms). While these are optional per the spec, their absence reduces transparency about the skill's operational scope.",
+      "severity": "MEDIUM",
+      "title": "Third-Party Data Transmission Without Consent Mechanism",
+      "description": "The skill sends user data (playlist IDs, video IDs) to an external third-party service (transcriptapi.com) without implementing any user consent mechanism or data privacy disclosure. Users may not be aware that their YouTube viewing patterns and playlist information are being transmitted to and potentially logged by a third-party API service. This creates a data exposure risk where user behavior and interests could be tracked or monetized without explicit consent.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": "allowed-tools: Not specified, compatibility: Not specified, license: Not specified",
-      "remediation": "Add optional manifest fields: (1) allowed-tools: [Bash] to indicate only Bash tool usage, (2) compatibility: Specify supported environments, (3) license: Add appropriate open source license. This improves transparency and helps users understand security boundaries.",
+      "snippet": "curl -s \"https://transcriptapi.com/api/v2/youtube/playlist/videos?playlist_id=PL_PLAYLIST_ID\" \\\n  -H \"Authorization: Bearer $TRANSCRIPT_API_KEY\"",
+      "remediation": "1. Add explicit disclosure in the skill description that data is sent to transcriptapi.com. 2. Implement a consent prompt before first use. 3. Document transcriptapi.com's data retention and privacy policies. 4. Provide an option for users to review what data will be transmitted. 5. Consider implementing local caching to minimize repeated external calls.",
       "analyzer": "llm",
       "metadata": {
         "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The youtube-playlist skill is a relatively safe wrapper around the TranscriptAPI.com service for browsing YouTube playlists and fetching transcripts. The skill uses only Bash curl commands to interact with an external API and does not contain executable scripts, prompt injection attempts, or data exfiltration code. The primary security concerns are: (1) API key management lacks security guidance, instructing users to store credentials in plaintext shell config files without warnings about exposure risks, (2) Missing optional manifest metadata reduces transparency about operational scope, and (3) Documentation references non-existent files. No critical threats were identified - the skill does not attempt to override instructions, exfiltrate data beyond its stated purpose, or execute malicious code. The external API dependency is clearly documented and matches the skill's stated purpose.",
+        "overall_assessment": "MODERATE RISK - This skill integrates with a third-party commercial API service (transcriptapi.com) and requires users to store API credentials in plaintext shell configuration files. The primary security concerns are: (1) insecure credential storage guidance that could lead to key exposure, (2) undisclosed third-party data transmission that sends user YouTube activity to an external service without explicit consent, (3) missing metadata fields that prevent users from making informed security decisions, and (4) missing referenced files suggesting incomplete packaging. The skill does not contain direct prompt injection, command injection, or data exfiltration code, but the reliance on external services and credential handling practices create meaningful privacy and security risks. The skill would benefit from secure credential management guidance, explicit data privacy disclosures, and complete metadata documentation.",
         "primary_threats": [
-          "API credential exposure risk",
-          "Missing security guidance",
-          "Incomplete documentation"
+          "Data Exposure via Third-Party API",
+          "Insecure Credential Storage",
+          "Missing Security Metadata",
+          "Incomplete Package Integrity"
         ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
         "aisubtech": "AISubtech-8.2.3",
         "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION"
-      }
-    },
-    {
-      "id": "llm_finding_youtube-playlist_2",
-      "rule_id": "LLM_SOCIAL_ENGINEERING",
-      "category": "social_engineering",
-      "severity": "LOW",
-      "title": "Referenced Files Not Found in Package",
-      "description": "The skill instructions reference files 'a.py' and 'URL.py' that are not present in the skill package. These appear to be documentation artifacts or errors rather than actual dependencies, but their presence in the reference list could confuse users or indicate incomplete packaging.",
-      "file_path": null,
-      "line_number": null,
-      "snippet": "Files referenced in instructions: a.py, URL.py (both not found)",
-      "remediation": "Remove references to non-existent files from the documentation, or include the files if they are intended to be part of the skill package. Ensure all referenced files are present and documented.",
-      "analyzer": "llm",
-      "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The youtube-playlist skill is a relatively safe wrapper around the TranscriptAPI.com service for browsing YouTube playlists and fetching transcripts. The skill uses only Bash curl commands to interact with an external API and does not contain executable scripts, prompt injection attempts, or data exfiltration code. The primary security concerns are: (1) API key management lacks security guidance, instructing users to store credentials in plaintext shell config files without warnings about exposure risks, (2) Missing optional manifest metadata reduces transparency about operational scope, and (3) Documentation references non-existent files. No critical threats were identified - the skill does not attempt to override instructions, exfiltrate data beyond its stated purpose, or execute malicious code. The external API dependency is clearly documented and matches the skill's stated purpose.",
-        "primary_threats": [
-          "API credential exposure risk",
-          "Missing security guidance",
-          "Incomplete documentation"
-        ],
-        "aitech": "AITech-15.1",
-        "aitech_name": "Harmful / Misleading / Inaccurate Content",
-        "aisubtech": "AISubtech-15.1.1",
-        "aisubtech_name": "Deceptive or Misleading Content",
-        "scanner_category": "DECEPTIVE CONTENT"
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "LLM correctly identified lack of privacy disclosure. However, this is a legitimate API integration for the skill's documented purpose (fetching transcripts). The data transmission is necessary for functionality, not malicious exfiltration.",
+        "meta_exploitability": "Low - This is documented functionality, not a hidden backdoor. Users explicitly request playlist/transcript data.",
+        "meta_impact": "Low - User viewing patterns could be logged by third-party service, but this is inherent to using any API service"
       }
     }
   ],
-  "scan_duration_seconds": 21.67486596107483,
-  "duration_ms": 21674,
+  "scan_duration_seconds": 31.566967010498047,
+  "duration_ms": 31566,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer"
+    "trigger_analyzer",
+    "meta_analyzer"
   ],
-  "timestamp": "2026-02-01T07:14:06.332129"
+  "timestamp": "2026-02-01T08:47:34.274366"
 }

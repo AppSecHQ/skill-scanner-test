@@ -8,7 +8,7 @@ AI agent skills -- installable packages that extend what coding assistants and A
 
 This is early-stage and evolving. The current implementation:
 
-- **Scanner:** [Cisco AI Defense skill-scanner](https://github.com/cisco-ai-defense/skill-scanner) (static + behavioral + trigger + LLM analysis)
+- **Scanner:** [Cisco AI Defense skill-scanner](https://github.com/cisco-ai-defense/skill-scanner) (static + behavioral + trigger + LLM + meta-analysis)
 - **Skill registries:** [skills.sh](https://skills.sh/) and [clawhub.ai](https://clawhub.ai/)
 - **Coverage:** 22 skills scanned so far
 - **Test suite:** 77 tests passing
@@ -21,26 +21,26 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 | Metric | Count |
 |--------|-------|
 | Total Skills Scanned | 22 |
-| Safe Skills | 12 (55%) |
-| Skills with Issues | 10 (45%) |
-| Total Findings | 80 |
+| Safe Skills | 19 (86%) |
+| Skills with Issues | 3 (14%) |
+| Total Findings | 39 |
 
 | Severity | Count |
 |----------|-------|
-| CRITICAL | 10 |
-| HIGH | 9 |
-| MEDIUM | 22 |
-| LOW | 39 |
+| CRITICAL | 3 |
+| HIGH | 8 |
+| MEDIUM | 21 |
+| LOW | 7 |
 
 | Category | Count |
 |----------|-------|
-| data_exfiltration | 32 |
-| policy_violation | 18 |
-| social_engineering | 8 |
-| hardcoded_secrets | 8 |
-| command_injection | 7 |
-| unauthorized_tool_use | 4 |
-| resource_abuse | 3 |
+| data_exfiltration | 20 |
+| policy_violation | 7 |
+| command_injection | 6 |
+| unauthorized_tool_use | 3 |
+| social_engineering | 1 |
+| resource_abuse | 1 |
+| hardcoded_secrets | 1 |
 
 - See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 <!-- END SCAN RESULTS -->

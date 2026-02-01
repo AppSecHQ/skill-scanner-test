@@ -2,51 +2,83 @@
   "skill_name": "subtitles",
   "skill_path": "./skills/clawhub-subtitles",
   "skill_directory": "./skills/clawhub-subtitles",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_subtitles_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Key Requirement Without Validation",
+      "description": "The skill requires users to store a TRANSCRIPT_API_KEY in their shell environment (~/.zshenv) but provides no validation, security guidance, or warnings about key exposure. The instructions encourage direct shell export without discussing secure credential management practices. While the API service itself appears legitimate, the skill does not validate the key format, warn about accidental commits to version control, or suggest more secure storage methods.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {}
+      "snippet": "Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
+      "remediation": "Add security guidance: (1) Warn users about keeping API keys out of version control, (2) Suggest using a secrets manager or encrypted credential store, (3) Validate API key format before making requests, (4) Document key rotation procedures, (5) Consider using environment-specific configuration files with restricted permissions instead of shell rc files.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The 'subtitles' skill is a straightforward YouTube subtitle fetching tool that uses a legitimate third-party API (TranscriptAPI.com). The skill has MEDIUM severity concerns around credential management and data privacy, but no critical security threats. The primary issues are: (1) inadequate guidance on secure API key storage, (2) lack of privacy disclosure about sending video URLs to a third party, (3) missing optional metadata fields, and (4) limited error handling for network failures. The skill does not contain malicious code, prompt injection attempts, data exfiltration, or command injection vulnerabilities. It is a legitimate utility skill that would benefit from enhanced security guidance and privacy disclosures.",
+        "primary_threats": [
+          "Credential Management",
+          "Data Privacy",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified lack of security guidance. While not a hardcoded secret vulnerability, the instructions could lead users to insecure practices.",
+        "meta_exploitability": "Low - Requires user to follow insecure practices and accidentally expose their own credentials",
+        "meta_impact": "Medium - Could lead to API key exposure if user commits shell config to public repository"
+      }
     },
     {
-      "id": "YARA_credential_harvesting_595e6831ec",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export TRANSCRIPT_API_KEY",
+      "id": "llm_finding_subtitles_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Potential Data Exposure via Third-Party API",
+      "description": "The skill sends YouTube video URLs to an external third-party API (transcriptapi.com) which could create a privacy concern. Users' viewing history and video interests are transmitted to this external service. While the service appears legitimate, there is no disclosure about data retention, logging, or privacy policies. The skill metadata indicates API key requirement but does not inform users that their video access patterns will be shared with a third party.",
       "file_path": "SKILL.md",
-      "line_number": 9,
-      "snippet": "- Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "Fetch YouTube video subtitles via [TranscriptAPI.com](https://transcriptapi.com)... curl -s \"https://transcriptapi.com/api/v2/youtube/transcript?video_url=VIDEO_URL\"",
+      "remediation": "Add privacy disclosure: (1) Clearly state that video URLs are sent to a third-party service, (2) Link to TranscriptAPI.com's privacy policy, (3) Warn users about potential data retention/logging, (4) Consider adding a confirmation prompt before first use, (5) Document what data is transmitted (video URLs, API keys) and what is received.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING"
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The 'subtitles' skill is a straightforward YouTube subtitle fetching tool that uses a legitimate third-party API (TranscriptAPI.com). The skill has MEDIUM severity concerns around credential management and data privacy, but no critical security threats. The primary issues are: (1) inadequate guidance on secure API key storage, (2) lack of privacy disclosure about sending video URLs to a third party, (3) missing optional metadata fields, and (4) limited error handling for network failures. The skill does not contain malicious code, prompt injection attempts, data exfiltration, or command injection vulnerabilities. It is a legitimate utility skill that would benefit from enhanced security guidance and privacy disclosures.",
+        "primary_threats": [
+          "Credential Management",
+          "Data Privacy",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a transparency/disclosure issue rather than active data exfiltration. The service appears legitimate and the data sharing is inherent to the skill's functionality.",
+        "meta_exploitability": "N/A - Not a security vulnerability, but a privacy transparency issue",
+        "meta_impact": "Low - Users should be informed about third-party data sharing, but the service is legitimate and necessary for functionality"
       }
     }
   ],
-  "scan_duration_seconds": 5.724045276641846,
-  "duration_ms": 5724,
+  "scan_duration_seconds": 29.161165475845337,
+  "duration_ms": 29161,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer"
+    "trigger_analyzer",
+    "meta_analyzer"
   ],
-  "timestamp": "2026-02-01T07:17:13.163042"
+  "timestamp": "2026-02-01T08:56:32.336642"
 }

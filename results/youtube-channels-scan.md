@@ -2,43 +2,23 @@
 
 **Skill:** youtube-channels
 **Directory:** ./skills/clawhub-youtube-channels
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 5.87s
-**Timestamp:** 2026-02-01T07:15:17.043949
+**Status:** [OK] SAFE
+**Max Severity:** SAFE
+**Scan Duration:** 28.47s
+**Timestamp:** 2026-02-01T08:51:24.701842
 
 ## Summary
 
-- **Total Findings:** 2
-- **Critical:** 1
+- **Total Findings:** 0
+- **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### CRITICAL Severity
-
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
-
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:9
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export TRANSCRIPT_API_KEY
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 
@@ -48,3 +28,4 @@ The following analyzers were used:
 - behavioral_analyzer
 - llm_analyzer
 - trigger_analyzer
+- meta_analyzer
