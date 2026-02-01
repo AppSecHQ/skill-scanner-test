@@ -23,7 +23,8 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 | Safe Skills | 13 (59%) |
 | Skills with Issues | 9 (41%) |
 
-The most common issues are policy violations (missing license metadata) and data exfiltration patterns, with the highest-severity findings in skills from clawhub.ai. See the [full summary report](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
+- The most common issues are policy violations (missing license metadata) and data exfiltration patterns, with the highest-severity findings in skills from clawhub.ai.
+- [Summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 
 ## Getting Started
 
