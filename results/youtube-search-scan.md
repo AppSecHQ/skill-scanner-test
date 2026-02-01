@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** youtube-search
-**Directory:** /workspace/skills/clawhub-youtube-search
+**Directory:** ./skills/clawhub-youtube-search
 **Status:** [OK] SAFE
 **Max Severity:** LOW
 **Scan Duration:** 0.00s

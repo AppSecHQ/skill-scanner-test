@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** skill-creator
-**Directory:** /workspace/skills/anthropics-skills/skills/skill-creator
+**Directory:** ./skills/anthropics-skills/skills/skill-creator
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
 **Scan Duration:** 0.48s

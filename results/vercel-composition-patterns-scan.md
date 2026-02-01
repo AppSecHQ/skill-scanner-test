@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** vercel-composition-patterns
-**Directory:** /workspace/skills/vercel-labs-agent-skills/skills/composition-patterns
+**Directory:** ./skills/vercel-labs-agent-skills/skills/composition-patterns
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
 **Scan Duration:** 0.01s

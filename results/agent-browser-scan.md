@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** agent-browser
-**Directory:** /workspace/skills/vercel-labs-agent-browser/skills/agent-browser
+**Directory:** ./skills/vercel-labs-agent-browser/skills/agent-browser
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
 **Scan Duration:** 0.02s

@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** remotion-best-practices
-**Directory:** /workspace/skills/remotion-dev-skills/skills/remotion
+**Directory:** ./skills/remotion-dev-skills/skills/remotion
 **Status:** [OK] SAFE
 **Max Severity:** LOW
 **Scan Duration:** 0.02s

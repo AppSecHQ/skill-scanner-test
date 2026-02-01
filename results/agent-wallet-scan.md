@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** Agent Wallet
-**Directory:** /workspace/skills/clawhub-agent-wallet
+**Directory:** ./skills/clawhub-agent-wallet
 **Status:** [OK] SAFE
 **Max Severity:** LOW
 **Scan Duration:** 0.00s

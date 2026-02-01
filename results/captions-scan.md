@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** captions
-**Directory:** /workspace/skills/clawhub-captions
+**Directory:** ./skills/clawhub-captions
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
 **Scan Duration:** 0.00s

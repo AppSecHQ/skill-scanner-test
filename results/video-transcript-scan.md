@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** video-transcript
-**Directory:** /workspace/skills/clawhub-video-transcript
+**Directory:** ./skills/clawhub-video-transcript
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
 **Scan Duration:** 0.00s

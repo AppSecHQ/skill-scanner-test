@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** seo-audit
-**Directory:** /workspace/skills/coreyhaines31-marketingskills/skills/seo-audit
+**Directory:** ./skills/coreyhaines31-marketingskills/skills/seo-audit
 **Status:** [OK] SAFE
 **Max Severity:** LOW
 **Scan Duration:** 0.01s

@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** vercel-react-native-skills
-**Directory:** /workspace/skills/vercel-labs-agent-skills/skills/react-native-skills
+**Directory:** ./skills/vercel-labs-agent-skills/skills/react-native-skills
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
 **Scan Duration:** 0.01s

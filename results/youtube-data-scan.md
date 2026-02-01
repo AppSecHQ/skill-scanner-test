@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** youtube-data
-**Directory:** /workspace/skills/clawhub-youtube-data
+**Directory:** ./skills/clawhub-youtube-data
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
 **Scan Duration:** 0.00s

@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** birthday-reminder
-**Directory:** /Users/brian.levine/claude-projects/skill-scanner-test/skills/clawhub-birthday-reminder
+**Directory:** ~/skill-scanner-test/skills/clawhub-birthday-reminder
 **Status:** [OK] SAFE
 **Max Severity:** LOW
 **Scan Duration:** 1.75s

@@ -1,7 +1,7 @@
 # Agent Skill Security Scan Report
 
 **Skill:** web-design-guidelines
-**Directory:** /workspace/skills/vercel-labs-agent-skills/skills/web-design-guidelines
+**Directory:** ./skills/vercel-labs-agent-skills/skills/web-design-guidelines
 **Status:** [OK] SAFE
 **Max Severity:** LOW
 **Scan Duration:** 0.00s
