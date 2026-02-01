@@ -1,6 +1,7 @@
-"""Shared pipeline utilities: HTTP sessions, logging constants."""
+"""Shared pipeline utilities: HTTP sessions, logging constants, path helpers."""
 
 import atexit
+from pathlib import Path
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -58,3 +59,11 @@ def close_session() -> None:
 
 
 atexit.register(close_session)
+
+
+def shorten_path(path_str: str) -> str:
+    """Replace the home directory prefix with ~ to avoid absolute paths in reports."""
+    home = str(Path.home())
+    if path_str.startswith(home):
+        return "~" + path_str[len(home):]
+    return path_str

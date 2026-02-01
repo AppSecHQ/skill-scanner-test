@@ -13,7 +13,7 @@ from pathlib import Path
 
 import requests
 
-from pipeline_utils import get_session, LOG_FORMAT, LOG_DATE_FORMAT
+from pipeline_utils import get_session, shorten_path, LOG_FORMAT, LOG_DATE_FORMAT
 
 logger = logging.getLogger(__name__)
 
@@ -267,6 +267,19 @@ def run_scan(
         )
     except subprocess.TimeoutExpired:
         logger.warning("Markdown scan timed out after %ds", SCAN_TIMEOUT_SECONDS)
+
+    # Post-process: shorten absolute paths in output files
+    abs_path = str(skill_path.resolve())
+    short = shorten_path(abs_path)
+    if abs_path != short:
+        # Fix JSON
+        if json_output.exists():
+            text = json_output.read_text()
+            json_output.write_text(text.replace(abs_path, short))
+        # Fix Markdown
+        if md_output.exists():
+            text = md_output.read_text()
+            md_output.write_text(text.replace(abs_path, short))
 
     # Load and return results
     try:

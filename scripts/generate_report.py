@@ -7,7 +7,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT
+from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT, shorten_path
 
 logger = logging.getLogger(__name__)
 
@@ -86,9 +86,10 @@ def aggregate_results(results_dir: Path) -> dict:
                 })
 
         # Add skill summary
+        raw_path = result.get("skill_path") or ""
         findings["skills"].append({
             "name": result.get("skill_name"),
-            "path": result.get("skill_path"),
+            "path": shorten_path(raw_path) if raw_path else None,
             "is_safe": is_safe,
             "findings_count": result.get("findings_count", 0),
             "max_severity": result.get("max_severity", "SAFE"),
