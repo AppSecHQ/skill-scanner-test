@@ -28,11 +28,17 @@ Latest scan highlights (10 skills from skills.sh):
 
 ## Getting Started
 
-Requires Python 3.10+.
+Requires Python 3.10+ and Git.
 
 ```bash
+git clone https://github.com/AppSecHQ/skill-scanner-test.git
+cd skill-scanner-test
+python -m venv .venv
+source .venv/bin/activate
 pip install -r scripts/requirements.txt
 ```
+
+If you're in a container or environment where you don't need a venv, you can skip the venv steps and install directly with `pip install -r scripts/requirements.txt --break-system-packages`.
 
 ### Scan top skills from a registry
 
