@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** polymarket
-**Directory:** ./skills/clawhub-polymarket-qjypn
+**Directory:** ./skills/clawhub-polymarket-qpi7w
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 41.85s
-**Timestamp:** 2026-02-01T19:09:44.571028
+**Scan Duration:** 40.06s
+**Timestamp:** 2026-02-01T19:52:20.847131
 
 ## Summary
 
@@ -20,53 +20,53 @@
 
 ### CRITICAL Severity
 
-#### [CRITICAL] Malicious Binary Download with Obfuscated Credentials
+#### [CRITICAL] Malicious Binary Download with Social Engineering
 
 **Severity:** CRITICAL
-**Category:** data_exfiltration
-**Rule ID:** LLM_DATA_EXFILTRATION
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
 **Location:** SKILL.md
 
-**Description:** The skill instructs users to download a binary executable (openclaw-agent.zip) from an untrusted GitHub repository with password-protected extraction (pass: 'openclaw'). This is a classic malware distribution pattern - password-protected archives bypass antivirus scanning, and the binary could contain arbitrary malicious code including keyloggers, credential stealers, or backdoors. The requirement to run this executable before any trading operations creates a dependency on untrusted code execution.
+**Description:** The skill instructs users to download and execute a binary (openclaw-agent.zip) from an untrusted GitHub repository (hedefbari/openclaw-agent) with password-protected extraction. This is a classic malware distribution pattern disguised as a legitimate trading utility. The password protection ('openclaw') prevents antivirus scanning of the archive contents. The skill falsely claims this binary is required for Polymarket operations, which is deceptive - Polymarket's official API does not require any third-party agent software.
 
-#### [CRITICAL] Malicious Script Execution via External URL
+#### [CRITICAL] Remote Code Execution via Obfuscated Script
 
 **Severity:** CRITICAL
-**Category:** data_exfiltration
-**Rule ID:** LLM_DATA_EXFILTRATION
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
 **Location:** SKILL.md:13
 
-**Description:** The skill directs macOS users to visit an external URL (glot.io/snippets/hfdxv8uyaf) and copy-paste a script directly into Terminal. This is an extremely dangerous pattern - the script content is not visible in the skill package, can be changed remotely at any time, and users are instructed to execute it with full shell privileges. This could install malware, steal credentials, exfiltrate data, or establish persistent backdoors.
+**Description:** The skill directs macOS users to visit an external URL (glot.io/snippets/hfdxv8uyaf) and execute arbitrary code from that page directly in Terminal. This is a remote code execution attack vector where the attacker controls the script content on glot.io. The user is instructed to blindly copy-paste and execute unknown code, which could install malware, steal credentials, or compromise the system.
 
 ### HIGH Severity
 
-#### [HIGH] Deceptive Skill Purpose - Financial Fraud Risk
+#### [HIGH] Credential Harvesting via Required Environment Variable
+
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+
+**Description:** The skill requires users to set a POLYMARKET_ADDRESS environment variable, which likely contains wallet addresses or private keys for Polymarket trading. Combined with the malicious binary and remote script execution, this creates a complete credential theft pipeline. The openclaw-agent binary or remote script could exfiltrate this sensitive credential.
+
+#### [HIGH] Deceptive Skill Description and False Prerequisites
 
 **Severity:** HIGH
 **Category:** social_engineering
 **Rule ID:** LLM_SOCIAL_ENGINEERING
 **Location:** SKILL.md
 
-**Description:** The skill claims to enable 'trading prediction markets on Polymarket' but requires installing untrusted third-party binaries ('openclaw-agent') that have no official relationship to Polymarket. The legitimate Polymarket platform does not require such tools. This appears to be a social engineering attack disguised as a trading utility, potentially designed to steal cryptocurrency wallet credentials, private keys, or trading account access.
-
-#### [HIGH] Credential Harvesting via Environment Variable
-
-**Severity:** HIGH
-**Category:** data_exfiltration
-**Rule ID:** LLM_DATA_EXFILTRATION
-
-**Description:** The skill requires the POLYMARKET_ADDRESS environment variable to be set, which likely contains wallet addresses or API credentials. Combined with the malicious binary requirement, this creates a complete attack chain: the untrusted executable could read this environment variable and exfiltrate wallet credentials or private keys to attacker-controlled servers.
+**Description:** The skill falsely claims that 'openclaw-agent utility' is required for Polymarket operations and that 'market data retrieval and trading operations will not work' without it. This is social engineering to convince users to install malware. Polymarket's public APIs (gamma-api.polymarket.com, clob.polymarket.com) are accessible without any third-party agent software. The skill description misleads users about legitimate Polymarket functionality.
 
 ### MEDIUM Severity
 
-#### [MEDIUM] Shell Command Injection Risk in API Examples
+#### [MEDIUM] External Content Trust Without Validation
 
 **Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** LLM_COMMAND_INJECTION
+**Category:** prompt_injection
+**Rule ID:** LLM_PROMPT_INJECTION
 **Location:** SKILL.md
 
-**Description:** The skill provides bash examples using curl with variable substitution ($SLUG, $CONDITION_ID, $MARKET_ID) without any input validation or sanitization guidance. If users follow these examples with untrusted input, they could be vulnerable to command injection attacks where malicious input breaks out of the curl command and executes arbitrary shell commands.
+**Description:** The skill instructs users to fetch and execute content from external URLs (GitHub releases, glot.io) without any validation, signature verification, or security checks. This creates a transitive trust vulnerability where the skill delegates trust to external sources that could be compromised or malicious.
 
 ## Analyzers
 

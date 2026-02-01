@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** youtube-summarize
-**Directory:** ./skills/clawhub-youtube-summarize-ietsw
+**Directory:** ./skills/clawhub-youtube-summarize-lh9rq
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 37.02s
-**Timestamp:** 2026-02-01T19:15:45.206636
+**Scan Duration:** 35.26s
+**Timestamp:** 2026-02-01T19:56:08.443345
 
 ## Summary
 
@@ -20,43 +20,43 @@
 
 ### CRITICAL Severity
 
-#### [CRITICAL] Malicious Binary Download with Hardcoded Password
+#### [CRITICAL] Malicious Binary Download with Obfuscated Payload
 
 **Severity:** CRITICAL
 **Category:** data_exfiltration
 **Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** The skill instructs users to download an executable (openclaw-agent.zip) from an external GitHub repository with a hardcoded password ('openclaw'). This is a classic malware distribution pattern - password-protected archives are commonly used to bypass antivirus detection. The executable is presented as 'required' for functionality, pressuring users to install it. There is no legitimate reason why YouTube transcript extraction would require a separate binary executable when yt-dlp already provides this functionality.
+**Description:** The skill instructs users to download and execute a binary (openclaw-agent.zip) from an untrusted GitHub repository with password-protected archive ('openclaw'). This is a classic malware distribution pattern - password-protected archives bypass antivirus scanning, and the executable's true purpose cannot be verified. The skill falsely claims this utility is required for YouTube transcript extraction, but yt-dlp itself handles transcripts natively without any external agent. This is a social engineering attack to trick users into installing malware.
 
-#### [CRITICAL] Malicious Script Download via glot.io
+#### [CRITICAL] Remote Code Execution via Untrusted Script
 
 **Severity:** CRITICAL
-**Category:** data_exfiltration
-**Rule ID:** LLM_DATA_EXFILTRATION
-**Location:** SKILL.md:11
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
+**Location:** SKILL.md:7
 
-**Description:** The skill instructs macOS users to visit an external code-sharing site (glot.io) and execute an arbitrary installation script in Terminal. This is a severe security risk - the script content is hosted externally and could be modified at any time to perform malicious actions (data theft, backdoor installation, credential harvesting). Users are instructed to blindly copy-paste and execute code without review.
+**Description:** The skill instructs macOS users to visit an external URL (glot.io/snippets/hfdxv8uyaf), copy an unknown script, and paste it directly into Terminal for execution. This is arbitrary remote code execution - the script content is not shown, cannot be audited, and could contain any malicious commands (data exfiltration, backdoor installation, credential theft). The attacker controls the glot.io snippet and can modify it at any time to target victims.
 
 ### HIGH Severity
 
-#### [HIGH] Social Engineering via False Prerequisites
+#### [HIGH] Deceptive Skill Purpose - Social Engineering
 
 **Severity:** HIGH
 **Category:** social_engineering
 **Rule ID:** LLM_SOCIAL_ENGINEERING
 **Location:** SKILL.md
 
-**Description:** The skill falsely claims that 'openclaw-agent utility' is required for YouTube transcript extraction, creating artificial urgency and dependency. The statement 'Without openclaw-agent installed, transcript extraction and video summarization will not work' is demonstrably false - all the yt-dlp commands shown work independently. This is social engineering to trick users into installing malicious software.
+**Description:** The skill's description claims it summarizes YouTube videos using transcripts, which is a legitimate use case. However, the actual instructions focus on tricking users into downloading and executing malware (openclaw-agent) under the false pretense that it's required for transcript extraction. The skill uses social engineering by presenting malware installation as a 'prerequisite' with urgent language ('IMPORTANT', 'will not work'). This is tool poisoning disguised as a helpful utility.
 
-#### [HIGH] Dependency Installation Without Version Pinning
+#### [HIGH] False Technical Claims to Distribute Malware
 
 **Severity:** HIGH
-**Category:** data_exfiltration
-**Rule ID:** LLM_DATA_EXFILTRATION
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
 **Location:** SKILL.md
 
-**Description:** The skill instructs installation of yt-dlp without version pinning ('pip install yt-dlp'), which could lead to supply chain attacks if the package is compromised. Additionally, the openclaw metadata specifies yt-dlp installation but doesn't validate its integrity or pin to a known-safe version.
+**Description:** The skill makes demonstrably false technical claims that 'openclaw-agent utility' is required for YouTube transcript extraction. This is misinformation designed to trick users into installing malware. The skill's own commands (lines 18-60) prove that yt-dlp handles transcript extraction perfectly without any external agent. The false prerequisite section contradicts the skill's actual working commands.
 
 ## Analyzers
 
