@@ -14,7 +14,7 @@ from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT, shorten_path
 logger = logging.getLogger(__name__)
 
 
-def aggregate_results(results_dir: Path) -> dict:
+def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict:
     """
     Aggregate all scan results from JSON files.
 
@@ -36,6 +36,11 @@ def aggregate_results(results_dir: Path) -> dict:
         "findings_by_category": {},
         "top_risks": [],
     }
+
+    # Build source lookup from inventory files
+    if skills_dir is None:
+        skills_dir = results_dir.parent / "skills"
+    source_lookup = _build_source_lookup(skills_dir)
 
     # Process each scan result
     for json_file in sorted(results_dir.glob("*-scan.json")):
@@ -90,7 +95,7 @@ def aggregate_results(results_dir: Path) -> dict:
         # Add skill summary
         raw_path = result.get("skill_path") or ""
         short_path = shorten_path(raw_path) if raw_path else ""
-        source = "clawhub.ai" if "clawhub-" in short_path else "skills.sh"
+        source = _detect_source(short_path, result.get("skill_name", ""), source_lookup)
         scan_md = json_file.with_suffix("").name + ".md"  # e.g. "clickup-skill-scan.md"
         findings["skills"].append({
             "name": result.get("skill_name"),
@@ -246,6 +251,58 @@ def _pct(num: int, total: int) -> str:
     if total == 0:
         return "0%"
     return f"{num / total * 100:.0f}%"
+
+
+def _build_source_lookup(skills_dir: Path) -> dict[str, str]:
+    """Build a skill_name -> source mapping from all inventory files."""
+    lookup = {}
+    for inv_file in skills_dir.glob("skill-inventory-*.json"):
+        try:
+            with open(inv_file) as f:
+                skills = json.load(f)
+            for skill in skills:
+                name = skill.get("name", "").lower().replace(" ", "-")
+                source = skill.get("source", "")
+                if name and source:
+                    lookup[name] = source
+        except (json.JSONDecodeError, FileNotFoundError):
+            pass
+    return lookup
+
+
+def _detect_source(skill_path: str, skill_name: str = "",
+                   source_lookup: dict[str, str] | None = None) -> str:
+    """Detect skill source from inventory lookup, then path heuristics."""
+    # Check inventory first
+    if source_lookup:
+        normalized = skill_name.lower().replace(" ", "-")
+        if normalized in source_lookup:
+            src = source_lookup[normalized]
+            # Normalize clawhub variants
+            if src == "clawhub":
+                return "clawhub.ai"
+            return src
+
+    # Path heuristics for skills not in any inventory
+    if "clawhub-" in skill_path:
+        return "clawhub.ai"
+
+    # Split path into components: ./skills/<clone-dir>/[sub/path]
+    parts = skill_path.replace("\\", "/").strip("/").split("/")
+    # Find the "skills" root and check what follows
+    try:
+        idx = parts.index("skills")
+    except ValueError:
+        return "other"
+
+    # skills/<clone-dir>/... -> has sub-path means it's a GitHub repo (skills.sh)
+    # skills/<clone-dir> alone (no sub-path) means standalone (manual download)
+    remaining = parts[idx + 1:]  # everything after "skills/"
+    if len(remaining) >= 2:
+        # Clone dir + sub-path -> GitHub repo from skills.sh
+        return "skills.sh"
+
+    return "other"
 
 
 BEGIN_MARKER = "<!-- BEGIN SCAN RESULTS -->"

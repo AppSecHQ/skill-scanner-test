@@ -10,7 +10,7 @@ This is early-stage and evolving. The current implementation:
 
 - **Scanner:** [Cisco AI Defense skill-scanner](https://github.com/cisco-ai-defense/skill-scanner) (static + behavioral + trigger + LLM + meta-analysis)
 - **Skill registries:** [skills.sh](https://skills.sh/) and [clawhub.ai](https://clawhub.ai/)
-- **Coverage:** 86 skills scanned so far
+- **Coverage:** 103 skills scanned so far
 - **Test suite:** 77 tests passing
 
 This could be expanded along both axes -- adding more scanners and targeting more skill directories.
@@ -20,28 +20,30 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 
 | Metric | Count |
 |--------|-------|
-| Total Skills Scanned | 86 |
-| Safe Skills | 64 (74%) |
-| Skills with Issues | 22 (26%) |
-| Total Findings | 126 |
+| Total Skills Scanned | 103 |
+| Safe Skills | 81 (79%) |
+| Skills with Issues | 22 (21%) |
+| Total Findings | 134 |
 
 | Severity | Count |
 |----------|-------|
 | CRITICAL | 28 |
 | HIGH | 38 |
-| MEDIUM | 47 |
+| MEDIUM | 55 |
 | LOW | 13 |
 
 | Category | Count |
 |----------|-------|
 | data_exfiltration | 50 |
 | social_engineering | 22 |
+| unauthorized_tool_use | 14 |
 | command_injection | 14 |
-| unauthorized_tool_use | 13 |
-| prompt_injection | 11 |
+| prompt_injection | 12 |
 | resource_abuse | 8 |
 | policy_violation | 6 |
+| skill_discovery_abuse | 4 |
 | tool_chaining_abuse | 2 |
+| transitive_trust_abuse | 2 |
 
 - See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 <!-- END SCAN RESULTS -->
