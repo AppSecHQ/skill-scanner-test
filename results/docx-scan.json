@@ -1,13 +1,45 @@
 {
   "skill_name": "docx",
-  "skill_path": "./skills/anthropics-skills/skills/docx",
-  "skill_directory": "./skills/anthropics-skills/skills/docx",
+  "skill_path": "./skills/clawhub-docx",
+  "skill_directory": "./skills/clawhub-docx",
   "is_safe": true,
-  "max_severity": "SAFE",
-  "findings_count": 0,
-  "findings": [],
-  "scan_duration_seconds": 26.51805806159973,
-  "duration_ms": 26518,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
+  "findings": [
+    {
+      "id": "llm_finding_docx_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Mandatory External File Reading Without Validation",
+      "description": "The SKILL.md instructions contain multiple MANDATORY directives requiring Claude to read entire external markdown files (docx-js.md ~500 lines, ooxml.md ~600 lines) with explicit instructions to 'NEVER set any range limits' and 'Read the full file content'. This creates a transitive trust vulnerability where Claude must unconditionally follow instructions from these files before proceeding with any document operations. While these files are bundled with the skill package (making them internal resources), the MANDATORY nature and explicit prohibition of range limits creates an unusual pattern that could be exploited if these files were replaced or modified.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'**MANDATORY - READ ENTIRE FILE**: Read [`docx-js.md`](docx-js.md) (~500 lines) completely from start to finish. **NEVER set any range limits when reading this file.**' and '**MANDATORY - READ ENTIRE FILE**: Read [`ooxml.md`](ooxml.md) (~600 lines) completely from start to finish. **NEVER set any range limi...'",
+      "remediation": "Remove MANDATORY directives and range limit prohibitions. Rephrase as recommendations: 'It is recommended to review docx-js.md for syntax and formatting guidelines before creating documents.' This maintains functionality while removing the unconditional trust pattern.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The docx skill is a comprehensive document manipulation package with generally sound architecture. The primary concern is the MANDATORY file reading directives that create an unusual transitive trust pattern, though this is mitigated by the files being internal to the skill package. The Python code demonstrates good security practices including use of defusedxml for XML parsing, proper validation workflows, and structured error handling. Missing optional metadata fields (allowed-tools, compatibility) reduce transparency but do not constitute security vulnerabilities. No evidence of data exfiltration, credential theft, command injection, or malicious code was found.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust pattern)",
+          "Missing metadata transparency"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The files are internal bundled resources (not external URLs), making this a documentation pattern rather than a transitive trust vulnerability. The MANDATORY language is unusual but serves a legitimate purpose for complex document manipulation tasks.",
+        "meta_exploitability": "Low - Files are bundled with the skill, not fetched from external sources. An attacker would need to modify the skill package itself.",
+        "meta_impact": "Low - Even if exploited, the worst case is misleading documentation causing incorrect code generation, not system compromise."
+      }
+    }
+  ],
+  "scan_duration_seconds": 24.679791927337646,
+  "duration_ms": 24679,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -15,5 +47,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-01T09:54:24.596449"
+  "timestamp": "2026-02-01T16:43:43.786832"
 }
