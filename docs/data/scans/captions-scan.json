@@ -1,0 +1,51 @@
+{
+  "skill_name": "captions",
+  "skill_path": "./skills/clawhub-captions",
+  "skill_directory": "./skills/clawhub-captions",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
+  "findings": [
+    {
+      "id": "llm_finding_captions_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "API Key Required Without Security Guidance",
+      "description": "The skill requires TRANSCRIPT_API_KEY environment variable but provides no security guidance on key protection, rotation, or scope limitations. Users are instructed to store the key in ~/.zshenv which persists it in plaintext. No warnings about key exposure risks or best practices for credential management.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
+      "remediation": "Add security guidance: (1) Warn users about plaintext storage risks, (2) Recommend using secure credential managers, (3) Advise on key rotation practices, (4) Document key scope and permissions, (5) Warn against committing keys to version control",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The 'captions' skill is a straightforward YouTube caption extraction tool with LOW to MEDIUM security risk. It acts as a simple wrapper around the TranscriptAPI.com service using curl commands. The primary concern is the lack of security guidance around API key management - users are instructed to store credentials in plaintext without warnings about exposure risks. The skill has no code execution, no data exfiltration, no prompt injection attempts, and no malicious behavior. The missing optional metadata fields (license, compatibility, allowed-tools) reduce transparency but don't pose security threats. Referenced files (video.py, YouTube.py) appear to be documentation artifacts rather than actual dependencies. Overall, this is a legitimate utility skill that would benefit from improved security documentation around credential handling.",
+        "primary_threats": [
+          "Inadequate credential security guidance",
+          "Missing security best practices documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified lack of security guidance. While the skill itself doesn't expose credentials, the documentation could lead users to insecure practices. This is a documentation quality issue, not an active security threat.",
+        "meta_exploitability": "Low - Requires user to follow insecure documentation and then have their environment compromised",
+        "meta_impact": "Medium - If user's environment is compromised, API key could be stolen, leading to unauthorized API usage and potential billing charges"
+      }
+    }
+  ],
+  "scan_duration_seconds": 22.99629545211792,
+  "duration_ms": 22996,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-01T09:03:09.161831"
+}

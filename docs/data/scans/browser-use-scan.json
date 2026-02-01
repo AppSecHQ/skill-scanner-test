@@ -1,0 +1,246 @@
+{
+  "skill_name": "browser-use",
+  "skill_path": "./skills/browser-use-browser-use/skills/browser-use",
+  "skill_directory": "./skills/browser-use-browser-use/skills/browser-use",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 8,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browser-use_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Arbitrary Command Execution via Unvalidated Browser Automation",
+      "description": "The skill allows execution of arbitrary browser-use CLI commands through Bash without input validation or sanitization. An attacker could craft malicious URLs or commands that execute arbitrary code through command injection. The skill accepts user-provided URLs and text inputs that are passed directly to shell commands without escaping or validation.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Examples showing direct command execution: 'browser-use open <url>', 'browser-use type \"text\"', 'browser-use input <index> \"text\"'. User-controlled inputs (URLs, text) are passed to Bash commands without sanitization.",
+      "remediation": "Implement strict input validation and sanitization for all user-provided parameters (URLs, text, indices). Use parameterized command execution instead of string concatenation. Validate URLs against allowlists and sanitize text inputs to prevent command injection.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This browser automation skill presents MULTIPLE HIGH-SEVERITY security risks. The primary concerns are: (1) Arbitrary command execution through unvalidated browser-use CLI parameters enabling command injection attacks, (2) Credential and session exposure through 'real' browser mode that accesses user's authenticated Chrome sessions, (3) Data exfiltration risks via remote browser mode sending data to external services, and (4) Transitive trust abuse by navigating to and interacting with arbitrary untrusted websites. The skill lacks input validation, URL sanitization, and security controls around sensitive browser operations. The wildcard Bash tool restriction is insufficient to prevent abuse. Users should exercise extreme caution when using this skill, especially with 'real' browser mode or when navigating to untrusted sites. The skill requires significant security hardening before it can be considered safe for general use.",
+        "primary_threats": [
+          "Command Injection",
+          "Credential Exposure",
+          "Data Exfiltration",
+          "Transitive Trust Abuse",
+          "Tool Restriction Bypass"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browser-use_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Potential Credential and Session Data Exposure via Real Browser Mode",
+      "description": "The 'real' browser mode explicitly uses the user's Chrome browser with cookies, extensions, and logged-in sessions. This exposes all authenticated sessions, credentials, and personal browsing data to the automation context. An attacker could craft instructions to navigate to malicious sites, extract session cookies, or exfiltrate authentication tokens from the user's active browser sessions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'browser-use --browser real open <url>  # User's Chrome with login sessions' - This mode provides access to all user cookies, extensions, and authenticated sessions without isolation.",
+      "remediation": "Warn users about the security implications of 'real' browser mode. Recommend using isolated 'chromium' mode by default. Implement explicit user consent before using 'real' mode. Consider restricting access to sensitive domains when using authenticated sessions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This browser automation skill presents MULTIPLE HIGH-SEVERITY security risks. The primary concerns are: (1) Arbitrary command execution through unvalidated browser-use CLI parameters enabling command injection attacks, (2) Credential and session exposure through 'real' browser mode that accesses user's authenticated Chrome sessions, (3) Data exfiltration risks via remote browser mode sending data to external services, and (4) Transitive trust abuse by navigating to and interacting with arbitrary untrusted websites. The skill lacks input validation, URL sanitization, and security controls around sensitive browser operations. The wildcard Bash tool restriction is insufficient to prevent abuse. Users should exercise extreme caution when using this skill, especially with 'real' browser mode or when navigating to untrusted sites. The skill requires significant security hardening before it can be considered safe for general use.",
+        "primary_threats": [
+          "Command Injection",
+          "Credential Exposure",
+          "Data Exfiltration",
+          "Transitive Trust Abuse",
+          "Tool Restriction Bypass"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browser-use_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Tool Restriction Bypass via Unrestricted Bash Execution",
+      "description": "The allowed-tools restriction 'Bash(browser-use:*)' attempts to limit execution to browser-use commands, but the wildcard pattern may be too permissive. The skill could potentially execute arbitrary bash commands if the browser-use CLI has vulnerabilities or if command injection is possible through its parameters.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "allowed-tools: Bash(browser-use:*) - Wildcard pattern allows any browser-use subcommand without validation of what those subcommands might execute.",
+      "remediation": "Implement stricter tool restrictions by explicitly listing allowed browser-use subcommands. Add validation layer to verify commands match expected patterns before execution. Monitor for unexpected command patterns.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This browser automation skill presents MULTIPLE HIGH-SEVERITY security risks. The primary concerns are: (1) Arbitrary command execution through unvalidated browser-use CLI parameters enabling command injection attacks, (2) Credential and session exposure through 'real' browser mode that accesses user's authenticated Chrome sessions, (3) Data exfiltration risks via remote browser mode sending data to external services, and (4) Transitive trust abuse by navigating to and interacting with arbitrary untrusted websites. The skill lacks input validation, URL sanitization, and security controls around sensitive browser operations. The wildcard Bash tool restriction is insufficient to prevent abuse. Users should exercise extreme caution when using this skill, especially with 'real' browser mode or when navigating to untrusted sites. The skill requires significant security hardening before it can be considered safe for general use.",
+        "primary_threats": [
+          "Command Injection",
+          "Credential Exposure",
+          "Data Exfiltration",
+          "Transitive Trust Abuse",
+          "Tool Restriction Bypass"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browser-use_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Remote Browser Mode Requires External API Key",
+      "description": "The 'remote' browser mode requires BROWSER_USE_API_KEY environment variable, indicating data is sent to external cloud services. This creates a data exfiltration risk where browsing activity, screenshots, and page content are transmitted to third-party servers. The skill does not disclose what data is collected or where it is sent.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'browser-use --browser remote open <url>  # Cloud browser (requires BROWSER_USE_API_KEY)' - Indicates external service dependency without transparency about data handling.",
+      "remediation": "Add explicit disclosure about data transmission to external services. Warn users that remote mode sends browsing data to third parties. Provide documentation about the remote service's data handling practices. Recommend local modes for sensitive operations.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This browser automation skill presents MULTIPLE HIGH-SEVERITY security risks. The primary concerns are: (1) Arbitrary command execution through unvalidated browser-use CLI parameters enabling command injection attacks, (2) Credential and session exposure through 'real' browser mode that accesses user's authenticated Chrome sessions, (3) Data exfiltration risks via remote browser mode sending data to external services, and (4) Transitive trust abuse by navigating to and interacting with arbitrary untrusted websites. The skill lacks input validation, URL sanitization, and security controls around sensitive browser operations. The wildcard Bash tool restriction is insufficient to prevent abuse. Users should exercise extreme caution when using this skill, especially with 'real' browser mode or when navigating to untrusted sites. The skill requires significant security hardening before it can be considered safe for general use.",
+        "primary_threats": [
+          "Command Injection",
+          "Credential Exposure",
+          "Data Exfiltration",
+          "Transitive Trust Abuse",
+          "Tool Restriction Bypass"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browser-use_4",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse via Unvalidated Web Content Interaction",
+      "description": "The skill navigates to arbitrary user-provided URLs and interacts with web page content without validation. Malicious web pages could contain instructions or content designed to manipulate the agent's behavior through the browser automation context. The skill blindly follows navigation and interaction commands without verifying the safety of target sites.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'browser-use open <url>' accepts arbitrary URLs without validation. The skill interacts with page elements and extracts content from potentially malicious sites.",
+      "remediation": "Implement URL validation and allowlist/blocklist mechanisms. Warn users about navigating to untrusted sites. Add content security checks before extracting or processing web page data. Consider sandboxing browser sessions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This browser automation skill presents MULTIPLE HIGH-SEVERITY security risks. The primary concerns are: (1) Arbitrary command execution through unvalidated browser-use CLI parameters enabling command injection attacks, (2) Credential and session exposure through 'real' browser mode that accesses user's authenticated Chrome sessions, (3) Data exfiltration risks via remote browser mode sending data to external services, and (4) Transitive trust abuse by navigating to and interacting with arbitrary untrusted websites. The skill lacks input validation, URL sanitization, and security controls around sensitive browser operations. The wildcard Bash tool restriction is insufficient to prevent abuse. Users should exercise extreme caution when using this skill, especially with 'real' browser mode or when navigating to untrusted sites. The skill requires significant security hardening before it can be considered safe for general use.",
+        "primary_threats": [
+          "Command Injection",
+          "Credential Exposure",
+          "Data Exfiltration",
+          "Transitive Trust Abuse",
+          "Tool Restriction Bypass"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browser-use_5",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Security Metadata in Manifest",
+      "description": "The YAML manifest is missing critical security-related fields including license and compatibility information. This makes it difficult for users to assess the skill's trustworthiness and intended use cases. The lack of version information also prevents tracking of security updates.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "license: Not specified, compatibility: Not specified - Missing metadata fields that help users assess security posture.",
+      "remediation": "Add license field to clarify usage terms and liability. Add compatibility field to document supported environments. Include version information for security update tracking. Add author/maintainer information for accountability.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This browser automation skill presents MULTIPLE HIGH-SEVERITY security risks. The primary concerns are: (1) Arbitrary command execution through unvalidated browser-use CLI parameters enabling command injection attacks, (2) Credential and session exposure through 'real' browser mode that accesses user's authenticated Chrome sessions, (3) Data exfiltration risks via remote browser mode sending data to external services, and (4) Transitive trust abuse by navigating to and interacting with arbitrary untrusted websites. The skill lacks input validation, URL sanitization, and security controls around sensitive browser operations. The wildcard Bash tool restriction is insufficient to prevent abuse. Users should exercise extreme caution when using this skill, especially with 'real' browser mode or when navigating to untrusted sites. The skill requires significant security hardening before it can be considered safe for general use.",
+        "primary_threats": [
+          "Command Injection",
+          "Credential Exposure",
+          "Data Exfiltration",
+          "Transitive Trust Abuse",
+          "Tool Restriction Bypass"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browser-use_6",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Missing Referenced File Could Cause Availability Issues",
+      "description": "The instructions reference 'state.py' file which is not found in the skill package. This could cause runtime errors or unexpected behavior if the skill attempts to use this file. While not a direct security threat, missing dependencies can lead to unpredictable behavior.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Referenced file 'state.py' is listed but not found in the package contents.",
+      "remediation": "Either include the state.py file in the skill package or remove the reference from the instructions. Document all required files clearly in the manifest.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This browser automation skill presents MULTIPLE HIGH-SEVERITY security risks. The primary concerns are: (1) Arbitrary command execution through unvalidated browser-use CLI parameters enabling command injection attacks, (2) Credential and session exposure through 'real' browser mode that accesses user's authenticated Chrome sessions, (3) Data exfiltration risks via remote browser mode sending data to external services, and (4) Transitive trust abuse by navigating to and interacting with arbitrary untrusted websites. The skill lacks input validation, URL sanitization, and security controls around sensitive browser operations. The wildcard Bash tool restriction is insufficient to prevent abuse. Users should exercise extreme caution when using this skill, especially with 'real' browser mode or when navigating to untrusted sites. The skill requires significant security hardening before it can be considered safe for general use.",
+        "primary_threats": [
+          "Command Injection",
+          "Credential Exposure",
+          "Data Exfiltration",
+          "Transitive Trust Abuse",
+          "Tool Restriction Bypass"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 37.737857818603516,
+  "duration_ms": 37737,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-01T09:40:29.856817"
+}

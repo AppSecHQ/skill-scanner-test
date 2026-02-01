@@ -1,0 +1,84 @@
+{
+  "skill_name": "launch-strategy",
+  "skill_path": "./skills/coreyhaines31-marketingskills/skills/launch-strategy",
+  "skill_directory": "./skills/coreyhaines31-marketingskills/skills/launch-strategy",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "llm_finding_launch-strategy_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse - External Context File Dependency",
+      "description": "The skill instructions direct the agent to read and trust content from '.claude/product-marketing-context.md' without validation. This file is external to the skill package and could contain malicious instructions that override the skill's intended behavior. The instruction 'read it before asking questions. Use that context' creates a transitive trust relationship where the agent will follow instructions from an untrusted external source.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Check for product marketing context first: If `.claude/product-marketing-context.md` exists, read it before asking questions. Use that context and only ask for information not already covered or specific to this task.",
+      "remediation": "Remove the directive to automatically read and trust external context files. If context is needed, it should be: (1) bundled within the skill package itself, (2) explicitly validated before use, or (3) treated as user data rather than trusted instructions. Consider adding a warning that external context files should not contain instructions or directives.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The 'launch-strategy' skill presents MEDIUM security risks primarily related to transitive trust abuse and incomplete dependencies. The skill directs the agent to automatically read and trust content from an external file ('.claude/product-marketing-context.md') without validation, creating a vector for indirect prompt injection. Additionally, the skill references a missing 'content.py' file that could be exploited through tool shadowing if an attacker places a malicious file with that name in the execution context. The skill lacks optional metadata fields that would improve transparency. The core instruction content appears benign and focused on legitimate product launch strategy guidance. No data exfiltration, credential theft, or command injection patterns were detected. Remediation should focus on removing external file trust dependencies and ensuring all referenced files are bundled with the skill package.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust)",
+          "Tool Shadowing (missing dependency)",
+          "Incomplete Metadata"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a transitive trust pattern. The instruction explicitly tells the agent to 'use that context' from an external file without validation. This is a textbook AITech-1.2 indirect prompt injection vector.",
+        "meta_exploitability": "Medium - Requires attacker to place malicious .claude/product-marketing-context.md file in user's workspace, but no authentication needed",
+        "meta_impact": "Medium - Could override skill behavior, cause unintended actions, or leak information if malicious instructions are followed"
+      }
+    },
+    {
+      "id": "llm_finding_launch-strategy_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing Referenced Script File - Broken Tool Dependency",
+      "description": "The skill references 'content.py' in its instructions but this file is not included in the skill package. This creates an incomplete tool chain where the skill may attempt to use functionality that doesn't exist, potentially causing the agent to improvise behavior or fail unexpectedly. This could be exploited if an attacker places a malicious 'content.py' file in the execution context.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Files referenced in instructions: content.py\n**Referenced File: content.py** (not found)",
+      "remediation": "Either: (1) Include the missing 'content.py' file in the skill package with proper implementation, (2) Remove references to 'content.py' if it's not needed, or (3) Add explicit error handling for missing dependencies. Ensure all referenced files are bundled with the skill to prevent tool shadowing attacks.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The 'launch-strategy' skill presents MEDIUM security risks primarily related to transitive trust abuse and incomplete dependencies. The skill directs the agent to automatically read and trust content from an external file ('.claude/product-marketing-context.md') without validation, creating a vector for indirect prompt injection. Additionally, the skill references a missing 'content.py' file that could be exploited through tool shadowing if an attacker places a malicious file with that name in the execution context. The skill lacks optional metadata fields that would improve transparency. The core instruction content appears benign and focused on legitimate product launch strategy guidance. No data exfiltration, credential theft, or command injection patterns were detected. Remediation should focus on removing external file trust dependencies and ensuring all referenced files are bundled with the skill package.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust)",
+          "Tool Shadowing (missing dependency)",
+          "Incomplete Metadata"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The file is listed in metadata but never actually referenced in the SKILL.md instructions. This appears to be a documentation error rather than an active security threat. Tool shadowing risk is theoretical since there's no code attempting to import or execute this file.",
+        "meta_exploitability": "Low - Would require both placing a malicious file AND the agent somehow deciding to execute it despite no instructions to do so",
+        "meta_impact": "Low - Primarily a documentation issue; actual exploitation would require additional attack vectors"
+      }
+    }
+  ],
+  "scan_duration_seconds": 23.22292947769165,
+  "duration_ms": 23222,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-01T10:49:10.025669"
+}

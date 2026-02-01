@@ -1,0 +1,84 @@
+{
+  "skill_name": "canvas-design",
+  "skill_path": "./skills/anthropics-skills/skills/canvas-design",
+  "skill_directory": "./skills/anthropics-skills/skills/canvas-design",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "llm_finding_canvas-design_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Indirect Prompt Injection via Two-Stage Design Philosophy Pattern",
+      "description": "The skill uses a two-stage pattern where it first creates a 'design philosophy' document, then instructs the agent to 'receive the philosophy and EXPRESS IT VISUALLY'. This creates a transitive trust vulnerability where the agent is instructed to follow content it just generated. The instructions explicitly state 'What happens next: Then, the same version receives the philosophy and EXPRESSES IT VISUALLY'. This pattern could be exploited if malicious content is injected into the philosophy generation stage, which would then be automatically followed in the execution stage. The skill delegates trust to intermediate content without validation.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Complete this in two steps:\n1. Design Philosophy Creation (.md file)\n2. Express by creating it on a canvas (.pdf file or .png file)\n\n### THE CRITICAL UNDERSTANDING\n- What happens next: Then, the same version receives the philosophy and EXPRESSES IT VISUALLY",
+      "remediation": "Add explicit validation that the philosophy content is reviewed before execution. Include safety checks that the generated philosophy doesn't contain instructions that override the original skill purpose. Consider requiring user confirmation between the two stages.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The canvas-design skill is a creative design tool with MEDIUM security concerns. The primary risk is an indirect prompt injection vulnerability through its two-stage design philosophy pattern, where the agent is instructed to automatically follow content it generates without validation. This creates a transitive trust issue that could be exploited. Additionally, the skill contains unusual instructions to repeatedly emphasize craftsmanship in potentially misleading ways, and references non-existent Python files that appear to be artifacts. The skill lacks optional metadata fields for compatibility and allowed-tools. No critical threats like data exfiltration, command injection, or hardcoded secrets were found. The skill appears to be a legitimate creative tool with some design pattern concerns that should be addressed.",
+        "primary_threats": [
+          "Indirect Prompt Injection",
+          "Transitive Trust Abuse",
+          "Misleading Content Generation"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a legitimate two-stage creative workflow, not a malicious pattern. The LLM analyzer correctly identified the transitive trust pattern, but the context shows this is intentional design methodology (like a design brief \u2192 execution workflow). The risk is theoretical rather than practical, as there's no external input injection point.",
+        "meta_exploitability": "Low - Requires compromising the philosophy generation stage first, which has no external input vectors",
+        "meta_impact": "Medium - Could potentially cause unintended behavior if exploited, but limited to design output"
+      }
+    },
+    {
+      "id": "llm_finding_canvas-design_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Suspicious Instruction to Emphasize Craftsmanship 'REPEATEDLY'",
+      "description": "The instructions contain an unusual directive to 'REPEATEDLY' emphasize that work should appear to have taken 'countless hours' and come from 'someone at the absolute top of their field'. The instruction explicitly says to 'repeat phrases like meticulously crafted, the product of deep expertise, painstaking attention, master-level execution.' This pattern of instructing the agent to repeatedly claim expertise or effort could be used to generate misleading content that overstates the quality or effort involved, potentially deceiving users about the nature of AI-generated content.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "**CRITICAL GUIDELINES:**\n- **Emphasize craftsmanship REPEATEDLY**: The philosophy MUST stress multiple times that the final work should appear as though it took countless hours to create, was labored over with care, and comes from someone at the absolute top of their field. This framing is essential - repeat phrases like 'meticulously crafted,' 'the product of deep expertise,' 'painstaking attention,' 'master-level execution.'",
+      "remediation": "Remove the instruction to repeatedly emphasize craftsmanship. If quality standards are important, state them once clearly without instructing the agent to create an impression of effort or expertise that may not reflect the actual AI generation process.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The canvas-design skill is a creative design tool with MEDIUM security concerns. The primary risk is an indirect prompt injection vulnerability through its two-stage design philosophy pattern, where the agent is instructed to automatically follow content it generates without validation. This creates a transitive trust issue that could be exploited. Additionally, the skill contains unusual instructions to repeatedly emphasize craftsmanship in potentially misleading ways, and references non-existent Python files that appear to be artifacts. The skill lacks optional metadata fields for compatibility and allowed-tools. No critical threats like data exfiltration, command injection, or hardcoded secrets were found. The skill appears to be a legitimate creative tool with some design pattern concerns that should be addressed.",
+        "primary_threats": [
+          "Indirect Prompt Injection",
+          "Transitive Trust Abuse",
+          "Misleading Content Generation"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The intent appears to be setting a high quality bar for design output rather than deception. However, the specific language about 'appearing as though it took countless hours' and 'not AI-generated' could be misinterpreted. Context suggests this is about achieving professional quality, not hiding AI authorship.",
+        "meta_exploitability": "Very Low - This is a quality directive, not an active deception mechanism",
+        "meta_impact": "Low - Could create misleading impressions about effort/authorship, but doesn't cause direct harm"
+      }
+    }
+  ],
+  "scan_duration_seconds": 28.411560535430908,
+  "duration_ms": 28411,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-01T09:59:53.218787"
+}

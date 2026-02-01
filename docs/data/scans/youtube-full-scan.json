@@ -1,0 +1,51 @@
+{
+  "skill_name": "youtube-full",
+  "skill_path": "./skills/clawhub-youtube-full",
+  "skill_directory": "./skills/clawhub-youtube-full",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
+  "findings": [
+    {
+      "id": "llm_finding_youtube-full_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Key Storage in Shell Configuration",
+      "description": "The skill instructs users to store the API key directly in shell configuration files (~/.zshenv) using echo commands. This creates a persistent credential that could be exposed through shell history, backup files, or if the configuration file is inadvertently shared. While the API key is required for functionality, the storage method lacks security best practices such as file permission warnings or encrypted credential storage recommendations.",
+      "file_path": "SKILL.md",
+      "line_number": 12,
+      "snippet": "Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
+      "remediation": "Recommend secure credential storage methods: (1) Warn users to set restrictive permissions (chmod 600 ~/.zshenv), (2) Suggest using dedicated credential managers or encrypted environment variable storage, (3) Advise clearing shell history after manual key entry, (4) Consider recommending .env files with proper .gitignore configuration instead of shell config files.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The youtube-full skill is a straightforward API wrapper for TranscriptAPI.com services with MODERATE security concerns. The skill provides legitimate YouTube data access functionality (transcripts, search, channels, playlists) through a third-party API service. Primary security concern is the recommended credential storage method which could expose API keys through shell configuration files. The skill contains no executable scripts (only curl examples in documentation), no data exfiltration patterns, no prompt injection attempts, and no malicious code. The functionality matches the description accurately. The main risk is credential exposure through insecure storage practices recommended in the setup instructions. Missing optional metadata reduces transparency but does not constitute a security threat.",
+        "primary_threats": [
+          "Credential exposure through insecure storage recommendations",
+          "Missing transparency metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified insecure credential storage practice. The recommendation to echo credentials directly into shell config files is a documented security anti-pattern that exposes secrets through shell history and backup files.",
+        "meta_exploitability": "Medium - Requires access to user's shell history or dotfiles, but these are commonly exposed through backup systems, git repositories, or shared configurations",
+        "meta_impact": "Medium - API key exposure could lead to unauthorized API usage and credit consumption, but impact is limited to the TranscriptAPI.com service"
+      }
+    }
+  ],
+  "scan_duration_seconds": 20.605623722076416,
+  "duration_ms": 20605,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-01T08:40:54.861779"
+}
