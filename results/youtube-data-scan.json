@@ -4,7 +4,7 @@
   "skill_directory": "./skills/clawhub-youtube-data",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 2,
+  "findings_count": 5,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -38,14 +38,96 @@
         "matched_string": "$leak_param",
         "threat_type": "CREDENTIAL HARVESTING"
       }
+    },
+    {
+      "id": "llm_finding_youtube-data_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Key Storage in Shell Configuration File",
+      "description": "The skill instructs users to store the API key directly in ~/.zshenv using echo and export commands. This approach stores credentials in plaintext in shell configuration files, which poses a security risk if the system is compromised or if configuration files are inadvertently shared (e.g., in dotfiles repositories). While this is a common practice, it represents a credential exposure risk, especially since the instructions don't warn users about the security implications or suggest more secure alternatives like encrypted credential stores.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
+      "remediation": "Recommend using more secure credential storage methods such as system keychains, encrypted environment variable managers, or at minimum, warn users about the security implications of storing credentials in plaintext configuration files. Consider suggesting file permission restrictions (chmod 600 ~/.zshenv) as a minimum security measure.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is SAFE for use with minor security considerations. It provides a legitimate wrapper around the TranscriptAPI.com service for accessing YouTube data. The primary concerns are: (1) plaintext credential storage in shell configuration files (MEDIUM severity), (2) missing optional metadata fields that would improve transparency (LOW severity), and (3) minor misleading language about quota limits (LOW severity). The skill does not contain malicious code, prompt injection attempts, data exfiltration, or other serious security threats. It uses standard curl commands to interact with a documented third-party API. The main risk is credential exposure through insecure storage practices, which is a user education issue rather than a malicious design flaw.",
+        "primary_threats": [
+          "Credential exposure via plaintext storage",
+          "Missing transparency metadata",
+          "Minor misleading description"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION"
+      }
+    },
+    {
+      "id": "llm_finding_youtube-data_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Optional Metadata Fields",
+      "description": "The skill manifest is missing several optional but recommended metadata fields: 'license', 'compatibility', and 'allowed-tools'. While these fields are not required per the agent skills specification, their absence makes it harder for users to understand the skill's requirements, limitations, and security boundaries. The lack of 'allowed-tools' means users cannot verify which agent capabilities the skill intends to use.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "license: Not specified, compatibility: Not specified, allowed-tools: Not specified",
+      "remediation": "Add the following optional metadata fields to improve transparency: 'license' (e.g., MIT, Apache-2.0), 'compatibility' (e.g., 'Requires internet access, works with Claude.ai and API'), and 'allowed-tools' (e.g., [Bash] since the skill uses curl commands). This helps users make informed decisions about skill usage.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is SAFE for use with minor security considerations. It provides a legitimate wrapper around the TranscriptAPI.com service for accessing YouTube data. The primary concerns are: (1) plaintext credential storage in shell configuration files (MEDIUM severity), (2) missing optional metadata fields that would improve transparency (LOW severity), and (3) minor misleading language about quota limits (LOW severity). The skill does not contain malicious code, prompt injection attempts, data exfiltration, or other serious security threats. It uses standard curl commands to interact with a documented third-party API. The main risk is credential exposure through insecure storage practices, which is a user education issue rather than a malicious design flaw.",
+        "primary_threats": [
+          "Credential exposure via plaintext storage",
+          "Missing transparency metadata",
+          "Minor misleading description"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING"
+      }
+    },
+    {
+      "id": "llm_finding_youtube-data_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "External API Dependency Requires User-Provided Credentials",
+      "description": "The skill requires users to sign up for a third-party service (TranscriptAPI.com) and obtain an API key. While the service offers a free tier, this creates a dependency on an external service and requires users to share their usage patterns with a third party. The skill description mentions 'no quota limits' but the free tier actually has 100 credits, which is a quota. This could be considered mildly misleading, though not malicious.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description claims 'no quota limits' but setup section states 'Get one free (100 credits, no card)' indicating there is a quota limit on the free tier.",
+      "remediation": "Clarify in the description that the free tier has a 100-credit limit and that additional credits require payment. Be transparent about the external service dependency and data sharing implications. Consider adding a note about what data TranscriptAPI.com may collect or log.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is SAFE for use with minor security considerations. It provides a legitimate wrapper around the TranscriptAPI.com service for accessing YouTube data. The primary concerns are: (1) plaintext credential storage in shell configuration files (MEDIUM severity), (2) missing optional metadata fields that would improve transparency (LOW severity), and (3) minor misleading language about quota limits (LOW severity). The skill does not contain malicious code, prompt injection attempts, data exfiltration, or other serious security threats. It uses standard curl commands to interact with a documented third-party API. The main risk is credential exposure through insecure storage practices, which is a user education issue rather than a malicious design flaw.",
+        "primary_threats": [
+          "Credential exposure via plaintext storage",
+          "Missing transparency metadata",
+          "Minor misleading description"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION"
+      }
     }
   ],
-  "scan_duration_seconds": 0.002156972885131836,
-  "duration_ms": 2,
+  "scan_duration_seconds": 23.44738268852234,
+  "duration_ms": 23447,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
+    "llm_analyzer",
     "trigger_analyzer"
   ],
-  "timestamp": "2026-02-01T05:22:57.052644"
+  "timestamp": "2026-02-01T07:12:20.101223"
 }

@@ -320,6 +320,7 @@ class TestScanSkills:
             skill_name="alpha",
             scanner_path="skill-scanner",
             use_llm=False,
+            enable_meta=False,
         )
 
     @patch("run_scans.run_scan")

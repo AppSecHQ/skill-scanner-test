@@ -214,6 +214,7 @@ def run_scan(
     use_behavioral: bool = True,
     use_trigger: bool = True,
     use_llm: bool = False,
+    enable_meta: bool = False,
 ) -> dict | None:
     """
     Run skill-scanner on a skill directory.
@@ -244,6 +245,8 @@ def run_scan(
         cmd.append("--use-trigger")
     if use_llm:
         cmd.append("--use-llm")
+    if enable_meta:
+        cmd.append("--enable-meta")
 
     # Run JSON scan
     json_cmd = cmd + ["--format", "json", "-o", str(json_output)]
@@ -296,6 +299,7 @@ def scan_skills(
     output_dir: Path,
     scanner_path: str = "skill-scanner",
     use_llm: bool = False,
+    enable_meta: bool = False,
 ) -> list[dict]:
     """
     Download/clone and scan all skills.
@@ -383,6 +387,7 @@ def scan_skills(
             skill_name=safe_name,
             scanner_path=scanner_path,
             use_llm=use_llm,
+            enable_meta=enable_meta,
         )
 
         if result:
@@ -441,6 +446,7 @@ def scan_adhoc_repos(
     output_dir: Path,
     scanner_path: str = "skill-scanner",
     use_llm: bool = False,
+    enable_meta: bool = False,
 ) -> list[dict]:
     """
     Clone and scan all skills in arbitrary GitHub repositories.
@@ -514,6 +520,7 @@ def scan_adhoc_repos(
                 skill_name=skill_name,
                 scanner_path=scanner_path,
                 use_llm=use_llm,
+                enable_meta=enable_meta,
             )
 
             if result:
@@ -549,6 +556,7 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--output", type=Path, default=Path("results"), help="Output directory")
     parser.add_argument("--scanner", type=str, default="skill-scanner", help="Path to skill-scanner")
     parser.add_argument("--use-llm", action="store_true", help="Enable LLM analyzer")
+    parser.add_argument("--enable-meta", action="store_true", help="Enable meta-analysis")
     args = parser.parse_args()
 
     skills = load_inventory(args.inventory)
@@ -558,6 +566,7 @@ if __name__ == "__main__":
         output_dir=args.output,
         scanner_path=args.scanner,
         use_llm=args.use_llm,
+        enable_meta=args.enable_meta,
     )
 
     safe = sum(1 for r in results if r.get("is_safe") is True)

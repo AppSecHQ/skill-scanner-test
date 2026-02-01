@@ -3,8 +3,8 @@
   "skill_path": "./skills/clawhub-youtube-api",
   "skill_directory": "./skills/clawhub-youtube-api",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 5,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -19,14 +19,107 @@
       "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
       "analyzer": "static",
       "metadata": {}
+    },
+    {
+      "id": "llm_finding_youtube-api_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill manifest does not specify the 'allowed-tools' field. While this field is optional per the agent skills specification, its absence means there are no declared restrictions on which agent tools can be used. This is informational only, as the skill appears to only use Bash for curl commands.",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "allowed-tools: Not specified",
+      "remediation": "Consider adding 'allowed-tools: [Bash]' to the YAML frontmatter to explicitly declare the skill's tool requirements and improve transparency.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is SAFE for use. It provides a wrapper around a third-party YouTube data API service (transcriptapi.com) using standard curl commands. The skill contains no executable scripts, no prompt injection attempts, no data exfiltration code, and no malicious patterns. The primary considerations are: (1) users must trust the third-party API provider with their YouTube data access patterns, (2) an API key is required and stored in environment variables, and (3) some optional metadata fields are missing. The skill's behavior matches its description, and it operates transparently through documented API calls. The missing 'allowed-tools' field is a minor documentation issue since the skill only uses Bash for curl commands.",
+        "primary_threats": [],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION"
+      }
+    },
+    {
+      "id": "llm_finding_youtube-api_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing License and Compatibility Metadata",
+      "description": "The skill manifest is missing 'license' and 'compatibility' fields. While optional, these fields help users understand licensing terms and where the skill can be used. This is a documentation completeness issue rather than a security threat.",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "license: Not specified, compatibility: Not specified",
+      "remediation": "Add 'license: MIT' (or appropriate license) and 'compatibility' field to the YAML frontmatter to improve skill documentation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is SAFE for use. It provides a wrapper around a third-party YouTube data API service (transcriptapi.com) using standard curl commands. The skill contains no executable scripts, no prompt injection attempts, no data exfiltration code, and no malicious patterns. The primary considerations are: (1) users must trust the third-party API provider with their YouTube data access patterns, (2) an API key is required and stored in environment variables, and (3) some optional metadata fields are missing. The skill's behavior matches its description, and it operates transparently through documented API calls. The missing 'allowed-tools' field is a minor documentation issue since the skill only uses Bash for curl commands.",
+        "primary_threats": [],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION"
+      }
+    },
+    {
+      "id": "llm_finding_youtube-api_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Third-Party API Dependency with Credential Requirement",
+      "description": "The skill requires users to obtain and store an API key (TRANSCRIPT_API_KEY) from a third-party service (transcriptapi.com). While the service appears legitimate, users are trusting this external provider with their YouTube data access patterns. The skill instructions guide users to store credentials in shell configuration files (~/.zshenv), which is a common practice but creates a persistent credential that could be accessed by other processes.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "TRANSCRIPT_API_KEY required. Get one free (100 credits, no card):\n- [transcriptapi.com/signup](https://transcriptapi.com/signup)\n- Store: `echo 'export TRANSCRIPT_API_KEY=\"sk_...\"' >> ~/.zshenv && source ~/.zshenv`",
+      "remediation": "Document the trust relationship with transcriptapi.com clearly. Consider warning users that their API usage patterns will be visible to the third-party service. Ensure users understand the privacy implications of using a third-party proxy instead of Google's official API.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is SAFE for use. It provides a wrapper around a third-party YouTube data API service (transcriptapi.com) using standard curl commands. The skill contains no executable scripts, no prompt injection attempts, no data exfiltration code, and no malicious patterns. The primary considerations are: (1) users must trust the third-party API provider with their YouTube data access patterns, (2) an API key is required and stored in environment variables, and (3) some optional metadata fields are missing. The skill's behavior matches its description, and it operates transparently through documented API calls. The missing 'allowed-tools' field is a minor documentation issue since the skill only uses Bash for curl commands.",
+        "primary_threats": [],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION"
+      }
+    },
+    {
+      "id": "llm_finding_youtube-api_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Incomplete Error Documentation",
+      "description": "The error handling documentation appears to be truncated (ends mid-sentence with 'Retry onc'). This could lead to incomplete understanding of error handling, though it does not represent a direct security threat.",
+      "file_path": "SKILL.md",
+      "line_number": 95,
+      "snippet": "| 408 | Timeout/retryable | Retry onc",
+      "remediation": "Complete the error documentation table to ensure users understand all error scenarios and appropriate responses.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is SAFE for use. It provides a wrapper around a third-party YouTube data API service (transcriptapi.com) using standard curl commands. The skill contains no executable scripts, no prompt injection attempts, no data exfiltration code, and no malicious patterns. The primary considerations are: (1) users must trust the third-party API provider with their YouTube data access patterns, (2) an API key is required and stored in environment variables, and (3) some optional metadata fields are missing. The skill's behavior matches its description, and it operates transparently through documented API calls. The missing 'allowed-tools' field is a minor documentation issue since the skill only uses Bash for curl commands.",
+        "primary_threats": [],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT"
+      }
     }
   ],
-  "scan_duration_seconds": 0.0020542144775390625,
-  "duration_ms": 2,
+  "scan_duration_seconds": 23.333152294158936,
+  "duration_ms": 23333,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
+    "llm_analyzer",
     "trigger_analyzer"
   ],
-  "timestamp": "2026-02-01T05:22:59.741689"
+  "timestamp": "2026-02-01T07:13:16.405529"
 }

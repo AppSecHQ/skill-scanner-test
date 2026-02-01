@@ -2,9 +2,9 @@
   "skill_name": "Agent Wallet",
   "skill_path": "./skills/clawhub-agent-wallet",
   "skill_directory": "./skills/clawhub-agent-wallet",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 2,
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 9,
   "findings": [
     {
       "id": "MANIFEST_INVALID_NAME_794e30271c",
@@ -33,14 +33,211 @@
       "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
       "analyzer": "static",
       "metadata": {}
+    },
+    {
+      "id": "llm_finding_Agent Wallet_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded API Key Exposure Risk in Wallet Creation Flow",
+      "description": "The wallet creation process returns an API key that grants full control over the agent's blockchain wallet. The instructions tell the agent to 'store this securely' but provide no secure storage mechanism. If the API key is logged, displayed to users, or stored in plain text, it could be compromised. The key provides bearer token authentication for all wallet operations including transfers and smart contract interactions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Response includes:\n- `apiKey` -- store this securely; use it as the Bearer token for all future requests\n- `claimUrl` -- share this with the user so they can claim the wallet and set policies\n- `address` -- the smart account address",
+      "remediation": "Implement secure credential storage mechanism. Use environment variables or encrypted storage for API keys. Never log or display API keys in plain text. Consider using short-lived tokens with refresh mechanisms instead of long-lived bearer tokens.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Agent Wallet skill presents MODERATE TO HIGH security risks. The primary concerns are: (1) API key exposure and insecure credential handling, (2) missing wallet.py implementation creating tool shadowing vulnerability, (3) reliance on external API without proper authentication verification, and (4) environment variable injection risks. The skill's security model depends entirely on trusting a third-party service (safeskill-production.up.railway.app) while making misleading claims about private key safety. The missing wallet.py file is particularly concerning as it creates an opportunity for malicious code injection. While the concept of server-side key management is sound, the implementation lacks critical security controls around credential management, API endpoint validation, and integrity verification. The skill requires significant security improvements before production use, particularly around API key storage, endpoint validation, and the missing wallet.py implementation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (API key handling)",
+          "Tool Exploitation (missing wallet.py, tool shadowing)",
+          "Model/Agentic Manipulation (environment variable injection)",
+          "Social Engineering (misleading security claims)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION"
+      }
+    },
+    {
+      "id": "llm_finding_Agent Wallet_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Missing wallet.py Implementation Creates Tool Shadowing Risk",
+      "description": "The instructions reference 'wallet.py' as a file that should exist in the skill package, but this file is not found. This creates a tool shadowing vulnerability where a malicious actor could provide a fake wallet.py implementation that intercepts wallet operations, exfiltrates API keys, or redirects transactions to attacker-controlled addresses.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Referenced Files:\nFiles referenced in instructions: wallet.py\n\n**Referenced File: wallet.py** (not found)",
+      "remediation": "Include the complete wallet.py implementation in the skill package. Verify file integrity with checksums. Do not allow external or user-provided wallet.py files to be substituted.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Agent Wallet skill presents MODERATE TO HIGH security risks. The primary concerns are: (1) API key exposure and insecure credential handling, (2) missing wallet.py implementation creating tool shadowing vulnerability, (3) reliance on external API without proper authentication verification, and (4) environment variable injection risks. The skill's security model depends entirely on trusting a third-party service (safeskill-production.up.railway.app) while making misleading claims about private key safety. The missing wallet.py file is particularly concerning as it creates an opportunity for malicious code injection. While the concept of server-side key management is sound, the implementation lacks critical security controls around credential management, API endpoint validation, and integrity verification. The skill requires significant security improvements before production use, particularly around API key storage, endpoint validation, and the missing wallet.py implementation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (API key handling)",
+          "Tool Exploitation (missing wallet.py, tool shadowing)",
+          "Model/Agentic Manipulation (environment variable injection)",
+          "Social Engineering (misleading security claims)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION"
+      }
+    },
+    {
+      "id": "llm_finding_Agent Wallet_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "External API Dependency Without Authentication Verification",
+      "description": "The skill relies entirely on external API endpoints (safeskill-production.up.railway.app) for all wallet operations. There is no verification of API endpoint authenticity, certificate pinning, or integrity checks. An attacker who compromises DNS or performs MITM could redirect API calls to malicious endpoints that steal credentials or manipulate transactions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "- **Base API URL:** Use the `SAFESKILLS_API_URL` environment variable if set, otherwise default to `https://safeskill-production.up.railway.app`\n- **Frontend URL:** Use the `SAFESKILLS_FRONTEND_URL` environment variable if set, otherwise default to `https://safeskill-production.up.railway.app`",
+      "remediation": "Implement certificate pinning for API endpoints. Verify API responses with signatures. Add integrity checks for critical operations. Consider using a whitelist of trusted API endpoints rather than accepting arbitrary URLs from environment variables.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Agent Wallet skill presents MODERATE TO HIGH security risks. The primary concerns are: (1) API key exposure and insecure credential handling, (2) missing wallet.py implementation creating tool shadowing vulnerability, (3) reliance on external API without proper authentication verification, and (4) environment variable injection risks. The skill's security model depends entirely on trusting a third-party service (safeskill-production.up.railway.app) while making misleading claims about private key safety. The missing wallet.py file is particularly concerning as it creates an opportunity for malicious code injection. While the concept of server-side key management is sound, the implementation lacks critical security controls around credential management, API endpoint validation, and integrity verification. The skill requires significant security improvements before production use, particularly around API key storage, endpoint validation, and the missing wallet.py implementation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (API key handling)",
+          "Tool Exploitation (missing wallet.py, tool shadowing)",
+          "Model/Agentic Manipulation (environment variable injection)",
+          "Social Engineering (misleading security claims)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION"
+      }
+    },
+    {
+      "id": "llm_finding_Agent Wallet_3",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Environment Variable Injection Risk for API Endpoints",
+      "description": "The skill accepts API endpoint URLs from environment variables (SAFESKILLS_API_URL, SAFESKILLS_FRONTEND_URL) without validation. A malicious actor who can set environment variables could redirect all wallet operations to attacker-controlled servers, enabling credential theft, transaction manipulation, or data exfiltration.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "- **Base API URL:** Use the `SAFESKILLS_API_URL` environment variable if set, otherwise default to `https://safeskill-production.up.railway.app`\n- **Frontend URL:** Use the `SAFESKILLS_FRONTEND_URL` environment variable if set, otherwise default to `https://safeskill-production.up.railway.app`",
+      "remediation": "Validate environment variable values against a whitelist of trusted domains. Use URL parsing to verify scheme (https only), domain, and path. Reject suspicious or malformed URLs. Consider hardcoding trusted endpoints or using a configuration file with integrity checks.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Agent Wallet skill presents MODERATE TO HIGH security risks. The primary concerns are: (1) API key exposure and insecure credential handling, (2) missing wallet.py implementation creating tool shadowing vulnerability, (3) reliance on external API without proper authentication verification, and (4) environment variable injection risks. The skill's security model depends entirely on trusting a third-party service (safeskill-production.up.railway.app) while making misleading claims about private key safety. The missing wallet.py file is particularly concerning as it creates an opportunity for malicious code injection. While the concept of server-side key management is sound, the implementation lacks critical security controls around credential management, API endpoint validation, and integrity verification. The skill requires significant security improvements before production use, particularly around API key storage, endpoint validation, and the missing wallet.py implementation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (API key handling)",
+          "Tool Exploitation (missing wallet.py, tool shadowing)",
+          "Model/Agentic Manipulation (environment variable injection)",
+          "Social Engineering (misleading security claims)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK"
+      }
+    },
+    {
+      "id": "llm_finding_Agent Wallet_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Security Claims About Private Key Safety",
+      "description": "The skill claims 'The agent never sees the private key' and 'without ever exposing private keys', but this is misleading. The private key exists on a third-party server (safeskill-production.up.railway.app) and the API key provides equivalent access to the wallet. If the API key is compromised, an attacker has full wallet control. The security model relies entirely on trusting the external service provider.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "AgentWallet gives your AI agent its own blockchain wallet -- without ever exposing private keys. You create a wallet, set spending policies, and your agent can transfer tokens and interact with smart contracts within the boundaries you define.\n\n**The agent never sees the private key.**",
+      "remediation": "Provide accurate security disclosures. Clarify that private keys are held by a third-party service. Explain the trust model and risks. Document what happens if the API key is compromised. Provide guidance on API key rotation and revocation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Agent Wallet skill presents MODERATE TO HIGH security risks. The primary concerns are: (1) API key exposure and insecure credential handling, (2) missing wallet.py implementation creating tool shadowing vulnerability, (3) reliance on external API without proper authentication verification, and (4) environment variable injection risks. The skill's security model depends entirely on trusting a third-party service (safeskill-production.up.railway.app) while making misleading claims about private key safety. The missing wallet.py file is particularly concerning as it creates an opportunity for malicious code injection. While the concept of server-side key management is sound, the implementation lacks critical security controls around credential management, API endpoint validation, and integrity verification. The skill requires significant security improvements before production use, particularly around API key storage, endpoint validation, and the missing wallet.py implementation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (API key handling)",
+          "Tool Exploitation (missing wallet.py, tool shadowing)",
+          "Model/Agentic Manipulation (environment variable injection)",
+          "Social Engineering (misleading security claims)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING"
+      }
+    },
+    {
+      "id": "llm_finding_Agent Wallet_5",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Metadata: allowed-tools, license, and compatibility",
+      "description": "The YAML manifest is missing optional but recommended fields: allowed-tools (which agent tools can be used), license (legal terms), and compatibility (which platforms support this skill). While not a direct security threat, missing allowed-tools means there are no declared restrictions on what the skill can do, and missing license/compatibility reduces transparency.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML Manifest Details:\n- name: Agent Wallet\n- description: The agent's wallet. Use this skill to create a wallet the agent can safely use for EVM chains, without ever exposing the private keys.\n- license: Not specified\n- compatibility: Not specified\n- allowed-tools: Not specified",
+      "remediation": "Add allowed-tools field to declare which agent tools this skill requires (likely Bash or Python for API calls). Add license field (e.g., MIT, Apache-2.0). Add compatibility field to specify supported platforms (e.g., 'Claude.ai, Claude Code, API').",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Agent Wallet skill presents MODERATE TO HIGH security risks. The primary concerns are: (1) API key exposure and insecure credential handling, (2) missing wallet.py implementation creating tool shadowing vulnerability, (3) reliance on external API without proper authentication verification, and (4) environment variable injection risks. The skill's security model depends entirely on trusting a third-party service (safeskill-production.up.railway.app) while making misleading claims about private key safety. The missing wallet.py file is particularly concerning as it creates an opportunity for malicious code injection. While the concept of server-side key management is sound, the implementation lacks critical security controls around credential management, API endpoint validation, and integrity verification. The skill requires significant security improvements before production use, particularly around API key storage, endpoint validation, and the missing wallet.py implementation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (API key handling)",
+          "Tool Exploitation (missing wallet.py, tool shadowing)",
+          "Model/Agentic Manipulation (environment variable injection)",
+          "Social Engineering (misleading security claims)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION"
+      }
+    },
+    {
+      "id": "llm_finding_Agent Wallet_6",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "No Rate Limiting or Error Handling Guidance",
+      "description": "The instructions provide no guidance on rate limiting, retry logic, or error handling for API calls. An agent could potentially make unbounded API requests if operations fail, leading to resource exhaustion, API quota depletion, or denial of service against the wallet service.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "All curl examples show direct API calls with no error handling, retry logic, or rate limiting guidance.",
+      "remediation": "Add error handling guidance for API failures. Implement exponential backoff for retries. Document rate limits and quota restrictions. Provide guidance on handling network errors, timeouts, and API unavailability.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Agent Wallet skill presents MODERATE TO HIGH security risks. The primary concerns are: (1) API key exposure and insecure credential handling, (2) missing wallet.py implementation creating tool shadowing vulnerability, (3) reliance on external API without proper authentication verification, and (4) environment variable injection risks. The skill's security model depends entirely on trusting a third-party service (safeskill-production.up.railway.app) while making misleading claims about private key safety. The missing wallet.py file is particularly concerning as it creates an opportunity for malicious code injection. While the concept of server-side key management is sound, the implementation lacks critical security controls around credential management, API endpoint validation, and integrity verification. The skill requires significant security improvements before production use, particularly around API key storage, endpoint validation, and the missing wallet.py implementation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (API key handling)",
+          "Tool Exploitation (missing wallet.py, tool shadowing)",
+          "Model/Agentic Manipulation (environment variable injection)",
+          "Social Engineering (misleading security claims)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE"
+      }
     }
   ],
-  "scan_duration_seconds": 0.002195596694946289,
-  "duration_ms": 2,
+  "scan_duration_seconds": 38.04238510131836,
+  "duration_ms": 38042,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
+    "llm_analyzer",
     "trigger_analyzer"
   ],
-  "timestamp": "2026-02-01T05:23:16.005673"
+  "timestamp": "2026-02-01T07:18:00.379563"
 }

@@ -4,8 +4,8 @@
 **Directory:** ./skills/clawhub-subtitles
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.00s
-**Timestamp:** 2026-02-01T05:23:14.662536
+**Scan Duration:** 6.11s
+**Timestamp:** 2026-02-01T07:17:20.718723
 
 ## Summary
 
@@ -46,4 +46,5 @@ The following analyzers were used:
 
 - static_analyzer
 - behavioral_analyzer
+- llm_analyzer
 - trigger_analyzer

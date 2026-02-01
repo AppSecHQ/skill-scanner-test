@@ -106,6 +106,12 @@ def aggregate_results(results_dir: Path) -> dict:
     # Sort skills by findings count (most findings first)
     findings["skills"].sort(key=lambda x: (-x["findings_count"], x["name"]))
 
+    # Collect all unique analyzers used across all skills
+    all_analyzers = set()
+    for skill in findings["skills"]:
+        all_analyzers.update(skill.get("analyzers", []))
+    findings["analyzers_used"] = sorted(all_analyzers)
+
     return findings
 
 
@@ -117,11 +123,14 @@ def generate_markdown_report(findings: dict, output_path: Path) -> None:
         findings: Aggregated findings dictionary
         output_path: Path to write the report
     """
+    analyzers_list = ", ".join(
+        a.replace("_analyzer", "") for a in findings.get("analyzers_used", [])
+    ) or "static"
     report = f"""# AI Agent Skills Security Scan Report
 
 **Generated:** {findings['scan_date']}
 **Scanner:** cisco-ai-skill-scanner
-**Analyzers:** static, behavioral, trigger
+**Analyzers:** {analyzers_list}
 
 ---
 
@@ -204,21 +213,26 @@ def generate_markdown_report(findings: dict, output_path: Path) -> None:
             report += f"- {skill['name']}\n"
 
     # Footer
+    analyzers_full = ", ".join(findings.get("analyzers_used", []))
     report += f"""
 ---
 
 ## Methodology
 
 - **Scanner:** cisco-ai-skill-scanner
-- **Analyzers:** static_analyzer, behavioral_analyzer, trigger_analyzer
+- **Analyzers:** {analyzers_full}
 - **Scan Date:** {findings['scan_date']}
 
 ### Limitations
 
-- LLM-based semantic analysis not used (requires API key)
-- VirusTotal binary scanning not used (requires API key)
-- Static analysis only - no runtime verification
 """
+    used = set(findings.get("analyzers_used", []))
+    if "llm_analyzer" not in used:
+        report += "- LLM-based semantic analysis not used (requires API key)\n"
+    if "meta_analyzer" not in used:
+        report += "- Meta-analysis for false positive filtering not used\n"
+    report += "- VirusTotal binary scanning not used (requires API key)\n"
+    report += "- No runtime verification - static and semantic analysis only\n"
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w") as f:

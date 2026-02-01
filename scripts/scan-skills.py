@@ -119,6 +119,11 @@ Examples:
         help="Enable LLM analyzer (requires SKILL_SCANNER_LLM_API_KEY)",
     )
     parser.add_argument(
+        "--enable-meta",
+        action="store_true",
+        help="Enable meta-analysis for false positive filtering (requires --use-llm)",
+    )
+    parser.add_argument(
         "--scanner",
         type=str,
         default=None,
@@ -257,6 +262,7 @@ Examples:
                 output_dir=args.output,
                 scanner_path=args.scanner,
                 use_llm=args.use_llm,
+                enable_meta=args.enable_meta,
             )
             all_results.extend(results)
 
@@ -272,6 +278,7 @@ Examples:
                 output_dir=args.output,
                 scanner_path=args.scanner,
                 use_llm=args.use_llm,
+                enable_meta=args.enable_meta,
             )
             all_results.extend(adhoc_results)
 
