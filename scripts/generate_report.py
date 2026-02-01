@@ -7,6 +7,8 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import quote
+
 from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT, shorten_path
 
 logger = logging.getLogger(__name__)
@@ -87,9 +89,14 @@ def aggregate_results(results_dir: Path) -> dict:
 
         # Add skill summary
         raw_path = result.get("skill_path") or ""
+        short_path = shorten_path(raw_path) if raw_path else ""
+        source = "clawhub.ai" if "clawhub-" in short_path else "skills.sh"
+        scan_md = json_file.with_suffix("").name + ".md"  # e.g. "clickup-skill-scan.md"
         findings["skills"].append({
             "name": result.get("skill_name"),
-            "path": shorten_path(raw_path) if raw_path else None,
+            "path": short_path or None,
+            "source": source,
+            "scan_file": scan_md,
             "is_safe": is_safe,
             "findings_count": result.get("findings_count", 0),
             "max_severity": result.get("max_severity", "SAFE"),
@@ -155,15 +162,17 @@ def generate_markdown_report(findings: dict, output_path: Path) -> None:
 
 ## Results by Skill
 
-| # | Skill | Safe | Findings | Max Severity |
-|---|-------|------|----------|--------------|
+| # | Skill | Source | Safe | Findings | Max Severity |
+|---|-------|--------|------|----------|--------------|
 """
     for i, skill in enumerate(findings["skills"], 1):
         safe = "Yes" if skill["is_safe"] else ("**No**" if skill["is_safe"] is False else "Error")
         severity = skill["max_severity"]
         if severity in ("CRITICAL", "HIGH"):
             severity = f"**{severity}**"
-        report += f"| {i} | {skill['name']} | {safe} | {skill['findings_count']} | {severity} |\n"
+        scan_link = quote(skill["scan_file"], safe="")
+        name_col = f"[{skill['name']}]({scan_link})"
+        report += f"| {i} | {name_col} | {skill['source']} | {safe} | {skill['findings_count']} | {severity} |\n"
 
     # Top risks
     if findings["top_risks"]:
