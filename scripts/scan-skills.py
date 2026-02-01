@@ -161,7 +161,16 @@ Examples:
     args.output.mkdir(parents=True, exist_ok=True)
     args.skills_dir.mkdir(parents=True, exist_ok=True)
 
-    inventory_path = args.skills_dir / "skill-inventory.json"
+    # Per-source inventory file (e.g. skill-inventory-skills.sh.json)
+    safe_source = args.source.replace("/", "-").replace(" ", "-")
+    inventory_path = args.skills_dir / f"skill-inventory-{safe_source}.json"
+
+    # Migrate legacy single inventory file if per-source file doesn't exist
+    legacy_path = args.skills_dir / "skill-inventory.json"
+    if not inventory_path.exists() and legacy_path.exists():
+        import shutil
+        shutil.copy2(legacy_path, inventory_path)
+        logger.info("Migrated legacy inventory to %s", inventory_path)
 
     # Auto-detect scanner path
     if args.scanner is None:
