@@ -10,7 +10,7 @@ This is early-stage and evolving. The current implementation:
 
 - **Scanner:** [Cisco AI Defense skill-scanner](https://github.com/cisco-ai-defense/skill-scanner) (static + behavioral + trigger + LLM + meta-analysis)
 - **Skill registries:** [skills.sh](https://skills.sh/) and [clawhub.ai](https://clawhub.ai/)
-- **Coverage:** 22 skills scanned so far
+- **Coverage:** 62 skills scanned so far
 - **Test suite:** 77 tests passing
 
 This could be expanded along both axes -- adding more scanners and targeting more skill directories.
@@ -20,26 +20,28 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 
 | Metric | Count |
 |--------|-------|
-| Total Skills Scanned | 22 |
-| Safe Skills | 19 (86%) |
-| Skills with Issues | 3 (14%) |
-| Total Findings | 39 |
+| Total Skills Scanned | 62 |
+| Safe Skills | 57 (92%) |
+| Skills with Issues | 5 (8%) |
+| Total Findings | 62 |
 
 | Severity | Count |
 |----------|-------|
-| CRITICAL | 3 |
-| HIGH | 8 |
-| MEDIUM | 21 |
-| LOW | 7 |
+| CRITICAL | 4 |
+| HIGH | 10 |
+| MEDIUM | 32 |
+| LOW | 16 |
 
 | Category | Count |
 |----------|-------|
-| data_exfiltration | 20 |
-| policy_violation | 7 |
-| command_injection | 6 |
-| unauthorized_tool_use | 3 |
-| social_engineering | 1 |
-| resource_abuse | 1 |
+| data_exfiltration | 24 |
+| policy_violation | 11 |
+| command_injection | 9 |
+| unauthorized_tool_use | 6 |
+| prompt_injection | 4 |
+| social_engineering | 3 |
+| resource_abuse | 2 |
+| tool_chaining_abuse | 2 |
 | hardcoded_secrets | 1 |
 
 - See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.

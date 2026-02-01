@@ -1,0 +1,84 @@
+{
+  "skill_name": "doc-coauthoring",
+  "skill_path": "./skills/anthropics-skills/skills/doc-coauthoring",
+  "skill_directory": "./skills/anthropics-skills/skills/doc-coauthoring",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "llm_finding_doc-coauthoring_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse via External Shared Documents",
+      "description": "The skill instructs the agent to fetch and trust content from external shared documents provided by users (e.g., 'use the appropriate integration to fetch it' when user provides a link). This creates an indirect prompt injection vector where malicious instructions could be embedded in external documents that the agent will then follow. The skill delegates trust to untrusted external content without validation or sandboxing.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'If they provide a link to a shared document, use the appropriate integration to fetch it' and 'Use the appropriate integration to read the current state' - The skill instructs fetching and processing external document content without security controls.",
+      "remediation": "Add explicit warnings about trusting external document content. Implement content validation before processing external documents. Consider sandboxing or limiting what instructions from external documents can affect agent behavior. Warn users that external documents should only contain documentation content, not instructions for the agent.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The doc-coauthoring skill presents MEDIUM security risks primarily related to transitive trust abuse and undefined tool usage. The skill's core functionality of guiding users through document creation is legitimate, but it instructs the agent to fetch and trust external shared documents without proper security controls, creating an indirect prompt injection vector. Additionally, the skill references undefined 'integrations' and missing Python files, reducing transparency. The missing optional metadata fields are minor informational issues. The skill would benefit from explicit security boundaries around external content handling and clearer tool authorization specifications.",
+        "primary_threats": [
+          "Indirect Prompt Injection via External Documents",
+          "Undefined Tool Authorization",
+          "Missing Dependency Files"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a real transitive trust issue. The skill explicitly instructs fetching and processing external content without security controls. This is a documented attack vector (AITech-1.2) where malicious instructions in external documents can manipulate agent behavior. The lack of content sanitization or security framing makes this exploitable.",
+        "meta_exploitability": "Medium - Requires user to provide a malicious document link, but no other barriers exist. Attacker could social engineer users to 'use this template' containing hidden instructions.",
+        "meta_impact": "Medium - Could manipulate the document creation workflow, inject unwanted content, or cause the agent to perform unintended actions. Limited by the skill's scope (document creation) but could affect document quality or leak conversation context."
+      }
+    },
+    {
+      "id": "llm_finding_doc-coauthoring_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Undefined Integration Tool Usage",
+      "description": "The skill references 'appropriate integration' for fetching shared documents without specifying which tools are allowed or how they should be used. This creates ambiguity about tool authorization and could lead to unauthorized tool usage if the agent interprets this broadly. The manifest lacks 'allowed-tools' specification, making it unclear what capabilities should be permitted.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'use the appropriate integration to fetch it' and 'Use the appropriate integration to read the current state' - References undefined integrations without specifying allowed tools or access controls.",
+      "remediation": "Specify exact tools/integrations allowed in the YAML manifest using 'allowed-tools' field. Define which document sources are permitted (e.g., Google Docs, Notion, local files only). Add explicit boundaries for what integrations can access.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The doc-coauthoring skill presents MEDIUM security risks primarily related to transitive trust abuse and undefined tool usage. The skill's core functionality of guiding users through document creation is legitimate, but it instructs the agent to fetch and trust external shared documents without proper security controls, creating an indirect prompt injection vector. Additionally, the skill references undefined 'integrations' and missing Python files, reducing transparency. The missing optional metadata fields are minor informational issues. The skill would benefit from explicit security boundaries around external content handling and clearer tool authorization specifications.",
+        "primary_threats": [
+          "Indirect Prompt Injection via External Documents",
+          "Undefined Tool Authorization",
+          "Missing Dependency Files"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is more of a best practice issue than a security threat. The tools referenced (file operations, integrations) are appropriate for the skill's documented purpose. The missing declaration reduces transparency but doesn't indicate malicious intent. Downgraded from MEDIUM to LOW severity as this is informational.",
+        "meta_exploitability": "Low - Not directly exploitable. This is a transparency/documentation issue.",
+        "meta_impact": "Low - Users may not know what tools the skill will attempt to use, but the tools themselves are appropriate for document co-authoring."
+      }
+    }
+  ],
+  "scan_duration_seconds": 24.649927139282227,
+  "duration_ms": 24649,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-01T12:03:24.078463"
+}
