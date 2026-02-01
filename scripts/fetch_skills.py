@@ -19,6 +19,10 @@ def _fetch_skillssh(n: int, offset: int, reverse: bool) -> list[dict]:
     """
     Fetch skills from skills.sh API.
 
+    The API only supports `limit` and `offset` params and always returns
+    skills sorted by installs descending. To get least-installed skills
+    (--reverse), we fetch all skills and take from the end.
+
     Args:
         n: Number of skills to fetch
         offset: Number of skills to skip from the start
@@ -27,18 +31,23 @@ def _fetch_skillssh(n: int, offset: int, reverse: bool) -> list[dict]:
     Returns:
         List of normalized skill dictionaries
     """
-    url = "https://skills.sh/api/skills"
-
+    base_url = "https://skills.sh/api/skills"
     session = get_session()
-    response = session.get(url, timeout=30)
-    response.raise_for_status()
 
-    data = response.json()
-    all_skills = data.get("skills", [])
-
-    # Reverse sort if requested (lowest installs first)
     if reverse:
-        all_skills = list(reversed(all_skills))
+        # API has no sort param, so fetch all and reverse in memory
+        response = session.get(base_url, params={"limit": 50000}, timeout=60)
+        response.raise_for_status()
+        all_skills = response.json().get("skills", [])
+        all_skills.reverse()
+    else:
+        # Fetch only what we need using server-side offset/limit
+        response = session.get(
+            base_url, params={"limit": n, "offset": offset}, timeout=30
+        )
+        response.raise_for_status()
+        all_skills = response.json().get("skills", [])
+        offset = 0  # Already applied server-side
 
     # Apply offset and limit
     skills = all_skills[offset:offset + n]
