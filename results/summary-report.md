@@ -1,6 +1,6 @@
 # AI Agent Skills Security Scan Report
 
-**Generated:** 2026-02-01T19:57:14.684864
+**Generated:** 2026-02-01T15:31:30.492841
 **Scanner:** cisco-ai-skill-scanner
 **Analyzers:** behavioral, llm, meta, static, trigger
 
@@ -19,25 +19,24 @@
 
 | Severity | Count |
 |----------|-------|
-| CRITICAL | 30 |
-| HIGH | 42 |
-| MEDIUM | 52 |
-| LOW | 19 |
-| **Total Findings** | **143** |
+| CRITICAL | 28 |
+| HIGH | 38 |
+| MEDIUM | 49 |
+| LOW | 17 |
+| **Total Findings** | **132** |
 
 ### Findings by Category
 
 | Category | Count |
 |----------|-------|
-| data_exfiltration | 55 |
+| data_exfiltration | 48 |
 | social_engineering | 21 |
 | command_injection | 20 |
 | unauthorized_tool_use | 13 |
-| policy_violation | 12 |
+| policy_violation | 10 |
 | prompt_injection | 10 |
-| resource_abuse | 9 |
+| resource_abuse | 8 |
 | tool_chaining_abuse | 2 |
-| hardcoded_secrets | 1 |
 
 ---
 
@@ -45,25 +44,25 @@
 
 | # | Skill | Source | Safe | Findings | Max Severity |
 |---|-------|--------|------|----------|--------------|
-| 1 | [clickup](clickup-skill-scan.md) | clawhub.ai | **No** | 14 | **CRITICAL** |
-| 2 | [agent-browser](agent-browser-scan.md) | skills.sh | **No** | 8 | **HIGH** |
-| 3 | [browser-use](browser-use-scan.md) | skills.sh | **No** | 8 | **HIGH** |
-| 4 | [auto-updater](auto-updater-skill-scan.md) | clawhub.ai | **No** | 7 | **CRITICAL** |
-| 5 | [wallet-tracker](wallet-tracker-scan.md) | clawhub.ai | **No** | 6 | **CRITICAL** |
-| 6 | [ClawGateSecure](claw-gate-secure-scan.md) | clawhub.ai | Yes | 5 | MEDIUM |
-| 7 | [clawhub](clawhub-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
-| 8 | [moltbook](mersal-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
-| 9 | [polymarket](polymarket-trading-skill-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
-| 10 | [solana](solana-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
-| 11 | [ethereum-gas-tracker](ethereum-gas-tracker-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
-| 12 | [expo-api-routes](expo-api-routes-scan.md) | skills.sh | **No** | 4 | **CRITICAL** |
-| 13 | [google-workspace](google-workspace-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
-| 14 | [insider-wallets-finder](insider-wallets-finder-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
-| 15 | [phantom](phantom-wallet-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
-| 16 | [tencent-map](%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BEapi%E8%B0%83%E7%94%A8%E6%8A%80%E8%83%BD-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
-| 17 | [x-trends](x-twitter-trends-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
-| 18 | [yahoo-finance](yahoo-finance-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
-| 19 | [youtube-summarize](youtube-video-summarizer-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
+| 1 | [agent-browser](agent-browser-scan.md) | skills.sh | **No** | 8 | **HIGH** |
+| 2 | [browser-use](browser-use-scan.md) | skills.sh | **No** | 8 | **HIGH** |
+| 3 | [auto-updater](auto-updater-skill-scan.md) | clawhub.ai | **No** | 7 | **CRITICAL** |
+| 4 | [wallet-tracker](wallet-tracker-scan.md) | clawhub.ai | **No** | 6 | **CRITICAL** |
+| 5 | [ClawGateSecure](claw-gate-secure-scan.md) | clawhub.ai | Yes | 5 | MEDIUM |
+| 6 | [clawhub](clawhub-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
+| 7 | [moltbook](mersal-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
+| 8 | [polymarket](polymarket-trading-skill-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
+| 9 | [solana](solana-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
+| 10 | [ethereum-gas-tracker](ethereum-gas-tracker-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
+| 11 | [expo-api-routes](expo-api-routes-scan.md) | skills.sh | **No** | 4 | **CRITICAL** |
+| 12 | [google-workspace](google-workspace-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
+| 13 | [insider-wallets-finder](insider-wallets-finder-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
+| 14 | [phantom](phantom-wallet-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
+| 15 | [tencent-map](%E8%85%BE%E8%AE%AF%E5%9C%B0%E5%9B%BEapi%E8%B0%83%E7%94%A8%E6%8A%80%E8%83%BD-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
+| 16 | [x-trends](x-twitter-trends-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
+| 17 | [yahoo-finance](yahoo-finance-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
+| 18 | [youtube-summarize](youtube-video-summarizer-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
+| 19 | [clickup](clickup-skill-scan.md) | clawhub.ai | **No** | 3 | **CRITICAL** |
 | 20 | [moltbook](moltbook-scan.md) | skills.sh | **No** | 3 | **HIGH** |
 | 21 | [Agent Wallet](agent-wallet-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
 | 22 | [canvas-design](canvas-design-scan.md) | skills.sh | Yes | 2 | MEDIUM |
@@ -76,7 +75,7 @@
 | 29 | [subtitles](subtitles-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
 | 30 | [video-transcript](video-transcript-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
 | 31 | [youtube-playlist](youtube-playlist-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 32 | [birthday-reminder](Birthday%20Reminder-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 32 | [birthday-reminder](Birthday%20Reminder-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
 | 33 | [captions](captions-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
 | 34 | [docx](docx-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
 | 35 | [find-skills](find-skills-scan.md) | skills.sh | Yes | 1 | LOW |
@@ -258,7 +257,7 @@ The skill instructs macOS users to visit an external URL (glot.io/snippets/hfdxv
 
 - **Scanner:** cisco-ai-skill-scanner
 - **Analyzers:** behavioral_analyzer, llm_analyzer, meta_analyzer, static_analyzer, trigger_analyzer
-- **Scan Date:** 2026-02-01T19:57:14.684864
+- **Scan Date:** 2026-02-01T15:31:30.492841
 
 ### Limitations
 

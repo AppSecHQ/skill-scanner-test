@@ -51,6 +51,8 @@ for skill in summary.get('skills', []):
     # Fallback: derive from clone path
     if not url and skill.get('path'):
         path = skill['path']
+        # Normalize absolute /workspace/skills/ paths to ./skills/
+        path = re.sub(r'^/workspace/skills/', './skills/', path)
         # clawhub.ai skills: path like ./skills/clawhub-<name>
         if skill.get('source') == 'clawhub.ai':
             m = re.match(r'^\./skills/clawhub-(.+)$', path)

@@ -1,32 +1,18 @@
 {
-  "scan_date": "2026-02-01T19:57:14.684864",
+  "scan_date": "2026-02-01T15:31:30.492841",
   "total_skills": 86,
   "safe_skills": 64,
   "unsafe_skills": 22,
   "error_skills": 0,
   "severity_counts": {
-    "CRITICAL": 30,
-    "HIGH": 42,
-    "MEDIUM": 52,
-    "LOW": 19,
+    "CRITICAL": 28,
+    "HIGH": 38,
+    "MEDIUM": 49,
+    "LOW": 17,
     "INFO": 0
   },
-  "total_findings": 143,
+  "total_findings": 132,
   "skills": [
-    {
-      "name": "clickup",
-      "path": "./skills/clawhub-clickup-skill",
-      "source": "clawhub.ai",
-      "scan_file": "clickup-skill-scan.md",
-      "is_safe": false,
-      "findings_count": 14,
-      "max_severity": "CRITICAL",
-      "analyzers": [
-        "static_analyzer",
-        "behavioral_analyzer",
-        "trigger_analyzer"
-      ]
-    },
     {
       "name": "agent-browser",
       "path": "./skills/vercel-labs-agent-browser/skills/agent-browser",
@@ -314,8 +300,22 @@
       ]
     },
     {
+      "name": "clickup",
+      "path": "/workspace/skills/clawhub-clickup-skill",
+      "source": "clawhub.ai",
+      "scan_file": "clickup-skill-scan.md",
+      "is_safe": false,
+      "findings_count": 3,
+      "max_severity": "CRITICAL",
+      "analyzers": [
+        "static_analyzer",
+        "llm_analyzer",
+        "meta_analyzer"
+      ]
+    },
+    {
       "name": "moltbook",
-      "path": "./skills/moltbook",
+      "path": "/workspace/skills/moltbook",
       "source": "skills.sh",
       "scan_file": "moltbook-scan.md",
       "is_safe": false,
@@ -505,16 +505,16 @@
     },
     {
       "name": "birthday-reminder",
-      "path": "./skills/clawhub-birthday-reminder",
+      "path": "/workspace/skills/clawhub-birthday-reminder",
       "source": "clawhub.ai",
       "scan_file": "Birthday Reminder-scan.md",
       "is_safe": true,
       "findings_count": 1,
-      "max_severity": "LOW",
+      "max_severity": "MEDIUM",
       "analyzers": [
         "static_analyzer",
-        "behavioral_analyzer",
-        "trigger_analyzer"
+        "llm_analyzer",
+        "meta_analyzer"
       ]
     },
     {
@@ -1357,14 +1357,13 @@
     }
   ],
   "findings_by_category": {
-    "policy_violation": 12,
+    "data_exfiltration": 48,
+    "policy_violation": 10,
     "command_injection": 20,
     "unauthorized_tool_use": 13,
     "social_engineering": 21,
-    "data_exfiltration": 55,
-    "resource_abuse": 9,
+    "resource_abuse": 8,
     "prompt_injection": 10,
-    "hardcoded_secrets": 1,
     "tool_chaining_abuse": 2
   },
   "top_risks": [
@@ -1466,74 +1465,26 @@
     },
     {
       "skill": "clickup",
-      "severity": "HIGH",
-      "category": "resource_abuse",
-      "rule_id": "RESOURCE_ABUSE_INFINITE_LOOP",
-      "description": "Pattern detected: while True:",
-      "location": null
-    },
-    {
-      "skill": "clickup",
-      "severity": "CRITICAL",
-      "category": "hardcoded_secrets",
-      "rule_id": "YARA_credential_harvesting",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export CLICKUP_API_TOKEN",
-      "location": null
-    },
-    {
-      "skill": "clickup",
       "severity": "CRITICAL",
       "category": "data_exfiltration",
-      "rule_id": "BEHAVIOR_ENV_VAR_EXFILTRATION",
-      "description": "Script accesses environment variables and makes network calls in skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "description": "The skill requires users to set CLICKUP_API_TOKEN as an environment variable, which could lead to credential exposure if the token is hardcoded in shell configuration files, logged, or accidentally committed to version control. The client reads this token directly without any validation or secure storage mechanism.",
       "location": null
     },
     {
       "skill": "clickup",
       "severity": "HIGH",
       "category": "data_exfiltration",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "description": "The skill provides full CRUD access to all ClickUp workspaces, tasks, documents, and time tracking data without any access controls or data minimization. Scripts can read, modify, or delete any data the API token has access to, including potentially sensitive client information, financial data (billing/retainer info), and confidential project details.",
       "location": null
     },
     {
       "skill": "clickup",
       "severity": "HIGH",
-      "category": "data_exfiltration",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "location": null
-    },
-    {
-      "skill": "clickup",
-      "severity": "HIGH",
-      "category": "data_exfiltration",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "location": null
-    },
-    {
-      "skill": "clickup",
-      "severity": "HIGH",
-      "category": "data_exfiltration",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "location": null
-    },
-    {
-      "skill": "clickup",
-      "severity": "HIGH",
-      "category": "data_exfiltration",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "location": null
-    },
-    {
-      "skill": "clickup",
-      "severity": "CRITICAL",
-      "category": "data_exfiltration",
-      "rule_id": "BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION",
-      "description": "Environment variable access with network calls in scripts/clickup_client.py",
+      "category": "unauthorized_tool_use",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "description": "The skill manifest does not declare allowed-tools, yet the Python scripts perform extensive file system operations, network requests, and data manipulation. This lack of declaration prevents users and systems from understanding the skill's actual capabilities and enforcing appropriate restrictions.",
       "location": null
     },
     {
