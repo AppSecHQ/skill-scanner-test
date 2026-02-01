@@ -80,7 +80,13 @@ for skill in summary.get('skills', []):
                     'hyf0-vue-skills': 'hyf0/vue-skills',
                     'callstackincubator-agent-skills': 'callstackincubator/agent-skills',
                 }
-                if clone_dir in known:
+                # Non-GitHub skills with direct URLs
+                direct_urls = {
+                    'moltbook': 'https://www.moltbook.com',
+                }
+                if clone_dir in direct_urls:
+                    url = direct_urls[clone_dir]
+                elif clone_dir in known:
                     url = 'https://github.com/' + known[clone_dir]
                 else:
                     # Generic: try splitting on first hyphen as owner-repo

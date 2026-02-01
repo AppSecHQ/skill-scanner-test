@@ -1,270 +1,120 @@
 {
   "skill_name": "clickup",
-  "skill_path": "./skills/clawhub-clickup-skill",
-  "skill_directory": "./skills/clawhub-clickup-skill",
+  "skill_path": "/workspace/skills/clawhub-clickup-skill",
+  "skill_directory": "/workspace/skills/clawhub-clickup-skill",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 14,
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {}
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_70b6cb93b5",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import requests",
-      "file_path": "scripts/clickup_client.py",
-      "line_number": 11,
-      "snippet": "import requests",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+requests",
-        "matched_text": "import requests",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION"
-      }
-    },
-    {
-      "id": "DATA_EXFIL_ENV_VARS_5e7d0135e0",
-      "rule_id": "DATA_EXFIL_ENV_VARS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Reading environment variables that may contain secrets",
-      "description": "Pattern detected: os.getenv(\"CLICKUP_API_TOKEN",
-      "file_path": "scripts/clickup_client.py",
-      "line_number": 19,
-      "snippet": "self.api_token = api_token or os.getenv(\"CLICKUP_API_TOKEN\")",
-      "remediation": "Minimize access to environment variables. Document why needed",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "os\\.getenv\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
-        "matched_text": "os.getenv(\"CLICKUP_API_TOKEN",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION"
-      }
-    },
-    {
-      "id": "RESOURCE_ABUSE_INFINITE_LOOP_086b61c91c",
-      "rule_id": "RESOURCE_ABUSE_INFINITE_LOOP",
-      "category": "resource_abuse",
-      "severity": "HIGH",
-      "title": "Infinite loop without clear exit condition",
-      "description": "Pattern detected: while True:",
-      "file_path": "scripts/clickup_client.py",
-      "line_number": 427,
-      "snippet": "while True:",
-      "remediation": "Add proper exit conditions or limits to loops",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "while\\s+True\\s*:",
-        "matched_text": "while True:",
-        "aitech": "AITech-13.3",
-        "aitech_name": "Availability Disruption",
-        "scanner_category": "RESOURCE ABUSE"
-      }
-    },
-    {
-      "id": "TOOL_MISMATCH_NETWORK_c66b5c7695",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
-      "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
-      "metadata": {}
-    },
-    {
-      "id": "YARA_credential_harvesting_038117ac19",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export CLICKUP_API_TOKEN",
-      "file_path": "SKILL.md",
-      "line_number": 23,
-      "snippet": "export CLICKUP_API_TOKEN=\"pk_your_token_here\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING"
-      }
-    },
-    {
-      "id": "ENV_VAR_EXFILTRATION_88291d721e",
-      "rule_id": "BEHAVIOR_ENV_VAR_EXFILTRATION",
+      "id": "llm_finding_clickup_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "CRITICAL",
-      "title": "Environment variable access with network calls detected",
-      "description": "Script accesses environment variables and makes network calls in skills/clawhub-clickup-skill/scripts/clickup_client.py",
-      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
+      "title": "Hardcoded API Token Exposure Risk",
+      "description": "The skill requires users to set CLICKUP_API_TOKEN as an environment variable, which could lead to credential exposure if the token is hardcoded in shell configuration files, logged, or accidentally committed to version control. The client reads this token directly without any validation or secure storage mechanism.",
+      "file_path": "scripts/clickup_client.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable harvesting or network transmission",
-      "analyzer": "behavioral",
+      "snippet": "self.api_token = api_token or os.getenv(\"CLICKUP_API_TOKEN\")\nif not self.api_token:\n    raise ValueError(\"ClickUp API token required. Set CLICKUP_API_TOKEN env var.\")",
+      "remediation": "Implement secure credential storage using system keychains (e.g., keyring library), provide warnings about token security in documentation, validate token format before use, and consider implementing token rotation mechanisms.",
+      "analyzer": "llm",
       "metadata": {
-        "has_network": true,
-        "has_env_access": true,
-        "suspicious_urls": [
-          "https://api.clickup.com/api/v3",
-          "https://app.clickup.com/",
-          "https://app.clickup.com/",
-          "https://app.clickup.com/docs/",
-          "https://api.clickup.com/api/v2"
-        ]
-      }
-    },
-    {
-      "id": "ENV_VAR_HARVESTING_9c2e70ea99",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/clawhub-clickup-skill/scripts/clickup_client.py",
-      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
-      "metadata": {}
-    },
-    {
-      "id": "SUSPICIOUS_URL_9c048bcaa2",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://api.clickup.com/api/v3",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://api.clickup.com/api/v3"
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_91ca6cfe09",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://app.clickup.com/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://app.clickup.com/"
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_91ca6cfe09",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://app.clickup.com/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://app.clickup.com/"
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_32bbcfe4f7",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://app.clickup.com/docs/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://app.clickup.com/docs/"
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_a2030c5d95",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://api.clickup.com/api/v2",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-clickup-skill/scripts/clickup_client.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://api.clickup.com/api/v2"
-      }
-    },
-    {
-      "id": "CROSSFILE_ENV_VAR_EXFILTRATION_1220dc84d3",
-      "rule_id": "BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Cross-file env var exfiltration: 1 files",
-      "description": "Environment variable access with network calls in scripts/clickup_client.py",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review data flow across files: scripts/clickup_client.py",
-      "analyzer": "behavioral",
-      "metadata": {
-        "files_involved": [
-          "scripts/clickup_client.py"
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This ClickUp integration skill presents CRITICAL and HIGH security risks primarily related to credential management and unrestricted data access. The skill requires a ClickUp API token with full access to all workspaces, tasks, documents, and time tracking data, but lacks secure credential storage, access controls, and proper security documentation. The missing allowed-tools declaration prevents enforcement of appropriate restrictions. While the skill appears to be legitimately designed for ClickUp integration (no evidence of malicious code, data exfiltration, or prompt injection), its broad permissions and lack of security guardrails make it suitable only for highly trusted environments. The code quality is professional and there are no obvious backdoors, but the security posture needs significant improvement before enterprise deployment.",
+        "primary_threats": [
+          "Data Exfiltration Risk (credential exposure)",
+          "Unrestricted API Access",
+          "Missing Access Controls",
+          "Resource Exhaustion Potential",
+          "Insufficient Input Validation"
         ],
-        "threat_type": "env_var_exfiltration",
-        "evidence": {
-          "env_var_files": [
-            "scripts/clickup_client.py"
-          ],
-          "network_files": [
-            "scripts/clickup_client.py"
-          ]
-        }
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Environment variable usage is standard practice for API tokens, but lack of security documentation increases risk of misuse. This is a real concern for enterprise deployments.",
+        "meta_exploitability": "Medium - Requires user error (committing token to git, logging env vars) rather than a direct vulnerability in the skill code",
+        "meta_impact": "High - Exposed token grants full access to all ClickUp workspaces, tasks, and documents"
+      }
+    },
+    {
+      "id": "llm_finding_clickup_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Unrestricted API Access to Sensitive Data",
+      "description": "The skill provides full CRUD access to all ClickUp workspaces, tasks, documents, and time tracking data without any access controls or data minimization. Scripts can read, modify, or delete any data the API token has access to, including potentially sensitive client information, financial data (billing/retainer info), and confidential project details.",
+      "file_path": "scripts/clickup_client.py",
+      "line_number": null,
+      "snippet": "Full implementation of get_teams(), get_spaces(), get_tasks(), create_task(), update_task(), delete_task(), get_time_entries(), create_time_entry() with no access restrictions",
+      "remediation": "Implement principle of least privilege by: (1) documenting minimum required API scopes, (2) adding optional access controls to limit operations to specific workspaces/spaces, (3) requiring explicit user confirmation for destructive operations (delete, bulk updates), (4) implementing audit logging for sensitive operations.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This ClickUp integration skill presents CRITICAL and HIGH security risks primarily related to credential management and unrestricted data access. The skill requires a ClickUp API token with full access to all workspaces, tasks, documents, and time tracking data, but lacks secure credential storage, access controls, and proper security documentation. The missing allowed-tools declaration prevents enforcement of appropriate restrictions. While the skill appears to be legitimately designed for ClickUp integration (no evidence of malicious code, data exfiltration, or prompt injection), its broad permissions and lack of security guardrails make it suitable only for highly trusted environments. The code quality is professional and there are no obvious backdoors, but the security posture needs significant improvement before enterprise deployment.",
+        "primary_threats": [
+          "Data Exfiltration Risk (credential exposure)",
+          "Unrestricted API Access",
+          "Missing Access Controls",
+          "Resource Exhaustion Potential",
+          "Insufficient Input Validation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a limitation of ClickUp's API design, not a flaw in the skill. The skill accurately implements the API. However, better documentation would help users understand the security implications.",
+        "meta_exploitability": "Low - Requires the user to grant a token with broad permissions, which is how ClickUp's API works by design",
+        "meta_impact": "Medium - Broad access is expected for a project management integration, but users should be aware of the scope"
+      }
+    },
+    {
+      "id": "llm_finding_clickup_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Missing allowed-tools Declaration Enables Unrestricted Operations",
+      "description": "The skill manifest does not declare allowed-tools, yet the Python scripts perform extensive file system operations, network requests, and data manipulation. This lack of declaration prevents users and systems from understanding the skill's actual capabilities and enforcing appropriate restrictions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "allowed-tools: Not specified\n\nBut scripts perform: HTTP requests (requests library), environment variable access (os.getenv), JSON parsing, file operations (implicit in script execution)",
+      "remediation": "Add explicit allowed-tools declaration to manifest: allowed-tools: [Python, Read]. Document that the skill requires network access to ClickUp API. Consider splitting into read-only and read-write variants with different tool permissions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This ClickUp integration skill presents CRITICAL and HIGH security risks primarily related to credential management and unrestricted data access. The skill requires a ClickUp API token with full access to all workspaces, tasks, documents, and time tracking data, but lacks secure credential storage, access controls, and proper security documentation. The missing allowed-tools declaration prevents enforcement of appropriate restrictions. While the skill appears to be legitimately designed for ClickUp integration (no evidence of malicious code, data exfiltration, or prompt injection), its broad permissions and lack of security guardrails make it suitable only for highly trusted environments. The code quality is professional and there are no obvious backdoors, but the security posture needs significant improvement before enterprise deployment.",
+        "primary_threats": [
+          "Data Exfiltration Risk (credential exposure)",
+          "Unrestricted API Access",
+          "Missing Access Controls",
+          "Resource Exhaustion Potential",
+          "Insufficient Input Validation"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill clearly uses Python scripts and environment variables. Missing metadata is a policy violation, not a security threat.",
+        "meta_exploitability": "N/A - This is a metadata/documentation issue, not an exploitable vulnerability",
+        "meta_impact": "Low - Missing metadata reduces transparency but doesn't create a security vulnerability"
       }
     }
   ],
-  "scan_duration_seconds": 0.8421909809112549,
-  "duration_ms": 842,
+  "scan_duration_seconds": 42.528109312057495,
+  "duration_ms": 42528,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
-    "trigger_analyzer"
+    "llm_analyzer",
+    "meta_analyzer"
   ],
-  "timestamp": "2026-01-31T17:34:55.509055"
+  "timestamp": "2026-02-01T20:17:12.363820"
 }
