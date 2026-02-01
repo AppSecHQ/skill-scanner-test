@@ -4,8 +4,8 @@
 **Directory:** ./skills/anthropics-skills/skills/frontend-design
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.00s
-**Timestamp:** 2026-01-30T22:12:47.827418
+**Scan Duration:** 19.20s
+**Timestamp:** 2026-02-01T20:38:42.639434
 
 ## Summary
 
@@ -26,4 +26,6 @@ The following analyzers were used:
 
 - static_analyzer
 - behavioral_analyzer
+- llm_analyzer
 - trigger_analyzer
+- meta_analyzer

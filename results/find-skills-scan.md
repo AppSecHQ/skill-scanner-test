@@ -3,31 +3,22 @@
 **Skill:** find-skills
 **Directory:** ./skills/vercel-labs-skills/skills/find-skills
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.00s
-**Timestamp:** 2026-01-31T17:35:16.650665
+**Max Severity:** SAFE
+**Scan Duration:** 6.45s
+**Timestamp:** 2026-02-01T20:33:16.358254
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 
@@ -35,4 +26,6 @@ The following analyzers were used:
 
 - static_analyzer
 - behavioral_analyzer
+- llm_analyzer
 - trigger_analyzer
+- meta_analyzer

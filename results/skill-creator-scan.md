@@ -4,8 +4,8 @@
 **Directory:** ./skills/anthropics-skills/skills/skill-creator
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.48s
-**Timestamp:** 2026-01-30T22:13:06.516639
+**Scan Duration:** 8.05s
+**Timestamp:** 2026-02-01T20:39:58.843335
 
 ## Summary
 
@@ -26,4 +26,5 @@ The following analyzers were used:
 
 - static_analyzer
 - behavioral_analyzer
+- llm_analyzer
 - trigger_analyzer

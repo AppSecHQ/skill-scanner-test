@@ -4,8 +4,8 @@
 **Directory:** ./skills/vercel-labs-agent-skills/skills/composition-patterns
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.01s
-**Timestamp:** 2026-01-30T22:13:15.325627
+**Scan Duration:** 5.09s
+**Timestamp:** 2026-02-01T20:42:20.065880
 
 ## Summary
 
@@ -26,4 +26,5 @@ The following analyzers were used:
 
 - static_analyzer
 - behavioral_analyzer
+- llm_analyzer
 - trigger_analyzer

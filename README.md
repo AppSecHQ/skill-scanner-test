@@ -23,26 +23,25 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 | Total Skills Scanned | 86 |
 | Safe Skills | 64 (74%) |
 | Skills with Issues | 22 (26%) |
-| Total Findings | 143 |
+| Total Findings | 126 |
 
 | Severity | Count |
 |----------|-------|
-| CRITICAL | 30 |
-| HIGH | 42 |
-| MEDIUM | 52 |
-| LOW | 19 |
+| CRITICAL | 28 |
+| HIGH | 38 |
+| MEDIUM | 47 |
+| LOW | 13 |
 
 | Category | Count |
 |----------|-------|
-| data_exfiltration | 55 |
-| social_engineering | 21 |
-| command_injection | 20 |
+| data_exfiltration | 50 |
+| social_engineering | 22 |
+| command_injection | 14 |
 | unauthorized_tool_use | 13 |
-| policy_violation | 12 |
-| prompt_injection | 10 |
-| resource_abuse | 9 |
+| prompt_injection | 11 |
+| resource_abuse | 8 |
+| policy_violation | 6 |
 | tool_chaining_abuse | 2 |
-| hardcoded_secrets | 1 |
 
 - See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 <!-- END SCAN RESULTS -->
