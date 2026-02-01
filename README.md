@@ -10,21 +10,20 @@ This is early-stage and evolving. The current implementation:
 
 - **Scanner:** [Cisco AI Defense skill-scanner](https://github.com/cisco-ai-defense/skill-scanner) (static + behavioral + trigger analysis)
 - **Skill registries:** [skills.sh](https://skills.sh/) and [clawhub.ai](https://clawhub.ai/)
-- **Coverage:** 10 skills scanned so far
+- **Coverage:** 22 skills scanned so far
 - **Test suite:** 77 tests passing
 
 This could be expanded along both axes -- adding more scanners and targeting more skill directories.
 
 ## Scan Results
 
-Results are in the [`results/`](results/) directory. Each scanned skill has a JSON file (machine-readable) and a Markdown file (human-readable). The [summary report](results/summary-report.md) consolidates all findings.
+| Metric | Count |
+|--------|-------|
+| Total Skills Scanned | 22 |
+| Safe Skills | 13 (59%) |
+| Skills with Issues | 9 (41%) |
 
-Latest scan highlights (10 skills from skills.sh):
-
-- 5 skills clean, 5 with findings
-- 1 skill flagged unsafe (command injection + unauthorized tool use)
-- 12 total findings: 1 HIGH, 6 MEDIUM, 5 LOW
-- Most common finding: missing license metadata
+The most common issues are policy violations (missing license metadata) and data exfiltration patterns, with the highest-severity findings in skills from clawhub.ai. See the [full summary report](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 
 ## Getting Started
 
