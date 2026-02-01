@@ -2,31 +2,121 @@
   "skill_name": "web-design-guidelines",
   "skill_path": "./skills/vercel-labs-agent-skills/skills/web-design-guidelines",
   "skill_directory": "./skills/vercel-labs-agent-skills/skills/web-design-guidelines",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_web-design-guidelines_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "HIGH",
+      "title": "Indirect Prompt Injection via External URL Content",
+      "description": "The skill instructs the agent to fetch and follow instructions from an external URL (https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md). The fetched content explicitly contains 'all the rules and output format instructions' that the agent must follow. This creates a transitive trust vulnerability where an attacker controlling or compromising that external resource could inject arbitrary instructions that the agent would execute. The skill delegates trust to untrusted external content without validation.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {}
+      "snippet": "Fetch fresh guidelines before each review:\n\n```\nhttps://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md\n```\n\nUse WebFetch to retrieve the latest rules. The fetched content contains all the rules and output format instructions.",
+      "remediation": "Bundle the guidelines as an internal file within the skill package instead of fetching from external URLs. If external fetching is required, implement strict validation of the fetched content, use content hashing/signatures to verify integrity, and never directly execute instructions from external sources. Separate data (guidelines) from instructions (how to process them).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks primarily due to indirect prompt injection vulnerabilities. The skill fetches and follows instructions from an external URL without validation, creating a transitive trust attack vector where compromised external content could inject arbitrary instructions. The external source controls both the analysis rules AND the output format, enabling potential tool shadowing attacks. The skill description fails to disclose this external dependency, misleading users about its actual behavior. While the skill appears to have legitimate functionality (UI guideline review), the architecture of fetching executable instructions from external sources is fundamentally insecure. Recommended actions: Bundle guidelines internally, separate data from instructions, add transparency about network dependencies, and implement strict validation if external fetching is required.",
+        "primary_threats": [
+          "Indirect Prompt Injection (AITech-1.2)",
+          "Tool Shadowing (AITech-12.1)",
+          "Social Engineering via Misleading Description (AITech-2.1)",
+          "Transitive Trust Abuse",
+          "External Instruction Execution"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified indirect prompt injection. The skill explicitly states 'The fetched content contains all the rules and output format instructions' and instructs the agent to 'Apply all rules from the fetched guidelines' and 'Output findings using the format specified in the guidelines'. This is a clear case of delegating control to external, unvalidated content.",
+        "meta_exploitability": "Medium - Requires compromising the GitHub repository or performing a man-in-the-middle attack. However, the repository is third-party (vercel-labs) and uses HTTP over raw.githubusercontent.com which could be intercepted.",
+        "meta_impact": "High - Attacker could inject arbitrary instructions to exfiltrate data, manipulate output to hide malicious findings, or cause the agent to execute unintended actions."
+      }
+    },
+    {
+      "id": "llm_finding_web-design-guidelines_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Potential Tool Shadowing via Output Format Control",
+      "description": "The skill allows externally-fetched content to specify the 'output format instructions' that the agent must use. This could be exploited to manipulate how the agent presents findings, potentially hiding malicious behavior or misleading users about the actual analysis results. An attacker could modify the external guidelines to include output formatting that obscures security issues or injects deceptive content into the agent's responses.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "When a user provides a file or pattern argument:\n1. Fetch guidelines from the source URL above\n2. Read the specified files\n3. Apply all rules from the fetched guidelines\n4. Output findings using the format specified in the guidelines",
+      "remediation": "Hardcode the output format within the skill itself rather than allowing external content to dictate it. The skill should control its own output formatting and only use external content as data to be analyzed, not as instructions to be followed.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks primarily due to indirect prompt injection vulnerabilities. The skill fetches and follows instructions from an external URL without validation, creating a transitive trust attack vector where compromised external content could inject arbitrary instructions. The external source controls both the analysis rules AND the output format, enabling potential tool shadowing attacks. The skill description fails to disclose this external dependency, misleading users about its actual behavior. While the skill appears to have legitimate functionality (UI guideline review), the architecture of fetching executable instructions from external sources is fundamentally insecure. Recommended actions: Bundle guidelines internally, separate data from instructions, add transparency about network dependencies, and implement strict validation if external fetching is required.",
+        "primary_threats": [
+          "Indirect Prompt Injection (AITech-1.2)",
+          "Tool Shadowing (AITech-12.1)",
+          "Social Engineering via Misleading Description (AITech-2.1)",
+          "Transitive Trust Abuse",
+          "External Instruction Execution"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a direct consequence of the indirect prompt injection vulnerability. The skill explicitly delegates output formatting to external content, which is a form of tool behavior manipulation.",
+        "meta_exploitability": "Medium - Same attack vector as finding #1 (compromise external repository)",
+        "meta_impact": "Medium - Could mislead users about actual findings, hide critical issues, or inject false positives to cause alert fatigue"
+      }
+    },
+    {
+      "id": "llm_finding_web-design-guidelines_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Scope - External Dependency Not Disclosed",
+      "description": "The skill description states it reviews UI code for 'Web Interface Guidelines compliance' but does not disclose that it fetches instructions from an external GitHub repository. Users may reasonably expect a self-contained local analysis tool, not one that depends on external network resources and follows remotely-hosted instructions. This lack of transparency about the skill's actual behavior and dependencies constitutes social engineering through omission.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description: Review UI code for Web Interface Guidelines compliance. Use when asked to 'review my UI', 'check accessibility', 'audit design', 'review UX', or 'check my site against best practices'.\n\nNo mention of external URL dependency in description.",
+      "remediation": "Update the skill description to clearly state that it fetches guidelines from an external GitHub repository. Add transparency about network dependencies and the trust model. Consider adding a 'requires-network: true' field to the manifest.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks primarily due to indirect prompt injection vulnerabilities. The skill fetches and follows instructions from an external URL without validation, creating a transitive trust attack vector where compromised external content could inject arbitrary instructions. The external source controls both the analysis rules AND the output format, enabling potential tool shadowing attacks. The skill description fails to disclose this external dependency, misleading users about its actual behavior. While the skill appears to have legitimate functionality (UI guideline review), the architecture of fetching executable instructions from external sources is fundamentally insecure. Recommended actions: Bundle guidelines internally, separate data from instructions, add transparency about network dependencies, and implement strict validation if external fetching is required.",
+        "primary_threats": [
+          "Indirect Prompt Injection (AITech-1.2)",
+          "Tool Shadowing (AITech-12.1)",
+          "Social Engineering via Misleading Description (AITech-2.1)",
+          "Transitive Trust Abuse",
+          "External Instruction Execution"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The description objectively omits critical information about the skill's behavior. Users cannot make informed trust decisions without knowing about external dependencies.",
+        "meta_exploitability": "N/A - This is a transparency issue, not a direct exploit",
+        "meta_impact": "Medium - Users may unknowingly grant network access and trust external content they haven't vetted"
+      }
     }
   ],
-  "scan_duration_seconds": 0.002645730972290039,
-  "duration_ms": 2,
+  "scan_duration_seconds": 32.75340723991394,
+  "duration_ms": 32753,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
-    "trigger_analyzer"
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
   ],
-  "timestamp": "2026-01-30T22:12:37.837482"
+  "timestamp": "2026-02-01T20:34:05.062130"
 }
