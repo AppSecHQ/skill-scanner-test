@@ -1,6 +1,7 @@
 """Tests for scripts/generate_report.py"""
 
 import json
+import logging
 from pathlib import Path
 
 import pytest
@@ -47,11 +48,13 @@ class TestAggregateResults:
         assert findings["severity_counts"]["LOW"] == 1
         assert len(findings["top_risks"]) == 1
 
-    def test_corrupted_json_counted_as_error(self, tmp_results_dir):
+    def test_corrupted_json_counted_as_error(self, tmp_results_dir, caplog):
         (tmp_results_dir / "bad-scan.json").write_text("{invalid json")
-        findings = aggregate_results(tmp_results_dir)
+        with caplog.at_level(logging.WARNING):
+            findings = aggregate_results(tmp_results_dir)
         assert findings["total_skills"] == 0
         assert findings["error_skills"] == 1
+        assert "Skipping corrupted file" in caplog.text
 
     def test_skills_sorted_by_findings_count(self, tmp_results_dir, sample_scan_result, safe_scan_result):
         with open(tmp_results_dir / "test-skill-scan.json", "w") as f:

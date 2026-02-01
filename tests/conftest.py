@@ -1,7 +1,9 @@
 """Shared test fixtures for the skill scanner pipeline."""
 
+import io
 import json
 import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -79,6 +81,26 @@ def safe_scan_result():
         "analyzers_used": ["static_analyzer"],
         "timestamp": "2026-01-31T00:00:00.000000",
     }
+
+
+@pytest.fixture
+def make_zip():
+    """Factory fixture for creating in-memory ZIP archives.
+
+    Usage:
+        make_zip({"file.txt": "content"})           -> zipfile.ZipFile
+        make_zip({"file.txt": "content"}, as_bytes=True) -> bytes
+    """
+    def _make(members: dict[str, str], *, as_bytes: bool = False):
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as zf:
+            for name, content in members.items():
+                zf.writestr(name, content)
+        if as_bytes:
+            return buf.getvalue()
+        buf.seek(0)
+        return zipfile.ZipFile(buf, "r")
+    return _make
 
 
 @pytest.fixture

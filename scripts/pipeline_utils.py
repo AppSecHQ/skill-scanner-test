@@ -1,8 +1,15 @@
-"""Shared HTTP utilities with retry support."""
+"""Shared pipeline utilities: HTTP sessions, logging constants."""
+
+import atexit
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+
+LOG_FORMAT = "%(asctime)s [%(levelname)-7s] %(name)s: %(message)s"
+LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+_session: requests.Session | None = None
 
 
 def get_retry_session(
@@ -32,3 +39,22 @@ def get_retry_session(
     session.mount("http://", adapter)
     session.mount("https://", adapter)
     return session
+
+
+def get_session() -> requests.Session:
+    """Return the shared retry-enabled session, creating it on first call."""
+    global _session
+    if _session is None:
+        _session = get_retry_session()
+    return _session
+
+
+def close_session() -> None:
+    """Close the shared session if open. Safe to call multiple times."""
+    global _session
+    if _session is not None:
+        _session.close()
+        _session = None
+
+
+atexit.register(close_session)

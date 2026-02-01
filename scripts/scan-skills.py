@@ -24,9 +24,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from fetch_skills import fetch_top_skills, save_inventory, load_inventory, VALID_SOURCES
 from run_scans import scan_skills, get_unique_repos, scan_adhoc_repos
 from generate_report import aggregate_results, generate_markdown_report, generate_json_summary
-
-LOG_FORMAT = "%(asctime)s [%(levelname)-7s] %(name)s: %(message)s"
-LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT
 
 logger = logging.getLogger(__name__)
 

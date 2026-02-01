@@ -8,7 +8,7 @@ import logging
 import requests
 from pathlib import Path
 
-from http_utils import get_retry_session
+from pipeline_utils import get_session, LOG_FORMAT, LOG_DATE_FORMAT
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def _fetch_skillssh(n: int, offset: int, reverse: bool) -> list[dict]:
     """
     url = "https://skills.sh/api/skills"
 
-    session = get_retry_session()
+    session = get_session()
     response = session.get(url, timeout=30)
     response.raise_for_status()
 
@@ -75,7 +75,7 @@ def _fetch_clawhub(n: int, offset: int, reverse: bool) -> list[dict]:
     # Fetch all skills (paginated)
     all_skills = []
     cursor = None
-    session = get_retry_session()
+    session = get_session()
 
     while True:
         url = base_url
@@ -176,8 +176,8 @@ if __name__ == "__main__":
 
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(levelname)-7s] %(name)s: %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        format=LOG_FORMAT,
+        datefmt=LOG_DATE_FORMAT,
     )
 
     parser = argparse.ArgumentParser(description="Fetch top skills from skill registries")

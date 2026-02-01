@@ -8,14 +8,12 @@ import json
 import logging
 import re
 import subprocess
-import sys
 import zipfile
 from pathlib import Path
-from typing import Optional
 
 import requests
 
-from http_utils import get_retry_session
+from pipeline_utils import get_session, LOG_FORMAT, LOG_DATE_FORMAT
 
 logger = logging.getLogger(__name__)
 
@@ -69,12 +67,12 @@ def sanitize_filename(name: str) -> str:
     """Sanitize a string for use as a filename."""
     # Replace problematic characters with dashes
     sanitized = re.sub(r'[<>:"/\\|?*()[\]{}]', '-', name)
+    # Replace spaces with dashes
+    sanitized = sanitized.replace(' ', '-')
     # Replace multiple dashes with single dash
     sanitized = re.sub(r'-+', '-', sanitized)
     # Remove leading/trailing dashes and whitespace
     sanitized = sanitized.strip('- ')
-    # Replace spaces with dashes
-    sanitized = sanitized.replace(' ', '-')
     return sanitized.lower()
 
 
@@ -101,7 +99,13 @@ def clone_repo(repo: str, dest: Path, shallow: bool = True) -> bool:
     cmd.extend([url, str(dest)])
 
     logger.info("Cloning %s...", repo)
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=CLONE_TIMEOUT_SECONDS
+        )
+    except subprocess.TimeoutExpired:
+        logger.error("Clone of %s timed out after %ds", repo, CLONE_TIMEOUT_SECONDS)
+        return False
 
     if result.returncode != 0:
         logger.error("Failed to clone %s: %s", repo, result.stderr)
@@ -129,7 +133,7 @@ def download_clawhub_skill(slug: str, dest: Path) -> bool:
 
     logger.info("Downloading %s...", slug)
     try:
-        session = get_retry_session()
+        session = get_session()
         response = session.get(url, timeout=60)
         response.raise_for_status()
 
@@ -151,7 +155,7 @@ def download_clawhub_skill(slug: str, dest: Path) -> bool:
         return False
 
 
-def find_skill_path(repo_dir: Path, skill_name: str) -> Optional[Path]:
+def find_skill_path(repo_dir: Path, skill_name: str) -> Path | None:
     """
     Locate the skill directory within a repository.
 
@@ -198,6 +202,7 @@ def find_skill_path(repo_dir: Path, skill_name: str) -> Optional[Path]:
     return None
 
 
+CLONE_TIMEOUT_SECONDS = 120  # 2 minutes per clone
 SCAN_TIMEOUT_SECONDS = 300  # 5 minutes per scan
 
 
@@ -209,7 +214,7 @@ def run_scan(
     use_behavioral: bool = True,
     use_trigger: bool = True,
     use_llm: bool = False,
-) -> Optional[dict]:
+) -> dict | None:
     """
     Run skill-scanner on a skill directory.
 
@@ -521,8 +526,8 @@ if __name__ == "__main__":
 
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(levelname)-7s] %(name)s: %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        format=LOG_FORMAT,
+        datefmt=LOG_DATE_FORMAT,
     )
 
     parser = argparse.ArgumentParser(description="Run security scans on skills")

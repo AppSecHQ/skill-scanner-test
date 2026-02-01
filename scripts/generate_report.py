@@ -7,7 +7,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT
 
 logger = logging.getLogger(__name__)
 
@@ -237,8 +237,8 @@ if __name__ == "__main__":
 
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(levelname)-7s] %(name)s: %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        format=LOG_FORMAT,
+        datefmt=LOG_DATE_FORMAT,
     )
 
     parser = argparse.ArgumentParser(description="Generate summary report from scan results")
