@@ -1,6 +1,6 @@
 # AI Agent Skills Security Scan Report
 
-**Generated:** 2026-02-01T23:22:50.792778
+**Generated:** 2026-02-01T18:41:33.179399
 **Scanner:** cisco-ai-skill-scanner
 **Analyzers:** behavioral, llm, meta, static, trigger
 
@@ -51,10 +51,10 @@
 | 3 | [wallet-tracker](wallet-tracker-scan.md) | clawhub.ai | **No** | 6 | **CRITICAL** |
 | 4 | [ClawGateSecure](claw-gate-secure-scan.md) | clawhub.ai | Yes | 5 | MEDIUM |
 | 5 | [clawhub](clawhub-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
-| 6 | [moltbook](mersal-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
+| 6 | [moltbook](mersal-scan.md) | skills.sh | **No** | 5 | **CRITICAL** |
 | 7 | [polymarket](polymarket-trading-skill-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
 | 8 | [solana](solana-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
-| 9 | [canvas-design](skills-canvas-design-scan.md) | skills.sh | Yes | 4 | MEDIUM |
+| 9 | [canvas-design](skills-canvas-design-scan.md) | anthropic | Yes | 4 | MEDIUM |
 | 10 | [ethereum-gas-tracker](ethereum-gas-tracker-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
 | 11 | [expo-api-routes](expo-api-routes-scan.md) | skills.sh | **No** | 4 | **CRITICAL** |
 | 12 | [google-workspace](google-workspace-scan.md) | clawhub.ai | **No** | 4 | **CRITICAL** |
@@ -69,9 +69,9 @@
 | 21 | [web-design-guidelines](web-design-guidelines-scan.md) | skills.sh | **No** | 3 | **HIGH** |
 | 22 | [Agent Wallet](agent-wallet-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
 | 23 | [agent-browser](agent-browser-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 24 | [canvas-design](canvas-design-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 25 | [doc-coauthoring](doc-coauthoring-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 26 | [doc-coauthoring](skills-doc-coauthoring-scan.md) | skills.sh | Yes | 2 | MEDIUM |
+| 24 | [canvas-design](canvas-design-scan.md) | anthropic | Yes | 2 | MEDIUM |
+| 25 | [doc-coauthoring](doc-coauthoring-scan.md) | anthropic | Yes | 2 | MEDIUM |
+| 26 | [doc-coauthoring](skills-doc-coauthoring-scan.md) | anthropic | Yes | 2 | MEDIUM |
 | 27 | [ez-google](ez-google-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
 | 28 | [launch-strategy](launch-strategy-scan.md) | skills.sh | Yes | 2 | MEDIUM |
 | 29 | [marketing-psychology](marketing-psychology-scan.md) | skills.sh | Yes | 2 | MEDIUM |
@@ -83,21 +83,21 @@
 | 35 | [birthday-reminder](Birthday%20Reminder-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
 | 36 | [captions](captions-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
 | 37 | [docx](docx-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
-| 38 | [docx](skills-docx-scan.md) | skills.sh | Yes | 1 | MEDIUM |
+| 38 | [docx](skills-docx-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
 | 39 | [next-best-practices](next-best-practices-scan.md) | skills.sh | Yes | 1 | LOW |
 | 40 | [obsidian-sync](obsidian-sync-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
 | 41 | [seo-audit](seo-audit-scan.md) | skills.sh | Yes | 1 | LOW |
-| 42 | [webapp-testing](skills-webapp-testing-scan.md) | skills.sh | Yes | 1 | MEDIUM |
-| 43 | [webapp-testing](webapp-testing-scan.md) | skills.sh | Yes | 1 | MEDIUM |
+| 42 | [webapp-testing](skills-webapp-testing-scan.md) | anthropic | Yes | 1 | MEDIUM |
+| 43 | [webapp-testing](webapp-testing-scan.md) | anthropic | Yes | 1 | MEDIUM |
 | 44 | [writing-plans](writing-plans-scan.md) | skills.sh | Yes | 1 | LOW |
 | 45 | [youtube-channels](youtube-channels-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
 | 46 | [youtube-data](youtube-data-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
 | 47 | [youtube-full](youtube-full-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
-| 48 | [algorithmic-art](skills-algorithmic-art-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 48 | [algorithmic-art](skills-algorithmic-art-scan.md) | anthropic | Yes | 0 | SAFE |
 | 49 | [analytics-tracking](analytics-tracking-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 50 | [audit-website](audit-website-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 51 | [brainstorming](brainstorming-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 52 | [brand-guidelines](skills-brand-guidelines-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 52 | [brand-guidelines](skills-brand-guidelines-scan.md) | anthropic | Yes | 0 | SAFE |
 | 53 | [building-native-ui](building-native-ui-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 54 | [clawdex](clawdex-by-koi-scan.md) | clawhub.ai | Yes | 0 | SAFE |
 | 55 | [copy-editing](copy-editing-scan.md) | skills.sh | Yes | 0 | SAFE |
@@ -111,18 +111,18 @@
 | 63 | [frontend-design](skills-frontend-design-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 64 | [gitlab-manager](gitlab-manager-scan.md) | clawhub.ai | Yes | 0 | SAFE |
 | 65 | [health-tracker](healthcheck-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 66 | [internal-comms](skills-internal-comms-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 66 | [internal-comms](skills-internal-comms-scan.md) | anthropic | Yes | 0 | SAFE |
 | 67 | [logseq](logseq-scan.md) | clawhub.ai | Yes | 0 | SAFE |
 | 68 | [marketing-ideas](marketing-ideas-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 69 | [mcp-builder](mcp-builder-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 70 | [mcp-builder](skills-mcp-builder-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 69 | [mcp-builder](mcp-builder-scan.md) | anthropic | Yes | 0 | SAFE |
+| 70 | [mcp-builder](skills-mcp-builder-scan.md) | anthropic | Yes | 0 | SAFE |
 | 71 | [native-data-fetching](native-data-fetching-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 72 | [onboarding-cro](onboarding-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 73 | [page-cro](page-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 74 | [pdf](pdf-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 75 | [pdf](skills-pdf-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 76 | [pptx](pptx-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 77 | [pptx](skills-pptx-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 74 | [pdf](pdf-scan.md) | anthropic | Yes | 0 | SAFE |
+| 75 | [pdf](skills-pdf-scan.md) | anthropic | Yes | 0 | SAFE |
+| 76 | [pptx](pptx-scan.md) | anthropic | Yes | 0 | SAFE |
+| 77 | [pptx](skills-pptx-scan.md) | anthropic | Yes | 0 | SAFE |
 | 78 | [pricing-strategy](pricing-strategy-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 79 | [programmatic-seo](programmatic-seo-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 80 | [react-native-best-practices](react-native-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
@@ -130,23 +130,23 @@
 | 82 | [schema-markup](schema-markup-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 83 | [skill-creator](skill-creator-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 84 | [skill-creator](skills-skill-creator-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 85 | [slack-gif-creator](skills-slack-gif-creator-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 85 | [slack-gif-creator](skills-slack-gif-creator-scan.md) | anthropic | Yes | 0 | SAFE |
 | 86 | [social-content](social-content-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 87 | [supabase-postgres-best-practices](supabase-postgres-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 88 | [systematic-debugging](systematic-debugging-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 89 | [template-skill](template-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 89 | [template-skill](template-scan.md) | anthropic | Yes | 0 | SAFE |
 | 90 | [test-driven-development](test-driven-development-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 91 | [theme-factory](skills-theme-factory-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 92 | [theme-factory](theme-factory-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 91 | [theme-factory](skills-theme-factory-scan.md) | anthropic | Yes | 0 | SAFE |
+| 92 | [theme-factory](theme-factory-scan.md) | anthropic | Yes | 0 | SAFE |
 | 93 | [ui-ux-pro-max](ui-ux-pro-max-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 94 | [upgrading-expo](upgrading-expo-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 95 | [vercel-composition-patterns](vercel-composition-patterns-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 96 | [vercel-react-best-practices](vercel-react-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 97 | [vercel-react-native-skills](vercel-react-native-skills-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 98 | [vue-best-practices](vue-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 99 | [web-artifacts-builder](skills-web-artifacts-builder-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 100 | [xlsx](skills-xlsx-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 101 | [xlsx](xlsx-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 99 | [web-artifacts-builder](skills-web-artifacts-builder-scan.md) | anthropic | Yes | 0 | SAFE |
+| 100 | [xlsx](skills-xlsx-scan.md) | anthropic | Yes | 0 | SAFE |
+| 101 | [xlsx](xlsx-scan.md) | anthropic | Yes | 0 | SAFE |
 | 102 | [youtube-api](youtube-api-scan.md) | clawhub.ai | Yes | 0 | SAFE |
 | 103 | [youtube-search](youtube-search-scan.md) | clawhub.ai | Yes | 0 | SAFE |
 
@@ -291,7 +291,7 @@ The skill creates a hard dependency on 'openclaw-agent' (a suspicious binary/scr
 
 - **Scanner:** cisco-ai-skill-scanner
 - **Analyzers:** behavioral_analyzer, llm_analyzer, meta_analyzer, static_analyzer, trigger_analyzer
-- **Scan Date:** 2026-02-01T23:22:50.792778
+- **Scan Date:** 2026-02-01T18:41:33.179399
 
 ### Limitations
 

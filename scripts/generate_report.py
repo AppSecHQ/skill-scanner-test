@@ -283,7 +283,14 @@ def _detect_source(skill_path: str, skill_name: str = "",
                 return "clawhub.ai"
             return src
 
+    # Known skills not in inventory files
+    known_sources = {"moltbook": "skills.sh"}
+    if skill_name.lower() in known_sources:
+        return known_sources[skill_name.lower()]
+
     # Path heuristics for skills not in any inventory
+    if "anthropics-skills" in skill_path:
+        return "anthropic"
     if "clawhub-" in skill_path:
         return "clawhub.ai"
 

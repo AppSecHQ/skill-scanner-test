@@ -53,8 +53,13 @@ for skill in summary.get('skills', []):
         path = skill['path']
         # Normalize absolute /workspace/skills/ paths to ./skills/
         path = re.sub(r'^/workspace/skills/', './skills/', path)
+        # anthropic skills: path like ./skills/anthropics-skills/skills/<name>
+        if skill.get('source') == 'anthropic':
+            m = re.match(r'^\./skills/anthropics-skills/skills/(.+)$', path)
+            if m:
+                url = 'https://github.com/anthropics/skills/tree/main/skills/' + m.group(1)
         # clawhub.ai skills: path like ./skills/clawhub-<name>
-        if skill.get('source') == 'clawhub.ai':
+        elif skill.get('source') == 'clawhub.ai':
             m = re.match(r'^\./skills/clawhub-(.+)$', path)
             if m:
                 url = 'https://clawhub.ai/skills/' + m.group(1)
