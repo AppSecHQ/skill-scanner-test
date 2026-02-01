@@ -1,0 +1,66 @@
+{
+  "skill_name": "ez-google",
+  "skill_path": "./skills/clawhub-ez-google",
+  "skill_directory": "./skills/clawhub-ez-google",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "DATA_EXFIL_ENV_VARS_9b9a5fd74e",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"GOOGLE_CLIENT_SECRET",
+      "file_path": "scripts/auth.py",
+      "line_number": 62,
+      "snippet": "client_secret = os.environ.get(\"GOOGLE_CLIENT_SECRET\")",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"GOOGLE_CLIENT_SECRET",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is standard OAuth configuration. The code reads credentials to SET UP authentication, not to exfiltrate them. No network calls send these values anywhere.",
+        "meta_exploitability": "None - This is legitimate functionality",
+        "meta_impact": "None - Standard configuration practice"
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_f8081c769d",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://ezagentauth.com",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-ez-google/scripts/auth.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://ezagentauth.com",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The code clearly routes OAuth tokens through a third-party service. While this may be legitimate, it creates a trust dependency on an external service for credential handling.",
+        "meta_exploitability": "Medium - Requires the third-party service to be malicious or compromised",
+        "meta_impact": "Critical - Full access to user's Google Workspace data (Gmail, Drive, Calendar, etc.)"
+      }
+    }
+  ],
+  "scan_duration_seconds": 11.044931888580322,
+  "duration_ms": 11044,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-01T17:34:09.970011"
+}

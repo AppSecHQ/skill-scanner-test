@@ -1,17 +1,17 @@
 # Agent Skill Security Scan Report
 
 **Skill:** polymarket
-**Directory:** ./skills/clawhub-polymarket-hoedg
+**Directory:** ./skills/clawhub-polymarket-qjypn
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 41.99s
-**Timestamp:** 2026-02-01T16:49:11.379848
+**Scan Duration:** 41.85s
+**Timestamp:** 2026-02-01T19:09:44.571028
 
 ## Summary
 
-- **Total Findings:** 4
+- **Total Findings:** 5
 - **Critical:** 2
-- **High:** 1
+- **High:** 2
 - **Medium:** 1
 - **Low:** 0
 - **Info:** 0
@@ -27,38 +27,46 @@
 **Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** The skill instructs users to download a binary executable (openclaw-agent.zip) from an untrusted GitHub repository with password-protected extraction (pass: 'openclaw'). This is a classic malware distribution pattern - password-protected archives bypass antivirus scanning, and the binary could contain arbitrary malicious code including keyloggers, credential stealers, or backdoors. The requirement to run this executable before any trading operations creates a dependency on untrusted code with full system access.
+**Description:** The skill instructs users to download a binary executable (openclaw-agent.zip) from an untrusted GitHub repository with password-protected extraction (pass: 'openclaw'). This is a classic malware distribution pattern - password-protected archives bypass antivirus scanning, and the binary could contain arbitrary malicious code including keyloggers, credential stealers, or backdoors. The requirement to run this executable before any trading operations creates a dependency on untrusted code execution.
 
-#### [CRITICAL] Remote Code Execution via Untrusted Script
+#### [CRITICAL] Malicious Script Execution via External URL
 
 **Severity:** CRITICAL
 **Category:** data_exfiltration
 **Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md:13
 
-**Description:** The skill instructs macOS users to visit an external URL (glot.io/snippets/hfdxv8uyaf), copy an installation script, and paste it directly into Terminal. This is an extremely dangerous pattern that enables arbitrary remote code execution with full user privileges. The script content is not visible in the skill package, cannot be audited, and could be modified at any time by the attacker. Users are being socially engineered to execute untrusted code that could steal credentials, install backdoors, or exfiltrate data.
+**Description:** The skill directs macOS users to visit an external URL (glot.io/snippets/hfdxv8uyaf) and copy-paste a script directly into Terminal. This is an extremely dangerous pattern - the script content is not visible in the skill package, can be changed remotely at any time, and users are instructed to execute it with full shell privileges. This could install malware, steal credentials, exfiltrate data, or establish persistent backdoors.
 
 ### HIGH Severity
 
-#### [HIGH] Social Engineering Through Fake Prerequisites
+#### [HIGH] Deceptive Skill Purpose - Financial Fraud Risk
 
 **Severity:** HIGH
 **Category:** social_engineering
 **Rule ID:** LLM_SOCIAL_ENGINEERING
 **Location:** SKILL.md
 
-**Description:** The skill creates a false sense of legitimacy by repeatedly claiming that 'openclaw-agent' is required for Polymarket operations. This is social engineering designed to convince users to install malware. The skill emphasizes 'IMPORTANT' and 'Prerequisites' to create urgency and authority. Real Polymarket API access does not require any third-party agent or binary - the public APIs work directly via curl/HTTP requests.
+**Description:** The skill claims to enable 'trading prediction markets on Polymarket' but requires installing untrusted third-party binaries ('openclaw-agent') that have no official relationship to Polymarket. The legitimate Polymarket platform does not require such tools. This appears to be a social engineering attack disguised as a trading utility, potentially designed to steal cryptocurrency wallet credentials, private keys, or trading account access.
+
+#### [HIGH] Credential Harvesting via Environment Variable
+
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+
+**Description:** The skill requires the POLYMARKET_ADDRESS environment variable to be set, which likely contains wallet addresses or API credentials. Combined with the malicious binary requirement, this creates a complete attack chain: the untrusted executable could read this environment variable and exfiltrate wallet credentials or private keys to attacker-controlled servers.
 
 ### MEDIUM Severity
 
-#### [MEDIUM] Deceptive Trading Instructions Without Actual Implementation
+#### [MEDIUM] Shell Command Injection Risk in API Examples
 
 **Severity:** MEDIUM
-**Category:** social_engineering
-**Rule ID:** LLM_SOCIAL_ENGINEERING
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
 **Location:** SKILL.md
 
-**Description:** The skill provides extensive documentation about trading, placing bets, tracking positions, and automating strategies, but contains no actual implementation code. The curl examples shown only query public market data APIs - there is no code for placing trades, managing positions, or any of the promised trading functionality. This is deceptive content designed to make the skill appear legitimate while the real purpose is malware distribution.
+**Description:** The skill provides bash examples using curl with variable substitution ($SLUG, $CONDITION_ID, $MARKET_ID) without any input validation or sanitization guidance. If users follow these examples with untrusted input, they could be vulnerable to command injection attacks where malicious input breaks out of the curl command and executes arbitrary shell commands.
 
 ## Analyzers
 
