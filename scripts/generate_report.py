@@ -13,6 +13,17 @@ from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT, shorten_path
 
 logger = logging.getLogger(__name__)
 
+# Skills whose findings are known false positives, with explanations.
+# These are rendered in a dedicated section of the summary report.
+KNOWN_FALSE_POSITIVES: dict[str, str] = {
+    "clawdefender": (
+        "Security defense tool whose detection signatures (prompt injection patterns, "
+        "dangerous command strings, ANSI codes) trigger the same rules they are designed "
+        "to detect. All 37 findings are pattern arrays and documentation examples, not "
+        "malicious code."
+    ),
+}
+
 
 def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict:
     """
@@ -206,6 +217,24 @@ def generate_markdown_report(findings: dict, output_path: Path) -> None:
 
 """
 
+    # Known false positives
+    fp_skills = [s for s in findings["skills"] if s["name"] in KNOWN_FALSE_POSITIVES]
+    if fp_skills:
+        report += """---
+
+## Known False Positives
+
+The following skills were flagged by the scanner but have been manually reviewed and determined to be false positives.
+
+| Skill | Findings | Reason |
+|-------|----------|--------|
+"""
+        for skill in fp_skills:
+            reason = KNOWN_FALSE_POSITIVES[skill["name"]]
+            scan_link = quote(skill["scan_file"], safe="")
+            report += f"| [{skill['name']}]({scan_link}) | {skill['findings_count']} | {reason} |\n"
+        report += "\n"
+
     # Clean skills
     clean_skills = [s for s in findings["skills"] if s["is_safe"] is True and s["findings_count"] == 0]
     if clean_skills:
@@ -283,31 +312,28 @@ def _detect_source(skill_path: str, skill_name: str = "",
                 return "clawhub.ai"
             return src
 
-    # Known skills not in inventory files
-    known_sources = {"moltbook": "skills.sh"}
-    if skill_name.lower() in known_sources:
-        return known_sources[skill_name.lower()]
-
     # Path heuristics for skills not in any inventory
-    if "anthropics-skills" in skill_path:
-        return "anthropic"
     if "clawhub-" in skill_path:
         return "clawhub.ai"
 
     # Split path into components: ./skills/<clone-dir>/[sub/path]
     parts = skill_path.replace("\\", "/").strip("/").split("/")
-    # Find the "skills" root and check what follows
     try:
         idx = parts.index("skills")
     except ValueError:
         return "other"
 
-    # skills/<clone-dir>/... -> has sub-path means it's a GitHub repo (skills.sh)
-    # skills/<clone-dir> alone (no sub-path) means standalone (manual download)
     remaining = parts[idx + 1:]  # everything after "skills/"
     if len(remaining) >= 2:
-        # Clone dir + sub-path -> GitHub repo from skills.sh
-        return "skills.sh"
+        # Clone dir + sub-path -> GitHub repo
+        # Not in inventory, so this is an ad-hoc repo scan
+        # Derive source from clone dir owner (e.g., "anthropics-skills" -> "anthropic")
+        clone_dir = remaining[0]
+        owner = clone_dir.split("-")[0]
+        # Strip trailing 's' for nicer display (anthropics -> anthropic)
+        if owner.endswith("s") and len(owner) > 3:
+            owner = owner[:-1]
+        return owner
 
     return "other"
 

@@ -1,6 +1,6 @@
 # AI Agent Skills Security Scan Report
 
-**Generated:** 2026-02-02T03:13:03.981776
+**Generated:** 2026-02-02T13:07:34.603837
 **Scanner:** cisco-ai-skill-scanner
 **Analyzers:** behavioral, llm, meta, static, trigger
 
@@ -310,6 +310,16 @@ Detects system manipulation, privilege escalation, and destructive file operatio
 
 ---
 
+## Known False Positives
+
+The following skills were flagged by the scanner but have been manually reviewed and determined to be false positives.
+
+| Skill | Findings | Reason |
+|-------|----------|--------|
+| [clawdefender](clawdefender-openclaw-security-prompt-injection%2C-rogue-skills-etc-scan.md) | 37 | Security defense tool whose detection signatures (prompt injection patterns, dangerous command strings, ANSI codes) trigger the same rules they are designed to detect. All 37 findings are pattern arrays and documentation examples, not malicious code. |
+
+---
+
 ## Clean Skills (No Findings)
 
 - agent-md-refactor
@@ -382,7 +392,7 @@ Detects system manipulation, privilege escalation, and destructive file operatio
 
 - **Scanner:** cisco-ai-skill-scanner
 - **Analyzers:** behavioral_analyzer, llm_analyzer, meta_analyzer, static_analyzer, trigger_analyzer
-- **Scan Date:** 2026-02-02T03:13:03.981776
+- **Scan Date:** 2026-02-02T13:07:34.603837
 
 ### Limitations
 
