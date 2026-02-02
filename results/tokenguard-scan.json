@@ -1,0 +1,160 @@
+{
+  "skill_name": "tokenguard",
+  "skill_path": "./skills/clawhub-tokenguard",
+  "skill_directory": "./skills/clawhub-tokenguard",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 7,
+  "findings": [
+    {
+      "id": "DATA_EXFIL_SENSITIVE_FILES_4dcfd0f260",
+      "rule_id": "DATA_EXFIL_SENSITIVE_FILES",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Accessing sensitive system or credential files",
+      "description": "Pattern detected: Path(os.env",
+      "file_path": "scripts/tokenguard.py",
+      "line_number": 25,
+      "snippet": "TOKENGUARD_DIR = Path(os.environ.get(\"TOKENGUARD_DIR\", Path.home() / \".tokenguard\"))",
+      "remediation": "Do not access credential files or sensitive system files",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "(?:open|read|Path)\\s*\\([^)]*\\.env",
+        "matched_text": "Path(os.env",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_3aa1034c2d",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"TOKEN",
+      "file_path": "scripts/tokenguard.py",
+      "line_number": 25,
+      "snippet": "TOKENGUARD_DIR = Path(os.environ.get(\"TOKENGUARD_DIR\", Path.home() / \".tokenguard\"))",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"TOKEN",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_3718874acb",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"TOKEN",
+      "file_path": "scripts/tokenguard.py",
+      "line_number": 31,
+      "snippet": "DEFAULT_LIMIT = float(os.environ.get(\"TOKENGUARD_DEFAULT_LIMIT\", \"20.0\"))",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"TOKEN",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_bd47342fcd",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"TOKEN",
+      "file_path": "scripts/tokenguard.py",
+      "line_number": 32,
+      "snippet": "WARNING_THRESHOLD = float(os.environ.get(\"TOKENGUARD_WARNING_PCT\", \"0.8\"))",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"TOKEN",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_0118e8408d",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
+      "file_path": "SKILL.md",
+      "line_number": 116,
+      "snippet": "\"\"\"Log actual cost after API call.\"\"\"",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_system_calls",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_ece0a74fdf",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
+      "file_path": "SKILL.md",
+      "line_number": 125,
+      "snippet": "sys.exit(1)",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_system_calls",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_6755eaacbd",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/clawhub-tokenguard/scripts/tokenguard.py",
+      "file_path": "skills/clawhub-tokenguard/scripts/tokenguard.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 2.4136290550231934,
+  "duration_ms": 2413,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-02T03:05:30.944879"
+}

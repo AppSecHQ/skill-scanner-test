@@ -3,22 +3,31 @@
 **Skill:** obsidian-sync
 **Directory:** ./skills/clawhub-obsidian-sync
 **Status:** [OK] SAFE
-**Max Severity:** SAFE
-**Scan Duration:** 29.67s
-**Timestamp:** 2026-02-01T19:23:43.877759
+**Max Severity:** LOW
+**Scan Duration:** 0.33s
+**Timestamp:** 2026-02-02T03:07:54.129102
 
 ## Summary
 
-- **Total Findings:** 0
+- **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 0
+- **Low:** 1
 - **Info:** 0
 
-## [OK] No Issues Found
+## Findings
 
-This skill passed all security checks.
+### LOW Severity
+
+#### [LOW] Skill does not specify a license
+
+**Severity:** LOW
+**Category:** policy_violation
+**Rule ID:** MANIFEST_MISSING_LICENSE
+**Location:** SKILL.md
+
+**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
 
 ## Analyzers
 

@@ -2,23 +2,43 @@
 
 **Skill:** expo-api-routes
 **Directory:** ./skills/expo-skills/plugins/expo-app-design/skills/expo-api-routes
-**Status:** [OK] SAFE
-**Max Severity:** SAFE
-**Scan Duration:** 15.23s
-**Timestamp:** 2026-02-01T12:02:36.670706
+**Status:** [FAIL] ISSUES FOUND
+**Max Severity:** CRITICAL
+**Scan Duration:** 0.31s
+**Timestamp:** 2026-02-02T02:53:54.826297
 
 ## Summary
 
-- **Total Findings:** 0
-- **Critical:** 0
+- **Total Findings:** 2
+- **Critical:** 1
 - **High:** 0
-- **Medium:** 0
+- **Medium:** 1
 - **Low:** 0
 - **Info:** 0
 
-## [OK] No Issues Found
+## Findings
 
-This skill passed all security checks.
+### CRITICAL Severity
+
+#### [CRITICAL] INJECTION ATTACK detected by YARA
+
+**Severity:** CRITICAL
+**Category:** command_injection
+**Rule ID:** YARA_command_injection
+**Location:** SKILL.md:202
+
+**Description:** Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl http://localhost:8081/api/hello
+
+### MEDIUM Severity
+
+#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
+
+**Severity:** MEDIUM
+**Category:** tool_chaining_abuse
+**Rule ID:** YARA_tool_chaining_abuse
+**Location:** SKILL.md:161
+
+**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: GET, POST
 
 ## Analyzers
 

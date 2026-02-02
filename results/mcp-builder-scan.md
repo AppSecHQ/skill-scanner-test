@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** mcp-builder
-**Directory:** ./skills/anthropics-skills/skills/mcp-builder
+**Directory:** ./skills/clawhub-mcp-builder
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 8.04s
-**Timestamp:** 2026-02-01T09:57:58.532152
+**Scan Duration:** 1.67s
+**Timestamp:** 2026-02-02T03:08:26.168229
 
 ## Summary
 

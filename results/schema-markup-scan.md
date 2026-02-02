@@ -3,22 +3,31 @@
 **Skill:** schema-markup
 **Directory:** ./skills/coreyhaines31-marketingskills/skills/schema-markup
 **Status:** [OK] SAFE
-**Max Severity:** SAFE
-**Scan Duration:** 6.31s
-**Timestamp:** 2026-02-01T12:07:12.826507
+**Max Severity:** LOW
+**Scan Duration:** 0.37s
+**Timestamp:** 2026-02-02T02:54:03.355807
 
 ## Summary
 
-- **Total Findings:** 0
+- **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 0
+- **Low:** 1
 - **Info:** 0
 
-## [OK] No Issues Found
+## Findings
 
-This skill passed all security checks.
+### LOW Severity
+
+#### [LOW] Skill does not specify a license
+
+**Severity:** LOW
+**Category:** policy_violation
+**Rule ID:** MANIFEST_MISSING_LICENSE
+**Location:** SKILL.md
+
+**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
 
 ## Analyzers
 

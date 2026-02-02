@@ -1,0 +1,57 @@
+{
+  "skill_name": "memory-system-v2",
+  "skill_path": "./skills/clawhub-memory-system-v2",
+  "skill_directory": "./skills/clawhub-memory-system-v2",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_688fccd742",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: $(echo \"$line\" | awk -F'imp:' '{print $2}' | awk '{print $1}')",
+      "file_path": "memory-cli.sh",
+      "line_number": 168,
+      "snippet": "importance=$(echo \"$line\" | awk -F'imp:' '{print $2}' | awk '{print $1}')",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\$\\([^)]*\\$[0-9]+[^)]*\\)",
+        "matched_text": "$(echo \"$line\" | awk -F'imp:' '{print $2}' | awk '{print $1}')",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.36211085319519043,
+  "duration_ms": 362,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-02T03:08:13.201547"
+}
