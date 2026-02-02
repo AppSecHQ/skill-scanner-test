@@ -1,6 +1,6 @@
 # AI Agent Skills Security Scan Report
 
-**Generated:** 2026-02-02T08:33:41.404532
+**Generated:** 2026-02-02T08:37:20.152669
 **Scanner:** cisco-ai-skill-scanner
 **Analyzers:** behavioral, llm, meta, static, trigger
 
@@ -57,7 +57,7 @@
 | 7 | [wallet-tracker](wallet-tracker-scan.md) | clawhub.ai | **No** | 6 | **CRITICAL** |
 | 8 | [ClawGateSecure](claw-gate-secure-scan.md) | clawhub.ai | Yes | 5 | MEDIUM |
 | 9 | [kalshi](kalshi-scan.md) | clawhub.ai | **No** | 5 | **HIGH** |
-| 10 | [moltbook](mersal-scan.md) | skills.sh | **No** | 5 | **CRITICAL** |
+| 10 | [moltbook](mersal-scan.md) | moltbook.com | **No** | 5 | **CRITICAL** |
 | 11 | [solana](solana-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
 | 12 | [canvas-design](skills-canvas-design-scan.md) | anthropic | Yes | 4 | MEDIUM |
 | 13 | [domain-name-brainstormer](domain-name-brainstormer-scan.md) | skills.sh | Yes | 4 | MEDIUM |
@@ -76,7 +76,7 @@
 | 26 | [gemini](gemini-scan.md) | skills.sh | **No** | 3 | **HIGH** |
 | 27 | [gemini-nano-banana-pro-portraits](gemini-nano-banana-pro-portraits-scan.md) | clawhub.ai | Yes | 3 | MEDIUM |
 | 28 | [google-workspace](google-workspace-scan.md) | clawhub.ai | Yes | 3 | MEDIUM |
-| 29 | [moltbook](moltbook-scan.md) | skills.sh | **No** | 3 | **HIGH** |
+| 29 | [moltbook](moltbook-scan.md) | moltbook.com | **No** | 3 | **HIGH** |
 | 30 | [web-design-guidelines](web-design-guidelines-scan.md) | skills.sh | **No** | 3 | **HIGH** |
 | 31 | [windows-control](windows-control-scan.md) | clawhub.ai | **No** | 3 | **CRITICAL** |
 | 32 | [Agent Wallet](agent-wallet-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
@@ -392,7 +392,7 @@ The following skills were flagged by the scanner but have been manually reviewed
 
 - **Scanner:** cisco-ai-skill-scanner
 - **Analyzers:** behavioral_analyzer, llm_analyzer, meta_analyzer, static_analyzer, trigger_analyzer
-- **Scan Date:** 2026-02-02T08:33:41.404532
+- **Scan Date:** 2026-02-02T08:37:20.152669
 
 ### Limitations
 

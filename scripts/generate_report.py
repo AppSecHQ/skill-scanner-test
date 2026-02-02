@@ -313,7 +313,7 @@ def _detect_source(skill_path: str, skill_name: str = "",
             return src
 
     # Known skills not in inventory files
-    known_sources = {"moltbook": "skills.sh"}
+    known_sources = {"moltbook": "moltbook.com"}
     if skill_name.lower() in known_sources:
         return known_sources[skill_name.lower()]
 
