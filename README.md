@@ -47,7 +47,7 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 | transitive_trust_abuse | 3 |
 | autonomy_abuse | 2 |
 
-- See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
+- These results are visualized at [skillscan.appsechq.com](https://skillscan.appsechq.com/). See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 <!-- END SCAN RESULTS -->
 
 ## Getting Started
@@ -152,6 +152,7 @@ Cloned skill repositories are kept in `skills/` locally but excluded from versio
 
 ## Links
 
+- [skillscan.appsechq.com](https://skillscan.appsechq.com/) -- interactive dashboard of scan results
 - [Cisco AI Defense skill-scanner](https://github.com/cisco-ai-defense/skill-scanner)
 - [skills.sh](https://skills.sh/)
 - [clawhub.ai](https://clawhub.ai/)

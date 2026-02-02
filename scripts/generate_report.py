@@ -388,7 +388,7 @@ def update_readme(findings: dict, readme_path: Path) -> bool:
         section += f"| {category} | {count} |\n"
 
     section += f"""
-- See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
+- These results are visualized at [skillscan.appsechq.com](https://skillscan.appsechq.com/). See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 {END_MARKER}"""
 
     updated = text[:begin] + section + text[end + len(END_MARKER):]
