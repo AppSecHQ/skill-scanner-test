@@ -312,6 +312,11 @@ def _detect_source(skill_path: str, skill_name: str = "",
                 return "clawhub.ai"
             return src
 
+    # Known skills not in inventory files
+    known_sources = {"moltbook": "skills.sh"}
+    if skill_name.lower() in known_sources:
+        return known_sources[skill_name.lower()]
+
     # Path heuristics for skills not in any inventory
     if "clawhub-" in skill_path:
         return "clawhub.ai"
@@ -325,15 +330,12 @@ def _detect_source(skill_path: str, skill_name: str = "",
 
     remaining = parts[idx + 1:]  # everything after "skills/"
     if len(remaining) >= 2:
-        # Clone dir + sub-path -> GitHub repo
-        # Not in inventory, so this is an ad-hoc repo scan
-        # Derive source from clone dir owner (e.g., "anthropics-skills" -> "anthropic")
         clone_dir = remaining[0]
-        owner = clone_dir.split("-")[0]
-        # Strip trailing 's' for nicer display (anthropics -> anthropic)
-        if owner.endswith("s") and len(owner) > 3:
-            owner = owner[:-1]
-        return owner
+        # Anthropic skills repo
+        if clone_dir == "anthropics-skills":
+            return "anthropic"
+        # Default: skills cloned from GitHub via skills.sh
+        return "skills.sh"
 
     return "other"
 

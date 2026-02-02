@@ -1,6 +1,6 @@
 # AI Agent Skills Security Scan Report
 
-**Generated:** 2026-02-02T13:07:34.603837
+**Generated:** 2026-02-02T08:33:41.404532
 **Scanner:** cisco-ai-skill-scanner
 **Analyzers:** behavioral, llm, meta, static, trigger
 
@@ -52,12 +52,12 @@
 | 2 | [qa-test-planner](qa-test-planner-scan.md) | skills.sh | **No** | 19 | **CRITICAL** |
 | 3 | [clawmail](clawmail-scan.md) | clawhub.ai | **No** | 10 | **CRITICAL** |
 | 4 | [swarmmarket](swarmmarket-skill%2C-make-money-with-your-agents-scan.md) | clawhub.ai | **No** | 10 | **CRITICAL** |
-| 5 | [browser-use](browser-use-scan.md) | browser | **No** | 8 | **HIGH** |
+| 5 | [browser-use](browser-use-scan.md) | skills.sh | **No** | 8 | **HIGH** |
 | 6 | [tokenguard](tokenguard-scan.md) | clawhub.ai | **No** | 7 | **HIGH** |
 | 7 | [wallet-tracker](wallet-tracker-scan.md) | clawhub.ai | **No** | 6 | **CRITICAL** |
 | 8 | [ClawGateSecure](claw-gate-secure-scan.md) | clawhub.ai | Yes | 5 | MEDIUM |
 | 9 | [kalshi](kalshi-scan.md) | clawhub.ai | **No** | 5 | **HIGH** |
-| 10 | [moltbook](mersal-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
+| 10 | [moltbook](mersal-scan.md) | skills.sh | **No** | 5 | **CRITICAL** |
 | 11 | [solana](solana-scan.md) | clawhub.ai | **No** | 5 | **CRITICAL** |
 | 12 | [canvas-design](skills-canvas-design-scan.md) | anthropic | Yes | 4 | MEDIUM |
 | 13 | [domain-name-brainstormer](domain-name-brainstormer-scan.md) | skills.sh | Yes | 4 | MEDIUM |
@@ -76,11 +76,11 @@
 | 26 | [gemini](gemini-scan.md) | skills.sh | **No** | 3 | **HIGH** |
 | 27 | [gemini-nano-banana-pro-portraits](gemini-nano-banana-pro-portraits-scan.md) | clawhub.ai | Yes | 3 | MEDIUM |
 | 28 | [google-workspace](google-workspace-scan.md) | clawhub.ai | Yes | 3 | MEDIUM |
-| 29 | [moltbook](moltbook-scan.md) | other | **No** | 3 | **HIGH** |
-| 30 | [web-design-guidelines](web-design-guidelines-scan.md) | vercel | **No** | 3 | **HIGH** |
+| 29 | [moltbook](moltbook-scan.md) | skills.sh | **No** | 3 | **HIGH** |
+| 30 | [web-design-guidelines](web-design-guidelines-scan.md) | skills.sh | **No** | 3 | **HIGH** |
 | 31 | [windows-control](windows-control-scan.md) | clawhub.ai | **No** | 3 | **CRITICAL** |
 | 32 | [Agent Wallet](agent-wallet-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
-| 33 | [agent-browser](agent-browser-scan.md) | vercel | Yes | 2 | MEDIUM |
+| 33 | [agent-browser](agent-browser-scan.md) | skills.sh | Yes | 2 | MEDIUM |
 | 34 | [agent-task-manager](agent-task-manager-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
 | 35 | [atxp](atxp-scan.md) | skills.sh | Yes | 2 | MEDIUM |
 | 36 | [canvas-design](canvas-design-scan.md) | anthropic | Yes | 2 | MEDIUM |
@@ -93,8 +93,8 @@
 | 43 | [ez-google](ez-google-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
 | 44 | [free-tool-strategy](free-tool-strategy-scan.md) | skills.sh | Yes | 2 | MEDIUM |
 | 45 | [google-imagen-3-hyperrealistic-landscape](google-imagen-3-%E8%B6%85%E5%86%99%E5%AE%9E%E9%A3%8E%E6%99%AF-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 46 | [launch-strategy](launch-strategy-scan.md) | coreyhaines31 | Yes | 2 | MEDIUM |
-| 47 | [marketing-psychology](marketing-psychology-scan.md) | coreyhaines31 | Yes | 2 | MEDIUM |
+| 46 | [launch-strategy](launch-strategy-scan.md) | skills.sh | Yes | 2 | MEDIUM |
+| 47 | [marketing-psychology](marketing-psychology-scan.md) | skills.sh | Yes | 2 | MEDIUM |
 | 48 | [memory-system-v2](memory-system-v2-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
 | 49 | [n8n-api](n8n-api-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
 | 50 | [near-email](near-email-skill-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
@@ -132,7 +132,7 @@
 | 82 | [form-cro](form-cro-scan.md) | skills.sh | Yes | 1 | LOW |
 | 83 | [gitlab-manager](gitlab-manager-scan.md) | clawhub.ai | Yes | 1 | LOW |
 | 84 | [mermaid-diagrams](mermaid-diagrams-scan.md) | skills.sh | Yes | 1 | LOW |
-| 85 | [next-best-practices](next-best-practices-scan.md) | vercel | Yes | 1 | LOW |
+| 85 | [next-best-practices](next-best-practices-scan.md) | skills.sh | Yes | 1 | LOW |
 | 86 | [notion](notion-api-scan.md) | clawhub.ai | Yes | 1 | LOW |
 | 87 | [nuxt](nuxt-scan.md) | skills.sh | Yes | 1 | LOW |
 | 88 | [obsidian-sync](obsidian-sync-scan.md) | clawhub.ai | Yes | 1 | LOW |
@@ -147,7 +147,7 @@
 | 97 | [referral-program](referral-program-scan.md) | skills.sh | Yes | 1 | LOW |
 | 98 | [requesting-code-review](requesting-code-review-scan.md) | skills.sh | Yes | 1 | LOW |
 | 99 | [schema-markup](schema-markup-scan.md) | skills.sh | Yes | 1 | LOW |
-| 100 | [seo-audit](seo-audit-scan.md) | coreyhaines31 | Yes | 1 | LOW |
+| 100 | [seo-audit](seo-audit-scan.md) | skills.sh | Yes | 1 | LOW |
 | 101 | [signup-flow-cro](signup-flow-cro-scan.md) | skills.sh | Yes | 1 | LOW |
 | 102 | [sora-2-nature-documentary](sora-2-%E8%87%AA%E7%84%B6%E7%BA%AA%E5%BD%95%E7%89%87-scan.md) | clawhub.ai | Yes | 1 | LOW |
 | 103 | [stealthy-auto-browse](stealthy-auto-browse-scan.md) | clawhub.ai | Yes | 1 | LOW |
@@ -164,7 +164,7 @@
 | 114 | [webapp-testing](skills-webapp-testing-scan.md) | anthropic | Yes | 1 | MEDIUM |
 | 115 | [webapp-testing](webapp-testing-scan.md) | anthropic | Yes | 1 | MEDIUM |
 | 116 | [writing-clearly-and-concisely](writing-clearly-and-concisely-scan.md) | skills.sh | Yes | 1 | LOW |
-| 117 | [writing-plans](writing-plans-scan.md) | obra | Yes | 1 | LOW |
+| 117 | [writing-plans](writing-plans-scan.md) | skills.sh | Yes | 1 | LOW |
 | 118 | [x-trends](x-twitter-trends-scan.md) | clawhub.ai | Yes | 1 | LOW |
 | 119 | [yahoo-finance](yahoo-finance-scan.md) | clawhub.ai | Yes | 1 | LOW |
 | 120 | [youtube-channels](youtube-channels-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
@@ -172,59 +172,59 @@
 | 122 | [youtube-full](youtube-full-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
 | 123 | [agent-md-refactor](agent-md-refactor-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 124 | [algorithmic-art](skills-algorithmic-art-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 125 | [analytics-tracking](analytics-tracking-scan.md) | coreyhaines31 | Yes | 0 | SAFE |
+| 125 | [analytics-tracking](analytics-tracking-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 126 | [artifacts-builder](artifacts-builder-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 127 | [audit-website](audit-website-scan.md) | squirrelscan | Yes | 0 | SAFE |
-| 128 | [brainstorming](brainstorming-scan.md) | obra | Yes | 0 | SAFE |
+| 127 | [audit-website](audit-website-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 128 | [brainstorming](brainstorming-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 129 | [brand-guidelines](brand-guidelines-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 130 | [brand-guidelines](skills-brand-guidelines-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 131 | [building-native-ui](building-native-ui-scan.md) | expo | Yes | 0 | SAFE |
+| 131 | [building-native-ui](building-native-ui-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 132 | [clawdex](clawdex-by-koi-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 133 | [copy-editing](copy-editing-scan.md) | coreyhaines31 | Yes | 0 | SAFE |
-| 134 | [copywriting](copywriting-scan.md) | coreyhaines31 | Yes | 0 | SAFE |
+| 133 | [copy-editing](copy-editing-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 134 | [copywriting](copywriting-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 135 | [create-auth-skill](better-auth-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 136 | [expo-cicd-workflows](expo-cicd-workflows-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 137 | [expo-deployment](expo-deployment-scan.md) | expo | Yes | 0 | SAFE |
-| 138 | [expo-dev-client](expo-dev-client-scan.md) | expo | Yes | 0 | SAFE |
-| 139 | [expo-tailwind-setup](expo-tailwind-setup-scan.md) | expo | Yes | 0 | SAFE |
-| 140 | [find-skills](find-skills-scan.md) | vercel | Yes | 0 | SAFE |
+| 137 | [expo-deployment](expo-deployment-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 138 | [expo-dev-client](expo-dev-client-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 139 | [expo-tailwind-setup](expo-tailwind-setup-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 140 | [find-skills](find-skills-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 141 | [frontend-design](frontend-design-scan.md) | anthropic | Yes | 0 | SAFE |
 | 142 | [frontend-design](skills-frontend-design-scan.md) | anthropic | Yes | 0 | SAFE |
 | 143 | [health-tracker](healthcheck-scan.md) | clawhub.ai | Yes | 0 | SAFE |
 | 144 | [internal-comms](internal-comms-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 145 | [internal-comms](skills-internal-comms-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 146 | [logseq](logseq-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 147 | [marketing-ideas](marketing-ideas-scan.md) | coreyhaines31 | Yes | 0 | SAFE |
+| 147 | [marketing-ideas](marketing-ideas-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 148 | [mcp-builder](mcp-builder-scan.md) | clawhub.ai | Yes | 0 | SAFE |
 | 149 | [mcp-builder](skills-mcp-builder-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 150 | [native-data-fetching](native-data-fetching-scan.md) | expo | Yes | 0 | SAFE |
-| 151 | [page-cro](page-cro-scan.md) | coreyhaines31 | Yes | 0 | SAFE |
+| 150 | [native-data-fetching](native-data-fetching-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 151 | [page-cro](page-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 152 | [pdf](pdf-scan.md) | anthropic | Yes | 0 | SAFE |
 | 153 | [pdf](skills-pdf-scan.md) | anthropic | Yes | 0 | SAFE |
 | 154 | [pptx](pptx-scan.md) | anthropic | Yes | 0 | SAFE |
 | 155 | [pptx](skills-pptx-scan.md) | anthropic | Yes | 0 | SAFE |
-| 156 | [pricing-strategy](pricing-strategy-scan.md) | coreyhaines31 | Yes | 0 | SAFE |
-| 157 | [programmatic-seo](programmatic-seo-scan.md) | coreyhaines31 | Yes | 0 | SAFE |
-| 158 | [react-native-best-practices](react-native-best-practices-scan.md) | callstackincubator | Yes | 0 | SAFE |
-| 159 | [remotion-best-practices](remotion-best-practices-scan.md) | remotion | Yes | 0 | SAFE |
+| 156 | [pricing-strategy](pricing-strategy-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 157 | [programmatic-seo](programmatic-seo-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 158 | [react-native-best-practices](react-native-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 159 | [remotion-best-practices](remotion-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 160 | [skill-creator](skill-creator-scan.md) | anthropic | Yes | 0 | SAFE |
 | 161 | [skill-creator](skills-skill-creator-scan.md) | anthropic | Yes | 0 | SAFE |
 | 162 | [slack-gif-creator](skills-slack-gif-creator-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 163 | [slack-gif-creator](slack-gif-creator-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 164 | [social-content](social-content-scan.md) | coreyhaines31 | Yes | 0 | SAFE |
-| 165 | [supabase-postgres-best-practices](supabase-postgres-best-practices-scan.md) | supabase | Yes | 0 | SAFE |
-| 166 | [systematic-debugging](systematic-debugging-scan.md) | obra | Yes | 0 | SAFE |
+| 164 | [social-content](social-content-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 165 | [supabase-postgres-best-practices](supabase-postgres-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 166 | [systematic-debugging](systematic-debugging-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 167 | [template-skill](template-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 168 | [test-driven-development](test-driven-development-scan.md) | obra | Yes | 0 | SAFE |
+| 168 | [test-driven-development](test-driven-development-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 169 | [theme-factory](skills-theme-factory-scan.md) | anthropic | Yes | 0 | SAFE |
 | 170 | [theme-factory](theme-factory-scan.md) | anthropic | Yes | 0 | SAFE |
-| 171 | [ui-ux-pro-max](ui-ux-pro-max-scan.md) | nextlevelbuilder | Yes | 0 | SAFE |
-| 172 | [upgrading-expo](upgrading-expo-scan.md) | expo | Yes | 0 | SAFE |
+| 171 | [ui-ux-pro-max](ui-ux-pro-max-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 172 | [upgrading-expo](upgrading-expo-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 173 | [use-dom](use-dom-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 174 | [vercel-composition-patterns](vercel-composition-patterns-scan.md) | vercel | Yes | 0 | SAFE |
-| 175 | [vercel-react-best-practices](vercel-react-best-practices-scan.md) | vercel | Yes | 0 | SAFE |
-| 176 | [vercel-react-native-skills](vercel-react-native-skills-scan.md) | vercel | Yes | 0 | SAFE |
-| 177 | [vue-best-practices](vue-best-practices-scan.md) | hyf0 | Yes | 0 | SAFE |
+| 174 | [vercel-composition-patterns](vercel-composition-patterns-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 175 | [vercel-react-best-practices](vercel-react-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 176 | [vercel-react-native-skills](vercel-react-native-skills-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 177 | [vue-best-practices](vue-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 178 | [web-artifacts-builder](skills-web-artifacts-builder-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 179 | [web-artifacts-builder](web-artifacts-builder-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 180 | [xlsx](skills-xlsx-scan.md) | anthropic | Yes | 0 | SAFE |
@@ -392,7 +392,7 @@ The following skills were flagged by the scanner but have been manually reviewed
 
 - **Scanner:** cisco-ai-skill-scanner
 - **Analyzers:** behavioral_analyzer, llm_analyzer, meta_analyzer, static_analyzer, trigger_analyzer
-- **Scan Date:** 2026-02-02T13:07:34.603837
+- **Scan Date:** 2026-02-02T08:33:41.404532
 
 ### Limitations
 
