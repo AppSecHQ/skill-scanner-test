@@ -31,6 +31,42 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+const SAFE_TAGS = new Set([
+  'P','A','STRONG','EM','B','I','CODE','PRE','H1','H2','H3','H4','H5','H6',
+  'UL','OL','LI','BLOCKQUOTE','TABLE','THEAD','TBODY','TR','TH','TD',
+  'BR','HR','SPAN','DIV','SUP','SUB','DL','DT','DD'
+]);
+const SAFE_ATTRS = new Set(['href','target','rel']);
+
+function sanitizeHtml(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  (function clean(node) {
+    for (const child of [...node.childNodes]) {
+      if (child.nodeType === 3) continue;
+      if (child.nodeType !== 1) { child.remove(); continue; }
+      if (!SAFE_TAGS.has(child.tagName)) {
+        while (child.firstChild) node.insertBefore(child.firstChild, child);
+        child.remove();
+        continue;
+      }
+      for (const attr of [...child.attributes]) {
+        if (!SAFE_ATTRS.has(attr.name)) child.removeAttribute(attr.name);
+      }
+      if (child.hasAttribute('href')) {
+        const href = child.getAttribute('href').trim().toLowerCase();
+        if (href.startsWith('javascript:') || href.startsWith('data:')) {
+          child.removeAttribute('href');
+        }
+      }
+      if (child.tagName === 'A' && !child.hasAttribute('rel')) {
+        child.setAttribute('rel', 'noopener');
+      }
+      clean(child);
+    }
+  })(doc.body);
+  return doc.body.innerHTML;
+}
+
 /* ============================================================
    Router
    ============================================================ */
@@ -574,7 +610,7 @@ function renderNoteDetail(id) {
       <div class="note-tags">${tags}</div>
     </div>
   </div>
-  <div class="note-body">${note.body}</div>`;
+  <div class="note-body">${sanitizeHtml(note.body)}</div>`;
 }
 
 /* ============================================================
