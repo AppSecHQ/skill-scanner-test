@@ -48,10 +48,11 @@ def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict
         "top_risks": [],
     }
 
-    # Build source lookup from inventory files
+    # Build lookups from inventory files
     if skills_dir is None:
         skills_dir = results_dir.parent / "skills"
     source_lookup = _build_source_lookup(skills_dir)
+    url_lookup = _build_url_lookup(skills_dir)
 
     # Process each scan result
     for json_file in sorted(results_dir.glob("*-scan.json")):
@@ -106,12 +107,15 @@ def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict
         # Add skill summary
         raw_path = result.get("skill_path") or ""
         short_path = shorten_path(raw_path) if raw_path else ""
-        source = _detect_source(short_path, result.get("skill_name", ""), source_lookup)
+        skill_name = result.get("skill_name", "")
+        source = _detect_source(short_path, skill_name, source_lookup)
+        repo_url = _derive_repo_url(short_path, skill_name, source, url_lookup)
         scan_md = json_file.with_suffix("").name + ".md"  # e.g. "clickup-skill-scan.md"
         findings["skills"].append({
-            "name": result.get("skill_name"),
+            "name": skill_name,
             "path": short_path or None,
             "source": source,
+            "repo_url": repo_url,
             "scan_file": scan_md,
             "is_safe": is_safe,
             "findings_count": result.get("findings_count", 0),
@@ -297,6 +301,105 @@ def _build_source_lookup(skills_dir: Path) -> dict[str, str]:
         except (json.JSONDecodeError, FileNotFoundError):
             pass
     return lookup
+
+
+def _build_url_lookup(skills_dir: Path) -> dict[str, str]:
+    """Build a skill_name -> repo_url mapping from all inventory files."""
+    lookup = {}
+    for inv_file in skills_dir.glob("skill-inventory-*.json"):
+        try:
+            with open(inv_file) as f:
+                skills = json.load(f)
+            for skill in skills:
+                name = skill.get("name", "").lower().replace(" ", "-")
+                sid = skill.get("id", "")
+                source = skill.get("source", "")
+                repo = skill.get("repo")
+
+                url = ""
+                if source == "skills.sh" and repo:
+                    url = f"https://github.com/{repo}"
+                elif source == "clawhub" and sid:
+                    url = f"https://clawhub.ai/skills/{sid}"
+
+                if name and url:
+                    lookup[name] = url
+        except (json.JSONDecodeError, FileNotFoundError):
+            pass
+    return lookup
+
+
+# Clone-dir -> GitHub owner/repo for repos with hyphenated owners.
+# The generic first-hyphen split handles single-word owners automatically.
+_KNOWN_CLONE_REPOS: dict[str, str] = {
+    "vercel-labs-agent-browser": "vercel-labs/agent-browser",
+    "vercel-labs-skills": "vercel-labs/skills",
+    "vercel-labs-next-skills": "vercel-labs/next-skills",
+    "anthropics-skills": "anthropics/skills",
+    "expo-skills": "expo/skills",
+    "remotion-dev-skills": "remotion-dev/skills",
+    "squirrelscan-skills": "squirrelscan/skills",
+    "obra-superpowers": "obra/superpowers",
+    "coreyhaines31-marketingskills": "coreyhaines31/marketingskills",
+    "browser-use-browser-use": "browser-use/browser-use",
+    "nextlevelbuilder-ui-ux-pro-max-skill": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "supabase-agent-skills": "supabase/agent-skills",
+    "better-auth-skills": "better-auth/skills",
+    "hyf0-vue-skills": "hyf0/vue-skills",
+    "callstackincubator-agent-skills": "callstackincubator/agent-skills",
+}
+
+
+def _derive_repo_url(skill_path: str, skill_name: str = "", source: str = "",
+                     url_lookup: dict[str, str] | None = None) -> str:
+    """Derive the repository URL for a skill from inventory data or path heuristics."""
+    # 1. Check inventory lookup
+    if url_lookup:
+        normalized = skill_name.lower().replace(" ", "-")
+        url = url_lookup.get(normalized, "")
+        if url:
+            return url
+
+    if not skill_path:
+        return ""
+
+    # 2. Known standalone sources
+    if source == "moltbook.com":
+        return "https://www.moltbook.com"
+
+    # 3. Parse path: ./skills/<clone-dir>/[sub/path]
+    parts = skill_path.replace("\\", "/").strip("/").split("/")
+    try:
+        idx = parts.index("skills")
+    except ValueError:
+        return ""
+
+    remaining = parts[idx + 1:]
+    if not remaining:
+        return ""
+
+    clone_dir = remaining[0]
+
+    # Clawhub: clone dir is "clawhub-<slug>"
+    if clone_dir.startswith("clawhub-"):
+        slug = clone_dir[len("clawhub-"):]
+        return f"https://clawhub.ai/skills/{slug}"
+
+    # Anthropic: link to specific skill subfolder within the monorepo
+    if clone_dir == "anthropics-skills" and len(remaining) >= 3:
+        subpath = "/".join(remaining[1:])
+        return f"https://github.com/anthropics/skills/tree/main/{subpath}"
+
+    # Known clone-dir mappings (handles hyphenated owners like vercel-labs)
+    if clone_dir in _KNOWN_CLONE_REPOS:
+        return f"https://github.com/{_KNOWN_CLONE_REPOS[clone_dir]}"
+
+    # Generic: split on first hyphen as owner/repo
+    parts2 = clone_dir.split("-", 1)
+    if len(parts2) == 2:
+        return f"https://github.com/{parts2[0]}/{parts2[1]}"
+
+    return ""
 
 
 def _detect_source(skill_path: str, skill_name: str = "",
