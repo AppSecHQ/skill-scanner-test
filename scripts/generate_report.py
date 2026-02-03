@@ -330,12 +330,50 @@ def _detect_source(skill_path: str, skill_name: str = "",
 
     remaining = parts[idx + 1:]  # everything after "skills/"
     if len(remaining) >= 2:
+        # Clone dir is e.g. "trailofbits-skills", "huggingface-skills",
+        # "anthropics-skills", "expo-skills", "coreyhaines31-marketingskills"
         clone_dir = remaining[0]
-        # Anthropic skills repo
-        if clone_dir == "anthropics-skills":
-            return "anthropic"
-        # Default: skills cloned from GitHub via skills.sh
-        return "skills.sh"
+        # Map clone-dir owner to a readable source name
+        owner = clone_dir.split("-")[0]
+        # Known owner -> source mappings for repos cloned via skills.sh
+        OWNER_TO_SOURCE = {
+            "expo": "skills.sh",
+            "coreyhaines31": "skills.sh",
+            "obra": "skills.sh",
+            "better": "skills.sh",       # better-auth
+            "antfu": "skills.sh",
+            "softaworks": "skills.sh",
+            "wshobson": "skills.sh",
+            "atxp": "skills.sh",
+            "vercel": "skills.sh",
+            "browser": "skills.sh",      # browser-use
+            "squirrelscan": "skills.sh",
+            "callstackincubator": "skills.sh",
+            "remotion": "skills.sh",     # remotion-dev
+            "supabase": "skills.sh",
+            "nextlevelbuilder": "skills.sh",
+            "hyf0": "skills.sh",
+        }
+        if owner in OWNER_TO_SOURCE:
+            return OWNER_TO_SOURCE[owner]
+        # Normalize well-known sources
+        OWNER_DISPLAY = {
+            "anthropics": "anthropic",
+            "trailofbits": "trailofbits",
+            "huggingface": "huggingface",
+            "cloudflare": "cloudflare",
+            "microsoft": "microsoft",
+            "stripe": "stripe",
+            "kepano": "kepano",
+            "zxkane": "zxkane",
+            "SawyerHood": "sawyerhood",
+            "lackeyjb": "lackeyjb",
+            "jthack": "jthack",
+        }
+        if owner in OWNER_DISPLAY:
+            return OWNER_DISPLAY[owner]
+        # Fallback: use owner name directly
+        return owner
 
     return "other"
 
