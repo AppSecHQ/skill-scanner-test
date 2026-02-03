@@ -1,0 +1,136 @@
+{
+  "skill_name": "home-assistant",
+  "skill_path": "./skills/clawhub-home-assistant",
+  "skill_directory": "./skills/clawhub-home-assistant",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 6,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_65a8368160",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: Run Scripts",
+      "file_path": "SKILL.md",
+      "line_number": 61,
+      "snippet": "### Run Scripts & Automations",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_02a598d56d",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export HA_TOKEN=\"your-long-lived-access-token",
+      "file_path": "SKILL.md",
+      "line_number": 21,
+      "snippet": "export HA_TOKEN=\"your-long-lived-access-token\"",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_79c7673446",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: Run script",
+      "file_path": "scripts/ha.sh",
+      "line_number": 81,
+      "snippet": "# Run script: ha.sh script goodnight",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_d69e15f52b",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: Run script",
+      "file_path": "scripts/ha.sh",
+      "line_number": 154,
+      "snippet": "automation <name>           Trigger automation",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_fc7048835a",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: <script_name>",
+      "file_path": "scripts/ha.sh",
+      "line_number": 82,
+      "snippet": "script=\"${1:?Usage: ha.sh script <script_name>}\"",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$tags",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.4006021022796631,
+  "duration_ms": 400,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T15:55:02.927436"
+}

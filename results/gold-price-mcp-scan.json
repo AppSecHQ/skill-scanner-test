@@ -1,0 +1,185 @@
+{
+  "skill_name": "gold_price_mcp",
+  "skill_path": "./skills/clawhub-gold-price-mcp",
+  "skill_directory": "./skills/clawhub-gold-price-mcp",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 9,
+  "findings": [
+    {
+      "id": "MANIFEST_INVALID_NAME_794e30271c",
+      "rule_id": "MANIFEST_INVALID_NAME",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill name does not follow agent skills naming rules",
+      "description": "Skill name 'gold_price_mcp' is invalid. Agent skills require lowercase letters, numbers, and hyphens only, with a maximum length of 64 characters.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Rename the skill to match `[a-z0-9-]{1,64}` (e.g., 'pdf-processing')",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_35c4955273",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: $(dirname \"$0\")",
+      "file_path": "run.sh",
+      "line_number": 4,
+      "snippet": "chmod +x \"$(dirname \"$0\")/gold-price-mcp.py\"",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\$\\([^)]*\\$[0-9]+[^)]*\\)",
+        "matched_text": "$(dirname \"$0\")",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_cb248ab820",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: $(dirname \"$0\")",
+      "file_path": "run.sh",
+      "line_number": 7,
+      "snippet": "\"$(dirname \"$0\")/gold-price-mcp.py\" \"$@\"",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\$\\([^)]*\\$[0-9]+[^)]*\\)",
+        "matched_text": "$(dirname \"$0\")",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_c60fb29edb",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import httpx",
+      "file_path": "gold-price-mcp.py",
+      "line_number": 11,
+      "snippet": "import httpx",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+httpx",
+        "matched_text": "import httpx",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_81d34ea6a8",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import httpx",
+      "file_path": "test_api.py",
+      "line_number": 8,
+      "snippet": "import httpx",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+httpx",
+        "matched_text": "import httpx",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "TOOL_MISMATCH_NETWORK_7df9b75abd",
+      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Undeclared network usage",
+      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Declare network usage in compatibility field or remove network calls",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_5a07f9bde8",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://api.chnwt.dev/thai-gold-api/latest",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-gold-price-mcp/gold-price-mcp.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://api.chnwt.dev/thai-gold-api/latest",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "TRIGGER_SHORT_42b4c5f5",
+      "rule_id": "TRIGGER_DESCRIPTION_TOO_SHORT",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Skill description is too short",
+      "description": "Description has only 1 words. Short descriptions may not provide enough context for the agent to determine when this skill should be used.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Expand the description to at least 10-20 words explaining the skill's purpose, capabilities, and appropriate use cases.",
+      "analyzer": "trigger",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.3387947082519531,
+  "duration_ms": 338,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T15:59:31.774255"
+}

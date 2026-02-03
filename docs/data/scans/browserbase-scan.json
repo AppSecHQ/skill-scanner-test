@@ -1,0 +1,56 @@
+{
+  "skill_name": "browse",
+  "skill_path": "./skills/clawhub-browse",
+  "skill_directory": "./skills/clawhub-browse",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_ee20caa765",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): eval(selector, els =>\n    els.map(el => el.textContent)",
+      "file_path": "SKILL.md",
+      "line_number": 246,
+      "snippet": "const data = await page.$$eval(selector, els =>",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_eval_exec",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.42731523513793945,
+  "duration_ms": 427,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:17:03.013358"
+}

@@ -1,0 +1,135 @@
+{
+  "skill_name": "stealth-browser",
+  "skill_path": "./skills/clawhub-kesslerio-stealth-browser",
+  "skill_directory": "./skills/clawhub-kesslerio-stealth-browser",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 6,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "TOOL_ABUSE_SYSTEM_PACKAGE_INSTALL_32a2252c5e",
+      "rule_id": "TOOL_ABUSE_SYSTEM_PACKAGE_INSTALL",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Attempting to install system packages with elevated privileges",
+      "description": "Pattern detected: sudo dnf install",
+      "file_path": "scripts/setup.sh",
+      "line_number": 30,
+      "snippet": "distrobox-enter pybox -- sudo dnf install -y gtk3 libXt nss at-spi2-atk cups-libs libdrm mesa-libgbm 2>/dev/null || true",
+      "remediation": "Use user-level installs without sudo. Document if system install is necessary",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "sudo\\s+dnf\\s+install",
+        "matched_text": "sudo dnf install",
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_8eb010a8bc",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import requests",
+      "file_path": "scripts/curl-api.py",
+      "line_number": 23,
+      "snippet": "from curl_cffi import requests",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+requests",
+        "matched_text": "import requests",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_HTTP_POST_4f536bfa34",
+      "rule_id": "DATA_EXFIL_HTTP_POST",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "HTTP POST request that may send data externally",
+      "description": "Pattern detected: requests.post(",
+      "file_path": "scripts/curl-api.py",
+      "line_number": 73,
+      "snippet": "response = requests.post(url, **kwargs)",
+      "remediation": "Review all POST requests. Ensure they don't send sensitive data",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "requests\\.post\\s*\\(",
+        "matched_text": "requests.post(",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "TOOL_MISMATCH_NETWORK_ab83c3eb83",
+      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Undeclared network usage",
+      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Declare network usage in compatibility field or remove network calls",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_24b1c01ed7",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: GET, POST",
+      "file_path": "scripts/curl-api.py",
+      "line_number": 11,
+      "snippet": "--method METHOD   HTTP method (GET, POST, etc.)",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 1.6989445686340332,
+  "duration_ms": 1698,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:06:41.039574"
+}

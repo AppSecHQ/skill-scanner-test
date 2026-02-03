@@ -1,76 +1,175 @@
 {
   "skill_name": "agent-browser",
-  "skill_path": "./skills/vercel-labs-agent-browser/skills/agent-browser",
-  "skill_directory": "./skills/vercel-labs-agent-browser/skills/agent-browser",
-  "is_safe": true,
-  "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "skill_path": "./skills/clawhub-agent-browser-tekken",
+  "skill_directory": "./skills/clawhub-agent-browser-tekken",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 8,
   "findings": [
     {
-      "id": "llm_finding_agent-browser_0",
-      "rule_id": "LLM_DATA_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Hardcoded Credentials in Template Scripts",
-      "description": "The template scripts (form-automation.sh, authenticated-session.sh) contain examples with hardcoded credentials like 'SecureP@ssw0rd!' and 'password123'. While these are template examples meant to be replaced, they demonstrate insecure practices and could be copied by users without modification, leading to credential exposure in scripts.",
-      "file_path": "templates/form-automation.sh",
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": "agent-browser fill @e4 \"SecureP@ssw0rd!\"\nagent-browser fill @e2 \"password123\"",
-      "remediation": "Replace hardcoded credential examples with environment variable references (e.g., $PASSWORD, $USERNAME) or placeholder text that clearly indicates users must replace them. Add warnings in comments about never hardcoding credentials.",
-      "analyzer": "llm",
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
       "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The agent-browser skill is a legitimate browser automation tool with MEDIUM security concerns primarily around credential handling and session state management. The skill itself does not contain malicious code or data exfiltration attempts. The main risks are: 1) Template scripts demonstrate insecure credential practices that users might copy, 2) Session state files containing authentication data are saved without encryption or access controls, 3) Documentation lacks sufficient security warnings about sensitive data handling. The skill operates as described and does not exhibit deceptive behavior, prompt injection, or tool exploitation. The referenced files are internal to the skill package (templates and references directories), which is normal and expected behavior. Recommendations focus on improving security documentation and examples rather than addressing active threats.",
-        "primary_threats": [
-          "Credential Exposure",
-          "Insecure State Management"
-        ],
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "aisubtech": "AISubtech-8.2.3",
-        "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_validated": true,
-        "meta_confidence": "HIGH",
-        "meta_confidence_reason": "LLM analyzer correctly identified insecure credential examples in template code. While commented out, these demonstrate bad practices users may copy.",
-        "meta_exploitability": "Low - Examples are commented out and require user action to activate",
-        "meta_impact": "Medium - If copied without modification, credentials would be exposed in script files"
+        "meta_reviewed": true
       }
     },
     {
-      "id": "llm_finding_agent-browser_1",
-      "rule_id": "LLM_DATA_EXFILTRATION",
-      "category": "data_exfiltration",
+      "id": "COMMAND_INJECTION_USER_INPUT_4e706dfcdb",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
       "severity": "MEDIUM",
-      "title": "Session State Files May Contain Sensitive Authentication Data",
-      "description": "The skill saves and loads browser session state to JSON files (auth-state.json) containing cookies, localStorage, sessionStorage, and authentication tokens. These files are stored in user-specified locations (including /tmp) without encryption or access controls, potentially exposing authentication credentials if the files are accessed by unauthorized parties.",
-      "file_path": "references/session-management.md",
-      "line_number": null,
-      "snippet": "agent-browser state save /path/to/auth-state.json\nSTATE_FILE=\"${2:-./auth-state.json}\"\nState file contains: {\"cookies\": [...], \"localStorage\": {...}, \"sessionStorage\": {...}}",
-      "remediation": "1) Document security risks of state files in SKILL.md 2) Recommend secure file permissions (chmod 600) 3) Warn against storing state files in shared directories like /tmp 4) Consider encrypting sensitive state data 5) Add examples showing secure state file handling",
-      "analyzer": "llm",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: ${1:?Usage: $0 <url> [output-dir]}",
+      "file_path": "templates/capture-workflow.sh",
+      "line_number": 7,
+      "snippet": "TARGET_URL=\"${1:?Usage: $0 <url> [output-dir]}\"",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
       "metadata": {
-        "model": "claude-sonnet-4-5-20250929",
-        "overall_assessment": "The agent-browser skill is a legitimate browser automation tool with MEDIUM security concerns primarily around credential handling and session state management. The skill itself does not contain malicious code or data exfiltration attempts. The main risks are: 1) Template scripts demonstrate insecure credential practices that users might copy, 2) Session state files containing authentication data are saved without encryption or access controls, 3) Documentation lacks sufficient security warnings about sensitive data handling. The skill operates as described and does not exhibit deceptive behavior, prompt injection, or tool exploitation. The referenced files are internal to the skill package (templates and references directories), which is normal and expected behavior. Recommendations focus on improving security documentation and examples rather than addressing active threats.",
-        "primary_threats": [
-          "Credential Exposure",
-          "Insecure State Management"
-        ],
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "aisubtech": "AISubtech-8.2.3",
-        "aisubtech_name": "Data Exfiltration via Agent Tooling",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_validated": true,
-        "meta_confidence": "HIGH",
-        "meta_confidence_reason": "LLM analyzer correctly identified that session state files contain sensitive data without encryption. This is a legitimate security concern for authentication workflows.",
-        "meta_exploitability": "Medium - Requires local file access, but state files may be stored in world-readable locations",
-        "meta_impact": "High - Exposed state files could allow session hijacking and unauthorized access"
+        "matched_pattern": "\\$\\{[^}]*\\$[0-9]+[^}]*\\}",
+        "matched_text": "${1:?Usage: $0 <url> [output-dir]}",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_7b9c8970b7",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: ${1:?Usage: $0 <form-url>}",
+      "file_path": "templates/form-automation.sh",
+      "line_number": 7,
+      "snippet": "FORM_URL=\"${1:?Usage: $0 <form-url>}\"",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\$\\{[^}]*\\$[0-9]+[^}]*\\}",
+        "matched_text": "${1:?Usage: $0 <form-url>}",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_42d1ab0c32",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: ${1:?Usage: $0 <login-url> [state-file]}",
+      "file_path": "templates/authenticated-session.sh",
+      "line_number": 15,
+      "snippet": "LOGIN_URL=\"${1:?Usage: $0 <login-url> [state-file]}\"",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\$\\{[^}]*\\$[0-9]+[^}]*\\}",
+        "matched_text": "${1:?Usage: $0 <login-url> [state-file]}",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ALLOWED_TOOLS_BASH_VIOLATION_43e797a9ce",
+      "rule_id": "ALLOWED_TOOLS_BASH_VIOLATION",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Code executes bash but Bash tool not in allowed-tools",
+      "description": "Skill restricts tools to ['Bash(agent-browser:*)'] but code executes bash commands",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'Bash' to allowed-tools or remove bash execution from code",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_42d1ab0c32",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: ${1:?Usage: $0 <login-url> [state-file]}",
+      "file_path": "templates/authenticated-session.sh",
+      "line_number": 15,
+      "snippet": "LOGIN_URL=\"${1:?Usage: $0 <login-url> [state-file]}\"",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\$\\{[^}]*\\$[0-9]+[^}]*\\}",
+        "matched_text": "${1:?Usage: $0 <login-url> [state-file]}",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "reference_depth": 0,
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_4e706dfcdb",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: ${1:?Usage: $0 <url> [output-dir]}",
+      "file_path": "templates/capture-workflow.sh",
+      "line_number": 7,
+      "snippet": "TARGET_URL=\"${1:?Usage: $0 <url> [output-dir]}\"",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\$\\{[^}]*\\$[0-9]+[^}]*\\}",
+        "matched_text": "${1:?Usage: $0 <url> [output-dir]}",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "reference_depth": 0,
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_7b9c8970b7",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: ${1:?Usage: $0 <form-url>}",
+      "file_path": "templates/form-automation.sh",
+      "line_number": 7,
+      "snippet": "FORM_URL=\"${1:?Usage: $0 <form-url>}\"",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\$\\{[^}]*\\$[0-9]+[^}]*\\}",
+        "matched_text": "${1:?Usage: $0 <form-url>}",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "reference_depth": 0,
+        "meta_reviewed": true
       }
     }
   ],
-  "scan_duration_seconds": 27.218048810958862,
-  "duration_ms": 27218,
+  "scan_duration_seconds": 0.36408352851867676,
+  "duration_ms": 364,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -78,5 +177,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-01T20:40:27.441860"
+  "timestamp": "2026-02-03T16:09:42.492037"
 }

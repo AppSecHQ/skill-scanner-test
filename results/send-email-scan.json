@@ -1,0 +1,93 @@
+{
+  "skill_name": "send-email",
+  "skill_path": "./skills/clawhub-send-email",
+  "skill_directory": "./skills/clawhub-send-email",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 4,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_2ad2f4d370",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.getenv(\"EMAIL_SMTP_PASSWORD",
+      "file_path": "send_email.py",
+      "line_number": 20,
+      "snippet": "AUTHORIZATION_CODE = os.getenv(\"EMAIL_SMTP_PASSWORD\")",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.getenv\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.getenv(\"EMAIL_SMTP_PASSWORD",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_99b48eed91",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: read config files. OpenClaw injects `skills.entries.send-email",
+      "file_path": "SKILL.md",
+      "line_number": 34,
+      "snippet": "1. **Credentials**: Never read config files. OpenClaw injects `skills.entries.send-email.env` when the script runs \u2014 do not use the read tool on `~/.openclaw/openclaw.json` or `workspace/openclaw.json` (exposes secrets). If the skill is enabled, assume env is configured; do not ask the user for passwords. Do not use ~/.msmtprc.",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_7e6349ba18",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/clawhub-send-email/send_email.py",
+      "file_path": "skills/clawhub-send-email/send_email.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.326580286026001,
+  "duration_ms": 326,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:03:24.505699"
+}

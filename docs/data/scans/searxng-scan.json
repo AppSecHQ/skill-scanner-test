@@ -1,0 +1,73 @@
+{
+  "skill_name": "searxng",
+  "skill_path": "./skills/clawhub-searxng",
+  "skill_directory": "./skills/clawhub-searxng",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 3,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_97a66eb17b",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import httpx",
+      "file_path": "scripts/searxng.py",
+      "line_number": 13,
+      "snippet": "import httpx",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+httpx",
+        "matched_text": "import httpx",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "TOOL_MISMATCH_NETWORK_2b4406bceb",
+      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Undeclared network usage",
+      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Declare network usage in compatibility field or remove network calls",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.8183772563934326,
+  "duration_ms": 818,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T15:54:05.050268"
+}

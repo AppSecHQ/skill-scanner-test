@@ -1,22 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** clawhub
-**Directory:** ./skills/clawhub-clawhub-c9y4p
-**Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.42s
-**Timestamp:** 2026-02-02T03:07:41.691693
+**Directory:** ./skills/clawhub-clawhub1
+**Status:** [FAIL] ISSUES FOUND
+**Max Severity:** HIGH
+**Scan Duration:** 0.36s
+**Timestamp:** 2026-02-03T16:09:54.059667
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 2
 - **Critical:** 0
-- **High:** 0
+- **High:** 1
 - **Medium:** 0
 - **Low:** 1
 - **Info:** 0
 
 ## Findings
+
+### HIGH Severity
+
+#### [HIGH] SYSTEM MANIPULATION detected by YARA
+
+**Severity:** HIGH
+**Category:** unauthorized_tool_use
+**Rule ID:** YARA_system_manipulation
+**Location:** SKILL.md:335
+
+**Description:** Detects system manipulation, privilege escalation, and destructive file operations: rm -rf
 
 ### LOW Severity
 

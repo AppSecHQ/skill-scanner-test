@@ -1,0 +1,114 @@
+{
+  "skill_name": "veo3-video-gen",
+  "skill_path": "./skills/clawhub-veo3-video-gen",
+  "skill_directory": "./skills/clawhub-veo3-video-gen",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 5,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_OS_SYSTEM_f40e2294ff",
+      "rule_id": "COMMAND_INJECTION_OS_SYSTEM",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "Shell command execution with string formatting (potential injection)",
+      "description": "Pattern detected: subprocess.run([\"bash\", \"-lc\", f\"command -v {shlex.quote(name)}",
+      "file_path": "scripts/generate_video.py",
+      "line_number": 49,
+      "snippet": "if subprocess.run([\"bash\", \"-lc\", f\"command -v {shlex.quote(name)}\"], capture_output=True).returncode != 0:",
+      "remediation": "Use subprocess with argument lists, not shell strings. Never use user input in shell commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "subprocess\\.(?:call|run|Popen)\\s*\\([^)]*[f\"'].*\\{.*\\}",
+        "matched_text": "subprocess.run([\"bash\", \"-lc\", f\"command -v {shlex.quote(name)}",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_04378e31e1",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"GEMINI_API_KEY",
+      "file_path": "scripts/generate_video.py",
+      "line_number": 45,
+      "snippet": "return os.environ.get(\"GEMINI_API_KEY\")",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"GEMINI_API_KEY",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_autonomy_abuse_95e0f64726",
+      "rule_id": "YARA_autonomy_abuse",
+      "category": "autonomy_abuse",
+      "severity": "MEDIUM",
+      "title": "AUTONOMY ABUSE detected by YARA",
+      "description": "Detects unbounded autonomy patterns that could lead to runaway behavior: keep trying",
+      "file_path": "scripts/generate_video.py",
+      "line_number": 117,
+      "snippet": "# If polling fails intermittently, keep trying until deadline.",
+      "remediation": "Review and remove autonomy abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "autonomy_abuse",
+        "yara_namespace": "autonomy_abuse",
+        "matched_string": "$keep_trying",
+        "threat_type": "AUTONOMY ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_100b9c658e",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/clawhub-veo3-video-gen/scripts/generate_video.py",
+      "file_path": "skills/clawhub-veo3-video-gen/scripts/generate_video.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 2.088923454284668,
+  "duration_ms": 2088,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T15:55:19.092979"
+}

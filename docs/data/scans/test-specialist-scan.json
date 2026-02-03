@@ -1,0 +1,157 @@
+{
+  "skill_name": "test-specialist",
+  "skill_path": "./skills/clawhub-test-specialist",
+  "skill_directory": "./skills/clawhub-test-specialist",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 7,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_SENSITIVE_FILES_da6878f977",
+      "rule_id": "DATA_EXFIL_SENSITIVE_FILES",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Accessing sensitive system or credential files",
+      "description": "Pattern detected: open(filepath",
+      "file_path": "scripts/analyze_coverage.py",
+      "line_number": 21,
+      "snippet": "with open(filepath, 'r') as f:",
+      "remediation": "Do not access credential files or sensitive system files",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "open\\s*\\(\\s*filepath",
+        "matched_text": "open(filepath",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_sql_injection_58d8e87767",
+      "rule_id": "YARA_sql_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects SQL injection attack patterns including keywords, tautologies, and database functions: '; DROP TABLE",
+      "file_path": "SKILL.md",
+      "line_number": 205,
+      "snippet": "const malicious = \"'; DROP TABLE expenses; --\";",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "sql_injection",
+        "yara_namespace": "sql_injection",
+        "matched_string": "$destructive_injections",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_5c22d2fcaf",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: <script>",
+      "file_path": "SKILL.md",
+      "line_number": 212,
+      "snippet": "const xss = '<script>alert(\"xss\")</script>';",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$tags",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_5c22d2fcaf",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: </script>",
+      "file_path": "SKILL.md",
+      "line_number": 212,
+      "snippet": "const xss = '<script>alert(\"xss\")</script>';",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$tags",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_2a81ca2275",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: <script>",
+      "file_path": "SKILL.md",
+      "line_number": 214,
+      "snippet": "expect(expense.description).not.toContain('<script>');",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$tags",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_f238f4dd7a",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: # ",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "# Test Specialist",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$markdown_heading",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 1.3676731586456299,
+  "duration_ms": 1367,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:11:06.619016"
+}

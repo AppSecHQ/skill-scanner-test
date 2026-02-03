@@ -1,24 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** find-skills
-**Directory:** ./skills/vercel-labs-skills/skills/find-skills
+**Directory:** ./skills/clawhub-find-skills
 **Status:** [OK] SAFE
-**Max Severity:** SAFE
-**Scan Duration:** 6.45s
-**Timestamp:** 2026-02-01T20:33:16.358254
+**Max Severity:** LOW
+**Scan Duration:** 0.42s
+**Timestamp:** 2026-02-03T15:54:50.786844
 
 ## Summary
 
-- **Total Findings:** 0
+- **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 0
+- **Low:** 1
 - **Info:** 0
 
-## [OK] No Issues Found
+## Findings
 
-This skill passed all security checks.
+### LOW Severity
+
+#### [LOW] Skill does not specify a license
+
+**Severity:** LOW
+**Category:** policy_violation
+**Rule ID:** MANIFEST_MISSING_LICENSE
+**Location:** SKILL.md
+
+**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
 
 ## Analyzers
 

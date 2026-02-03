@@ -1,0 +1,386 @@
+{
+  "skill_name": "skill-scanner",
+  "skill_path": "./skills/clawhub-ai-skill-scanner",
+  "skill_directory": "./skills/clawhub-ai-skill-scanner",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 19,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_EVAL_a73ec1af25",
+      "rule_id": "COMMAND_INJECTION_EVAL",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "Dangerous code execution functions that can execute arbitrary code",
+      "description": "Pattern detected: eval(",
+      "file_path": "scripts/advanced_checks.py",
+      "line_number": 337,
+      "snippet": "\"description\": \"eval() or new Function() \u2014 dynamic code execution\",  # noscan",
+      "remediation": "Avoid eval(), exec(), and compile(). Use safer alternatives like ast.literal_eval() or operator module",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\beval\\s*\\(",
+        "matched_text": "eval(",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_SOCKET_CONNECT_0e92bf12bc",
+      "rule_id": "DATA_EXFIL_SOCKET_CONNECT",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Direct socket connection to external server",
+      "description": "Pattern detected: socket.create_connection",
+      "file_path": "scripts/advanced_checks.py",
+      "line_number": 443,
+      "snippet": "\"socket.connect\", \"socket.create_connection\",  # noscan",
+      "remediation": "Remove socket connections unless absolutely necessary and documented",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "socket\\.create_connection",
+        "matched_text": "socket.create_connection",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_38a6d10b21",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: fetch|axios\\.(?:get|post|put|delete|patch|request)|got|got\\.(?:get|post",
+      "file_path": "scripts/advanced_checks.py",
+      "line_number": 322,
+      "snippet": "r\"\"\"(?:\\.ssh|\\.aws|\\.env|\\.npmrc|\\.docker|\\.kube|\\.gnupg|credentials|keychain|auth|\"\"\"  # noscan",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_38a6d10b21",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get|post|put|delete|patch|request)|got|got\\.(?:get|post",
+      "file_path": "scripts/advanced_checks.py",
+      "line_number": 322,
+      "snippet": "r\"\"\"(?:\\.ssh|\\.aws|\\.env|\\.npmrc|\\.docker|\\.kube|\\.gnupg|credentials|keychain|auth|\"\"\"  # noscan",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_ae408caf71",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get|post",
+      "file_path": "scripts/advanced_checks.py",
+      "line_number": 323,
+      "snippet": "r\"\"\"secret|private.?key|\\.clawdbot|\\.openai)\"\"\")  # noscan",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_15ff70d4c2",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get\", \"requests.post",
+      "file_path": "scripts/advanced_checks.py",
+      "line_number": 458,
+      "snippet": "\"api.telegram.org\", \"discord.com\",  # noscan",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_7dd9fc5753",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: TEMPLATE",
+      "file_path": "scripts/advanced_checks.py",
+      "line_number": 97,
+      "snippet": "if rev_pat.search(line):  # noscan",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$documentation_context",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_0ea3b9395b",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
+      "file_path": "scripts/advanced_checks.py",
+      "line_number": 98,
+      "snippet": "findings.append({\"check\": \"EVASION_REVERSE\", \"severity\": \"HIGH\",  # noscan",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$documentation_context",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_437ddce7a7",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: Function(",
+      "file_path": "scripts/advanced_checks.py",
+      "line_number": 349,
+      "snippet": "\"description\": \"process.env access \u2014 reads environment variables\",  # noscan",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$execution_functions",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_67b445e4e6",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: function (",
+      "file_path": "scripts/advanced_checks.py",
+      "line_number": 415,
+      "snippet": "return True  # noscan",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$execution_functions",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_e3fce83501",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: fetch|axios|got|request|http\\.request|https\\.request|urllib\\.request|requests\\.(get|post",
+      "file_path": "scripts/scan.py",
+      "line_number": 50,
+      "snippet": "\"Sends credentials via curl/wget\",",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_2f30951e7c",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get|post",
+      "file_path": "scripts/scan.py",
+      "line_number": 51,
+      "snippet": "r\"\"\"(?:curl|wget)\\s+.*(?:-d|--data|--data-raw|--data-binary)\\s+.*(?:api[_-]?key|token|secret|password|credential|auth)\"\"\",  # noscan",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_command_injection_d538d93a29",
+      "rule_id": "YARA_command_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: socat.*exec",
+      "file_path": "scripts/scan.py",
+      "line_number": 131,
+      "snippet": "r\"\"\"(?:keylog|keystroke|keyboard\\.on|input\\.on|keypress|keydown|pynput|keyboard\\.hook)\"\"\",  # noscan",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "command_injection",
+        "yara_namespace": "command_injection",
+        "matched_string": "$reverse_shells",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_autonomy_abuse_636adca556",
+      "rule_id": "YARA_autonomy_abuse",
+      "category": "autonomy_abuse",
+      "severity": "MEDIUM",
+      "title": "AUTONOMY ABUSE detected by YARA",
+      "description": "Detects unbounded autonomy patterns that could lead to runaway behavior: autorun",
+      "file_path": "scripts/scan.py",
+      "line_number": 119,
+      "snippet": "\"Shell command execution\",",
+      "remediation": "Review and remove autonomy abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "autonomy_abuse",
+        "yara_namespace": "autonomy_abuse",
+        "matched_string": "$auto_execute",
+        "threat_type": "AUTONOMY ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_cbfc91d983",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: http.client",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-ai-skill-scanner/scripts/advanced_checks.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "http.client",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_e185c0181f",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: http.client.HTTPConnection",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-ai-skill-scanner/scripts/advanced_checks.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "http.client.HTTPConnection",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_310a27451a",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: http.client.HTTPSConnection",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-ai-skill-scanner/scripts/advanced_checks.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "http.client.HTTPSConnection",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_e8ba3b344a",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https?://([a-zA-Z0-9._-]+\\.[a-zA-Z]{2,})(?:[:/]|$)",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-ai-skill-scanner/scripts/advanced_checks.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https?://([a-zA-Z0-9._-]+\\.[a-zA-Z]{2,})(?:[:/]|$)",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 13.077197313308716,
+  "duration_ms": 13077,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:05:04.171799"
+}

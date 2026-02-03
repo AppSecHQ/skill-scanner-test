@@ -1,0 +1,72 @@
+{
+  "skill_name": "amap",
+  "skill_path": "./skills/clawhub-amap",
+  "skill_directory": "./skills/clawhub-amap",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 3,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_d2766305d3",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export AMAP_KEY=\"\u4f60\u7684Web\u670d\u52a1API Key",
+      "file_path": "SKILL.md",
+      "line_number": 17,
+      "snippet": "- \"\u641c\u7d22[\u5730\u70b9]\u9644\u8fd1\u7684[\u4e1c\u897f]\"",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "TRIGGER_SHORT_20bee5b0",
+      "rule_id": "TRIGGER_DESCRIPTION_TOO_SHORT",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Skill description is too short",
+      "description": "Description has only 0 words. Short descriptions may not provide enough context for the agent to determine when this skill should be used.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Expand the description to at least 10-20 words explaining the skill's purpose, capabilities, and appropriate use cases.",
+      "analyzer": "trigger",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.4291059970855713,
+  "duration_ms": 429,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:15:58.832863"
+}

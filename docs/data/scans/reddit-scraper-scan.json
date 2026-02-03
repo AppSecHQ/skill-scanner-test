@@ -1,0 +1,184 @@
+{
+  "skill_name": "reddit",
+  "skill_path": "./skills/clawhub-reddit-scraper",
+  "skill_directory": "./skills/clawhub-reddit-scraper",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 9,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_b85dd63568",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import requests",
+      "file_path": "scripts/reddit_scraper.py",
+      "line_number": 13,
+      "snippet": "import requests",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+requests",
+        "matched_text": "import requests",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "TOOL_MISMATCH_NETWORK_c839833380",
+      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Undeclared network usage",
+      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Declare network usage in compatibility field or remove network calls",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_fe667c8823",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Read-only**: Cannot post",
+      "file_path": "SKILL.md",
+      "line_number": 80,
+      "snippet": "- **Read-only**: Cannot post, comment, or vote",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_5065764059",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('kind') == 't3':  # t3 = link/post",
+      "file_path": "scripts/reddit_scraper.py",
+      "line_number": 88,
+      "snippet": "if child.get('kind') == 't3':  # t3 = link/post",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_e309f2b85d",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('score', 0)} ({int(ratio*100)}%) \u2022 \ud83d\udcac {post",
+      "file_path": "scripts/reddit_scraper.py",
+      "line_number": 157,
+      "snippet": "print(f\"   \ud83d\udd3c {post.get('score', 0)} ({int(ratio*100)}%) \u2022 \ud83d\udcac {post.get('num_comments', 0)} \u2022 {created}\")",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_1d2e7e61a6",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://redd.it/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-reddit-scraper/scripts/reddit_scraper.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://redd.it/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_53b10c8f0a",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://reddit.com",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-reddit-scraper/scripts/reddit_scraper.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://reddit.com",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_b1080c6b79",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://www.reddit.com",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-reddit-scraper/scripts/reddit_scraper.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://www.reddit.com",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 1.2027912139892578,
+  "duration_ms": 1202,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T15:53:53.924448"
+}

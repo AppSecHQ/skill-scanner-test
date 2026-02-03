@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** auto-updater
-**Directory:** ./skills/clawhub-auto-updater-qdyme
+**Directory:** ./skills/clawhub-auto-updater-ek1qviijfp1
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.36s
-**Timestamp:** 2026-02-02T03:07:58.317275
+**Scan Duration:** 0.40s
+**Timestamp:** 2026-02-03T16:01:31.032402
 
 ## Summary
 

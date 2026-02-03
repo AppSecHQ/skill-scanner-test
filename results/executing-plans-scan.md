@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** executing-plans
-**Directory:** ./skills/obra-superpowers/skills/executing-plans
+**Directory:** ./skills/clawhub-executing-plans
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-02T02:54:07.309028
+**Scan Duration:** 0.39s
+**Timestamp:** 2026-02-03T15:59:53.147557
 
 ## Summary
 

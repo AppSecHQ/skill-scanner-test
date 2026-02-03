@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** frontend-design
-**Directory:** ./skills/anthropics-skills/skills/frontend-design
+**Directory:** ./skills/clawhub-frontend-design-2
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 19.20s
-**Timestamp:** 2026-02-01T20:38:42.639434
+**Scan Duration:** 0.44s
+**Timestamp:** 2026-02-03T16:06:17.443016
 
 ## Summary
 
@@ -28,4 +28,3 @@ The following analyzers were used:
 - behavioral_analyzer
 - llm_analyzer
 - trigger_analyzer
-- meta_analyzer

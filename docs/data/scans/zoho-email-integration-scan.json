@@ -1,0 +1,1419 @@
+{
+  "skill_name": "zoho-email",
+  "skill_path": "./skills/clawhub-zoho-email-integration",
+  "skill_directory": "./skills/clawhub-zoho-email-integration",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 69,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_1181eb0c39",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: eval \"$",
+      "file_path": "test-app-password.sh",
+      "line_number": 52,
+      "snippet": "if eval \"$command\"; then",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "eval\\s+.*\\$",
+        "matched_text": "eval \"$",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_c251b28225",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: $(dirname \"$0\")",
+      "file_path": "test-batch-operations.sh",
+      "line_number": 16,
+      "snippet": "cd \"$(dirname \"$0\")\"",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\$\\([^)]*\\$[0-9]+[^)]*\\)",
+        "matched_text": "$(dirname \"$0\")",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_05239c250f",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get('ZOHO_PASSWORD",
+      "file_path": "examples/batch-cleanup.py",
+      "line_number": 163,
+      "snippet": "if not os.environ.get('ZOHO_EMAIL') or not os.environ.get('ZOHO_PASSWORD'):",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get('ZOHO_PASSWORD",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_61044aa850",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import urllib.request",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 75,
+      "snippet": "import urllib.request",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+urllib\\.request",
+        "matched_text": "import urllib.request",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_13e54727fa",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import requests",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 114,
+      "snippet": "import requests",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+requests",
+        "matched_text": "import requests",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_8398f5a955",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import requests",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 141,
+      "snippet": "import requests",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+requests",
+        "matched_text": "import requests",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_b4063f2753",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import urllib.request",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 1808,
+      "snippet": "import urllib.request",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+urllib\\.request",
+        "matched_text": "import urllib.request",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_SOCKET_CONNECT_e5300e7ddb",
+      "rule_id": "DATA_EXFIL_SOCKET_CONNECT",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Direct socket connection to external server",
+      "description": "Pattern detected: socket.create_connection",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 1796,
+      "snippet": "sock = socket.create_connection((host, int(port)), timeout=timeout)",
+      "remediation": "Remove socket connections unless absolutely necessary and documented",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "socket\\.create_connection",
+        "matched_text": "socket.create_connection",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_5fc08fdedf",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get('ZOHO_PASSWORD",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 26,
+      "snippet": "PASSWORD = os.environ.get('ZOHO_PASSWORD')",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get('ZOHO_PASSWORD",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_65ba30a2da",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"ZOHO_PASSWORD",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 1768,
+      "snippet": "\"zoho_password_env_set\": bool(os.environ.get(\"ZOHO_PASSWORD\")),",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"ZOHO_PASSWORD",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_BASE64_AND_NETWORK_ef43dbaa2a",
+      "rule_id": "DATA_EXFIL_BASE64_AND_NETWORK",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Base64 encoding (often used before data exfiltration)",
+      "description": "Pattern detected: base64.b64encode",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 99,
+      "snippet": "return base64.b64encode(auth_string.encode()).decode()",
+      "remediation": "Review base64 usage, especially if combined with network calls",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "base64\\.(?:b64encode|encodebytes)",
+        "matched_text": "base64.b64encode",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_8c7fd457af",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import urllib.request",
+      "file_path": "scripts/apply_oauth2.py",
+      "line_number": 79,
+      "snippet": "import urllib.request",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+urllib\\.request",
+        "matched_text": "import urllib.request",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_BASE64_AND_NETWORK_8788a81c51",
+      "rule_id": "DATA_EXFIL_BASE64_AND_NETWORK",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Base64 encoding (often used before data exfiltration)",
+      "description": "Pattern detected: base64.b64encode",
+      "file_path": "scripts/apply_oauth2.py",
+      "line_number": 103,
+      "snippet": "return base64.b64encode(auth_string.encode()).decode()",
+      "remediation": "Review base64 usage, especially if combined with network calls",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "base64\\.(?:b64encode|encodebytes)",
+        "matched_text": "base64.b64encode",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_de20930d1f",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import urllib.request",
+      "file_path": "scripts/oauth-setup.py",
+      "line_number": 99,
+      "snippet": "import urllib.request",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+urllib\\.request",
+        "matched_text": "import urllib.request",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_795a94208c",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import urllib.request",
+      "file_path": "scripts/oauth-setup.py",
+      "line_number": 126,
+      "snippet": "import urllib.request",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+urllib\\.request",
+        "matched_text": "import urllib.request",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "TOOL_MISMATCH_NETWORK_9b3c25fc71",
+      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Undeclared network usage",
+      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Declare network usage in compatibility field or remove network calls",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_05239c250f",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get('ZOHO_PASSWORD",
+      "file_path": "examples/batch-cleanup.py",
+      "line_number": 163,
+      "snippet": "if not os.environ.get('ZOHO_EMAIL') or not os.environ.get('ZOHO_PASSWORD'):",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get('ZOHO_PASSWORD",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "reference_depth": 0,
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_c6ab80f399",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get a specific email",
+      "file_path": "SKILL.md",
+      "line_number": 114,
+      "snippet": "python3 scripts/zoho-email.py get INBOX <id>",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_6b24edafa2",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get Specific Email",
+      "file_path": "SKILL.md",
+      "line_number": 220,
+      "snippet": "python3 scripts/zoho-email.py get Inbox 4590",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_f4c6c034d2",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get latest email",
+      "file_path": "SKILL.md",
+      "line_number": 332,
+      "snippet": "# List attachments",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_43ef745880",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get specific email",
+      "file_path": "SKILL.md",
+      "line_number": 365,
+      "snippet": "email = zoho.get_email(folder=\"Sent\", email_id=\"4590\")",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_249c59ae8d",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: Export your Zoho credentials",
+      "file_path": "SKILL.md",
+      "line_number": 62,
+      "snippet": "export ZOHO_EMAIL=\"your-email@domain.com\"",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_7606ad84e7",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export credentials",
+      "file_path": "SKILL.md",
+      "line_number": 500,
+      "snippet": "export ZOHO_PASSWORD=\"your-app-password\"",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_skill_discovery_abuse_619577a7a2",
+      "rule_id": "YARA_skill_discovery_abuse",
+      "category": "skill_discovery_abuse",
+      "severity": "MEDIUM",
+      "title": "SKILL DISCOVERY ABUSE detected by YARA",
+      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
+      "file_path": "SKILL.md",
+      "line_number": 201,
+      "snippet": "### Search Inbox",
+      "remediation": "Review and remove skill discovery abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "skill_discovery_abuse",
+        "yara_namespace": "skill_discovery_abuse",
+        "matched_string": "$overpromising",
+        "threat_type": "SKILL DISCOVERY ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_skill_discovery_abuse_d34172c08f",
+      "rule_id": "YARA_skill_discovery_abuse",
+      "category": "skill_discovery_abuse",
+      "severity": "MEDIUM",
+      "title": "SKILL DISCOVERY ABUSE detected by YARA",
+      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
+      "file_path": "SKILL.md",
+      "line_number": 562,
+      "snippet": "python3 scripts/zoho-email.py mark-unread INBOX 1004 1005",
+      "remediation": "Review and remove skill discovery abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "skill_discovery_abuse",
+        "yara_namespace": "skill_discovery_abuse",
+        "matched_string": "$overpromising",
+        "threat_type": "SKILL DISCOVERY ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_a0751c6881",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;32m",
+      "file_path": "test-app-password.sh",
+      "line_number": 8,
+      "snippet": "GREEN='\\033[0;32m'",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$ansi_deception",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_d669e44e79",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;31m",
+      "file_path": "test-app-password.sh",
+      "line_number": 9,
+      "snippet": "RED='\\033[0;31m'",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$ansi_deception",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_9928b38fe0",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[1;33m",
+      "file_path": "test-app-password.sh",
+      "line_number": 10,
+      "snippet": "YELLOW='\\033[1;33m'",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$ansi_deception",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_74a781ae01",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;34m",
+      "file_path": "test-app-password.sh",
+      "line_number": 11,
+      "snippet": "BLUE='\\033[0;34m'",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$ansi_deception",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_0c2a32a0f1",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0m",
+      "file_path": "test-app-password.sh",
+      "line_number": 12,
+      "snippet": "NC='\\033[0m' # No Color",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$ansi_deception",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_917d2b5ed3",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get email: python3 scripts/zoho-email",
+      "file_path": "test.sh",
+      "line_number": 60,
+      "snippet": "echo \"  \u2022 Get email: python3 scripts/zoho-email.py get INBOX <email_id>\"",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_465be9f8f0",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get attachments for this email",
+      "file_path": "examples/attachment-demo.py",
+      "line_number": 73,
+      "snippet": "# Get attachments for this email",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_c044852b0f",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Read, Search, Monitor, Send",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 4,
+      "snippet": "Handles: Read, Search, Monitor, Send emails",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_b276cc406b",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: GET, POST",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 183,
+      "snippet": "method: HTTP method (GET, POST, PATCH, DELETE)",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_bce5367956",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('email', EMAIL",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 357,
+      "snippet": "'fromAddress': self.tokens.get('email', EMAIL),",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_c7475beda3",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('email') or EMAIL",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 641,
+      "snippet": "self.email = self.oauth_tokens.get('email') or EMAIL",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_d82841fbfa",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get a specific email",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 922,
+      "snippet": "\"\"\"Get a specific email by ID\"\"\"",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_b5f2097879",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get unread:      python3 zoho-email",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 1669,
+      "snippet": "print(\"  Get unread:      python3 zoho-email.py unread\")",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_dfbd6ab77e",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get email:       python3 zoho-email",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 1670,
+      "snippet": "print(\"  Get email:       python3 zoho-email.py get <folder> <id>\")",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_1ada164c9e",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: read:    python3 zoho-email",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 1678,
+      "snippet": "print(\"  Mark as read:    python3 zoho-email.py mark-read <folder> <id1> <id2> ...\")",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_6e66c6e204",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get unread:      python3 zoho-email",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 1718,
+      "snippet": "print(\"  Get unread:      python3 zoho-email.py unread\")",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_e9606e5a7c",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get email:       python3 zoho-email",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 1719,
+      "snippet": "print(\"  Get email:       python3 zoho-email.py get <folder> <id>\")",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_678966696e",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: read:    python3 zoho-email",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 1728,
+      "snippet": "print(\"  Mark as read:    python3 zoho-email.py mark-read <folder> <id1> <id2> ...\")",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_d84ee8a00e",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get(\"email",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": 1788,
+      "snippet": "report[\"oauth_email_in_token\"] = bool(tokens.get(\"email\") or tokens.get(\"user\") or tokens.get(\"user_email\"))",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_b41522fafe",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Read, Search, Monitor, Send",
+      "file_path": "scripts/apply_oauth2.py",
+      "line_number": 16,
+      "snippet": "Handles: Read, Search, Monitor, Send emails",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_cd52b498c8",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Read, Search, Monitor, Send",
+      "file_path": "scripts/apply_oauth2.py",
+      "line_number": 20,
+      "snippet": "Handles: Read, Search, Monitor, Send emails",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_c61ff7a9b9",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('email') or EMAIL",
+      "file_path": "scripts/apply_oauth2.py",
+      "line_number": 201,
+      "snippet": "self.email = self.oauth_tokens.get('email') or EMAIL",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_b1dbe4d481",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: <script>",
+      "file_path": "scripts/oauth-setup.py",
+      "line_number": 57,
+      "snippet": "<script>setTimeout(function() { window.close(); }, 3000);</script>",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$tags",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_b1dbe4d481",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: </script>",
+      "file_path": "scripts/oauth-setup.py",
+      "line_number": 57,
+      "snippet": "<script>setTimeout(function() { window.close(); }, 3000);</script>",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$tags",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_b1dbe4d481",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: setTimeout(",
+      "file_path": "scripts/oauth-setup.py",
+      "line_number": 57,
+      "snippet": "<script>setTimeout(function() { window.close(); }, 3000);</script>",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$execution_functions",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_script_injection_b1dbe4d481",
+      "rule_id": "YARA_script_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: function(",
+      "file_path": "scripts/oauth-setup.py",
+      "line_number": 57,
+      "snippet": "<script>setTimeout(function() { window.close(); }, 3000);</script>",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "script_injection",
+        "yara_namespace": "script_injection",
+        "matched_string": "$execution_functions",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_7c371c1273",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ZOHO_EMAIL='your-email@domain.com'\", file",
+      "file_path": "scripts/apply_oauth2_cli.py",
+      "line_number": 131,
+      "snippet": "print(\"  export ZOHO_EMAIL='your-email@domain.com'\", file=sys.stderr)",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_8100c6d782",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ZOHO_PASSWORD='your-app-specific-password'\", file",
+      "file_path": "scripts/apply_oauth2_cli.py",
+      "line_number": 132,
+      "snippet": "print(\"  export ZOHO_PASSWORD='your-app-specific-password'\", file=sys.stderr)'''",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_17ad0ac03b",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ZOHO_EMAIL='your-email@domain.com'\", file",
+      "file_path": "scripts/apply_oauth2_cli.py",
+      "line_number": 137,
+      "snippet": "print(\"     export ZOHO_EMAIL='your-email@domain.com'\", file=sys.stderr)",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_92d9f9a51f",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ZOHO_PASSWORD='your-app-specific-password'\", file",
+      "file_path": "scripts/apply_oauth2_cli.py",
+      "line_number": 138,
+      "snippet": "print(\"     export ZOHO_PASSWORD='your-app-specific-password'\", file=sys.stderr)'''",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_389669ef68",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ZOHO_EMAIL='your-email@domain.com'\", file",
+      "file_path": "scripts/add_oauth_cli.py",
+      "line_number": 114,
+      "snippet": "print(\"  export ZOHO_EMAIL='your-email@domain.com'\", file=sys.stderr)",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_843256dae8",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ZOHO_PASSWORD='your-app-specific-password'\", file",
+      "file_path": "scripts/add_oauth_cli.py",
+      "line_number": 115,
+      "snippet": "print(\"  export ZOHO_PASSWORD='your-app-specific-password'\", file=sys.stderr)''',",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_73c96e999a",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ZOHO_EMAIL='your-email@domain.com'\", file",
+      "file_path": "scripts/add_oauth_cli.py",
+      "line_number": 119,
+      "snippet": "print(\"     export ZOHO_EMAIL='your-email@domain.com'\", file=sys.stderr)",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_7bf43b84cd",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ZOHO_PASSWORD='your-app-specific-password'\", file",
+      "file_path": "scripts/add_oauth_cli.py",
+      "line_number": 120,
+      "snippet": "print(\"     export ZOHO_PASSWORD='your-app-specific-password'\", file=sys.stderr)'''",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_0b35c71a98",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/clawhub-zoho-email-integration/examples/batch-cleanup.py",
+      "file_path": "skills/clawhub-zoho-email-integration/examples/batch-cleanup.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_EXFILTRATION_b192575150",
+      "rule_id": "BEHAVIOR_ENV_VAR_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Environment variable access with network calls detected",
+      "description": "Script accesses environment variables and makes network calls in skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
+      "file_path": "skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable harvesting or network transmission",
+      "analyzer": "behavioral",
+      "metadata": {
+        "has_network": true,
+        "has_env_access": true,
+        "suspicious_urls": [
+          "https://mail.zoho.com/api",
+          "https://accounts.zoho.com/oauth/v2/token"
+        ],
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_b13ec2c40f",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
+      "file_path": "skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_f92b695a00",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://mail.zoho.com/api",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://mail.zoho.com/api",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_199c4738a7",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://accounts.zoho.com/oauth/v2/token",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://accounts.zoho.com/oauth/v2/token",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_0d97775de1",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://accounts.zoho.com/oauth/v2/auth",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-zoho-email-integration/scripts/oauth-setup.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://accounts.zoho.com/oauth/v2/auth",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_199c4738a7",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://accounts.zoho.com/oauth/v2/token",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/clawhub-zoho-email-integration/scripts/oauth-setup.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://accounts.zoho.com/oauth/v2/token",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "CROSSFILE_EXFILTRATION_CHAIN_d94ecc8c29",
+      "rule_id": "BEHAVIOR_CROSSFILE_EXFILTRATION_CHAIN",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Cross-file exfiltration chain: 3 files",
+      "description": "Multi-file exfiltration chain detected: examples/batch-cleanup.py, scripts/zoho-email.py collect data \u2192 scripts/zoho-email.py, scripts/oauth-setup.py \u2192 scripts/zoho-email.py, scripts/oauth-setup.py transmit to network",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review data flow across files: scripts/zoho-email.py, examples/batch-cleanup.py, scripts/oauth-setup.py",
+      "analyzer": "behavioral",
+      "metadata": {
+        "files_involved": [
+          "scripts/zoho-email.py",
+          "examples/batch-cleanup.py",
+          "scripts/oauth-setup.py"
+        ],
+        "threat_type": "exfiltration_chain",
+        "evidence": {
+          "collection_files": [
+            "examples/batch-cleanup.py",
+            "scripts/zoho-email.py"
+          ],
+          "encoding_files": [
+            "scripts/zoho-email.py",
+            "scripts/oauth-setup.py"
+          ],
+          "network_files": [
+            "scripts/zoho-email.py",
+            "scripts/oauth-setup.py"
+          ]
+        },
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "CROSSFILE_ENV_VAR_EXFILTRATION_2eb5f5303f",
+      "rule_id": "BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Cross-file env var exfiltration: 3 files",
+      "description": "Environment variable access with network calls in examples/batch-cleanup.py, scripts/zoho-email.py",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review data flow across files: scripts/zoho-email.py, examples/batch-cleanup.py, scripts/oauth-setup.py",
+      "analyzer": "behavioral",
+      "metadata": {
+        "files_involved": [
+          "scripts/zoho-email.py",
+          "examples/batch-cleanup.py",
+          "scripts/oauth-setup.py"
+        ],
+        "threat_type": "env_var_exfiltration",
+        "evidence": {
+          "env_var_files": [
+            "examples/batch-cleanup.py",
+            "scripts/zoho-email.py"
+          ],
+          "network_files": [
+            "scripts/zoho-email.py",
+            "scripts/oauth-setup.py"
+          ]
+        },
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 8.87645673751831,
+  "duration_ms": 8876,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:15:45.893298"
+}

@@ -1,0 +1,96 @@
+{
+  "skill_name": "security-auditor",
+  "skill_path": "./skills/clawhub-security-auditor",
+  "skill_directory": "./skills/clawhub-security-auditor",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 4,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_d30e379096",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('email",
+      "file_path": "SKILL.md",
+      "line_number": 196,
+      "snippet": "password: formData.get('password'),",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_ebd9ba47fe",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): exec(`ls ${userInput}`)",
+      "file_path": "SKILL.md",
+      "line_number": 94,
+      "snippet": "const result = exec(`ls ${userInput}`)",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_eval_exec",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_ebd9ba47fe",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): exec(`ls ${",
+      "file_path": "SKILL.md",
+      "line_number": 94,
+      "snippet": "const result = exec(`ls ${userInput}`)",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$bash_shell_exec",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.3927586078643799,
+  "duration_ms": 392,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:06:56.197669"
+}

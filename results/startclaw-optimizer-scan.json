@@ -1,0 +1,257 @@
+{
+  "skill_name": "openclaw-optimizer",
+  "skill_path": "./skills/clawhub-startclaw-optimizer",
+  "skill_directory": "./skills/clawhub-startclaw-optimizer",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 12,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_SHELL_TRUE_4874b78a7d",
+      "rule_id": "COMMAND_INJECTION_SHELL_TRUE",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Shell command execution with shell=True enabled",
+      "description": "Pattern detected: os.system(",
+      "file_path": "scripts/dashboard.py",
+      "line_number": 228,
+      "snippet": "os.system('clear' if os.name != 'nt' else 'cls')",
+      "remediation": "Use shell=False and pass commands as lists",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.system\\s*\\(",
+        "matched_text": "os.system(",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_5e74b5d0d2",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Gather-write | Navigate + reply, search + post",
+      "file_path": "SKILL.md",
+      "line_number": 67,
+      "snippet": "| **MED** | Haiku\u2192Sonnet | Gather-write | Navigate + reply, search + post |",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_e8201eccc8",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: gather+post",
+      "file_path": "SKILL.md",
+      "line_number": 402,
+      "snippet": "",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_tool_chaining_abuse_3fe50234e3",
+      "rule_id": "YARA_tool_chaining_abuse",
+      "category": "tool_chaining_abuse",
+      "severity": "MEDIUM",
+      "title": "TOOL CHAINING ABUSE detected by YARA",
+      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: gather $0.01 + Sonnet write $0.06 + Haiku post",
+      "file_path": "SKILL.md",
+      "line_number": 477,
+      "snippet": "(Smart routing, degradation)",
+      "remediation": "Review and remove tool chaining abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "tool_chaining_abuse",
+        "yara_namespace": "tool_chaining_abuse",
+        "matched_string": "$read_then_send",
+        "threat_type": "TOOL CHAINING ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_8c290ab178",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): os.system(",
+      "file_path": "scripts/dashboard.py",
+      "line_number": 228,
+      "snippet": "os.system('clear' if os.name != 'nt' else 'cls')",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_system_calls",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_9d9350a63d",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
+      "file_path": "scripts/scheduler.py",
+      "line_number": 31,
+      "snippet": "result = subprocess.run(",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_system_calls",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_57b21b4b1a",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
+      "file_path": "scripts/scheduler.py",
+      "line_number": 43,
+      "snippet": "result = subprocess.run(",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_system_calls",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_bee5744429",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
+      "file_path": "scripts/scheduler.py",
+      "line_number": 63,
+      "snippet": "result = subprocess.run(",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_system_calls",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_9edf1c1886",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
+      "file_path": "scripts/scheduler.py",
+      "line_number": 103,
+      "snippet": "[sys.executable, str(self.scripts / \"cost_guard.py\"), \"log\",",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_system_calls",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_8451ffb794",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
+      "file_path": "scripts/scheduler.py",
+      "line_number": 113,
+      "snippet": "subprocess.run([sys.executable, str(self.scripts / \"browser_governor.py\"), \"release\"])",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_system_calls",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_code_execution_c53a350415",
+      "rule_id": "YARA_code_execution",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "CODE EXECUTION detected by YARA",
+      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
+      "file_path": "scripts/scheduler.py",
+      "line_number": 118,
+      "snippet": "[sys.executable, str(self.scripts / \"cost_guard.py\"), \"finish\", task_id],",
+      "remediation": "Review and remove code execution pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "code_execution",
+        "yara_namespace": "code_execution",
+        "matched_string": "$python_system_calls",
+        "threat_type": "CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 1.6396219730377197,
+  "duration_ms": 1639,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:02:35.563672"
+}

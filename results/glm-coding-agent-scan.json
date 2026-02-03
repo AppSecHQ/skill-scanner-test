@@ -1,0 +1,96 @@
+{
+  "skill_name": "glm-coding-agent",
+  "skill_path": "./skills/clawhub-glm-coding-agent",
+  "skill_directory": "./skills/clawhub-glm-coding-agent",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 4,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_command_injection_9310c447ab",
+      "rule_id": "YARA_command_injection",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "INJECTION ATTACK detected by YARA",
+      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.z.ai/api/anthropic/v1/models`",
+      "file_path": "SKILL.md",
+      "line_number": 426,
+      "snippet": "\u2192 Try being more specific in your prompt, or switch to Claude Opus for that task",
+      "remediation": "Review and remove injection attack pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "command_injection",
+        "yara_namespace": "command_injection",
+        "matched_string": "$data_exfiltration_tools",
+        "threat_type": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_credential_harvesting_ed13b19e41",
+      "rule_id": "YARA_credential_harvesting",
+      "category": "hardcoded_secrets",
+      "severity": "CRITICAL",
+      "title": "CREDENTIAL HARVESTING detected by YARA",
+      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ANTHROPIC_AUTH_TOKEN=\"$API_KEY",
+      "file_path": "SKILL.md",
+      "line_number": 74,
+      "snippet": "export ANTHROPIC_AUTH_TOKEN=\"$API_KEY\"",
+      "remediation": "Review and remove credential harvesting pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "credential_harvesting",
+        "yara_namespace": "credential_harvesting",
+        "matched_string": "$leak_param",
+        "threat_type": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_skill_discovery_abuse_47498adf0b",
+      "rule_id": "YARA_skill_discovery_abuse",
+      "category": "skill_discovery_abuse",
+      "severity": "MEDIUM",
+      "title": "SKILL DISCOVERY ABUSE detected by YARA",
+      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
+      "file_path": "SKILL.md",
+      "line_number": 463,
+      "snippet": "git worktree add -b fix/issue-55 /tmp/issue-55 main",
+      "remediation": "Review and remove skill discovery abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "skill_discovery_abuse",
+        "yara_namespace": "skill_discovery_abuse",
+        "matched_string": "$overpromising",
+        "threat_type": "SKILL DISCOVERY ABUSE",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.36820387840270996,
+  "duration_ms": 368,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:03:58.599760"
+}

@@ -10,7 +10,7 @@ This is early-stage and evolving. The current implementation:
 
 - **Scanner:** [Cisco AI Defense skill-scanner](https://github.com/cisco-ai-defense/skill-scanner) (static + behavioral + trigger + LLM + meta-analysis)
 - **Skill registries:** [skills.sh](https://skills.sh/) and [clawhub.ai](https://clawhub.ai/)
-- **Coverage:** 372 skills scanned so far
+- **Coverage:** 614 skills scanned so far
 - **Test suite:** 77 tests passing
 
 This could be expanded along both axes -- adding more scanners and targeting more skill directories.
@@ -20,33 +20,33 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 
 | Metric | Count |
 |--------|-------|
-| Total Skills Scanned | 372 |
-| Safe Skills | 307 (83%) |
-| Skills with Issues | 65 (17%) |
-| Total Findings | 946 |
+| Total Skills Scanned | 614 |
+| Safe Skills | 478 (78%) |
+| Skills with Issues | 136 (22%) |
+| Total Findings | 1694 |
 
 | Severity | Count |
 |----------|-------|
-| CRITICAL | 208 |
-| HIGH | 96 |
-| MEDIUM | 364 |
-| LOW | 278 |
+| CRITICAL | 364 |
+| HIGH | 188 |
+| MEDIUM | 608 |
+| LOW | 534 |
 
 | Category | Count |
 |----------|-------|
-| policy_violation | 270 |
-| command_injection | 199 |
-| transitive_trust_abuse | 163 |
-| data_exfiltration | 150 |
-| unauthorized_tool_use | 51 |
-| hardcoded_secrets | 27 |
-| prompt_injection | 24 |
-| skill_discovery_abuse | 21 |
-| social_engineering | 14 |
-| tool_chaining_abuse | 13 |
-| resource_abuse | 8 |
-| autonomy_abuse | 3 |
-| obfuscation | 3 |
+| policy_violation | 521 |
+| command_injection | 328 |
+| data_exfiltration | 312 |
+| transitive_trust_abuse | 172 |
+| tool_chaining_abuse | 87 |
+| unauthorized_tool_use | 87 |
+| hardcoded_secrets | 80 |
+| skill_discovery_abuse | 38 |
+| prompt_injection | 26 |
+| social_engineering | 21 |
+| resource_abuse | 9 |
+| autonomy_abuse | 8 |
+| obfuscation | 5 |
 
 - These results are visualized at [skillscan.appsechq.com](https://skillscan.appsechq.com/). See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 <!-- END SCAN RESULTS -->

@@ -1,0 +1,57 @@
+{
+  "skill_name": "base-trader",
+  "skill_path": "./skills/clawhub-base-trader",
+  "skill_directory": "./skills/clawhub-base-trader",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "COMMAND_INJECTION_USER_INPUT_0c4e0799df",
+      "rule_id": "COMMAND_INJECTION_USER_INPUT",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "User input used in command substitution - potential injection risk",
+      "description": "Pattern detected: $(dirname \"$0\")",
+      "file_path": "scripts/log-trade.sh",
+      "line_number": 12,
+      "snippet": "TRADES_FILE=\"$(dirname \"$0\")/../data/trades.json\"",
+      "remediation": "Validate and sanitize all user inputs before using in commands",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "\\$\\([^)]*\\$[0-9]+[^)]*\\)",
+        "matched_text": "$(dirname \"$0\")",
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.6418211460113525,
+  "duration_ms": 641,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:18:18.745336"
+}

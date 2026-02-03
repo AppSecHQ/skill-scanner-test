@@ -4,8 +4,8 @@
 **Directory:** ./skills/clawhub-baidu-map-api
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.32s
-**Timestamp:** 2026-02-02T03:07:28.381201
+**Scan Duration:** 0.48s
+**Timestamp:** 2026-02-03T16:08:14.035453
 
 ## Summary
 

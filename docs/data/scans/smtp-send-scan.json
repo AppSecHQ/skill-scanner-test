@@ -1,0 +1,94 @@
+{
+  "skill_name": "smtp-send",
+  "skill_path": "./skills/clawhub-smtp-send",
+  "skill_directory": "./skills/clawhub-smtp-send",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 4,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_SENSITIVE_FILES_7566aa331a",
+      "rule_id": "DATA_EXFIL_SENSITIVE_FILES",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Accessing sensitive system or credential files",
+      "description": "Pattern detected: open(filepath",
+      "file_path": "scripts/send_email.py",
+      "line_number": 93,
+      "snippet": "with open(filepath, 'rb') as f:",
+      "remediation": "Do not access credential files or sensitive system files",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "open\\s*\\(\\s*filepath",
+        "matched_text": "open(filepath",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_23880fee6f",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.getenv('SMTP_PASSWORD",
+      "file_path": "scripts/send_email.py",
+      "line_number": 45,
+      "snippet": "config['password'] = os.getenv('SMTP_PASSWORD', config.get('password'))",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.getenv\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.getenv('SMTP_PASSWORD",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_b29b1f4ae6",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/clawhub-smtp-send/scripts/send_email.py",
+      "file_path": "skills/clawhub-smtp-send/scripts/send_email.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.960310697555542,
+  "duration_ms": 960,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T16:09:07.706914"
+}
