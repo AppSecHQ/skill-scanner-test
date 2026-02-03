@@ -125,6 +125,24 @@ async function loadData() {
       });
       await Promise.all(loads);
     }
+    // Group skills by name for deduplication (multi-scan support)
+    if (appData.summary && appData.summary.skills) {
+      appData.skillGroups = {};
+      for (const skill of appData.summary.skills) {
+        const key = skill.name;
+        if (!appData.skillGroups[key]) appData.skillGroups[key] = [];
+        appData.skillGroups[key].push(skill);
+      }
+      // Sort each group by timestamp (newest first)
+      for (const key in appData.skillGroups) {
+        appData.skillGroups[key].sort((a, b) => {
+          const tsA = appData.scans[a.slug]?.timestamp || '';
+          const tsB = appData.scans[b.slug]?.timestamp || '';
+          return tsB.localeCompare(tsA);
+        });
+      }
+    }
+
     // Load notes
     try {
       const notesRes = await fetch('notes.json');
@@ -146,14 +164,40 @@ function renderDashboard() {
   if (!appData.summary) return;
 
   const summary = appData.summary;
+  const groups = appData.skillGroups || {};
+
+  // --- Deduplicated stats (latest scan per skill) ---
+  const dedupedKeys = Object.keys(groups);
+  const totalSkills = dedupedKeys.length || summary.total_skills;
+  let totalFindings = 0;
+  const sevCounts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
+
+  for (const key of dedupedKeys) {
+    const latest = groups[key][0];
+    const sc = appData.scans[latest.slug];
+    totalFindings += latest.findings_count ?? (sc?.findings?.length || 0);
+    if (sc && sc.findings) {
+      for (const f of sc.findings) {
+        if (sevCounts[f.severity] !== undefined) sevCounts[f.severity]++;
+      }
+    }
+  }
+
+  // Fall back to raw summary if no groups computed
+  if (dedupedKeys.length === 0) {
+    totalFindings = summary.total_findings;
+    for (const s of SEVERITY_ORDER) {
+      if (sevCounts[s] !== undefined) sevCounts[s] = summary.severity_counts[s] || 0;
+    }
+  }
 
   // --- Stat cards (update text only, don't replace HTML) ---
-  document.getElementById('stat-total-skills').textContent = summary.total_skills;
-  document.getElementById('stat-total-findings').textContent = summary.total_findings;
-  document.getElementById('stat-critical').textContent = summary.severity_counts.CRITICAL;
-  document.getElementById('stat-high').textContent = summary.severity_counts.HIGH;
-  document.getElementById('stat-medium').textContent = summary.severity_counts.MEDIUM;
-  document.getElementById('stat-low').textContent = summary.severity_counts.LOW;
+  document.getElementById('stat-total-skills').textContent = totalSkills;
+  document.getElementById('stat-total-findings').textContent = totalFindings;
+  document.getElementById('stat-critical').textContent = sevCounts.CRITICAL;
+  document.getElementById('stat-high').textContent = sevCounts.HIGH;
+  document.getElementById('stat-medium').textContent = sevCounts.MEDIUM;
+  document.getElementById('stat-low').textContent = sevCounts.LOW;
 
   // --- Scan metadata (tool + model) ---
   const existingMeta = document.querySelector('#dashboard .scan-meta');
@@ -182,14 +226,14 @@ function renderDashboard() {
     firstStatsBar.parentNode.insertBefore(metaDiv, firstStatsBar.nextSibling);
   }
 
-  // --- Severity Breakdown (stacked bar) ---
+  // --- Severity Breakdown (stacked bar, using deduplicated counts) ---
   const severityPanel = document.getElementById('severity-breakdown');
-  const total = summary.total_findings || 1; // avoid division by zero
-  const sevEntries = SEVERITY_ORDER.filter(s => (summary.severity_counts[s] || 0) > 0);
+  const total = totalFindings || 1;
+  const sevEntries = SEVERITY_ORDER.filter(s => (sevCounts[s] || 0) > 0);
 
   let barHtml = '<div class="severity-bar" style="display:flex;height:2rem;border-radius:6px;overflow:hidden;margin-bottom:1rem;">';
   sevEntries.forEach(sev => {
-    const count = summary.severity_counts[sev] || 0;
+    const count = sevCounts[sev] || 0;
     const pct = ((count / total) * 100).toFixed(1);
     barHtml += `<div class="severity-bar-segment" style="width:${pct}%;background-color:${SEVERITY_COLORS[sev]};min-width:${count > 0 ? '2px' : '0'};transition:width 0.3s ease;" title="${sev}: ${count}"></div>`;
   });
@@ -197,7 +241,7 @@ function renderDashboard() {
 
   barHtml += '<div class="bar-legend" style="display:flex;flex-wrap:wrap;gap:1rem;">';
   SEVERITY_ORDER.forEach(sev => {
-    const count = summary.severity_counts[sev] || 0;
+    const count = sevCounts[sev] || 0;
     barHtml += `<span style="display:flex;align-items:center;gap:0.375rem;font-size:0.8125rem;">
       <span style="width:10px;height:10px;border-radius:50%;background-color:${SEVERITY_COLORS[sev]};display:inline-block;"></span>
       ${sev} <strong>${count}</strong>
@@ -207,9 +251,19 @@ function renderDashboard() {
 
   severityPanel.innerHTML = barHtml;
 
-  // --- Findings by Category (horizontal bar chart) ---
+  // --- Findings by Category (horizontal bar chart, deduplicated) ---
   const catPanel = document.getElementById('findings-by-category');
-  const cats = summary.findings_by_category;
+  const dedupedCats = {};
+  for (const key of dedupedKeys) {
+    const latest = groups[key][0];
+    const sc = appData.scans[latest.slug];
+    if (sc && sc.findings) {
+      for (const f of sc.findings) {
+        dedupedCats[f.category] = (dedupedCats[f.category] || 0) + 1;
+      }
+    }
+  }
+  const cats = dedupedKeys.length > 0 ? dedupedCats : (summary.findings_by_category || {});
   const catEntries = Object.entries(cats).sort((a, b) => b[1] - a[1]);
   const maxCat = catEntries.length > 0 ? catEntries[0][1] : 1;
 
@@ -265,12 +319,13 @@ let currentSort = { column: null, asc: true };
 function renderSkillsTable() {
   if (!appData.summary) return;
 
-  const skills = appData.summary.skills;
+  // Deduplicated: one entry per unique skill (latest scan)
+  const groups = appData.skillGroups || {};
+  const dedupedSkills = Object.values(groups).map(g => g[0]);
 
   // --- Populate source filter dropdown ---
   const sourceFilter = document.getElementById('source-filter');
-  const sources = [...new Set(skills.map(s => s.source))].sort();
-  // Keep the first "All Sources" option, clear any previously added options
+  const sources = [...new Set(dedupedSkills.map(s => s.source))].sort();
   sourceFilter.innerHTML = '<option value="">All Sources</option>';
   sources.forEach(src => {
     sourceFilter.innerHTML += `<option value="${escapeHtml(src)}">${escapeHtml(src)}</option>`;
@@ -278,7 +333,7 @@ function renderSkillsTable() {
 
   // --- Build table body ---
   const tbody = document.querySelector('#skills-list tbody');
-  renderTableRows(skills, tbody);
+  renderTableRows(dedupedSkills, tbody);
 
   // --- Event listeners (remove old ones by cloning) ---
   const searchInput = document.getElementById('skill-search');
@@ -315,10 +370,12 @@ function renderSkillsTable() {
 }
 
 function renderTableRows(skills, tbody) {
+  const groups = appData.skillGroups || {};
   let html = '';
   skills.forEach(skill => {
     const slug = skill.slug;
     const scan = appData.scans[slug];
+    const scanCount = (groups[skill.name] || []).length;
 
     // Count findings by severity from scan data
     const sevCounts = {};
@@ -333,11 +390,15 @@ function renderTableRows(skills, tbody) {
 
     const hasScan = !!scan;
     const maxSev = skill.max_severity || 'SAFE';
+    const scanLabel = scanCount > 1
+      ? `<div class="scan-count">${scanCount} scans</div>`
+      : '';
 
     html += `<tr data-name="${escapeHtml(skill.name.toLowerCase())}" data-source="${escapeHtml(skill.source)}">
       <td>
         <a href="#/skill/${encodeURIComponent(slug)}" style="color:var(--accent-light);text-decoration:none;font-weight:500;">${escapeHtml(skill.name)}</a>
         <span class="badge ${severityClass(maxSev)}">${maxSev === 'SAFE' ? 'SAFE' : maxSev}</span>
+        ${scanLabel}
       </td>
       <td style="color:var(--muted);">${escapeHtml(skill.source)}</td>
       <td style="font-weight:${skill.findings_count > 0 ? '700' : '400'};">${skill.findings_count}</td>
@@ -406,26 +467,78 @@ function sortTable() {
 /* ============================================================
    Render: Skill Detail
    ============================================================ */
-function renderSkillDetail(name) {
-  const scan = appData.scans[name];
+function renderSkillDetail(slug) {
   const skillSummary = appData.summary
-    ? appData.summary.skills.find(s => s.slug === name)
+    ? appData.summary.skills.find(s => s.slug === slug)
     : null;
 
   // --- Breadcrumb ---
   const breadcrumbEl = document.getElementById('detail-breadcrumb-name');
-  breadcrumbEl.textContent = scan ? scan.skill_name : (skillSummary ? skillSummary.name : name);
+  const scan = appData.scans[slug];
+  breadcrumbEl.textContent = scan ? scan.skill_name : (skillSummary ? skillSummary.name : slug);
 
   // --- No data guard ---
   if (!scan && !skillSummary) {
     document.getElementById('detail-metadata').innerHTML =
-      `<p class="muted">No scan data found for "${escapeHtml(name)}"</p>`;
+      `<p class="muted">No scan data found for "${escapeHtml(slug)}"</p>`;
+    document.getElementById('detail-scan-history').innerHTML = '';
     document.getElementById('detail-findings-list').innerHTML =
       '<li class="muted">No data available.</li>';
     return;
   }
 
+  // --- Resolve skill group (all scans for this skill, newest first) ---
+  const skillName = skillSummary ? skillSummary.name : (scan ? scan.skill_name : slug);
+  const group = (appData.skillGroups && appData.skillGroups[skillName]) || [skillSummary || { slug, name: skillName }];
+
+  // Default to latest scan (index 0)
+  renderDetailForScan(group, 0);
+}
+
+function formatScanTabDate(ts) {
+  if (!ts) return null;
+  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function getAnalyzerLabel(analyzers) {
+  const hasLlm = analyzers.some(a => a.includes('llm'));
+  const hasStatic = analyzers.some(a => !a.includes('llm'));
+  if (hasLlm && hasStatic) return 'static+llm';
+  if (hasLlm) return 'llm';
+  return 'static only';
+}
+
+function renderDetailForScan(group, selectedIndex) {
+  const skill = group[selectedIndex];
+  const scan = appData.scans[skill.slug];
+
   // --- Metadata ---
+  renderDetailMetadata(skill, scan);
+
+  // --- Scan history bar ---
+  renderScanHistory(group, selectedIndex);
+
+  // --- Delta banner ---
+  renderDeltaBanner(group, selectedIndex);
+
+  // --- Findings ---
+  renderDetailFindings(scan);
+
+  // --- Accessibility: tabpanel + aria-live for scan switching ---
+  const findingsRegion = document.getElementById('detail-findings');
+  if (group.length > 1) {
+    findingsRegion.setAttribute('role', 'tabpanel');
+    findingsRegion.setAttribute('aria-live', 'polite');
+    const activeGroupIdx = group.length - 1 - selectedIndex;
+    findingsRegion.setAttribute('aria-labelledby', `scan-tab-${activeGroupIdx}`);
+  } else {
+    findingsRegion.removeAttribute('role');
+    findingsRegion.removeAttribute('aria-labelledby');
+    findingsRegion.removeAttribute('aria-live');
+  }
+}
+
+function renderDetailMetadata(skillSummary, scan) {
   const metaEl = document.getElementById('detail-metadata');
   const displayName = scan ? scan.skill_name : skillSummary.name;
   const source = skillSummary ? skillSummary.source : '--';
@@ -435,7 +548,6 @@ function renderSkillDetail(name) {
   const duration = scan && scan.scan_duration_seconds != null ? scan.scan_duration_seconds.toFixed(1) + 's' : '--';
   const timestamp = scan && scan.timestamp ? new Date(scan.timestamp).toLocaleString() : '--';
 
-  // Extract LLM model: check this skill's findings first, then fall back to any scan globally
   const hasLlmAnalyzer = analyzers.some(a => a === 'llm_analyzer');
   let llmModel = 'N/A (static only)';
   if (hasLlmAnalyzer) {
@@ -443,7 +555,6 @@ function renderSkillDetail(name) {
     if (llmFinding) {
       llmModel = llmFinding.metadata.model;
     } else {
-      // LLM analyzer ran but produced no findings with model -- check other scans
       for (const slug in appData.scans) {
         const s = appData.scans[slug];
         if (s && s.findings) {
@@ -494,8 +605,89 @@ function renderSkillDetail(name) {
       <div style="font-family:var(--font-mono);font-size:0.8125rem;">${escapeHtml(llmModel)}</div>
     </div>
   </div>`;
+}
 
-  // --- Findings ---
+function renderScanHistory(group, selectedIndex) {
+  const container = document.getElementById('detail-scan-history');
+
+  // Single scan -- no history bar needed
+  if (group.length <= 1) {
+    container.innerHTML = '';
+    return;
+  }
+
+  // Check if analyzer sets differ across scans
+  const analyzerSets = group.map(s => {
+    const sc = appData.scans[s.slug];
+    return (sc?.analyzers_used || s.analyzers || []).slice().sort().join(',');
+  });
+  const showAnalyzerInfo = new Set(analyzerSets).size > 1;
+
+  // Build tabs (oldest to newest = reversed group, since group is newest-first)
+  const reversed = [...group].reverse();
+  const activeGroupIdx = group.length - 1 - selectedIndex; // position in reversed array
+
+  let tabsHtml = '<span class="scan-history-label">Scan:</span>';
+  reversed.forEach((skill, i) => {
+    const sc = appData.scans[skill.slug];
+    const ts = sc?.timestamp;
+    const findingCount = skill.findings_count ?? (sc?.findings?.length || 0);
+    const dateLabel = formatScanTabDate(ts) || skill.slug;
+    const isActive = i === activeGroupIdx;
+    const groupIdx = group.length - 1 - i; // index back into the newest-first group
+
+    let label = `${dateLabel} &middot; ${findingCount} finding${findingCount !== 1 ? 's' : ''}`;
+    if (showAnalyzerInfo) {
+      const analyzers = sc?.analyzers_used || skill.analyzers || [];
+      label += ` &middot; ${getAnalyzerLabel(analyzers)}`;
+    }
+
+    const tabId = `scan-tab-${i}`;
+    tabsHtml += `<button class="scan-tab${isActive ? ' active' : ''}" role="tab" id="${tabId}" aria-selected="${isActive}" data-group-index="${groupIdx}">${label}</button>`;
+  });
+
+  container.innerHTML = `<div class="scan-history" role="tablist" aria-label="Scan history">${tabsHtml}</div>`;
+
+  // Wire tab click handlers
+  container.querySelectorAll('.scan-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const idx = parseInt(tab.getAttribute('data-group-index'), 10);
+      renderDetailForScan(group, idx);
+    });
+  });
+}
+
+function renderDeltaBanner(group, selectedIndex) {
+  const container = document.getElementById('detail-scan-history');
+  // Remove any existing delta banner
+  const existing = container.querySelector('.scan-delta');
+  if (existing) existing.remove();
+
+  // Only show on latest tab (index 0) when a previous scan exists
+  if (selectedIndex !== 0 || group.length < 2) return;
+
+  const latestScan = appData.scans[group[0].slug];
+  const prevScan = appData.scans[group[1].slug];
+  const latestCount = group[0].findings_count ?? (latestScan?.findings?.length || 0);
+  const prevCount = group[1].findings_count ?? (prevScan?.findings?.length || 0);
+  const prevTs = prevScan?.timestamp;
+  const prevDate = formatScanTabDate(prevTs) || group[1].slug;
+
+  const diff = latestCount - prevCount;
+  let deltaHtml = '';
+  if (diff < 0) {
+    const abs = Math.abs(diff);
+    deltaHtml = `<div class="scan-delta scan-delta-improve" aria-label="${abs} fewer findings">&darr; ${abs} fewer finding${abs !== 1 ? 's' : ''} since previous scan (${escapeHtml(prevDate)})</div>`;
+  } else if (diff > 0) {
+    deltaHtml = `<div class="scan-delta scan-delta-regress" aria-label="${diff} new findings">&uarr; ${diff} new finding${diff !== 1 ? 's' : ''} since previous scan (${escapeHtml(prevDate)})</div>`;
+  } else {
+    deltaHtml = `<div class="scan-delta scan-delta-same" aria-label="No change">= No change from previous scan (${escapeHtml(prevDate)})</div>`;
+  }
+
+  container.insertAdjacentHTML('beforeend', deltaHtml);
+}
+
+function renderDetailFindings(scan) {
   const findingsList = document.getElementById('detail-findings-list');
 
   if (!scan || !scan.findings || scan.findings.length === 0) {
@@ -506,7 +698,6 @@ function renderSkillDetail(name) {
     return;
   }
 
-  // Sort findings by severity (CRITICAL first)
   const sortedFindings = [...scan.findings].sort((a, b) => {
     return SEVERITY_ORDER.indexOf(a.severity) - SEVERITY_ORDER.indexOf(b.severity);
   });
@@ -627,7 +818,15 @@ function renderFooter() {
     });
   }
   if (countEl) {
-    countEl.textContent = `${s.total_skills} skills \u00b7 ${s.total_findings} findings \u00b7 ${s.analyzers_used ? s.analyzers_used.length : 0} analyzers`;
+    const groups = appData.skillGroups || {};
+    const dedupedCount = Object.keys(groups).length || s.total_skills;
+    let dedupedFindings = 0;
+    for (const key in groups) {
+      const latest = groups[key][0];
+      dedupedFindings += latest.findings_count ?? 0;
+    }
+    if (Object.keys(groups).length === 0) dedupedFindings = s.total_findings;
+    countEl.textContent = `${dedupedCount} skills \u00b7 ${dedupedFindings} findings \u00b7 ${s.analyzers_used ? s.analyzers_used.length : 0} analyzers`;
   }
 }
 
