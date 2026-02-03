@@ -1,0 +1,1300 @@
+{
+  "skill_name": "hugging-face-paper-publisher",
+  "skill_path": "./skills/huggingface-skills/skills/hugging-face-paper-publisher",
+  "skill_directory": "./skills/huggingface-skills/skills/hugging-face-paper-publisher",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 65,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_f0202a2d11",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import requests",
+      "file_path": "scripts/paper_manager.py",
+      "line_number": 28,
+      "snippet": "import requests",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+requests",
+        "matched_text": "import requests",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_793a432651",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.getenv(\"HF_TOKEN",
+      "file_path": "scripts/paper_manager.py",
+      "line_number": 44,
+      "snippet": "self.token = hf_token or os.getenv(\"HF_TOKEN\") or HfFolder.get_token()",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.getenv\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.getenv(\"HF_TOKEN",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "TOOL_MISMATCH_NETWORK_1282a4d7c1",
+      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Undeclared network usage",
+      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Declare network usage in compatibility field or remove network calls",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_f0202a2d11",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "HTTP client library imports that enable external communication",
+      "description": "Pattern detected: import requests",
+      "file_path": "scripts/paper_manager.py",
+      "line_number": 28,
+      "snippet": "import requests",
+      "remediation": "Ensure network access is necessary and documented. Review all URLs",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "import\\s+requests",
+        "matched_text": "import requests",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "reference_depth": 0,
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_793a432651",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.getenv(\"HF_TOKEN",
+      "file_path": "scripts/paper_manager.py",
+      "line_number": 44,
+      "snippet": "self.token = hf_token or os.getenv(\"HF_TOKEN\") or HfFolder.get_token()",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.getenv\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.getenv(\"HF_TOKEN",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "reference_depth": 0,
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_d609351647",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 69,
+      "snippet": "uv run scripts/paper_manager.py index \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_2308ef7138",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 75,
+      "snippet": "uv run scripts/paper_manager.py check \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_4e78e2817a",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 88,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_0d050526c8",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 96,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_dfc67e4e23",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 104,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_6adc9a6a4d",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 112,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_8b9cca5a68",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 134,
+      "snippet": "uv run scripts/paper_manager.py claim \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_bd3f88182d",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 147,
+      "snippet": "uv run scripts/paper_manager.py check-authorship \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_f47913db93",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 157,
+      "snippet": "uv run scripts/paper_manager.py list-my-papers",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_dc83a01f29",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 162,
+      "snippet": "uv run scripts/paper_manager.py toggle-visibility \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_570293ee73",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 176,
+      "snippet": "uv run scripts/paper_manager.py create \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_5067b596a1",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 190,
+      "snippet": "uv run scripts/paper_manager.py create \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_e063edefbc",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 200,
+      "snippet": "uv run scripts/paper_manager.py convert \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_ced0289fd3",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 259,
+      "snippet": "uv run scripts/paper_manager.py index --arxiv-id \"2301.12345\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_6598108551",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 264,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_064fd112fa",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 274,
+      "snippet": "uv run scripts/paper_manager.py claim \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_d3554f1d8d",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 281,
+      "snippet": "uv run scripts/paper_manager.py toggle-visibility \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_1c8e927210",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 288,
+      "snippet": "uv run scripts/paper_manager.py create \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_d8c2d879e4",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 298,
+      "snippet": "uv run scripts/paper_manager.py convert \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_29d2e2534f",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 306,
+      "snippet": "uv run scripts/paper_manager.py check --arxiv-id \"2301.12345\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_60d81bad07",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 311,
+      "snippet": "uv run scripts/paper_manager.py list-my-papers",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_513f65e09c",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 316,
+      "snippet": "uv run scripts/paper_manager.py search --query \"transformer attention\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_5810aeb576",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 379,
+      "snippet": "uv run scripts/paper_manager.py create \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_882d921d3c",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 390,
+      "snippet": "uv run scripts/paper_manager.py index --arxiv-id \"2301.12345\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_ba644422a5",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 393,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_a2ccb49ec6",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 399,
+      "snippet": "uv run scripts/paper_manager.py claim \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_2811a2e39a",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 407,
+      "snippet": "uv run scripts/paper_manager.py check --arxiv-id \"2301.12345\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_8384345f26",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 410,
+      "snippet": "uv run scripts/paper_manager.py index --arxiv-id \"2301.12345\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_ccc99d3737",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 413,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_6d1a48db4f",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 418,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_c092ea6190",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 423,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_5410c3483e",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 435,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_7d419d0270",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 481,
+      "snippet": "uv run scripts/paper_manager.py link \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_94fa248a29",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 491,
+      "snippet": "uv run scripts/paper_manager.py info \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_2f3a5c1d1e",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 499,
+      "snippet": "uv run scripts/paper_manager.py citation \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_fd90db3de1",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 507,
+      "snippet": "uv run scripts/paper_manager.py validate \\",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_14c0b96ee6",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 562,
+      "snippet": "uv run scripts/paper_manager.py create --template modern --output paper.md",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_9c0a450356",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 564,
+      "snippet": "uv run scripts/paper_manager.py index --arxiv-id \"2301.12345\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_d484bdd897",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 565,
+      "snippet": "uv run scripts/paper_manager.py link --repo-id \"user/model\" --arxiv-id \"2301.12345\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_4939b9c6e2",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 571,
+      "snippet": "uv run scripts/paper_manager.py search --query \"transformers\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_246b8263b5",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 572,
+      "snippet": "uv run scripts/paper_manager.py check --arxiv-id \"2301.12345\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_90852718da",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 573,
+      "snippet": "uv run scripts/paper_manager.py link --repo-id \"user/model\" --arxiv-id \"2301.12345\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_ee7bf85c41",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 579,
+      "snippet": "uv run scripts/paper_manager.py claim --arxiv-id \"2301.12345\"",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_99db06df21",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 580,
+      "snippet": "uv run scripts/paper_manager.py list-my-papers",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_7c7e009693",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
+      "file_path": "SKILL.md",
+      "line_number": 581,
+      "snippet": "uv run scripts/paper_manager.py toggle-visibility --arxiv-id \"2301.12345\" --show true",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_EXFILTRATION_c6a307f95b",
+      "rule_id": "BEHAVIOR_ENV_VAR_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Environment variable access with network calls detected",
+      "description": "Script accesses environment variables and makes network calls in skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable harvesting or network transmission",
+      "analyzer": "behavioral",
+      "metadata": {
+        "has_network": true,
+        "has_env_access": true,
+        "suspicious_urls": [
+          "https://huggingface.co/papers/",
+          "https://huggingface.co/papers/",
+          "https://arxiv.org/abs/",
+          "https://huggingface.co/papers/",
+          "https://huggingface.co/",
+          "https://arxiv.org/abs/",
+          "https://huggingface.co/papers/",
+          "http://export.arxiv.org/api/query?id_list=",
+          "https://arxiv.org/abs/",
+          "https://arxiv.org/pdf/",
+          "https?://arxiv\\.org/(abs|pdf)/"
+        ],
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_6940c69cf1",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_28ce638457",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://huggingface.co/papers/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://huggingface.co/papers/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_28ce638457",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://huggingface.co/papers/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://huggingface.co/papers/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_6643c9d24c",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://arxiv.org/abs/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://arxiv.org/abs/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_28ce638457",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://huggingface.co/papers/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://huggingface.co/papers/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_9621a3528f",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://huggingface.co/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://huggingface.co/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_6643c9d24c",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://arxiv.org/abs/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://arxiv.org/abs/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_28ce638457",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://huggingface.co/papers/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://huggingface.co/papers/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_375b7c081a",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: http://export.arxiv.org/api/query?id_list=",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "http://export.arxiv.org/api/query?id_list=",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_6643c9d24c",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://arxiv.org/abs/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://arxiv.org/abs/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_e85d195136",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://arxiv.org/pdf/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://arxiv.org/pdf/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_3840128da1",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https?://arxiv\\.org/(abs|pdf)/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https?://arxiv\\.org/(abs|pdf)/",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "CROSSFILE_ENV_VAR_EXFILTRATION_e686a0c892",
+      "rule_id": "BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Cross-file env var exfiltration: 1 files",
+      "description": "Environment variable access with network calls in scripts/paper_manager.py",
+      "file_path": null,
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review data flow across files: scripts/paper_manager.py",
+      "analyzer": "behavioral",
+      "metadata": {
+        "files_involved": [
+          "scripts/paper_manager.py"
+        ],
+        "threat_type": "env_var_exfiltration",
+        "evidence": {
+          "env_var_files": [
+            "scripts/paper_manager.py"
+          ],
+          "network_files": [
+            "scripts/paper_manager.py"
+          ]
+        },
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 1.0808546543121338,
+  "duration_ms": 1080,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T14:18:43.861484"
+}

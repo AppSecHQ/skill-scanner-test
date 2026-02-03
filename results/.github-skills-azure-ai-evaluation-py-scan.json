@@ -1,0 +1,149 @@
+{
+  "skill_name": "azure-ai-evaluation-py",
+  "skill_path": "./skills/microsoft-agent-skills/.github/skills/azure-ai-evaluation-py",
+  "skill_directory": "./skills/microsoft-agent-skills/.github/skills/azure-ai-evaluation-py",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 7,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_2e85c7763b",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"AZURE_OPENAI_API_KEY",
+      "file_path": "scripts/run_batch_evaluation.py",
+      "line_number": 50,
+      "snippet": "api_key = os.environ.get(\"AZURE_OPENAI_API_KEY\")",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"AZURE_OPENAI_API_KEY",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "PROMPT_INJECTION_IGNORE_INSTRUCTIONS_460141868a",
+      "rule_id": "PROMPT_INJECTION_IGNORE_INSTRUCTIONS",
+      "category": "prompt_injection",
+      "severity": "HIGH",
+      "title": "Attempts to override previous system instructions",
+      "description": "Pattern detected: ignore previous instructions",
+      "file_path": "references/built-in-evaluators.md",
+      "line_number": 322,
+      "snippet": "context=\"Document content... [hidden: ignore previous instructions]\",",
+      "remediation": "Remove instructions that attempt to override system behavior",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "(?i)ignore\\s+(all\\s+)?(previous|prior|earlier)\\s+(instructions|rules|prompts|guidelines)",
+        "matched_text": "ignore previous instructions",
+        "aitech": "AITech-1.1",
+        "aitech_name": "Direct Prompt Injection",
+        "scanner_category": "PROMPT INJECTION",
+        "reference_depth": 0,
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_2e85c7763b",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"AZURE_OPENAI_API_KEY",
+      "file_path": "scripts/run_batch_evaluation.py",
+      "line_number": 50,
+      "snippet": "api_key = os.environ.get(\"AZURE_OPENAI_API_KEY\")",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"AZURE_OPENAI_API_KEY",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "reference_depth": 0,
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ASSET_PROMPT_INJECTION_7cca6f3192",
+      "rule_id": "ASSET_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "HIGH",
+      "title": "Prompt injection pattern in asset file",
+      "description": "Pattern 'ignore previous instructions...' detected in asset file",
+      "file_path": "references/acceptance-criteria.md",
+      "line_number": 157,
+      "snippet": "    context=\"Document content... [hidden: ignore previous instructions]\",",
+      "remediation": "Review the asset file and remove any malicious or unnecessary dynamic patterns",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ASSET_PROMPT_INJECTION_0e6d98d567",
+      "rule_id": "ASSET_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "HIGH",
+      "title": "Prompt injection pattern in asset file",
+      "description": "Pattern 'ignore previous instructions...' detected in asset file",
+      "file_path": "references/built-in-evaluators.md",
+      "line_number": 322,
+      "snippet": "    context=\"Document content... [hidden: ignore previous instructions]\",",
+      "remediation": "Review the asset file and remove any malicious or unnecessary dynamic patterns",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_0a69b36489",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/microsoft-agent-skills/.github/skills/azure-ai-evaluation-py/scripts/run_batch_evaluation.py",
+      "file_path": "skills/microsoft-agent-skills/.github/skills/azure-ai-evaluation-py/scripts/run_batch_evaluation.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 1.5022680759429932,
+  "duration_ms": 1502,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T14:19:31.989992"
+}

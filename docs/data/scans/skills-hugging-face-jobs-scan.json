@@ -1,0 +1,152 @@
+{
+  "skill_name": "hugging-face-jobs",
+  "skill_path": "./skills/huggingface-skills/skills/hugging-face-jobs",
+  "skill_directory": "./skills/huggingface-skills/skills/hugging-face-jobs",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 7,
+  "findings": [
+    {
+      "id": "DATA_EXFIL_ENV_VARS_0958fc3f0d",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"HF_TOKEN",
+      "file_path": "scripts/generate-responses.py",
+      "line_number": 228,
+      "snippet": "HF_TOKEN = hf_token or os.environ.get(\"HF_TOKEN\") or get_token()",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"HF_TOKEN",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_c33ce30bad",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"HF_TOKEN",
+      "file_path": "scripts/cot-self-instruct.py",
+      "line_number": 572,
+      "snippet": "hf_token = args.hf_token or os.environ.get(\"HF_TOKEN\")",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"HF_TOKEN",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "DATA_EXFIL_ENV_VARS_63f9988602",
+      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Reading environment variables that may contain secrets",
+      "description": "Pattern detected: os.environ.get(\"HF_TOKEN",
+      "file_path": "scripts/finepdfs-stats.py",
+      "line_number": 470,
+      "snippet": "hf_token = args.hf_token or os.environ.get(\"HF_TOKEN\")",
+      "remediation": "Minimize access to environment variables. Document why needed",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
+        "matched_text": "os.environ.get(\"HF_TOKEN",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "YARA_transitive_trust_abuse_21a6b3c22d",
+      "rule_id": "YARA_transitive_trust_abuse",
+      "category": "transitive_trust_abuse",
+      "severity": "MEDIUM",
+      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
+      "description": "Detects skills that delegate trust to untrusted external content: run script",
+      "file_path": "SKILL.md",
+      "line_number": 1024,
+      "snippet": "| Run Docker job | `hf_jobs(\"run\", {...})` | `hf jobs run image cmd` | `run_job(image, command)` |",
+      "remediation": "Review and remove transitive trust abuse pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "transitive_trust_abuse",
+        "yara_namespace": "transitive_trust_abuse",
+        "matched_string": "$execute_inline",
+        "threat_type": "TRANSITIVE TRUST ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_0918ca9377",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/huggingface-skills/skills/hugging-face-jobs/scripts/cot-self-instruct.py",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-jobs/scripts/cot-self-instruct.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "ENV_VAR_HARVESTING_9444211f19",
+      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment variable harvesting detected",
+      "description": "Script iterates through environment variables in skills/huggingface-skills/skills/hugging-face-jobs/scripts/finepdfs-stats.py",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-jobs/scripts/finepdfs-stats.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Remove environment variable collection unless explicitly required and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SUSPICIOUS_URL_fb7dca142a",
+      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Suspicious URL detected: https://huggingface.co/datasets/",
+      "description": "Script contains suspicious URL that may be used for data exfiltration",
+      "file_path": "skills/huggingface-skills/skills/hugging-face-jobs/scripts/finepdfs-stats.py",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Review URL and ensure it's legitimate and documented",
+      "analyzer": "behavioral",
+      "metadata": {
+        "url": "https://huggingface.co/datasets/",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 3.8383984565734863,
+  "duration_ms": 3838,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T14:18:35.270286"
+}
