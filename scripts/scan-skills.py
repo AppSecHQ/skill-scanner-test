@@ -29,14 +29,22 @@ from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(verbose: bool = False) -> None:
+def setup_logging(verbose: bool = False, log_file: Path | None = None) -> None:
     """Configure logging for the pipeline."""
     level = logging.DEBUG if verbose else logging.INFO
+    handlers: list[logging.Handler] = [logging.StreamHandler()]
+
+    if log_file is not None:
+        log_file.parent.mkdir(parents=True, exist_ok=True)
+        fh = logging.FileHandler(log_file, mode="w")
+        fh.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=LOG_DATE_FORMAT))
+        handlers.append(fh)
+
     logging.basicConfig(
         level=level,
         format=LOG_FORMAT,
         datefmt=LOG_DATE_FORMAT,
-        handlers=[logging.StreamHandler()],
+        handlers=handlers,
     )
 
 
@@ -154,11 +162,13 @@ Examples:
 
     args = parser.parse_args()
 
-    # Configure logging based on verbosity
-    setup_logging(verbose=args.verbose)
-
     # Setup directories
     args.output.mkdir(parents=True, exist_ok=True)
+
+    # Configure logging with file handler
+    from datetime import datetime
+    pipeline_log = args.output / f"pipeline-{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
+    setup_logging(verbose=args.verbose, log_file=pipeline_log)
     args.skills_dir.mkdir(parents=True, exist_ok=True)
 
     # Per-source inventory file (e.g. skill-inventory-skills.sh.json)

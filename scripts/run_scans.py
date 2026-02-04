@@ -206,6 +206,64 @@ CLONE_TIMEOUT_SECONDS = 120  # 2 minutes per clone
 SCAN_TIMEOUT_SECONDS = 300  # 5 minutes per scan
 
 
+def check_analysis_quality(
+    result: dict,
+    use_llm: bool,
+    enable_meta: bool,
+    skill_name: str,
+) -> dict:
+    """
+    Check whether LLM and meta analysis actually succeeded after a scan.
+
+    Returns a dict with:
+        llm_ok: bool | None (None if not requested)
+        meta_ok: bool | None
+        warnings: list[str]
+    """
+    quality: dict = {"llm_ok": None, "meta_ok": None, "warnings": []}
+    findings = result.get("findings", [])
+    analyzers = result.get("analyzers_used", [])
+    duration = result.get("scan_duration_seconds", 0)
+
+    if enable_meta:
+        if "meta_analyzer" not in analyzers:
+            # Meta is legitimately skipped when there are 0 findings
+            if findings:
+                quality["meta_ok"] = False
+                quality["warnings"].append(
+                    f"{skill_name}: meta requested but not in analyzers_used"
+                )
+        elif findings:
+            has_validated = any(
+                "meta_validated" in f.get("metadata", {}) for f in findings
+            )
+            if not has_validated:
+                quality["meta_ok"] = False
+                quality["warnings"].append(
+                    f"{skill_name}: meta ran but no meta_validated enrichment "
+                    f"(silent failure, {duration:.1f}s)"
+                )
+            else:
+                quality["meta_ok"] = True
+
+    if use_llm:
+        if "llm_analyzer" not in analyzers:
+            quality["llm_ok"] = False
+            quality["warnings"].append(
+                f"{skill_name}: LLM requested but not in analyzers_used"
+            )
+        elif any(f.get("analyzer") == "llm" for f in findings):
+            quality["llm_ok"] = True
+        elif findings and duration < 1.0:
+            quality["llm_ok"] = False
+            quality["warnings"].append(
+                f"{skill_name}: LLM produced no findings + fast scan "
+                f"({duration:.1f}s, likely API failure)"
+            )
+
+    return quality
+
+
 def run_scan(
     skill_path: Path,
     output_dir: Path,
@@ -258,6 +316,16 @@ def run_scan(
         logger.error("Scan timed out after %ds", SCAN_TIMEOUT_SECONDS)
         return None
 
+    # Save scan log (scanner stdout + stderr)
+    log_file = output_dir / f"{skill_name}-scan.log"
+    with open(log_file, "w") as lf:
+        stdout = result.stdout or ""
+        stderr = result.stderr or ""
+        if isinstance(stdout, str) and stdout:
+            lf.write(stdout)
+        if isinstance(stderr, str) and stderr:
+            lf.write(stderr)
+
     if result.returncode != 0:
         logger.error("Scan failed: %s", result.stderr)
         return None
@@ -287,10 +355,50 @@ def run_scan(
     # Load and return results
     try:
         with open(json_output) as f:
-            return json.load(f)
+            scan_result = json.load(f)
     except (json.JSONDecodeError, FileNotFoundError) as e:
         logger.error("Failed to read scan results: %s", e)
         return None
+
+    # Check analysis quality
+    if use_llm or enable_meta:
+        quality = check_analysis_quality(
+            scan_result, use_llm, enable_meta, skill_name,
+        )
+        for warning in quality["warnings"]:
+            logger.warning(warning)
+        scan_result["_analysis_quality"] = quality
+
+    return scan_result
+
+
+def _log_quality_summary(results: list[dict], use_llm: bool, enable_meta: bool) -> None:
+    """Log a summary of LLM/meta analysis quality across scan results."""
+    if not use_llm and not enable_meta:
+        return
+
+    quality_results = [r for r in results if "_analysis_quality" in r]
+    if not quality_results:
+        return
+
+    total = len(quality_results)
+    if use_llm:
+        llm_ok = sum(1 for r in quality_results if r["_analysis_quality"].get("llm_ok") is True)
+        logger.info("LLM analysis: %d/%d scans produced real findings", llm_ok, total)
+    if enable_meta:
+        meta_ok = sum(1 for r in quality_results if r["_analysis_quality"].get("meta_ok") is True)
+        logger.info("Meta analysis: %d/%d scans produced real enrichment", meta_ok, total)
+
+    failed = sum(
+        1 for r in quality_results
+        if r["_analysis_quality"].get("llm_ok") is False
+        or r["_analysis_quality"].get("meta_ok") is False
+    )
+    if failed:
+        logger.warning(
+            "%d/%d scans had silent analysis failures — check API key/credits",
+            failed, total,
+        )
 
 
 def scan_skills(
@@ -404,6 +512,7 @@ def scan_skills(
                 "max_severity": "ERROR",
             })
 
+    _log_quality_summary(results, use_llm, enable_meta)
     return results
 
 
@@ -537,6 +646,7 @@ def scan_adhoc_repos(
                     "max_severity": "ERROR",
                 })
 
+    _log_quality_summary(results, use_llm, enable_meta)
     return results
 
 
