@@ -209,7 +209,7 @@ def generate_rescan_script(skills: list[dict], output_path: Path,
         '    echo "Re-run this script to retry failed scans."',
         "fi",
         'if [[ $SUCCESS -gt 0 ]]; then',
-        '    echo "Run: python scripts/generate_report.py $RESULTS_DIR"',
+        '    echo "Run: python scripts/generate_report.py -i $RESULTS_DIR"',
         '    echo "     bash scripts/build-site.sh"',
         "fi",
     ])
