@@ -1,0 +1,82 @@
+{
+  "skill_name": "azure-ai-document-intelligence-dotnet",
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-ai-document-intelligence-dotnet",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-ai-document-intelligence-dotnet",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "llm_finding_azure-ai-document-intelligence-dotnet_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded Credentials in Environment Variables Without Secure Storage Guidance",
+      "description": "The skill instructs users to store sensitive credentials (DOCUMENT_INTELLIGENCE_API_KEY) in environment variables without providing guidance on secure storage mechanisms. While environment variables are mentioned, there is no warning about the risks of exposing API keys or recommendations for using secure credential management systems (e.g., Azure Key Vault, .NET Secret Manager). This could lead users to hardcode credentials in configuration files or expose them in version control systems.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```bash\nDOCUMENT_INTELLIGENCE_ENDPOINT=https://<resource-name>.cognitiveservices.azure.com/\nDOCUMENT_INTELLIGENCE_API_KEY=<your-api-key>\nBLOB_CONTAINER_SAS_URL=https://<storage>.blob.core.windows.net/<container>?<sas-token>\n```",
+      "remediation": "Add explicit warnings about credential security and recommend using Azure Key Vault or .NET Secret Manager for production environments. Include code examples showing secure credential retrieval patterns. Warn against committing credentials to version control.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The azure-ai-document-intelligence-dotnet skill is a documentation-focused skill providing guidance for using Azure's Document Intelligence .NET SDK. The skill does not contain executable scripts, which significantly reduces its attack surface. However, it has MEDIUM severity security concerns related to credential management practices. The skill instructs users to store sensitive API keys and SAS tokens in environment variables without adequate security guidance, which could lead to credential exposure if users follow the examples in insecure environments. The skill also contains a misleading reference to a non-existent Python file and lacks optional metadata fields. Overall, the skill is relatively safe as it contains no executable code, but the credential handling guidance needs improvement to prevent users from inadvertently exposing sensitive credentials.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential management guidance)",
+          "Misleading Content (missing referenced file)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a documentation skill with no executable code, so there's no direct credential theft. However, the guidance could lead users to insecure practices. The LLM analyzer correctly identified this as a documentation quality issue rather than an active threat.",
+        "meta_exploitability": "Low - Requires user to follow insecure practices based on incomplete guidance",
+        "meta_impact": "Medium - Could lead to credential exposure if users store keys insecurely (e.g., in config files, version control, or logs)"
+      }
+    },
+    {
+      "id": "llm_finding_azure-ai-document-intelligence-dotnet_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Referenced File Creates Incomplete Documentation",
+      "description": "The skill instructions reference a file 'documents.py' that is not included in the skill package. This creates misleading documentation as users may expect Python examples or helper code that doesn't exist. The skill is described as a .NET SDK skill, making the Python file reference particularly confusing and potentially indicating incomplete or incorrect documentation.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Referenced file 'documents.py' not found in skill package. Skill is for .NET (C#) but references Python file.",
+      "remediation": "Remove the reference to 'documents.py' if it's not needed, or include the file if it provides valuable examples. Ensure all referenced files are included in the skill package and align with the skill's technology stack (.NET/C#).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The azure-ai-document-intelligence-dotnet skill is a documentation-focused skill providing guidance for using Azure's Document Intelligence .NET SDK. The skill does not contain executable scripts, which significantly reduces its attack surface. However, it has MEDIUM severity security concerns related to credential management practices. The skill instructs users to store sensitive API keys and SAS tokens in environment variables without adequate security guidance, which could lead to credential exposure if users follow the examples in insecure environments. The skill also contains a misleading reference to a non-existent Python file and lacks optional metadata fields. Overall, the skill is relatively safe as it contains no executable code, but the credential handling guidance needs improvement to prevent users from inadvertently exposing sensitive credentials.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential management guidance)",
+          "Misleading Content (missing referenced file)"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The file reference is clearly incorrect - verified by checking the actual skill package contents which only contains SKILL.md and references/acceptance-criteria.md.",
+        "meta_exploitability": "None - This is a documentation error, not a security vulnerability",
+        "meta_impact": "Low - May confuse users but poses no security risk"
+      }
+    }
+  ],
+  "scan_duration_seconds": 25.73966073989868,
+  "duration_ms": 25739,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-05T13:24:37.354740"
+}

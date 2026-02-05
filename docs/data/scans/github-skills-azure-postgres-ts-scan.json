@@ -1,0 +1,78 @@
+{
+  "skill_name": "azure-postgres-ts",
+  "skill_path": "./skills/microsoft-agent-skills/.github/skills/azure-postgres-ts",
+  "skill_directory": "./skills/microsoft-agent-skills/.github/skills/azure-postgres-ts",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
+  "findings": [
+    {
+      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
+      "rule_id": "MANIFEST_MISSING_LICENSE",
+      "category": "policy_violation",
+      "severity": "LOW",
+      "title": "Skill does not specify a license",
+      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
+      "analyzer": "static",
+      "metadata": {
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SECRET_CONNECTION_STRING_e8eb508cbc",
+      "rule_id": "SECRET_CONNECTION_STRING",
+      "category": "hardcoded_secrets",
+      "severity": "HIGH",
+      "title": "Database connection string with embedded credentials",
+      "description": "Pattern detected: postgres://${user}:${password}@",
+      "file_path": "SKILL.md",
+      "line_number": 380,
+      "snippet": "connectionString: `postgres://${user}:${password}@${host}:${port}/${database}?sslmode=require`",
+      "remediation": "Remove credentials from connection strings",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "(?:mongodb|mysql|postgresql|postgres)://[^:]+:[^@]+@",
+        "matched_text": "postgres://${user}:${password}@",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "SECRET_CONNECTION_STRING_ef0c24c1cd",
+      "rule_id": "SECRET_CONNECTION_STRING",
+      "category": "hardcoded_secrets",
+      "severity": "HIGH",
+      "title": "Database connection string with embedded credentials",
+      "description": "Pattern detected: postgres://user:password@",
+      "file_path": "SKILL.md",
+      "line_number": 385,
+      "snippet": "`postgres://user:password@server.postgres.database.azure.com:5432/mydb?sslmode=require`;",
+      "remediation": "Remove credentials from connection strings",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "(?:mongodb|mysql|postgresql|postgres)://[^:]+:[^@]+@",
+        "matched_text": "postgres://user:password@",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "scanner_category": "CREDENTIAL HARVESTING",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.32451820373535156,
+  "duration_ms": 324,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-03T14:25:32.529738"
+}

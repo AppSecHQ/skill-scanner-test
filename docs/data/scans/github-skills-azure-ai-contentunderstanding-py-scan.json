@@ -1,0 +1,84 @@
+{
+  "skill_name": "azure-ai-contentunderstanding-py",
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-ai-contentunderstanding-py",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-ai-contentunderstanding-py",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "llm_finding_azure-ai-contentunderstanding-py_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Missing Environment Variable Validation and Hardcoded Secrets Risk",
+      "description": "The skill requires CONTENTUNDERSTANDING_ENDPOINT environment variable but provides no validation or error handling. Instructions show direct os.environ access without checking if the variable exists, which could lead to runtime errors. Additionally, there's no guidance on secure credential management, increasing risk of hardcoded secrets or insecure credential storage.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```python\nendpoint = os.environ[\"CONTENTUNDERSTANDING_ENDPOINT\"]\ncredential = DefaultAzureCredential()\nclient = ContentUnderstandingClient(endpoint=endpoint, credential=credential)\n```",
+      "remediation": "Add environment variable validation with clear error messages. Include security guidance on credential management: use Azure Key Vault or managed identities, never hardcode credentials, validate endpoint URLs to prevent SSRF attacks.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Azure AI Content Understanding skill presents MEDIUM security risks primarily related to unvalidated external URL processing and missing security guidance. The skill is a documentation/SDK wrapper without executable scripts, which reduces attack surface. However, it demonstrates processing arbitrary URLs without validation (indirect prompt injection risk via transitive trust), lacks environment variable validation, and provides no security guidance on credential management or URL validation. The missing optional metadata fields reduce transparency. No critical threats like data exfiltration, command injection, or hardcoded secrets were found, but the skill needs security hardening around external content processing and credential handling.",
+        "primary_threats": [
+          "Indirect Prompt Injection (unvalidated URL processing)",
+          "Data Exposure Risk (missing credential security guidance)",
+          "Missing Security Controls (no URL validation, no input sanitization)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a code quality issue rather than a security vulnerability. The LLM analyzer labeled it as data exfiltration risk, but there's no actual data exfiltration occurring. Missing env var validation causes poor error messages, not security issues. Downgraded to LOW severity.",
+        "meta_exploitability": "N/A - This is not an exploitable vulnerability, just poor error handling",
+        "meta_impact": "Low - Results in unhelpful KeyError instead of clear error message if environment variable is missing"
+      }
+    },
+    {
+      "id": "llm_finding_azure-ai-contentunderstanding-py_1",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Unvalidated External URL Processing Creates Indirect Injection Risk",
+      "description": "The skill demonstrates analyzing content from arbitrary URLs without any validation, sanitization, or security warnings. Code examples show direct URL processing (AnalyzeInput(url=\"https://example.com/document.pdf\")) with no guidance on validating URL sources, checking domains, or handling malicious content. This creates transitive trust abuse where the agent could be instructed to process attacker-controlled URLs containing malicious instructions or content.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```python\npoller = client.begin_analyze(\n    analyzer_id=\"prebuilt-documentSearch\",\n    inputs=[AnalyzeInput(url=\"https://example.com/document.pdf\")]\n)\n```",
+      "remediation": "Add URL validation requirements: whitelist trusted domains, implement URL sanitization, warn users about processing untrusted URLs, add content-type validation, implement size limits, and provide guidance on handling potentially malicious content from external sources.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Azure AI Content Understanding skill presents MEDIUM security risks primarily related to unvalidated external URL processing and missing security guidance. The skill is a documentation/SDK wrapper without executable scripts, which reduces attack surface. However, it demonstrates processing arbitrary URLs without validation (indirect prompt injection risk via transitive trust), lacks environment variable validation, and provides no security guidance on credential management or URL validation. The missing optional metadata fields reduce transparency. No critical threats like data exfiltration, command injection, or hardcoded secrets were found, but the skill needs security hardening around external content processing and credential handling.",
+        "primary_threats": [
+          "Indirect Prompt Injection (unvalidated URL processing)",
+          "Data Exposure Risk (missing credential security guidance)",
+          "Missing Security Controls (no URL validation, no input sanitization)"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified indirect prompt injection risk. The skill processes arbitrary external content (documents, images, audio, video) which could contain malicious instructions. This is a legitimate transitive trust abuse vector (AITech-1.2). The skill provides no security guidance on URL validation.",
+        "meta_exploitability": "Medium - Requires attacker to control a URL that the agent is instructed to process, but no authentication or special access needed once that condition is met",
+        "meta_impact": "Medium - Malicious content in processed files could inject instructions that manipulate agent behavior, leak data, or cause unintended actions"
+      }
+    }
+  ],
+  "scan_duration_seconds": 25.052125215530396,
+  "duration_ms": 25052,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-05T13:22:24.444793"
+}

@@ -1,0 +1,51 @@
+{
+  "skill_name": "azure-containerregistry-py",
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-containerregistry-py",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-containerregistry-py",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
+  "findings": [
+    {
+      "id": "llm_finding_azure-containerregistry-py_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Unpinned Package Dependency Installation",
+      "description": "The skill instructs installation of 'azure-containerregistry' package without version pinning (pip install azure-containerregistry). This creates a supply chain risk where future malicious or breaking versions could be automatically installed, potentially introducing vulnerabilities or unexpected behavior changes.",
+      "file_path": "SKILL.md",
+      "line_number": 7,
+      "snippet": "```bash\npip install azure-containerregistry\n```",
+      "remediation": "Pin to a specific tested version: 'pip install azure-containerregistry==1.2.0' (replace with current stable version). Document the tested version in the manifest and provide upgrade guidance.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is a documentation/tutorial package for the Azure Container Registry Python SDK with LOW to MEDIUM security risk. The primary concern is the unpinned package dependency which could introduce supply chain vulnerabilities. The skill contains no executable scripts, no data exfiltration attempts, no prompt injection, and no malicious code. It's essentially a reference guide showing legitimate Azure SDK usage patterns. The missing optional metadata fields reduce transparency but don't constitute a security threat. The skill appropriately uses Azure's recommended authentication patterns (DefaultAzureCredential). The referenced Python files (ArtifactTagOrder.py, etc.) are standard Azure SDK imports, not bundled files, so their absence is expected and not a security concern.",
+        "primary_threats": [
+          "Supply Chain Risk (unpinned dependencies)",
+          "Missing transparency metadata"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a legitimate best practice recommendation, but the severity is overstated. The skill contains no executable code, so there's no immediate exploitation path. This is a documentation quality issue, not an active security vulnerability.",
+        "meta_exploitability": "Low - Requires user to follow instructions and install a future malicious package version",
+        "meta_impact": "Low - Hypothetical future supply chain risk, not an active threat"
+      }
+    }
+  ],
+  "scan_duration_seconds": 19.18800711631775,
+  "duration_ms": 19188,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-05T14:03:48.876536"
+}

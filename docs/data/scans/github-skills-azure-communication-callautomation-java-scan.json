@@ -1,0 +1,52 @@
+{
+  "skill_name": "azure-communication-callautomation-java",
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-communication-callautomation-java",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-communication-callautomation-java",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
+  "findings": [
+    {
+      "id": "llm_finding_azure-communication-callautomation-java_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded Credentials in Code Examples",
+      "description": "The instruction body contains code examples with placeholder connection strings and endpoints that users might accidentally use with real credentials. While these are examples, they demonstrate patterns where sensitive credentials could be hardcoded directly in code.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "CallAutomationClient client = new CallAutomationClientBuilder()\n    .connectionString(\"<connection-string>\")\n    .buildClient();",
+      "remediation": "Add explicit warnings in the instructions about never hardcoding real credentials. Recommend using environment variables or Azure Key Vault for credential management. Include example: System.getenv(\"AZURE_CONNECTION_STRING\")",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Azure Communication Services Call Automation skill is primarily a documentation/tutorial skill providing Java SDK examples. It contains no executable scripts and poses minimal direct security risk. The main concerns are: (1) missing metadata fields (license, compatibility, allowed-tools) which are informational/low severity issues, (2) code examples that demonstrate credential handling patterns without sufficient security warnings, and (3) a missing referenced file. The skill does not contain prompt injection attempts, data exfiltration code, command injection, or other high-severity threats. The credential handling examples warrant a MEDIUM severity finding as they could lead users to hardcode secrets if not properly warned. Overall, this is a relatively safe documentation skill that would benefit from improved metadata and security guidance in the examples.",
+        "primary_threats": [
+          "Missing security guidance for credential management",
+          "Incomplete package (missing referenced file)",
+          "Missing metadata fields"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a legitimate documentation issue. While the skill itself contains no executable code, it serves as a tutorial that developers will copy. The lack of security guidance could lead to insecure implementations. The skill does show DefaultAzureCredential, which is good, but presents both options equally without guidance on which to prefer.",
+        "meta_exploitability": "Medium - Requires user to copy insecure pattern into production code",
+        "meta_impact": "High - Could lead to credential exposure if users follow examples without security awareness"
+      }
+    }
+  ],
+  "scan_duration_seconds": 23.089186906814575,
+  "duration_ms": 23089,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-05T13:55:14.430795"
+}
