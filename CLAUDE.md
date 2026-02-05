@@ -30,6 +30,7 @@ This approach validates the entire workflow before scaling up.
 skill-scanner/
 ├── CLAUDE.md              # This file - project instructions
 ├── PROJECT-PLAN.md        # Detailed execution plan
+├── design-plan/           # Internal design docs & plans (gitignored)
 ├── skills/                # Cloned skill repositories
 │   └── skill-inventory.md # Inventory of top 25 skills with metadata
 └── results/               # Scan output files
@@ -81,6 +82,7 @@ Create `results/summary-report.md` containing:
 
 ## Important Notes
 
+- **Internal docs go in `design-plan/`**: Save all design documents, implementation plans, security reviews, and other internal/private planning artifacts to the `design-plan/` directory. This directory is gitignored and will not be published or committed. Never place internal docs in `docs/` — that directory is the GitHub Pages publish root and everything in it is served publicly.
 - If API keys are required for LLM analysis, use static analysis only
 - Document any rate limiting or access issues
 - Note any unavailable/private repos and proceed with others
