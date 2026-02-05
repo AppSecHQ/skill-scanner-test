@@ -1,30 +1,113 @@
 {
   "skill_name": "azure-mgmt-fabric-py",
-  "skill_path": "./skills/microsoft-agent-skills/.github/skills/azure-mgmt-fabric-py",
-  "skill_directory": "./skills/microsoft-agent-skills/.github/skills/azure-mgmt-fabric-py",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-mgmt-fabric-py",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-mgmt-fabric-py",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_azure-mgmt-fabric-py_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Credential Exposure via DefaultAzureCredential",
+      "description": "The skill uses DefaultAzureCredential which automatically searches for credentials in multiple locations including environment variables, managed identity, Azure CLI, and Visual Studio. This could inadvertently expose Azure credentials to the agent without explicit user consent. The skill instructions encourage setting AZURE_SUBSCRIPTION_ID and AZURE_RESOURCE_GROUP as environment variables, which the agent would have access to.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "from azure.identity import DefaultAzureCredential\ncredential = DefaultAzureCredential()\nclient = FabricMgmtClient(\n    credential=credential,\n    subscription_id=os.environ[\"AZURE_SUBSCRIPTION_ID\"]\n)",
+      "remediation": "Add explicit warnings about credential access. Require user confirmation before accessing Azure credentials. Consider implementing credential scoping or using more restrictive authentication methods. Document exactly which credentials will be accessed and why.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM to HIGH security risks. Primary concerns include: (1) Potential typosquatting of official Azure SDK naming conventions, (2) Unrestricted access to Azure credentials via DefaultAzureCredential, (3) Ability to create costly cloud resources without safeguards, and (4) Supply chain risks from unpinned dependencies. The skill lacks proper provenance indicators (no license, no version, suspicious naming). While the code examples appear to be legitimate Azure SDK usage patterns, the packaging and presentation raise red flags about authenticity. The skill should not be used without verification of its source and implementation of additional safety controls.",
+        "primary_threats": [
+          "Social Engineering (Typosquatting)",
+          "Credential Exposure",
+          "Tool Exploitation (Unrestricted Cloud Operations)",
+          "Supply Chain Risk"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "DefaultAzureCredential is standard Azure SDK practice and not inherently malicious. However, in an agent context, the broad credential search without explicit user awareness is a legitimate concern. The severity is MEDIUM because this is documented Azure SDK behavior, not a hidden backdoor.",
+        "meta_exploitability": "Low - Requires Azure credentials to already be present in the environment. The skill doesn't exfiltrate credentials, it uses them for legitimate Azure API calls.",
+        "meta_impact": "Medium - Agent has access to Azure credentials and can perform operations within the scope of those credentials. Impact depends on the permissions of the available credentials."
+      }
+    },
+    {
+      "id": "llm_finding_azure-mgmt-fabric-py_4",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Unpinned Dependency Installation",
+      "description": "The installation instructions use 'pip install azure-mgmt-fabric' and 'pip install azure-identity' without version pinning. This creates a supply chain risk where malicious versions could be installed. The skill also references non-existent files (FabricMgmtClient.py, DefaultAzureCredential.py, CheckNameAvailabilityRequest.py) which may indicate incomplete or deceptive documentation.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "pip install azure-mgmt-fabric\npip install azure-identity",
+      "remediation": "Pin specific package versions (e.g., 'azure-mgmt-fabric==1.0.0'). Verify package authenticity on PyPI. Remove references to non-existent files or include them in the skill package. Add package hash verification for supply chain security.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM to HIGH security risks. Primary concerns include: (1) Potential typosquatting of official Azure SDK naming conventions, (2) Unrestricted access to Azure credentials via DefaultAzureCredential, (3) Ability to create costly cloud resources without safeguards, and (4) Supply chain risks from unpinned dependencies. The skill lacks proper provenance indicators (no license, no version, suspicious naming). While the code examples appear to be legitimate Azure SDK usage patterns, the packaging and presentation raise red flags about authenticity. The skill should not be used without verification of its source and implementation of additional safety controls.",
+        "primary_threats": [
+          "Social Engineering (Typosquatting)",
+          "Credential Exposure",
+          "Tool Exploitation (Unrestricted Cloud Operations)",
+          "Supply Chain Risk"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Unpinned dependencies are a legitimate supply chain concern, but this is standard practice in SDK documentation. The packages are official Microsoft packages from PyPI, not malicious. The risk is future vulnerabilities, not current malicious code.",
+        "meta_exploitability": "Low - Would require a future compromised version of an official Microsoft package, which is unlikely but not impossible (see SolarWinds).",
+        "meta_impact": "Low - Risk is theoretical future compromise, not current threat."
+      }
+    },
+    {
+      "id": "llm_finding_azure-mgmt-fabric-py_5",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Unrestricted Cloud Resource Management",
+      "description": "The skill provides full Azure Fabric capacity management capabilities including create, update, suspend, and delete operations without any safety guardrails, confirmation prompts, or cost warnings. Creating or scaling Azure Fabric capacities can incur significant costs (F2, F4 SKUs are expensive). The skill could be triggered to create costly resources without explicit user awareness.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "capacity = client.fabric_capacities.begin_create_or_update(\n    resource_group_name=resource_group,\n    capacity_name=capacity_name,\n    resource=FabricCapacity(\n        location=\"eastus\",\n        sku=CapacitySku(\n            name=\"F2\",  # Fabric SKU\n            tier=\"Fabric\"\n        )",
+      "remediation": "Add explicit user confirmation before any create, update, or delete operations. Include cost warnings for SKU selections. Implement dry-run mode. Add resource tagging to track skill-created resources. Consider read-only mode by default with explicit opt-in for write operations.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM to HIGH security risks. Primary concerns include: (1) Potential typosquatting of official Azure SDK naming conventions, (2) Unrestricted access to Azure credentials via DefaultAzureCredential, (3) Ability to create costly cloud resources without safeguards, and (4) Supply chain risks from unpinned dependencies. The skill lacks proper provenance indicators (no license, no version, suspicious naming). While the code examples appear to be legitimate Azure SDK usage patterns, the packaging and presentation raise red flags about authenticity. The skill should not be used without verification of its source and implementation of additional safety controls.",
+        "primary_threats": [
+          "Social Engineering (Typosquatting)",
+          "Credential Exposure",
+          "Tool Exploitation (Unrestricted Cloud Operations)",
+          "Supply Chain Risk"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Azure Fabric capacities have well-documented, significant costs. The skill provides unrestricted access to create/scale operations without any cost warnings or confirmation mechanisms. This is a legitimate financial risk.",
+        "meta_exploitability": "Medium - Requires Azure credentials to be present, but once available, can be triggered through natural language requests like 'create a fabric capacity'",
+        "meta_impact": "High - Financial impact from unintended resource creation. F64 capacity costs ~$8,389/month. Accidental creation could result in thousands of dollars in charges."
       }
     }
   ],
-  "scan_duration_seconds": 0.3239724636077881,
-  "duration_ms": 323,
+  "scan_duration_seconds": 35.10454726219177,
+  "duration_ms": 35104,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:27:56.717101"
+  "timestamp": "2026-02-05T15:19:11.734757"
 }
