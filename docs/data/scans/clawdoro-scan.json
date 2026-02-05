@@ -1,10 +1,10 @@
 {
   "skill_name": "ClawDoro",
-  "skill_path": "./skills/clawhub-pomodoro",
-  "skill_directory": "./skills/clawhub-pomodoro",
+  "skill_path": "/workspace/skills/clawhub-pomodoro",
+  "skill_directory": "/workspace/skills/clawhub-pomodoro",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 2,
+  "max_severity": "MEDIUM",
+  "findings_count": 7,
   "findings": [
     {
       "id": "MANIFEST_INVALID_NAME_794e30271c",
@@ -37,10 +37,155 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_ClawDoro_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded Network Port Exposure",
+      "description": "The skill starts an HTTP server on a hardcoded port 8765 without user confirmation or security controls. This creates a network-accessible endpoint on the user's machine that could be exploited by malicious websites or local attackers to interact with the timer interface or potentially probe for vulnerabilities.",
+      "file_path": "SKILL.md",
+      "line_number": 29,
+      "snippet": "Opens a mini HTTP server on port 8765",
+      "remediation": "Use a randomly assigned ephemeral port instead of a hardcoded port. Bind only to localhost (127.0.0.1) explicitly. Add user confirmation before starting the server. Implement proper server shutdown mechanisms.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "ClawDoro is a Pomodoro timer skill with MEDIUM security concerns. The primary risks are: (1) starting an HTTP server on a hardcoded port without user confirmation, creating network exposure, and (2) executing Node.js code (trigger.js) that is not provided for security review, creating a transparency gap. The skill appears to be a legitimate productivity tool, but the missing source code for trigger.js prevents full security validation. The network server component introduces attack surface that should be minimized through localhost-only binding and ephemeral ports. Minor issues include missing metadata (allowed-tools, license, compatibility) and lack of server lifecycle documentation. Recommend requiring full source code disclosure and implementing network security controls before deployment.",
+        "primary_threats": [
+          "Network exposure via hardcoded HTTP server port",
+          "Arbitrary code execution via undisclosed Node.js scripts",
+          "Missing source code transparency (trigger.js not provided)",
+          "Lack of server lifecycle management"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ClawDoro_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Arbitrary JavaScript Execution via Node.js",
+      "description": "The skill executes Node.js scripts (trigger.js) which are not provided for security review. The commands configuration shows direct execution of JavaScript files without visibility into what code is actually running. This creates a blind spot where malicious code could perform unauthorized operations including file system access, network requests, or system commands.",
+      "file_path": "YAML manifest",
+      "line_number": null,
+      "snippet": "commands: {'clawdoro': 'node ~/clawd/skills/pomodoro/trigger.js', 'pomodoro': 'node ~/clawd/skills/pomodoro/trigger.js'}",
+      "remediation": "Include trigger.js in the skill package for security review. Implement code signing or integrity checks. Restrict Node.js capabilities using --no-network or similar flags. Provide full source code transparency.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "ClawDoro is a Pomodoro timer skill with MEDIUM security concerns. The primary risks are: (1) starting an HTTP server on a hardcoded port without user confirmation, creating network exposure, and (2) executing Node.js code (trigger.js) that is not provided for security review, creating a transparency gap. The skill appears to be a legitimate productivity tool, but the missing source code for trigger.js prevents full security validation. The network server component introduces attack surface that should be minimized through localhost-only binding and ephemeral ports. Minor issues include missing metadata (allowed-tools, license, compatibility) and lack of server lifecycle documentation. Recommend requiring full source code disclosure and implementing network security controls before deployment.",
+        "primary_threats": [
+          "Network exposure via hardcoded HTTP server port",
+          "Arbitrary code execution via undisclosed Node.js scripts",
+          "Missing source code transparency (trigger.js not provided)",
+          "Lack of server lifecycle management"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ClawDoro_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill does not declare which agent tools it uses in the allowed-tools field. While this field is optional, its absence makes it harder to verify that the skill operates within expected boundaries and doesn't use unauthorized capabilities.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "allowed-tools: Not specified",
+      "remediation": "Add allowed-tools declaration to manifest specifying which agent tools are required (e.g., [Bash] if shell commands are needed).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "ClawDoro is a Pomodoro timer skill with MEDIUM security concerns. The primary risks are: (1) starting an HTTP server on a hardcoded port without user confirmation, creating network exposure, and (2) executing Node.js code (trigger.js) that is not provided for security review, creating a transparency gap. The skill appears to be a legitimate productivity tool, but the missing source code for trigger.js prevents full security validation. The network server component introduces attack surface that should be minimized through localhost-only binding and ephemeral ports. Minor issues include missing metadata (allowed-tools, license, compatibility) and lack of server lifecycle documentation. Recommend requiring full source code disclosure and implementing network security controls before deployment.",
+        "primary_threats": [
+          "Network exposure via hardcoded HTTP server port",
+          "Arbitrary code execution via undisclosed Node.js scripts",
+          "Missing source code transparency (trigger.js not provided)",
+          "Lack of server lifecycle management"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ClawDoro_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing License and Compatibility Information",
+      "description": "The skill lacks license and compatibility metadata, making it unclear under what terms it can be used and which environments it supports. This reduces transparency and could lead to unexpected behavior in unsupported environments.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "license: Not specified, compatibility: Not specified",
+      "remediation": "Add license field (e.g., MIT, Apache-2.0) and compatibility field specifying supported environments (e.g., 'Works in Claude.ai, Claude Code, API').",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "ClawDoro is a Pomodoro timer skill with MEDIUM security concerns. The primary risks are: (1) starting an HTTP server on a hardcoded port without user confirmation, creating network exposure, and (2) executing Node.js code (trigger.js) that is not provided for security review, creating a transparency gap. The skill appears to be a legitimate productivity tool, but the missing source code for trigger.js prevents full security validation. The network server component introduces attack surface that should be minimized through localhost-only binding and ephemeral ports. Minor issues include missing metadata (allowed-tools, license, compatibility) and lack of server lifecycle documentation. Recommend requiring full source code disclosure and implementing network security controls before deployment.",
+        "primary_threats": [
+          "Network exposure via hardcoded HTTP server port",
+          "Arbitrary code execution via undisclosed Node.js scripts",
+          "Missing source code transparency (trigger.js not provided)",
+          "Lack of server lifecycle management"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ClawDoro_4",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "No Server Lifecycle Management Documented",
+      "description": "The documentation does not specify how to stop the HTTP server once started. This could lead to resource leaks with servers continuing to run in the background, consuming ports and system resources unnecessarily.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "No shutdown or cleanup instructions provided in documentation",
+      "remediation": "Document how to stop the server (e.g., Ctrl+C, specific command). Implement automatic timeout or cleanup mechanisms. Add server status checking capabilities.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "ClawDoro is a Pomodoro timer skill with MEDIUM security concerns. The primary risks are: (1) starting an HTTP server on a hardcoded port without user confirmation, creating network exposure, and (2) executing Node.js code (trigger.js) that is not provided for security review, creating a transparency gap. The skill appears to be a legitimate productivity tool, but the missing source code for trigger.js prevents full security validation. The network server component introduces attack surface that should be minimized through localhost-only binding and ephemeral ports. Minor issues include missing metadata (allowed-tools, license, compatibility) and lack of server lifecycle documentation. Recommend requiring full source code disclosure and implementing network security controls before deployment.",
+        "primary_threats": [
+          "Network exposure via hardcoded HTTP server port",
+          "Arbitrary code execution via undisclosed Node.js scripts",
+          "Missing source code transparency (trigger.js not provided)",
+          "Lack of server lifecycle management"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.3850851058959961,
-  "duration_ms": 385,
+  "scan_duration_seconds": 25.553427696228027,
+  "duration_ms": 25553,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -48,5 +193,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:06:11.278852"
+  "timestamp": "2026-02-05T22:07:23.475947"
 }

@@ -1,30 +1,150 @@
 {
   "skill_name": "claude-chrome",
-  "skill_path": "./skills/clawhub-claude-chrome",
-  "skill_directory": "./skills/clawhub-claude-chrome",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-claude-chrome",
+  "skill_directory": "/workspace/skills/clawhub-claude-chrome",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 4,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_claude-chrome_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Dangerous Permission Bypass Flag Required for Operation",
+      "description": "The skill mandates use of '--dangerously-skip-permissions' flag which bypasses all safety confirmations in Claude Code. This flag auto-approves all browser actions without user consent, enabling arbitrary command execution, data access, and form submissions without oversight. The instructions explicitly state this flag is 'required for automation', making dangerous operations the default behavior.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "--dangerously-skip-permissions \u2014 auto-approve all actions (required for automation)\n\nAlways use `--dangerously-skip-permissions` for automated runs",
+      "remediation": "Remove the requirement for '--dangerously-skip-permissions' flag. Implement explicit user confirmation for sensitive browser operations. Add guardrails that require approval for: form submissions, navigation to new domains, data extraction, and file downloads. Consider implementing a whitelist of approved domains/actions.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents SIGNIFICANT SECURITY RISKS due to mandatory permission bypass (--dangerously-skip-permissions), unrestricted browser access, and lack of data protection controls. The combination of auto-approved actions, arbitrary website navigation, form filling capabilities, and external binary execution creates multiple attack vectors for data exfiltration, credential theft, and transitive trust abuse. The skill's description significantly understates these risks, potentially misleading users about its security implications. While the skill may have legitimate automation use cases, it requires substantial security hardening before safe deployment. Critical issues include: mandatory safety bypass, no domain restrictions, no credential protection, tool restriction circumvention, and transitive trust to arbitrary web content.",
+        "primary_threats": [
+          "Model or Agentic System Manipulation (permission bypass)",
+          "Data Exfiltration / Exposure (unrestricted browser access)",
+          "Tool Exploitation (restriction bypass via external binary)",
+          "Indirect Prompt Injection (transitive trust to web content)",
+          "Social Engineering (misleading description)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified this as a critical security issue. The skill documentation explicitly mandates bypassing all safety controls, which is objectively dangerous for browser automation with unrestricted web access. This is not a false positive - the flag is documented as 'required' and 'always use'.",
+        "meta_exploitability": "Easy - No authentication or special conditions required. Any prompt can trigger unrestricted browser automation with auto-approved actions.",
+        "meta_impact": "Critical - Enables credential theft from login pages, data exfiltration from authenticated sessions (banking, email, corporate apps), form manipulation, and arbitrary web interactions without user consent."
+      }
+    },
+    {
+      "id": "llm_finding_claude-chrome_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Unrestricted Browser Access Without Data Protection Controls",
+      "description": "The skill provides unrestricted browser automation capabilities with no data protection boundaries. It can read any webpage content, access form data, extract credentials from login pages, and interact with authenticated sessions. Combined with the mandatory '--dangerously-skip-permissions' flag, this enables silent data exfiltration from any website the user has access to, including banking sites, email, cloud services, and internal corporate applications.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Claude Code gains browser tools \u2014 it can navigate pages, click elements, fill forms, read content, and more.\n\nGo to example.com and read the headline",
+      "remediation": "Implement strict data access controls: (1) Define allowed domains in manifest, (2) Require explicit user approval for accessing authenticated sites, (3) Prohibit access to credential fields and sensitive form inputs, (4) Add content filtering to prevent extraction of PII, credentials, or tokens, (5) Log all browser actions for audit trail.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents SIGNIFICANT SECURITY RISKS due to mandatory permission bypass (--dangerously-skip-permissions), unrestricted browser access, and lack of data protection controls. The combination of auto-approved actions, arbitrary website navigation, form filling capabilities, and external binary execution creates multiple attack vectors for data exfiltration, credential theft, and transitive trust abuse. The skill's description significantly understates these risks, potentially misleading users about its security implications. While the skill may have legitimate automation use cases, it requires substantial security hardening before safe deployment. Critical issues include: mandatory safety bypass, no domain restrictions, no credential protection, tool restriction circumvention, and transitive trust to arbitrary web content.",
+        "primary_threats": [
+          "Model or Agentic System Manipulation (permission bypass)",
+          "Data Exfiltration / Exposure (unrestricted browser access)",
+          "Tool Exploitation (restriction bypass via external binary)",
+          "Indirect Prompt Injection (transitive trust to web content)",
+          "Social Engineering (misleading description)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified the lack of data protection controls. The skill documentation shows unrestricted browser capabilities with no mention of domain restrictions, credential protection, or data access controls. This is a legitimate security concern for browser automation.",
+        "meta_exploitability": "Easy - Any prompt can navigate to arbitrary websites and extract data. No domain restrictions or authentication required.",
+        "meta_impact": "High - Potential for credential theft, session hijacking, and exfiltration of sensitive data from any website the user has access to."
+      }
+    },
+    {
+      "id": "llm_finding_claude-chrome_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Tool Restriction Bypass via External Binary Execution",
+      "description": "The skill bypasses agent tool restrictions by delegating all operations to an external binary (Claude Code) via nodes.run. This circumvents any allowed-tools restrictions that might be in place, as the agent only sees a bash command execution, not the actual browser automation operations. The external binary has unrestricted capabilities including network access, file system access, and arbitrary code execution through browser JavaScript.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "nodes.run node=<your-node-id> command='[\"bash\", \"-lc\", \"claude --dangerously-skip-permissions --chrome -p \\\"Go to example.com and read the headline\\\"\"]'",
+      "remediation": "Declare explicit tool requirements in manifest (allowed-tools: [Bash, network_access]). Document that this skill requires external binary execution and network access. Implement capability declarations that accurately reflect the skill's true permissions. Consider sandboxing the Claude Code execution environment.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents SIGNIFICANT SECURITY RISKS due to mandatory permission bypass (--dangerously-skip-permissions), unrestricted browser access, and lack of data protection controls. The combination of auto-approved actions, arbitrary website navigation, form filling capabilities, and external binary execution creates multiple attack vectors for data exfiltration, credential theft, and transitive trust abuse. The skill's description significantly understates these risks, potentially misleading users about its security implications. While the skill may have legitimate automation use cases, it requires substantial security hardening before safe deployment. Critical issues include: mandatory safety bypass, no domain restrictions, no credential protection, tool restriction circumvention, and transitive trust to arbitrary web content.",
+        "primary_threats": [
+          "Model or Agentic System Manipulation (permission bypass)",
+          "Data Exfiltration / Exposure (unrestricted browser access)",
+          "Tool Exploitation (restriction bypass via external binary)",
+          "Indirect Prompt Injection (transitive trust to web content)",
+          "Social Engineering (misleading description)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a valid concern about tool restriction bypass, but it's somewhat inherent to the skill's design (integrating with an external browser automation tool). The severity is medium because the bypass is documented and transparent, not hidden or obfuscated.",
+        "meta_exploitability": "Medium - Requires nodes.run access and a node with Claude Code installed. Not exploitable without existing bash execution permissions.",
+        "meta_impact": "Medium - Bypasses tool restrictions but requires pre-existing bash execution capability. Main risk is lack of visibility into actual operations performed."
+      }
+    },
+    {
+      "id": "llm_finding_claude-chrome_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Description Omits Security Risks",
+      "description": "The skill description presents this as a simple 'browser automation' alternative without disclosing the significant security implications: mandatory permission bypass, unrestricted web access, credential exposure risks, and external binary execution. Users may enable this skill thinking it's a safe browsing tool, unaware that it grants unrestricted browser control with no safety confirmations.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "description: Use Claude Code with Chrome browser extension for web browsing and automation tasks. Alternative to OpenClaw's built-in browser tools.\n\nVS actual capabilities: --dangerously-skip-permissions, unrestricted form filling, credential access, arbitrary navigation",
+      "remediation": "Update description to explicitly state security implications: 'Provides unrestricted browser automation with permission bypass. Can access any website, fill forms, and extract content without confirmation. Requires careful use to avoid credential exposure and data exfiltration risks.' Add security warnings in the instructions section.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents SIGNIFICANT SECURITY RISKS due to mandatory permission bypass (--dangerously-skip-permissions), unrestricted browser access, and lack of data protection controls. The combination of auto-approved actions, arbitrary website navigation, form filling capabilities, and external binary execution creates multiple attack vectors for data exfiltration, credential theft, and transitive trust abuse. The skill's description significantly understates these risks, potentially misleading users about its security implications. While the skill may have legitimate automation use cases, it requires substantial security hardening before safe deployment. Critical issues include: mandatory safety bypass, no domain restrictions, no credential protection, tool restriction circumvention, and transitive trust to arbitrary web content.",
+        "primary_threats": [
+          "Model or Agentic System Manipulation (permission bypass)",
+          "Data Exfiltration / Exposure (unrestricted browser access)",
+          "Tool Exploitation (restriction bypass via external binary)",
+          "Indirect Prompt Injection (transitive trust to web content)",
+          "Social Engineering (misleading description)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The description objectively omits critical security information. Comparing the benign description to the actual capabilities (mandatory --dangerously-skip-permissions, unrestricted access) shows a significant disclosure gap.",
+        "meta_exploitability": "Low - This is a transparency issue, not a direct exploit vector. However, it may lead users to enable the skill without understanding risks.",
+        "meta_impact": "Medium - Users may unknowingly grant excessive permissions. Indirect impact through uninformed consent."
       }
     }
   ],
-  "scan_duration_seconds": 0.3150160312652588,
-  "duration_ms": 315,
+  "scan_duration_seconds": 44.612326860427856,
+  "duration_ms": 44612,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +152,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:03:41.523531"
+  "timestamp": "2026-02-05T21:47:39.376513"
 }

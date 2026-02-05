@@ -1,30 +1,78 @@
 {
   "skill_name": "codex",
-  "skill_path": "./skills/softaworks-agent-toolkit/skills/codex",
-  "skill_directory": "./skills/softaworks-agent-toolkit/skills/codex",
+  "skill_path": "/workspace/skills/softaworks-agent-toolkit/skills/codex",
+  "skill_directory": "/workspace/skills/softaworks-agent-toolkit/skills/codex",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_codex_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Deceptive Model Claims - Non-existent GPT-5.2 Models",
+      "description": "The skill claims to use 'GPT-5.2', 'gpt-5.2-max', 'gpt-5.2-mini', and 'gpt-5.1-thinking' models which do not exist in OpenAI's current model lineup. As of 2024, OpenAI's latest models are GPT-4 series. This appears to be either fictional content or an attempt to mislead users about the capabilities being offered. The skill references 'OpenAI Codex' which was deprecated in March 2023. This constitutes social engineering through false technical claims.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Model claims: 'gpt-5.2' (flagship), 'gpt-5.2-max', 'gpt-5.2-mini', 'gpt-5.1-thinking' with specific pricing ($1.25/$10.00) and performance metrics (76.3% SWE-bench). References deprecated 'OpenAI Codex' in description.",
+      "remediation": "Update skill to reference actual existing models (GPT-4, GPT-4 Turbo, etc.). Remove references to deprecated Codex API. Ensure all technical claims are accurate and verifiable. If this is a hypothetical/educational skill, clearly label it as such.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill has MEDIUM security concerns primarily related to deceptive technical claims and unrestricted external command execution. The skill claims to use non-existent GPT-5.2 models and references deprecated OpenAI Codex, which constitutes social engineering through false capabilities. The core functionality executes an external 'codex' CLI tool with various sandbox modes including 'danger-full-access' that permits broad system access and network operations. The use of stdin piping for command execution and systematic stderr suppression could mask security issues. While no active data exfiltration or credential theft was detected, the combination of fictional model claims, unrestricted command execution, and missing security metadata creates moderate risk. The skill would benefit from accurate technical claims, input validation, restricted default permissions, and complete metadata disclosure.",
+        "primary_threats": [
+          "Social Engineering (deceptive model claims)",
+          "Tool Exploitation (unrestricted external CLI execution)",
+          "Data Exposure (stderr suppression hiding warnings)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "While the model names don't match OpenAI's public offerings, this appears to be documentation for a specific CLI tool rather than malicious deception. The detailed pricing and performance metrics suggest this may be for an internal or custom implementation.",
+        "meta_exploitability": "Low - This is misleading documentation rather than an active exploit",
+        "meta_impact": "Low - May confuse users but doesn't directly enable attacks"
+      }
+    },
+    {
+      "id": "llm_finding_codex_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Unrestricted Command Execution via External CLI Tool",
+      "description": "The skill executes an external 'codex' CLI tool with user-controlled prompts and various sandbox modes including 'danger-full-access' which permits network access and broad system permissions. The skill uses stdin piping for resume functionality ('echo \"prompt\" | codex exec') which could be exploited for command injection if the external tool doesn't properly sanitize input. The --full-auto flag enables autonomous operation without confirmation, and --skip-git-repo-check bypasses safety checks.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Commands like: 'codex exec --sandbox danger-full-access --full-auto --skip-git-repo-check' and 'echo \"your prompt here\" | codex exec --skip-git-repo-check resume --last 2>/dev/null'. The danger-full-access mode explicitly permits network and broad system access.",
+      "remediation": "1) Validate and sanitize all user input before passing to external CLI. 2) Default to most restrictive sandbox mode (read-only). 3) Require explicit user confirmation before using danger-full-access mode. 4) Implement input validation to prevent command injection via stdin piping. 5) Add warnings about security implications of different sandbox modes.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill has MEDIUM security concerns primarily related to deceptive technical claims and unrestricted external command execution. The skill claims to use non-existent GPT-5.2 models and references deprecated OpenAI Codex, which constitutes social engineering through false capabilities. The core functionality executes an external 'codex' CLI tool with various sandbox modes including 'danger-full-access' that permits broad system access and network operations. The use of stdin piping for command execution and systematic stderr suppression could mask security issues. While no active data exfiltration or credential theft was detected, the combination of fictional model claims, unrestricted command execution, and missing security metadata creates moderate risk. The skill would benefit from accurate technical claims, input validation, restricted default permissions, and complete metadata disclosure.",
+        "primary_threats": [
+          "Social Engineering (deceptive model claims)",
+          "Tool Exploitation (unrestricted external CLI execution)",
+          "Data Exposure (stderr suppression hiding warnings)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill clearly executes external commands with varying permission levels. While it includes some safety measures (asking permission for high-impact flags), the reliance on an external tool's security model is a legitimate concern.",
+        "meta_exploitability": "Medium - Requires user to approve dangerous flags, but the external tool's behavior is outside the skill's control",
+        "meta_impact": "Medium - Could allow file system modifications and network access depending on sandbox mode chosen"
       }
     }
   ],
-  "scan_duration_seconds": 0.34888291358947754,
-  "duration_ms": 348,
+  "scan_duration_seconds": 37.13419151306152,
+  "duration_ms": 37134,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T02:56:25.259531"
+  "timestamp": "2026-02-05T22:42:38.155909"
 }

@@ -1,50 +1,46 @@
 {
   "skill_name": "clawdbot-security",
-  "skill_path": "./skills/clawhub-clawdbot-security",
-  "skill_directory": "./skills/clawhub-clawdbot-security",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 2,
+  "skill_path": "/workspace/skills/clawhub-clawdbot-security",
+  "skill_directory": "/workspace/skills/clawhub-clawdbot-security",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_clawdbot-security_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Skill Description - Not an Agent Skill",
+      "description": "This package is NOT an Agent Skill but rather an npm package (npx clawdbot-security-audit). The skill description claims to provide 'Security audit and hardening for Clawdbot/Moltbot installations' but the instructions only contain documentation for running an external npm tool. There is no SKILL.md with agent instructions, no Python/Bash scripts for the agent to execute, and no actual skill functionality. This is deceptive packaging that could mislead users about what they're installing.",
+      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Instructions contain 'npx clawdbot-security-audit' commands but no agent-executable code or actual skill logic. The entire content is documentation for an external tool, not agent instructions.",
+      "remediation": "Either: (1) Remove this from the agent skills repository as it's not a skill, or (2) Rewrite as an actual agent skill with proper YAML frontmatter, agent instructions, and executable scripts that perform the security audit using agent tools (Read, Bash, Python).",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_83560e7a61",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export CLAWDBOT_GATEWAY_TOKEN",
-      "file_path": "SKILL.md",
-      "line_number": 90,
-      "snippet": "export CLAWDBOT_GATEWAY_TOKEN=$(openssl rand -hex 32)",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This package has MEDIUM severity issues due to deceptive packaging - it is not actually an Agent Skill but rather documentation for an external npm tool. The content is purely instructional documentation for running 'npx clawdbot-security-audit' commands, with no agent-executable code, no proper SKILL.md structure with YAML frontmatter and agent instructions, and no scripts for the agent to run. While the security advice itself appears legitimate (hardening Clawdbot installations), the packaging as an 'agent skill' is misleading. Additionally, there is a missing referenced file (the.py) and absent optional metadata fields. If this were an actual agent skill with executable code, it would need proper structure and security review of any scripts that perform system modifications.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Packaging)",
+          "Missing Referenced Files",
+          "Incomplete Metadata"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The LLM analyzer correctly identified that this is npm tool documentation, not agent-executable content. The cli.js file confirms it's an npm binary (#!/usr/bin/env node, package.json has 'bin' field). The SKILL.md structure is documentation-focused rather than instruction-focused.",
+        "meta_exploitability": "Low - This is a packaging/labeling issue, not an active security threat",
+        "meta_impact": "Medium - Users may be confused about what they're installing and how to use it. Could lead to incorrect usage or unmet expectations."
       }
     }
   ],
-  "scan_duration_seconds": 0.5022094249725342,
-  "duration_ms": 502,
+  "scan_duration_seconds": 20.838653326034546,
+  "duration_ms": 20838,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:18:13.948127"
+  "timestamp": "2026-02-05T21:56:29.894981"
 }

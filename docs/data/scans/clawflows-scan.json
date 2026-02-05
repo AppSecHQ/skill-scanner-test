@@ -1,30 +1,184 @@
 {
   "skill_name": "clawflows",
-  "skill_path": "./skills/clawhub-clawflows",
-  "skill_directory": "./skills/clawhub-clawflows",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-clawflows",
+  "skill_directory": "/workspace/skills/clawhub-clawflows",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 5,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_clawflows_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "HIGH",
+      "title": "Indirect Prompt Injection via Untrusted External Automation Files",
+      "description": "The skill downloads and executes automation YAML files from clawflows.com registry without validation. These files contain instructions, logic, conditions, and data flow that the agent will follow. An attacker controlling the registry or performing a supply chain attack could inject malicious instructions into automation files that the agent would execute. The 'clawflows run' command executes arbitrary workflows from external sources, creating a transitive trust vulnerability where the agent delegates trust to untrusted external content.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "clawflows install youtube-competitor-tracker (downloads external YAML), clawflows run youtube-competitor-tracker (executes external workflow definitions with steps, capabilities, and logic)",
+      "remediation": "Implement cryptographic signing and verification of automation files. Add content validation and sandboxing for downloaded automations. Require explicit user review and approval before executing downloaded workflows. Display automation contents and required capabilities before execution. Implement allowlisting of trusted automation sources.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MULTIPLE HIGH-SEVERITY security risks primarily related to indirect prompt injection and tool chaining abuse. The core threat is that it downloads and executes untrusted automation workflow definitions from an external registry (clawflows.com) without validation, cryptographic verification, or adequate user controls. These automations can chain multiple capabilities together (data collection \u2192 processing \u2192 transmission) enabling sophisticated attacks including data exfiltration, unauthorized tool use, and automated malicious workflows. The scheduling feature amplifies these risks by enabling persistent, automated execution. The skill lacks transparency about its trust model and does not adequately warn users that they are delegating control to external workflow definitions. While the capability-based abstraction is architecturally interesting, it creates a powerful attack surface when combined with untrusted external content. RECOMMENDATION: This skill should NOT be used in its current form without significant security enhancements including: automation signing/verification, per-step user approval, data flow restrictions, and comprehensive security warnings.",
+        "primary_threats": [
+          "Indirect Prompt Injection (AITech-1.2)",
+          "Tool Chaining Abuse (AITech-12.1)",
+          "Data Exfiltration Risk (AITech-8.2)",
+          "Social Engineering via Insufficient Transparency (AITech-2.1)",
+          "Availability Disruption via Automated Scheduling (AITech-13.3)"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that downloading and executing external YAML workflow definitions without validation creates a clear indirect prompt injection attack vector. The skill explicitly states it downloads from clawflows.com and executes the content. No security controls are documented.",
+        "meta_exploitability": "EASY - Attacker only needs to compromise the registry or perform MITM to inject malicious workflows. No authentication or verification required.",
+        "meta_impact": "CRITICAL - Complete agent compromise. Attacker can define arbitrary multi-step workflows that execute with full agent capabilities, enabling data theft, system manipulation, and persistent access."
+      }
+    },
+    {
+      "id": "llm_finding_clawflows_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Tool Chaining and Capability Abuse via Automation Workflows",
+      "description": "Automations can chain multiple capabilities together (youtube-data \u2192 database \u2192 chart-generation \u2192 email) creating complex multi-step workflows that execute without per-step user confirmation. The examples show data flowing between steps (capture: videos, then use ${videos}), enabling sophisticated tool chaining attacks. An attacker could create automations that: 1) collect sensitive data via one capability, 2) exfiltrate it via another (database/email), 3) perform unauthorized actions across multiple tools. The --dry-run flag suggests normal execution happens automatically without user approval of each step.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Example workflow: capability: youtube-data \u2192 capture: videos \u2192 capability: database \u2192 args: data: \"${videos}\" (automated multi-step data flow). 'clawflows run' executes entire workflow, 'clawflows enable' sets up automated scheduling.",
+      "remediation": "Require explicit user confirmation for each capability invocation in a workflow. Implement data flow restrictions between capabilities. Add runtime monitoring and approval gates for sensitive operations. Prevent automated scheduling of workflows that access sensitive capabilities. Implement capability-based access control with user-defined policies.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MULTIPLE HIGH-SEVERITY security risks primarily related to indirect prompt injection and tool chaining abuse. The core threat is that it downloads and executes untrusted automation workflow definitions from an external registry (clawflows.com) without validation, cryptographic verification, or adequate user controls. These automations can chain multiple capabilities together (data collection \u2192 processing \u2192 transmission) enabling sophisticated attacks including data exfiltration, unauthorized tool use, and automated malicious workflows. The scheduling feature amplifies these risks by enabling persistent, automated execution. The skill lacks transparency about its trust model and does not adequately warn users that they are delegating control to external workflow definitions. While the capability-based abstraction is architecturally interesting, it creates a powerful attack surface when combined with untrusted external content. RECOMMENDATION: This skill should NOT be used in its current form without significant security enhancements including: automation signing/verification, per-step user approval, data flow restrictions, and comprehensive security warnings.",
+        "primary_threats": [
+          "Indirect Prompt Injection (AITech-1.2)",
+          "Tool Chaining Abuse (AITech-12.1)",
+          "Data Exfiltration Risk (AITech-8.2)",
+          "Social Engineering via Insufficient Transparency (AITech-2.1)",
+          "Availability Disruption via Automated Scheduling (AITech-13.3)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The YAML example clearly shows data capture and variable substitution between steps. The documentation explicitly describes multi-step workflows with data flow. This is a designed feature that creates security risk when combined with untrusted external automations.",
+        "meta_exploitability": "MEDIUM - Requires attacker to get user to install malicious automation, but once installed, execution is automatic. Social engineering via appealing automation names could work.",
+        "meta_impact": "HIGH - Enables sophisticated multi-step attacks including data exfiltration, unauthorized API calls, and automated malicious workflows. Combined with scheduling, enables persistent compromise."
+      }
+    },
+    {
+      "id": "llm_finding_clawflows_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Potential Data Exfiltration via Email and Database Capabilities",
+      "description": "The skill enables automations that can combine data collection capabilities (youtube-data, social-search, weather, calendar) with data transmission capabilities (email, database). The standard capabilities table explicitly lists 'email: Send/receive email' and 'database: Store and query data'. An attacker could create automations that collect sensitive information from various sources and automatically email it to external addresses or store it in attacker-controlled databases. The scheduling feature ('clawflows enable') could enable persistent, automated data exfiltration.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Standard capabilities include: 'email: Send/receive email', 'database: Store and query data', 'social-search: Search X/Twitter', 'calendar: Read/write events'. Automations can chain these: collect data \u2192 email/database it. Scheduling enables automated execution.",
+      "remediation": "Implement strict data flow policies preventing sensitive data from reaching transmission capabilities without explicit user approval. Add audit logging for all data access and transmission operations. Require user confirmation before any email sending or external database writes. Disable automated scheduling for automations that combine collection and transmission capabilities. Implement data classification and handling policies.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MULTIPLE HIGH-SEVERITY security risks primarily related to indirect prompt injection and tool chaining abuse. The core threat is that it downloads and executes untrusted automation workflow definitions from an external registry (clawflows.com) without validation, cryptographic verification, or adequate user controls. These automations can chain multiple capabilities together (data collection \u2192 processing \u2192 transmission) enabling sophisticated attacks including data exfiltration, unauthorized tool use, and automated malicious workflows. The scheduling feature amplifies these risks by enabling persistent, automated execution. The skill lacks transparency about its trust model and does not adequately warn users that they are delegating control to external workflow definitions. While the capability-based abstraction is architecturally interesting, it creates a powerful attack surface when combined with untrusted external content. RECOMMENDATION: This skill should NOT be used in its current form without significant security enhancements including: automation signing/verification, per-step user approval, data flow restrictions, and comprehensive security warnings.",
+        "primary_threats": [
+          "Indirect Prompt Injection (AITech-1.2)",
+          "Tool Chaining Abuse (AITech-12.1)",
+          "Data Exfiltration Risk (AITech-8.2)",
+          "Social Engineering via Insufficient Transparency (AITech-2.1)",
+          "Availability Disruption via Automated Scheduling (AITech-13.3)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The documentation explicitly lists email and database as standard capabilities and shows examples of data flowing between steps. This is a documented feature that creates data exfiltration risk when combined with untrusted automations.",
+        "meta_exploitability": "MEDIUM - Requires malicious automation to be installed, but the capability chaining is a designed feature. User may not realize data is being transmitted.",
+        "meta_impact": "HIGH - Enables automated collection and transmission of sensitive data including calendar events, social media searches, API data. Scheduling amplifies impact via persistent exfiltration."
+      }
+    },
+    {
+      "id": "llm_finding_clawflows_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Insufficient Transparency About External Dependencies and Trust Model",
+      "description": "The skill description does not clearly communicate that it downloads and executes external automation definitions from clawflows.com. Users may not understand they are trusting a third-party registry with the ability to define workflows that their agent will execute. The 'portable' nature of automations (working across any Clawbot with required capabilities) obscures the security implications of running untrusted workflow definitions. The skill presents this as a feature ('Discover and run multi-skill automations') without adequate security warnings about the trust model.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description: 'Search, install, and run multi-skill automations from clawflows.com' - no security warnings. Instructions emphasize portability and ease of use ('clawflows install', 'clawflows run') without discussing trust implications or security model.",
+      "remediation": "Add prominent security warnings in the description and instructions about the trust model. Clearly explain that automations are external code that will be executed. Implement a trust verification system (signatures, reputation scores). Add security documentation explaining risks and best practices. Require explicit user acknowledgment of risks before first use.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MULTIPLE HIGH-SEVERITY security risks primarily related to indirect prompt injection and tool chaining abuse. The core threat is that it downloads and executes untrusted automation workflow definitions from an external registry (clawflows.com) without validation, cryptographic verification, or adequate user controls. These automations can chain multiple capabilities together (data collection \u2192 processing \u2192 transmission) enabling sophisticated attacks including data exfiltration, unauthorized tool use, and automated malicious workflows. The scheduling feature amplifies these risks by enabling persistent, automated execution. The skill lacks transparency about its trust model and does not adequately warn users that they are delegating control to external workflow definitions. While the capability-based abstraction is architecturally interesting, it creates a powerful attack surface when combined with untrusted external content. RECOMMENDATION: This skill should NOT be used in its current form without significant security enhancements including: automation signing/verification, per-step user approval, data flow restrictions, and comprehensive security warnings.",
+        "primary_threats": [
+          "Indirect Prompt Injection (AITech-1.2)",
+          "Tool Chaining Abuse (AITech-12.1)",
+          "Data Exfiltration Risk (AITech-8.2)",
+          "Social Engineering via Insufficient Transparency (AITech-2.1)",
+          "Availability Disruption via Automated Scheduling (AITech-13.3)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The current documentation lacks security warnings despite the significant trust delegation involved. This is a clear transparency issue that could lead users to unknowingly trust malicious automations.",
+        "meta_exploitability": "MEDIUM - Requires social engineering to get users to install malicious automations, but lack of warnings makes this easier.",
+        "meta_impact": "MEDIUM - Increases likelihood of users installing malicious automations due to insufficient understanding of risks. Indirect impact via enabling other attacks."
+      }
+    },
+    {
+      "id": "llm_finding_clawflows_4",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Automated Scheduling Without Resource Limits",
+      "description": "The 'clawflows enable' command sets up automated cron-based execution of workflows without apparent resource limits or safeguards. An attacker could create automations with tight schedules that consume excessive resources, or workflows that contain infinite loops or unbounded operations. The scheduling feature combined with complex multi-step workflows creates availability disruption risks. No mention of rate limiting, execution timeouts, or resource quotas.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'clawflows enable youtube-competitor-tracker # Shows cron setup instructions' - enables automated execution. No documentation of resource limits, execution timeouts, or safeguards against runaway workflows.",
+      "remediation": "Implement execution timeouts for all workflow steps. Add resource quotas (CPU, memory, network) for automated executions. Implement rate limiting for scheduled workflows. Add monitoring and automatic disabling of workflows that exceed resource thresholds. Require user approval for scheduling intervals shorter than a reasonable minimum (e.g., hourly).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MULTIPLE HIGH-SEVERITY security risks primarily related to indirect prompt injection and tool chaining abuse. The core threat is that it downloads and executes untrusted automation workflow definitions from an external registry (clawflows.com) without validation, cryptographic verification, or adequate user controls. These automations can chain multiple capabilities together (data collection \u2192 processing \u2192 transmission) enabling sophisticated attacks including data exfiltration, unauthorized tool use, and automated malicious workflows. The scheduling feature amplifies these risks by enabling persistent, automated execution. The skill lacks transparency about its trust model and does not adequately warn users that they are delegating control to external workflow definitions. While the capability-based abstraction is architecturally interesting, it creates a powerful attack surface when combined with untrusted external content. RECOMMENDATION: This skill should NOT be used in its current form without significant security enhancements including: automation signing/verification, per-step user approval, data flow restrictions, and comprehensive security warnings.",
+        "primary_threats": [
+          "Indirect Prompt Injection (AITech-1.2)",
+          "Tool Chaining Abuse (AITech-12.1)",
+          "Data Exfiltration Risk (AITech-8.2)",
+          "Social Engineering via Insufficient Transparency (AITech-2.1)",
+          "Availability Disruption via Automated Scheduling (AITech-13.3)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The documentation mentions scheduling but doesn't describe resource controls. However, the actual implementation may have safeguards not documented. This is a potential risk that should be addressed.",
+        "meta_exploitability": "MEDIUM - Requires malicious automation to be installed and scheduled. User must explicitly enable scheduling.",
+        "meta_impact": "MEDIUM - Could cause resource exhaustion, high API costs, or system slowdown. Primarily availability impact rather than confidentiality/integrity."
       }
     }
   ],
-  "scan_duration_seconds": 0.35905003547668457,
-  "duration_ms": 359,
+  "scan_duration_seconds": 50.95369577407837,
+  "duration_ms": 50953,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +186,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:56:20.877295"
+  "timestamp": "2026-02-05T22:09:47.831729"
 }
