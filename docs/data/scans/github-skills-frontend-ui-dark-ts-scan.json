@@ -1,30 +1,46 @@
 {
   "skill_name": "frontend-ui-dark-ts",
-  "skill_path": "./skills/microsoft-agent-skills/.github/skills/frontend-ui-dark-ts",
-  "skill_directory": "./skills/microsoft-agent-skills/.github/skills/frontend-ui-dark-ts",
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/frontend-ui-dark-ts",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/frontend-ui-dark-ts",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_frontend-ui-dark-ts_3",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unpinned Package Versions in Dependencies",
+      "description": "The skill documentation specifies package versions using caret (^) ranges (e.g., 'react: ^18.x', 'framer-motion: ^11.x') rather than exact versions. This creates supply chain risk as future minor/patch versions could introduce breaking changes, vulnerabilities, or unexpected behavior when the skill is used.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Package versions specified as: react ^18.x, react-dom ^18.x, react-router-dom ^6.x, framer-motion ^11.x, clsx ^2.x, tailwindcss ^3.x, vite ^5.x, typescript ^5.x",
+      "remediation": "Pin exact package versions in the documentation (e.g., 'react: 18.2.0' instead of '^18.x') to ensure reproducible builds and prevent unexpected updates. Use package-lock.json or yarn.lock to lock transitive dependencies.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is a frontend development template for building dark-themed React applications. It appears to be primarily documentation-focused, providing code examples, design tokens, and component patterns. No critical security threats were identified. The skill contains no executable scripts (Python/Bash), no network calls, no data exfiltration attempts, no prompt injection, and no malicious code. The main concerns are supply chain related: unpinned package versions create moderate risk of dependency confusion or unexpected updates, and missing metadata (license, compatibility, allowed-tools) reduces transparency. Several referenced files are missing from the package, which could cause user confusion but does not pose a security threat. Overall, this skill is safe to use but would benefit from better dependency management and complete file inclusion.",
+        "primary_threats": [
+          "Supply Chain (unpinned dependencies)",
+          "Missing metadata (license, compatibility, allowed-tools)",
+          "Missing referenced files"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a legitimate supply chain concern for frontend dependencies. While caret ranges are common in JavaScript development, they do introduce risk of unexpected updates. However, this is a documentation skill providing templates, not executable code that will auto-install packages, so the actual risk is lower than if this were an automated installer script.",
+        "meta_exploitability": "Low - Requires user to manually install packages using the documented versions. The skill itself doesn't execute npm install.",
+        "meta_impact": "Medium - Could lead to broken builds or unexpected behavior if future package versions introduce breaking changes, but no direct security exploit."
       }
     }
   ],
-  "scan_duration_seconds": 0.34326839447021484,
-  "duration_ms": 343,
+  "scan_duration_seconds": 28.135177850723267,
+  "duration_ms": 28135,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:20:31.055970"
+  "timestamp": "2026-02-05T17:14:06.121663"
 }

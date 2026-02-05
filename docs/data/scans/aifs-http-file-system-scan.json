@@ -1,30 +1,80 @@
 {
   "skill_name": "aifs",
-  "skill_path": "./skills/clawhub-aifs-space",
-  "skill_directory": "./skills/clawhub-aifs-space",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-aifs-space",
+  "skill_directory": "/workspace/skills/clawhub-aifs-space",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_aifs_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "API Key Exposure Risk via Environment Variable",
+      "description": "The skill instructs the agent to check for the AIFS API key in environment variables (AIFS_API_KEY). If the agent has access to environment variables, this could expose sensitive credentials. The skill also encourages users to provide API keys directly to the agent, creating a credential handling risk where keys may be logged, cached, or inadvertently exposed.",
+      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Check for key in environment (`AIFS_API_KEY`) or user config.\n\nAuthentication section instructs: 'Requires API key in headers. Check for key in environment (`AIFS_API_KEY`) or user config.'",
+      "remediation": "Implement secure credential storage mechanisms. Do not instruct agents to read API keys from environment variables directly. Use secure credential vaults or encrypted configuration files. Provide clear warnings about API key security and recommend using read-only or write-only keys with minimal permissions rather than admin keys.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security risks primarily related to data exfiltration and credential exposure. The core functionality - uploading arbitrary content to an external cloud service (aifs.space) - creates inherent risks of sensitive data leakage. The skill instructs agents to access API keys from environment variables and transmit user data to external servers without content validation or explicit per-operation consent. While the description includes a disclaimer against sensitive content, there are no technical controls to enforce this policy. The missing 'allowed-tools' declaration reduces transparency about required capabilities. The skill would benefit from content scanning, explicit user confirmation prompts, secure credential handling, and clearer security warnings.",
+        "primary_threats": [
+          "Data Exfiltration via Cloud Upload",
+          "API Key Exposure",
+          "Unrestricted External Data Transmission",
+          "Missing Security Controls"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Reading environment variables for API keys is standard practice and not inherently malicious. However, the lack of security guidance and the instruction to accept keys directly from users creates credential handling risks. This is a legitimate concern but not an active exploit.",
+        "meta_exploitability": "Medium - Requires agent to have environment access and user to provide credentials",
+        "meta_impact": "Medium - Could expose API credentials if agent logs or caches environment variables"
+      }
+    },
+    {
+      "id": "llm_finding_aifs_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Unrestricted Cloud Data Transmission",
+      "description": "The skill enables uploading arbitrary file content to an external cloud service (aifs.space) without content validation, size limits, or explicit user consent per operation. While the description states 'Not to be used for any sensitive content', there are no technical controls to prevent sensitive data exfiltration. An agent could be manipulated to upload credentials, private keys, or confidential documents.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Write File endpoint: 'curl -X POST -H \"Authorization: Bearer $AIFS_API_KEY\" -H \"Content-Type: application/json\" -d '{\"path\":\"notes/new.txt\",\"content\":\"Hello world\"}' https://aifs.space/api/write'\n\nNo validation or filtering of content before transmission to external service.",
+      "remediation": "Implement content scanning before upload to detect and block sensitive patterns (API keys, private keys, credentials, PII). Add explicit user confirmation prompts before uploading data to cloud storage. Implement file size limits and content type restrictions. Add clear warnings when the skill is about to transmit data externally.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security risks primarily related to data exfiltration and credential exposure. The core functionality - uploading arbitrary content to an external cloud service (aifs.space) - creates inherent risks of sensitive data leakage. The skill instructs agents to access API keys from environment variables and transmit user data to external servers without content validation or explicit per-operation consent. While the description includes a disclaimer against sensitive content, there are no technical controls to enforce this policy. The missing 'allowed-tools' declaration reduces transparency about required capabilities. The skill would benefit from content scanning, explicit user confirmation prompts, secure credential handling, and clearer security warnings.",
+        "primary_threats": [
+          "Data Exfiltration via Cloud Upload",
+          "API Key Exposure",
+          "Unrestricted External Data Transmission",
+          "Missing Security Controls"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill's core functionality is uploading data to an external service. Without user confirmation prompts or content validation, this creates a clear data exfiltration risk if an agent is manipulated via prompt injection or follows malicious instructions.",
+        "meta_exploitability": "Medium - Requires prompt injection or user providing sensitive data to agent",
+        "meta_impact": "High - Could result in credential theft, PII exposure, or confidential data leakage"
       }
     }
   ],
-  "scan_duration_seconds": 0.5556583404541016,
-  "duration_ms": 555,
+  "scan_duration_seconds": 33.593464374542236,
+  "duration_ms": 33593,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:12:50.384222"
+  "timestamp": "2026-02-05T18:53:06.261279"
 }

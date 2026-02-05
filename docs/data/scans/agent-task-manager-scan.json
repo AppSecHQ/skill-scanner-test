@@ -1,10 +1,10 @@
 {
   "skill_name": "agent-task-manager",
-  "skill_path": "./skills/clawhub-agent-task-manager",
-  "skill_directory": "./skills/clawhub-agent-task-manager",
+  "skill_path": "/workspace/skills/clawhub-agent-task-manager",
+  "skill_directory": "/workspace/skills/clawhub-agent-task-manager",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "findings_count": 6,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -42,10 +42,122 @@
         "scanner_category": "INJECTION ATTACK",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_agent-task-manager_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded Cryptocurrency Address in Task Parser",
+      "description": "The task_parser.py file contains a hardcoded cryptocurrency mint address (7hhAuM18KxYETuDPLR2q3UHK5KKkiQdY1DQNqKGLCpump) for $SHIPYARD token. This hardcoded address in example code could lead to unintended monitoring of specific tokens or be used as a template for unauthorized financial surveillance if users don't modify it.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "\"target_mint\": \"7hhAuM18KxYETuDPLR2q3UHK5KKkiQdY1DQNqKGLCpump\"",
+      "remediation": "Remove hardcoded cryptocurrency addresses from example code. Use placeholder values or require users to explicitly provide addresses. Add validation to ensure users understand they're monitoring specific financial assets.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The agent-task-manager skill is a moderately complex workflow orchestration system with some security concerns but no critical threats. The skill implements stateful task management, rate limiting, and multi-step workflows primarily focused on cryptocurrency monitoring. Key concerns include: (1) hardcoded cryptocurrency addresses that could enable unintended financial surveillance, (2) unbounded autonomous execution loops that run indefinitely without user confirmation, (3) missing metadata documentation, and (4) potentially misleading scope claims. The skill does not exhibit data exfiltration, prompt injection, or malicious code execution patterns. All file operations are local and self-contained within the skill package. The primary risks are related to autonomous behavior and resource consumption rather than malicious intent.",
+        "primary_threats": [
+          "Hardcoded sensitive data",
+          "Unbounded autonomous execution",
+          "Missing metadata documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_agent-task-manager_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Automated Execution Loop",
+      "description": "The skill implements a rate-limited monitoring system that can run indefinitely without user confirmation. The cooldown.sh script combined with the orchestrator creates an autonomous loop that executes financial monitoring and notification tasks every 10 minutes (600 seconds) without requiring ongoing user approval. This could lead to resource exhaustion or unwanted persistent execution.",
+      "file_path": "scripts/task_parser.py",
+      "line_number": null,
+      "snippet": "\"rate_limit\": {\"period_seconds\": 600, # Check every 10 minutes\" combined with cooldown.sh automatic retry logic",
+      "remediation": "Implement execution limits (max iterations, time bounds, or explicit user confirmation for continuous monitoring). Add safeguards to prevent indefinite autonomous execution. Require user approval for long-running monitoring tasks.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The agent-task-manager skill is a moderately complex workflow orchestration system with some security concerns but no critical threats. The skill implements stateful task management, rate limiting, and multi-step workflows primarily focused on cryptocurrency monitoring. Key concerns include: (1) hardcoded cryptocurrency addresses that could enable unintended financial surveillance, (2) unbounded autonomous execution loops that run indefinitely without user confirmation, (3) missing metadata documentation, and (4) potentially misleading scope claims. The skill does not exhibit data exfiltration, prompt injection, or malicious code execution patterns. All file operations are local and self-contained within the skill package. The primary risks are related to autonomous behavior and resource consumption rather than malicious intent.",
+        "primary_threats": [
+          "Hardcoded sensitive data",
+          "Unbounded autonomous execution",
+          "Missing metadata documentation"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_agent-task-manager_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Optional Metadata Fields",
+      "description": "The skill manifest is missing optional but recommended fields: license, compatibility, and allowed-tools. While not required, these fields help users understand the skill's requirements and restrictions. The skill performs file I/O operations (reading/writing task_state.json, timestamp files) and executes bash commands, which should be documented in allowed-tools.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "license: Not specified, compatibility: Not specified, allowed-tools: Not specified",
+      "remediation": "Add recommended metadata fields: license (e.g., MIT), compatibility (specify Claude.ai/API requirements), and allowed-tools: [Read, Write, Bash, Python] to accurately reflect the skill's capabilities and requirements.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The agent-task-manager skill is a moderately complex workflow orchestration system with some security concerns but no critical threats. The skill implements stateful task management, rate limiting, and multi-step workflows primarily focused on cryptocurrency monitoring. Key concerns include: (1) hardcoded cryptocurrency addresses that could enable unintended financial surveillance, (2) unbounded autonomous execution loops that run indefinitely without user confirmation, (3) missing metadata documentation, and (4) potentially misleading scope claims. The skill does not exhibit data exfiltration, prompt injection, or malicious code execution patterns. All file operations are local and self-contained within the skill package. The primary risks are related to autonomous behavior and resource consumption rather than malicious intent.",
+        "primary_threats": [
+          "Hardcoded sensitive data",
+          "Unbounded autonomous execution",
+          "Missing metadata documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_agent-task-manager_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Potentially Misleading Scope Description",
+      "description": "The skill description mentions 'creating new multi-agent systems' and 'improving sequential workflows' which could be interpreted as general-purpose orchestration, but the implementation examples are heavily focused on cryptocurrency whale monitoring and financial alerts. The actual use case is more specialized than the broad description suggests.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description claims general 'multi-step, stateful agent workflows' but primary example is cryptocurrency monitoring with hardcoded $SHIPYARD token",
+      "remediation": "Clarify the skill description to indicate it's designed for financial monitoring workflows, or provide more diverse examples beyond cryptocurrency tracking. Ensure the description accurately reflects the primary use cases demonstrated in the code.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The agent-task-manager skill is a moderately complex workflow orchestration system with some security concerns but no critical threats. The skill implements stateful task management, rate limiting, and multi-step workflows primarily focused on cryptocurrency monitoring. Key concerns include: (1) hardcoded cryptocurrency addresses that could enable unintended financial surveillance, (2) unbounded autonomous execution loops that run indefinitely without user confirmation, (3) missing metadata documentation, and (4) potentially misleading scope claims. The skill does not exhibit data exfiltration, prompt injection, or malicious code execution patterns. All file operations are local and self-contained within the skill package. The primary risks are related to autonomous behavior and resource consumption rather than malicious intent.",
+        "primary_threats": [
+          "Hardcoded sensitive data",
+          "Unbounded autonomous execution",
+          "Missing metadata documentation"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.6698927879333496,
-  "duration_ms": 669,
+  "scan_duration_seconds": 26.655386209487915,
+  "duration_ms": 26655,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -53,5 +165,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T03:07:35.133273"
+  "timestamp": "2026-02-05T18:41:59.201749"
 }

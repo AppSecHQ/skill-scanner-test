@@ -1,30 +1,78 @@
 {
   "skill_name": "aws-infra",
-  "skill_path": "./skills/clawhub-aws-infra",
-  "skill_directory": "./skills/clawhub-aws-infra",
+  "skill_path": "/workspace/skills/clawhub-aws-infra",
+  "skill_directory": "/workspace/skills/clawhub-aws-infra",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_aws-infra_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Potential Credential Exposure via AWS CLI Output",
+      "description": "The skill instructs the agent to run 'aws sts get-caller-identity' and other AWS CLI commands that may output sensitive information including account IDs, user ARNs, and access key IDs. While the safety rules state 'Never reveal or log secrets (access keys, session tokens)', the skill provides no technical enforcement mechanism to prevent the agent from displaying this information to the user or in logs. The agent will have access to AWS credentials from the environment (~/.aws/config, AWS_PROFILE, AWS_REGION) and could inadvertently expose credential metadata.",
+      "file_path": "SKILL.md",
+      "line_number": 12,
+      "snippet": "Quick Start section: 'aws sts get-caller-identity' - This command outputs UserId, Account, and Arn which may contain sensitive identity information. Safety Rules section states 'Never reveal or log secrets' but provides no code-level enforcement.",
+      "remediation": "Implement output filtering in the instructions to explicitly redact sensitive fields from AWS CLI responses. Add specific guidance to mask or truncate credential-related output. Consider adding a Python wrapper script that sanitizes AWS CLI output before presenting it to the user.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The aws-infra skill is a moderately secure AWS management tool with good safety intentions but some implementation gaps. The skill demonstrates security awareness through explicit safety rules (read-only by default, confirmation for destructive actions, secret protection), but lacks technical enforcement mechanisms. Primary concerns include: (1) potential credential exposure through AWS CLI output without filtering, (2) missing allowed-tools declaration leaving tool usage unrestricted, and (3) access to AWS configuration files without validation guidance. The skill does not contain malicious code, data exfiltration attempts, or prompt injection. The safety rules are well-intentioned but rely on agent compliance rather than technical controls. Missing metadata fields reduce transparency. Overall, this skill is suitable for use with caution and would benefit from adding technical enforcement layers to match its stated safety policies.",
+        "primary_threats": [
+          "Credential exposure via CLI output",
+          "Unrestricted tool access without manifest controls",
+          "Missing technical enforcement of safety rules"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is context-dependent. Account IDs and ARNs are generally not considered secrets in AWS security model, but some organizations treat them as sensitive. The skill's safety rule correctly identifies actual secrets (keys/tokens) as protected.",
+        "meta_exploitability": "Very Low - Requires user to be in environment where account metadata is considered sensitive",
+        "meta_impact": "Low - Metadata exposure only, not actual credentials"
+      }
+    },
+    {
+      "id": "llm_finding_aws-infra_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Unrestricted AWS CLI Tool Access Without allowed-tools Declaration",
+      "description": "The skill does not declare 'allowed-tools' in its YAML manifest, leaving tool usage unrestricted. The skill instructions direct the agent to execute arbitrary AWS CLI commands via Bash, including potentially destructive operations (delete, terminate, modify, scale). While the instructions include safety rules requiring confirmation, there is no technical enforcement at the manifest level to restrict which agent tools can be used. This creates a gap between stated safety policy and technical controls.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "YAML manifest missing 'allowed-tools' field. Instructions direct use of AWS CLI commands including destructive operations: 'aws s3 rm', 'aws ecs update-service', 'aws autoscaling update-auto-scaling-group'. No technical restriction prevents the agent from executing these commands via Bash tool.",
+      "remediation": "Add 'allowed-tools: [Bash, Read]' to the YAML manifest to explicitly declare tool requirements. Consider whether Write tool access is needed. If the skill should truly be read-only by default, the manifest should reflect this constraint. Implement a wrapper script that validates commands against an allowlist before execution.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The aws-infra skill is a moderately secure AWS management tool with good safety intentions but some implementation gaps. The skill demonstrates security awareness through explicit safety rules (read-only by default, confirmation for destructive actions, secret protection), but lacks technical enforcement mechanisms. Primary concerns include: (1) potential credential exposure through AWS CLI output without filtering, (2) missing allowed-tools declaration leaving tool usage unrestricted, and (3) access to AWS configuration files without validation guidance. The skill does not contain malicious code, data exfiltration attempts, or prompt injection. The safety rules are well-intentioned but rely on agent compliance rather than technical controls. Missing metadata fields reduce transparency. Overall, this skill is suitable for use with caution and would benefit from adding technical enforcement layers to match its stated safety policies.",
+        "primary_threats": [
+          "Credential exposure via CLI output",
+          "Unrestricted tool access without manifest controls",
+          "Missing technical enforcement of safety rules"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The manifest objectively lacks allowed-tools declaration. While the skill's intended behavior is legitimate (AWS CLI usage), following security best practices requires explicit tool restrictions.",
+        "meta_exploitability": "Low - Requires malicious modification of skill instructions to exploit unrestricted tool access",
+        "meta_impact": "Medium - Could allow unintended tool usage if skill instructions were compromised"
       }
     }
   ],
-  "scan_duration_seconds": 0.5946011543273926,
-  "duration_ms": 594,
+  "scan_duration_seconds": 39.477272272109985,
+  "duration_ms": 39477,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:20:09.244926"
+  "timestamp": "2026-02-05T20:09:47.795300"
 }

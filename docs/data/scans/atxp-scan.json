@@ -1,50 +1,113 @@
 {
   "skill_name": "atxp",
-  "skill_path": "./skills/atxp-dev-cli/skills/atxp",
-  "skill_directory": "./skills/atxp-dev-cli/skills/atxp",
+  "skill_path": "/workspace/skills/atxp-dev-cli/skills/atxp",
+  "skill_directory": "/workspace/skills/atxp-dev-cli/skills/atxp",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_atxp_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Credential Exposure via Environment Variable Sourcing",
+      "description": "The skill instructs the agent to execute 'source ~/.atxp/config' which loads environment variables from a user configuration file. This pattern can expose credentials if the config file is compromised or if the skill is used in a shared environment. The ATXP_CONNECTION credential is then stored in the environment and could be accessed by other processes or logged.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "```bash\n# If not set, login:\nnpx atxp login\nsource ~/.atxp/config\n```",
+      "remediation": "Consider using more secure credential management approaches: (1) Use temporary session tokens instead of persistent environment variables, (2) Implement credential scoping to limit exposure, (3) Warn users about the security implications of sourcing config files, (4) Use secure credential storage mechanisms provided by the OS (keychain, credential manager)",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The ATXP skill provides legitimate functionality for accessing external API services (web search, AI media generation, email) but presents MEDIUM security risks primarily around credential management and external tool execution. The skill relies on npx to execute commands from an external npm package, creating supply chain risk if that package is compromised. Credential handling via environment variable sourcing could expose sensitive tokens. The email send functionality could be abused for data exfiltration without proper safeguards. Missing metadata fields reduce transparency. The skill does not contain direct prompt injection attempts or obvious malicious code, but the external dependencies and credential exposure patterns warrant careful review before deployment.",
+        "primary_threats": [
+          "Credential Exposure",
+          "External Tool Execution Risk",
+          "Potential Data Exfiltration via Email",
+          "Supply Chain Dependency"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Environment variables are standard for CLI tools. Risk is LOW unless the system is already compromised or credentials are mishandled by the user.",
+        "meta_exploitability": "Low - Requires local access or process inspection capabilities",
+        "meta_impact": "Medium - Exposed credential grants access to paid ATXP services"
       }
     },
     {
-      "id": "YARA_tool_chaining_abuse_26abe053b8",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
+      "id": "llm_finding_atxp_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
       "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get the messageId from `email",
+      "title": "Unrestricted External Tool Execution via npx",
+      "description": "The skill executes arbitrary npx commands to interact with external ATXP API services without any validation or sandboxing. The npx command can download and execute code from npm registries, creating a supply chain risk. If the 'atxp' package is compromised or typosquatted, malicious code could be executed on the user's system.",
       "file_path": "SKILL.md",
-      "line_number": 43,
-      "snippet": "Retrieves the full content of a specific message including the body. Get the messageId from `email inbox` output.",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "```bash\nnpx atxp search <query>\nnpx atxp image <prompt>\nnpx atxp music <prompt>\nnpx atxp video <prompt>\nnpx atxp x <query>\nnpx atxp email inbox\nnpx atxp email send --to <email> --subject <subject> --body <body>\n```",
+      "remediation": "(1) Pin the atxp package to a specific verified version, (2) Verify package integrity using checksums or signatures, (3) Document the trust assumption users must make about the ATXP npm package, (4) Consider implementing a local wrapper that validates commands before execution, (5) Add warnings about the external dependency and its security implications",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The ATXP skill provides legitimate functionality for accessing external API services (web search, AI media generation, email) but presents MEDIUM security risks primarily around credential management and external tool execution. The skill relies on npx to execute commands from an external npm package, creating supply chain risk if that package is compromised. Credential handling via environment variable sourcing could expose sensitive tokens. The email send functionality could be abused for data exfiltration without proper safeguards. Missing metadata fields reduce transparency. The skill does not contain direct prompt injection attempts or obvious malicious code, but the external dependencies and credential exposure patterns warrant careful review before deployment.",
+        "primary_threats": [
+          "Credential Exposure",
+          "External Tool Execution Risk",
+          "Potential Data Exfiltration via Email",
+          "Supply Chain Dependency"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "npx executes arbitrary code from npm without verification. This is a well-known supply chain attack vector (e.g., event-stream incident). The skill provides no mitigation.",
+        "meta_exploitability": "Medium - Requires attacker to compromise npm package or perform typosquatting attack",
+        "meta_impact": "High - Full code execution with user's privileges if package is compromised"
+      }
+    },
+    {
+      "id": "llm_finding_atxp_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Potential Data Exfiltration via Email Send Functionality",
+      "description": "The skill provides email sending capabilities that could be abused for data exfiltration. An attacker could use prompt injection to instruct the agent to send sensitive data from the user's system to an external email address. The skill does not implement any restrictions on email recipients or content validation.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```bash\nnpx atxp email send --to <email> --subject <subject> --body <body>\n```\nNo validation of recipient addresses or content filtering is mentioned.",
+      "remediation": "(1) Implement recipient allowlisting or require explicit user confirmation for email sends, (2) Add content scanning to detect potential sensitive data (credentials, API keys, PII), (3) Log all email send operations for audit purposes, (4) Implement rate limiting to prevent bulk data exfiltration, (5) Warn users about the data transmission risks",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The ATXP skill provides legitimate functionality for accessing external API services (web search, AI media generation, email) but presents MEDIUM security risks primarily around credential management and external tool execution. The skill relies on npx to execute commands from an external npm package, creating supply chain risk if that package is compromised. Credential handling via environment variable sourcing could expose sensitive tokens. The email send functionality could be abused for data exfiltration without proper safeguards. Missing metadata fields reduce transparency. The skill does not contain direct prompt injection attempts or obvious malicious code, but the external dependencies and credential exposure patterns warrant careful review before deployment.",
+        "primary_threats": [
+          "Credential Exposure",
+          "External Tool Execution Risk",
+          "Potential Data Exfiltration via Email",
+          "Supply Chain Dependency"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Email sending is legitimate functionality, but without safeguards it could be abused. Risk depends on agent's access to sensitive data and prompt injection defenses.",
+        "meta_exploitability": "Medium - Requires successful prompt injection to trick agent into exfiltrating data",
+        "meta_impact": "High - Could leak credentials, files, or other sensitive information"
       }
     }
   ],
-  "scan_duration_seconds": 0.3342323303222656,
-  "duration_ms": 334,
+  "scan_duration_seconds": 31.32551622390747,
+  "duration_ms": 31325,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T02:57:04.997508"
+  "timestamp": "2026-02-05T20:00:49.959513"
 }

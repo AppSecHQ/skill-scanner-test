@@ -1,70 +1,80 @@
 {
   "skill_name": "ai-pdf-builder",
-  "skill_path": "./skills/clawhub-ai-pdf-builder",
-  "skill_directory": "./skills/clawhub-ai-pdf-builder",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 3,
+  "skill_path": "/workspace/skills/clawhub-ai-pdf-builder",
+  "skill_directory": "/workspace/skills/clawhub-ai-pdf-builder",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_ai-pdf-builder_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing allowed-tools Declaration with External Tool Dependencies",
+      "description": "The skill requires external system tools (pandoc, basictex/texlive, tlmgr, npm/npx) and makes network calls (npx downloads packages, AI API calls to Anthropic), but does not declare any allowed-tools restrictions in the manifest. While allowed-tools is optional, the absence of this field combined with significant external dependencies and network activity creates ambiguity about the skill's intended permissions and makes it harder for users to assess security boundaries.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "YAML Manifest shows:\n- allowed-tools: Not specified\n\nBut instructions require:\n- System package installation (brew, apt-get, tlmgr)\n- Network package execution (npx)\n- External API calls (Anthropic API)\n- File system operations (reading/writing PDFs and markdown)",
+      "remediation": "1. Add explicit allowed-tools declaration to manifest (e.g., [Bash, Python, Read, Write]). 2. Document all external dependencies and network requirements clearly. 3. Provide transparency about what system-level operations the skill performs.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The ai-pdf-builder skill presents MEDIUM security risk due to missing implementation code, unclear tool permissions, and API key handling concerns. While the skill's stated purpose (PDF generation from Markdown with AI assistance) is legitimate, the absence of actual implementation files prevents verification of security claims like 'content sanitization' and secure API usage. The skill requires significant external dependencies (Pandoc, LaTeX, NPM packages, Anthropic API) but lacks explicit allowed-tools declarations, creating permission ambiguity. The documentation instructs users to expose their Anthropic API keys via environment variables without security warnings. Most concerning is that all referenced Python implementation files are missing, making it impossible to audit actual behavior, data flows, or verify that the skill matches its description. The skill should not be used until complete implementation code is provided for security review.",
+        "primary_threats": [
+          "Missing Implementation Code",
+          "API Key Exposure Risk",
+          "Unclear Tool Permissions",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Missing allowed-tools is a best-practice issue, not a security vulnerability. The skill's requirements are documented in the instructions, just not in the manifest metadata.",
+        "meta_exploitability": "N/A - Metadata issue, not exploitable",
+        "meta_impact": "Low - Reduces transparency but doesn't create security risk"
       }
     },
     {
-      "id": "YARA_credential_harvesting_649075ceb7",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ANTHROPIC_API_KEY=\"your-key",
-      "file_path": "SKILL.md",
-      "line_number": 37,
-      "snippet": "export ANTHROPIC_API_KEY=\"your-key-here\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_e00d8fae03",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
+      "id": "llm_finding_ai-pdf-builder_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
       "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
-      "file_path": "SKILL.md",
-      "line_number": 3,
-      "snippet": "Generate professional PDFs from Markdown with AI-powered content generation. Perfect for:",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
+      "title": "Missing Implementation Code Creates Verification Gap",
+      "description": "The skill claims to provide AI-powered PDF generation with multiple document types and AI features (generate, enhance, summarize), but no actual implementation code (Python/Bash scripts or JavaScript/TypeScript) is provided in the package. All referenced Python files (content.py, prompt.py, documents.py, etc.) are missing. This creates a significant verification gap where the actual behavior, security controls, data handling, and API usage cannot be audited. Users cannot verify claims about content sanitization, AI integration security, or data flow.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Referenced Files show 7 Python files mentioned but all marked as 'not found':\n- content.py (not found)\n- their.py (not found)\n- prompt.py (not found)\n- prompts.py (not found)\n- documents.py (not found)\n- Markdown.py (not found)\n- a.py (not found)\n\nNo script files provided despite claims of AI content generation, enhancement, and summarization features.",
+      "remediation": "1. Include all implementation code in the skill package for security review. 2. Provide the actual Python/JavaScript/TypeScript files that implement AI features. 3. Make the codebase transparent so users can audit API calls, data handling, and content processing. 4. If this is an NPM package wrapper, clarify the architecture and provide links to the actual source code repository.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The ai-pdf-builder skill presents MEDIUM security risk due to missing implementation code, unclear tool permissions, and API key handling concerns. While the skill's stated purpose (PDF generation from Markdown with AI assistance) is legitimate, the absence of actual implementation files prevents verification of security claims like 'content sanitization' and secure API usage. The skill requires significant external dependencies (Pandoc, LaTeX, NPM packages, Anthropic API) but lacks explicit allowed-tools declarations, creating permission ambiguity. The documentation instructs users to expose their Anthropic API keys via environment variables without security warnings. Most concerning is that all referenced Python implementation files are missing, making it impossible to audit actual behavior, data flows, or verify that the skill matches its description. The skill should not be used until complete implementation code is provided for security review.",
+        "primary_threats": [
+          "Missing Implementation Code",
+          "API Key Exposure Risk",
+          "Unclear Tool Permissions",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill package objectively contains no implementation code - only markdown documentation. All 7 referenced Python files are confirmed missing. This is a factual verification gap, not a pattern match.",
+        "meta_exploitability": "N/A - No code to exploit, but creates trust/transparency issue",
+        "meta_impact": "Medium - Users cannot verify what the skill actually does since there's no code to audit. Creates false expectations about skill capabilities."
       }
     }
   ],
-  "scan_duration_seconds": 0.3174271583557129,
-  "duration_ms": 317,
+  "scan_duration_seconds": 36.70287299156189,
+  "duration_ms": 36702,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -72,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:00:35.649329"
+  "timestamp": "2026-02-05T18:45:11.520909"
 }

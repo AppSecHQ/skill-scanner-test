@@ -1,10 +1,10 @@
 {
   "skill_name": "algorithmic-art",
-  "skill_path": "./skills/anthropics-skills/skills/algorithmic-art",
-  "skill_directory": "./skills/anthropics-skills/skills/algorithmic-art",
+  "skill_path": "/workspace/skills/anthropics-skills/skills/algorithmic-art",
+  "skill_directory": "/workspace/skills/anthropics-skills/skills/algorithmic-art",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 1,
+  "findings_count": 3,
   "findings": [
     {
       "id": "YARA_skill_discovery_abuse_74009587b6",
@@ -25,10 +25,58 @@
         "threat_type": "SKILL DISCOVERY ABUSE",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_algorithmic-art_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Optional Metadata Fields",
+      "description": "The skill manifest does not specify 'compatibility' or 'allowed-tools' fields. While these fields are optional per the agent skills specification, their absence means users cannot verify which agent tools the skill expects to use or which environments it's compatible with. This is informational only and does not indicate a security violation.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "compatibility: Not specified\nallowed-tools: Not specified",
+      "remediation": "Consider adding 'allowed-tools: [Write]' to document that this skill writes HTML/JS/MD files, and 'compatibility' to specify supported environments. This improves transparency but is not required.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This algorithmic art generation skill is SAFE with no significant security threats detected. The skill creates generative art using p5.js by first generating an algorithmic philosophy document, then expressing it through HTML/JavaScript code. The skill operates entirely locally, writing markdown philosophy files and HTML/JS art viewers. No data exfiltration, prompt injection, command injection, or credential theft patterns were found. The bundled template files (templates/viewer.html and templates/generator_template.js) contain only legitimate p5.js generative art code with proper structure and best practices. The skill correctly reads its own internal template files, which is normal and expected behavior for a self-contained skill package. Minor issues include missing optional metadata fields and some spurious file references that appear to be parsing artifacts rather than actual security concerns.",
+        "primary_threats": [],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_algorithmic-art_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Multiple Referenced Files Not Found in Package",
+      "description": "The skill references 14 files in its instructions, but most are not found in the package: references/generator_template.js, CDN.py, references/viewer.html, disorder.py, someone.py, assets/viewer.html, user.py, mathematical.py, velocity.py, a.py, assets/generator_template.js, the.py, scratch.py. Only templates/viewer.html and templates/generator_template.js exist. The missing .py files (CDN.py, disorder.py, someone.py, user.py, mathematical.py, velocity.py, a.py, the.py, scratch.py) appear to be artifacts from text parsing rather than intentional references, as they don't make semantic sense in the context of a p5.js art generation skill.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Files referenced: references/generator_template.js, CDN.py, references/viewer.html, disorder.py, someone.py, assets/viewer.html, user.py, mathematical.py, templates/viewer.html, velocity.py, a.py, assets/generator_template.js, the.py, templates/generator_template.js, scratch.py",
+      "remediation": "Clean up file references in the skill documentation. The .py file references appear to be false positives from parsing. Ensure only actual template files (templates/viewer.html, templates/generator_template.js) are referenced. Consider organizing templates in a single consistent directory structure.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This algorithmic art generation skill is SAFE with no significant security threats detected. The skill creates generative art using p5.js by first generating an algorithmic philosophy document, then expressing it through HTML/JavaScript code. The skill operates entirely locally, writing markdown philosophy files and HTML/JS art viewers. No data exfiltration, prompt injection, command injection, or credential theft patterns were found. The bundled template files (templates/viewer.html and templates/generator_template.js) contain only legitimate p5.js generative art code with proper structure and best practices. The skill correctly reads its own internal template files, which is normal and expected behavior for a self-contained skill package. Minor issues include missing optional metadata fields and some spurious file references that appear to be parsing artifacts rather than actual security concerns.",
+        "primary_threats": [],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.33513307571411133,
-  "duration_ms": 335,
+  "scan_duration_seconds": 39.63086700439453,
+  "duration_ms": 39630,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -36,5 +84,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T02:54:25.282782"
+  "timestamp": "2026-02-05T19:01:36.009112"
 }

@@ -1,51 +1,45 @@
 {
   "skill_name": "ansible",
-  "skill_path": "./skills/clawhub-ansible-skill",
-  "skill_directory": "./skills/clawhub-ansible-skill",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 2,
+  "skill_path": "/workspace/skills/clawhub-ansible-skill",
+  "skill_directory": "/workspace/skills/clawhub-ansible-skill",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_ansible_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded SSH Password in Inventory Example",
+      "description": "The SKILL.md documentation contains an example inventory configuration that demonstrates storing SSH passwords in plain text using ansible_ssh_pass with vault variables. While the example references vault encryption, it teaches users a pattern that could lead to credential exposure if they store passwords without proper vault encryption or commit unencrypted credentials.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "ansible_ssh_pass: \"{{ vault_eva_password }}\" - Example shows password-based authentication pattern that users might implement insecurely",
+      "remediation": "Update documentation to emphasize SSH key-based authentication as the primary method. If password authentication examples are needed, add prominent warnings about vault encryption requirements and never storing passwords in plain text. Consider removing password-based examples entirely in favor of key-based authentication patterns.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SECRET_PRIVATE_KEY_467a4a21c9",
-      "rule_id": "SECRET_PRIVATE_KEY",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "Private key block detected",
-      "description": "Pattern detected: -----BEGIN OPENSSH PRIVATE KEY-----",
-      "file_path": "SKILL.md",
-      "line_number": 261,
-      "snippet": "-----BEGIN OPENSSH PRIVATE KEY-----",
-      "remediation": "Remove hardcoded private keys",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----",
-        "matched_text": "-----BEGIN OPENSSH PRIVATE KEY-----",
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Ansible infrastructure automation skill is generally well-structured and secure for its intended purpose. The skill provides legitimate infrastructure-as-code capabilities without malicious code or prompt injection attempts. The primary security concern is the documentation's treatment of SSH password authentication, which could lead users to implement insecure credential storage if not properly understood. The skill appropriately requires external binary dependencies (ansible, ansible-playbook) and provides comprehensive documentation. Missing optional metadata fields reduce transparency but don't represent active security threats. The skill follows infrastructure automation best practices and includes security-focused roles (SSH hardening, fail2ban, UFW firewall). No data exfiltration, command injection, or malicious behavior detected.",
+        "primary_threats": [
+          "Credential exposure risk from documentation examples",
+          "Missing tool permission declarations"
+        ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The documentation does reference vault encryption, but the examples could be misinterpreted by users unfamiliar with Ansible security best practices. This is a legitimate documentation clarity issue that could lead to credential exposure.",
+        "meta_exploitability": "Medium - Requires user error (not using vault or committing unencrypted files)",
+        "meta_impact": "High - Could expose SSH credentials if users follow examples incorrectly"
       }
     }
   ],
-  "scan_duration_seconds": 0.8006281852722168,
-  "duration_ms": 800,
+  "scan_duration_seconds": 24.417046785354614,
+  "duration_ms": 24417,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -53,5 +47,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:08:45.199664"
+  "timestamp": "2026-02-05T19:21:53.475415"
 }

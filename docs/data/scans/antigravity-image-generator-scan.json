@@ -1,30 +1,80 @@
 {
   "skill_name": "antigravity-image-gen",
-  "skill_path": "./skills/clawhub-antigravity-image-gen",
-  "skill_directory": "./skills/clawhub-antigravity-image-gen",
+  "skill_path": "/workspace/skills/clawhub-antigravity-image-gen",
+  "skill_directory": "/workspace/skills/clawhub-antigravity-image-gen",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_antigravity-image-gen_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded credential path exposes authentication data",
+      "description": "The skill instructions explicitly reference a hardcoded credential file path '~/.clawdbot/agents/main/agent/auth-profiles.json' containing Google Antigravity OAuth credentials. This creates a predictable target for credential theft. If the skill's actual implementation (generate.js - not provided for analysis) reads this file, it could exfiltrate OAuth tokens to external endpoints. The instructions also reveal the internal authentication architecture, which aids attackers in targeting credential storage.",
+      "file_path": "SKILL.md",
+      "line_number": 9,
+      "snippet": "**Google Antigravity OAuth Profile**: Must be present in `~/.clawdbot/agents/main/agent/auth-profiles.json`.",
+      "remediation": "1. Do not hardcode credential paths in documentation. 2. Use environment variables or secure credential managers. 3. Implement proper OAuth token scoping and rotation. 4. If the script reads this file, ensure it validates the token locally and does not transmit credentials to external endpoints. 5. Add allowed-tools restrictions to prevent unauthorized file access.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "MODERATE RISK - This skill presents several security concerns primarily around credential exposure and lack of transparency. The hardcoded OAuth credential path (~/.clawdbot/agents/main/agent/auth-profiles.json) creates a predictable target for credential theft. The missing 'allowed-tools' declaration enables unrestricted tool access, which could be exploited if the generate.js script (not provided for analysis) is malicious. The description claims to use an 'internal Google API' without verification, which could be social engineering. However, without access to the actual generate.js implementation, we cannot confirm data exfiltration, command injection, or other critical threats. The skill requires OAuth credentials and network access but lacks transparency through missing license/compatibility metadata. RECOMMENDATION: Do not use this skill until: (1) generate.js source code is reviewed for malicious network calls, (2) allowed-tools restrictions are added, (3) credential handling is secured, and (4) API endpoint authenticity is verified.",
+        "primary_threats": [
+          "Credential exposure via hardcoded paths",
+          "Missing tool access restrictions",
+          "Potentially deceptive API claims",
+          "Insufficient metadata transparency"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The hardcoded path is clearly visible in the source code and represents a real security concern for credential management. While the current implementation appears to only use credentials for legitimate API calls, the hardcoded path makes it easier for attackers to target credential theft.",
+        "meta_exploitability": "Medium - Requires local file system access to exploit, but path is predictable",
+        "meta_impact": "Medium - OAuth token exposure could allow unauthorized API access"
+      }
+    },
+    {
+      "id": "llm_finding_antigravity-image-gen_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing allowed-tools declaration enables unrestricted tool access",
+      "description": "The skill manifest does not declare 'allowed-tools', which means the agent has no restrictions on tool usage. Given that the skill requires Node.js execution and file system access (reading OAuth credentials, writing image files), the absence of tool restrictions creates risk for tool exploitation. An attacker could modify the generate.js script (not provided) to use unrestricted Bash/Python tools for malicious purposes beyond image generation.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "allowed-tools: Not specified",
+      "remediation": "Add explicit allowed-tools declaration to the YAML manifest. Recommended: 'allowed-tools: [Bash, Write]' to permit Node.js execution and image file writing while restricting other capabilities. Example:\n```yaml\nallowed-tools: [Bash, Write]\n```",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "MODERATE RISK - This skill presents several security concerns primarily around credential exposure and lack of transparency. The hardcoded OAuth credential path (~/.clawdbot/agents/main/agent/auth-profiles.json) creates a predictable target for credential theft. The missing 'allowed-tools' declaration enables unrestricted tool access, which could be exploited if the generate.js script (not provided for analysis) is malicious. The description claims to use an 'internal Google API' without verification, which could be social engineering. However, without access to the actual generate.js implementation, we cannot confirm data exfiltration, command injection, or other critical threats. The skill requires OAuth credentials and network access but lacks transparency through missing license/compatibility metadata. RECOMMENDATION: Do not use this skill until: (1) generate.js source code is reviewed for malicious network calls, (2) allowed-tools restrictions are added, (3) credential handling is secured, and (4) API endpoint authenticity is verified.",
+        "primary_threats": [
+          "Credential exposure via hardcoded paths",
+          "Missing tool access restrictions",
+          "Potentially deceptive API claims",
+          "Insufficient metadata transparency"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "While missing allowed-tools is a policy violation, the actual script behavior appears legitimate. The script only reads auth files, writes generated images, and makes HTTPS API calls - all necessary for its stated purpose. This is more of a best practice issue than an active threat.",
+        "meta_exploitability": "Low - Would require modification of the script itself to exploit",
+        "meta_impact": "Low - Missing metadata, not an active vulnerability"
       }
     }
   ],
-  "scan_duration_seconds": 0.38309526443481445,
-  "duration_ms": 383,
+  "scan_duration_seconds": 33.65761113166809,
+  "duration_ms": 33657,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:15:03.684960"
+  "timestamp": "2026-02-05T19:27:34.783790"
 }

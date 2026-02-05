@@ -1,101 +1,113 @@
 {
   "skill_name": "agnxi-search",
-  "skill_path": "./skills/clawhub-agnxi-search-skill",
-  "skill_directory": "./skills/clawhub-agnxi-search-skill",
+  "skill_path": "/workspace/skills/clawhub-agnxi-search-skill",
+  "skill_directory": "/workspace/skills/clawhub-agnxi-search-skill",
   "is_safe": false,
   "max_severity": "HIGH",
-  "findings_count": 5,
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_agnxi-search_1",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "HIGH",
+      "title": "Indirect Prompt Injection via Untrusted External Sitemap Content",
+      "description": "The skill fetches XML content from an external URL (agnxi.com/sitemap.xml) and parses it as trusted data without validation. If the sitemap is compromised or the domain is hijacked, an attacker could inject malicious URLs or XML content that the agent would then present to the user or follow. The skill treats external web content as authoritative, creating a transitive trust vulnerability where the agent delegates trust to an external, unverified source.",
+      "file_path": "search.py",
+      "line_number": null,
+      "snippet": "def parse_sitemap(xml_content, query):\n    try:\n        root = ET.fromstring(xml_content)\n        # Parses external XML without validation\n        for url in root.findall('ns:url', namespace):\n            loc = url.find('ns:loc', namespace).text\n            results.append(loc)  # Returns URLs from external source",
+      "remediation": "1. Implement content validation and sanitization for external data. 2. Add URL allowlisting to verify returned URLs match expected patterns (e.g., only agnxi.com domains). 3. Display a warning to users that results come from an external source. 4. Consider cryptographic verification of sitemap content (signatures/hashes). 5. Implement rate limiting and caching to reduce dependency on external source.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks primarily due to unvalidated network requests to external sources and transitive trust vulnerabilities. The skill fetches and parses content from https://agnxi.com/sitemap.xml without user consent, content validation, or disclosure of network activity. This creates both data exfiltration risks (outbound HTTP requests leak metadata) and indirect prompt injection risks (compromised sitemap could inject malicious URLs). The lack of timeout/size limits on network requests creates denial-of-service vulnerabilities. Additionally, the skill's description is misleading as it does not disclose the network dependency, violating user expectations of transparency. While the core functionality (searching a directory) is legitimate, the implementation lacks critical security controls for handling external data and network operations.",
+        "primary_threats": [
+          "Data Exfiltration via Network Requests",
+          "Indirect Prompt Injection from External Content",
+          "Availability Disruption (DoS via unbounded requests)",
+          "Social Engineering (misleading description)"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified transitive trust vulnerability. The code clearly fetches external content and parses it as trusted data without validation. This is a legitimate indirect prompt injection vector.",
+        "meta_exploitability": "Medium - Requires domain compromise or DNS hijacking, but once achieved, trivial to inject malicious URLs",
+        "meta_impact": "High - Could redirect users to phishing sites or inject malicious content into agent responses"
+      }
+    },
+    {
+      "id": "llm_finding_agnxi-search_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Network Request Without Timeout or Size Limits",
+      "description": "The urllib.request.urlopen() call lacks timeout parameters and response size limits. An attacker controlling the sitemap URL could cause a denial-of-service by serving an extremely large XML file, never responding (causing indefinite hang), or responding very slowly to exhaust agent resources. This could freeze the agent or consume excessive memory/bandwidth.",
+      "file_path": "search.py",
+      "line_number": 14,
+      "snippet": "with urllib.request.urlopen(SITEMAP_URL) as response:\n    return response.read()  # No timeout, no size limit",
+      "remediation": "1. Add timeout parameter: urllib.request.urlopen(SITEMAP_URL, timeout=10). 2. Implement response size limits (e.g., max 10MB). 3. Add streaming parser instead of loading entire response into memory. 4. Implement retry limits and exponential backoff. 5. Add resource monitoring to detect and abort excessive operations.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks primarily due to unvalidated network requests to external sources and transitive trust vulnerabilities. The skill fetches and parses content from https://agnxi.com/sitemap.xml without user consent, content validation, or disclosure of network activity. This creates both data exfiltration risks (outbound HTTP requests leak metadata) and indirect prompt injection risks (compromised sitemap could inject malicious URLs). The lack of timeout/size limits on network requests creates denial-of-service vulnerabilities. Additionally, the skill's description is misleading as it does not disclose the network dependency, violating user expectations of transparency. While the core functionality (searching a directory) is legitimate, the implementation lacks critical security controls for handling external data and network operations.",
+        "primary_threats": [
+          "Data Exfiltration via Network Requests",
+          "Indirect Prompt Injection from External Content",
+          "Availability Disruption (DoS via unbounded requests)",
+          "Social Engineering (misleading description)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code inspection confirms no timeout or size limits on network request. This is a standard DoS vulnerability pattern.",
+        "meta_exploitability": "Medium - Requires control of agnxi.com or DNS hijacking",
+        "meta_impact": "Medium - Could freeze agent or consume excessive resources, but doesn't compromise data"
+      }
+    },
+    {
+      "id": "llm_finding_agnxi-search_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Description - Network Activity Not Disclosed",
+      "description": "The skill description claims to be 'The official search utility for Agnxi.com' but does not disclose that it makes live network requests to external servers. The YAML manifest lacks 'compatibility' and 'allowed-tools' fields that would inform users about network dependencies. Users may assume this is a local-only search tool when it actually performs external HTTP requests on every invocation.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "description: The official search utility for Agnxi.com - The premier directory of AI Agent Tools, MCP Servers, and Skills.\n# Missing: compatibility field should mention 'requires network access'\n# Missing: allowed-tools field (should include Python and network capabilities)",
+      "remediation": "1. Add to YAML manifest: 'compatibility: Requires network access to agnxi.com'. 2. Add 'allowed-tools: [Python]' to manifest. 3. Update description to explicitly state 'Performs live searches against agnxi.com sitemap'. 4. Add privacy notice about outbound HTTP requests in the instruction body. 5. Consider adding an offline mode with bundled data.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_a5111e815f",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import urllib.request",
-      "file_path": "search.py",
-      "line_number": 3,
-      "snippet": "import urllib.request",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+urllib\\.request",
-        "matched_text": "import urllib.request",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "TOOL_MISMATCH_NETWORK_248584f6d9",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
-      "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_1082d423f1",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: http://www.sitemaps.org/schemas/sitemap/0.9",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-agnxi-search-skill/search.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "http://www.sitemaps.org/schemas/sitemap/0.9",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_dea676d6e2",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://agnxi.com/sitemap.xml",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-agnxi-search-skill/search.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://agnxi.com/sitemap.xml",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks primarily due to unvalidated network requests to external sources and transitive trust vulnerabilities. The skill fetches and parses content from https://agnxi.com/sitemap.xml without user consent, content validation, or disclosure of network activity. This creates both data exfiltration risks (outbound HTTP requests leak metadata) and indirect prompt injection risks (compromised sitemap could inject malicious URLs). The lack of timeout/size limits on network requests creates denial-of-service vulnerabilities. Additionally, the skill's description is misleading as it does not disclose the network dependency, violating user expectations of transparency. While the core functionality (searching a directory) is legitimate, the implementation lacks critical security controls for handling external data and network operations.",
+        "primary_threats": [
+          "Data Exfiltration via Network Requests",
+          "Indirect Prompt Injection from External Content",
+          "Availability Disruption (DoS via unbounded requests)",
+          "Social Engineering (misleading description)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Manifest inspection confirms missing fields. The description does not mention network activity, which is a transparency issue.",
+        "meta_exploitability": "N/A - This is a transparency/disclosure issue, not a direct exploit",
+        "meta_impact": "Low - Users may be surprised by network activity, but no direct security harm"
       }
     }
   ],
-  "scan_duration_seconds": 0.6590559482574463,
-  "duration_ms": 659,
+  "scan_duration_seconds": 43.28506374359131,
+  "duration_ms": 43285,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -103,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:14:10.102738"
+  "timestamp": "2026-02-05T18:38:30.425808"
 }

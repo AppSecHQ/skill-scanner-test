@@ -1,30 +1,150 @@
 {
   "skill_name": "adguard",
-  "skill_path": "./skills/clawhub-adguard",
-  "skill_directory": "./skills/clawhub-adguard",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-adguard",
+  "skill_directory": "/workspace/skills/clawhub-adguard",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 4,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_adguard_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Hardcoded Credentials and Credential Exposure Risk",
+      "description": "The skill requires users to set ADGUARD_PASSWORD as an environment variable and stores session cookies in predictable temporary files (/tmp/adguard_cookie_$$.txt). While environment variables are mentioned, the instructions encourage storing credentials in shell configuration files (~/.bashrc, ~/.zshrc) which persists credentials in plaintext. Additionally, the cookie file cleanup relies on trap handlers which may not execute if the script is killed forcefully, leaving session tokens exposed in /tmp.",
+      "file_path": "scripts/adguard.sh",
+      "line_number": null,
+      "snippet": "ADGUARD_PASSWORD=\"${ADGUARD_PASSWORD}\" and COOKIE_FILE=\"/tmp/adguard_cookie_$$.txt\" with trap cleanup that may fail on SIGKILL",
+      "remediation": "Use secure credential storage (system keychain, encrypted credential files). Implement more robust cookie cleanup (atexit handlers, secure temp directories with restricted permissions). Warn users against storing passwords in shell config files. Consider using API tokens instead of passwords if AdGuard Home supports them.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This AdGuard Home controller skill presents CRITICAL and HIGH severity security risks primarily related to credential handling, command injection vulnerabilities, and network security. The skill requires admin credentials transmitted over HTTP to user-configurable endpoints, stores session tokens in predictable temporary locations, and lacks input validation for domain parameters enabling command injection attacks. While the skill's core functionality (managing DNS filtering via API) is legitimate, the implementation has significant security gaps. The skill should NOT be used in production without addressing the critical credential exposure and command injection vulnerabilities. Medium-severity issues around error handling and documentation transparency should also be resolved.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Insecure Network Communication",
+          "Missing Input Validation",
+          "Incomplete Security Documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The documentation does recommend environment variables, which is standard practice. However, suggesting ~/.bashrc storage is a security anti-pattern. Cookie cleanup via trap is reasonable but not bulletproof.",
+        "meta_exploitability": "Medium - requires local access to read shell config or /tmp files",
+        "meta_impact": "Medium - credentials exposed to local users or processes"
+      }
+    },
+    {
+      "id": "llm_finding_adguard_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Command Injection via Domain Parameter",
+      "description": "The bash script accepts domain names as command-line arguments and passes them directly to curl commands without proper validation or sanitization. An attacker could inject shell metacharacters in domain arguments to execute arbitrary commands. For example: './adguard.sh check \"example.com; rm -rf /\"' could lead to command execution.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Domain parameters from $2, $3 are used directly in curl commands and string interpolation without escaping or validation",
+      "remediation": "Implement strict input validation for domain parameters using regex patterns (e.g., ^[a-zA-Z0-9.-]+$). Use proper shell quoting and escaping. Consider using curl's --data-urlencode for URL parameters. Validate domain format before using in API calls.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This AdGuard Home controller skill presents CRITICAL and HIGH severity security risks primarily related to credential handling, command injection vulnerabilities, and network security. The skill requires admin credentials transmitted over HTTP to user-configurable endpoints, stores session tokens in predictable temporary locations, and lacks input validation for domain parameters enabling command injection attacks. While the skill's core functionality (managing DNS filtering via API) is legitimate, the implementation has significant security gaps. The skill should NOT be used in production without addressing the critical credential exposure and command injection vulnerabilities. Medium-severity issues around error handling and documentation transparency should also be resolved.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Insecure Network Communication",
+          "Missing Input Validation",
+          "Incomplete Security Documentation"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified lack of input validation. Bash script directly interpolates user input into curl commands without escaping. This is a well-known command injection vector.",
+        "meta_exploitability": "Easy - no authentication required to exploit, just pass malicious domain argument",
+        "meta_impact": "High - arbitrary command execution with privileges of the user running the script"
+      }
+    },
+    {
+      "id": "llm_finding_adguard_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Network Communication to User-Controlled Endpoint",
+      "description": "The skill makes HTTP API calls to a user-configurable endpoint (ADGUARD_URL) which defaults to a local network address but can be set to any URL. This creates risk if an attacker can manipulate the ADGUARD_URL environment variable to point to a malicious server, potentially capturing credentials or serving malicious responses. The script transmits admin credentials to this endpoint.",
+      "file_path": "scripts/adguard.sh",
+      "line_number": null,
+      "snippet": "ADGUARD_URL=\"${ADGUARD_URL:-http://192.168.68.97:3000}\" allows arbitrary URL configuration, credentials sent via POST to ${API_BASE}/login",
+      "remediation": "Validate ADGUARD_URL format (must be http/https, optionally restrict to local network ranges). Implement certificate validation for HTTPS. Warn users about the security implications of pointing to untrusted endpoints. Consider adding a whitelist of allowed URL patterns.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This AdGuard Home controller skill presents CRITICAL and HIGH severity security risks primarily related to credential handling, command injection vulnerabilities, and network security. The skill requires admin credentials transmitted over HTTP to user-configurable endpoints, stores session tokens in predictable temporary locations, and lacks input validation for domain parameters enabling command injection attacks. While the skill's core functionality (managing DNS filtering via API) is legitimate, the implementation has significant security gaps. The skill should NOT be used in production without addressing the critical credential exposure and command injection vulnerabilities. Medium-severity issues around error handling and documentation transparency should also be resolved.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Insecure Network Communication",
+          "Missing Input Validation",
+          "Incomplete Security Documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified in code: ADGUARD_URL is user-controlled and credentials are sent to it. This is a legitimate concern for credential theft if environment is compromised.",
+        "meta_exploitability": "Medium - requires attacker to control environment variables or inject into agent context",
+        "meta_impact": "High - admin credentials for AdGuard Home could be stolen"
+      }
+    },
+    {
+      "id": "llm_finding_adguard_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Incomplete Documentation of Network Requirements",
+      "description": "The skill description and manifest do not clearly indicate that this skill makes network HTTP requests to external devices (AdGuard Home server). Users might not realize this skill communicates over the network, potentially crossing security boundaries. The compatibility field is not specified, which should indicate network requirements.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Description mentions 'HTTP API' but manifest lacks compatibility field and network requirement warnings",
+      "remediation": "Update manifest to include compatibility field specifying network requirements. Add clear warnings in description about network communication. Document security implications of network-based API access in the Quick Start section.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This AdGuard Home controller skill presents CRITICAL and HIGH severity security risks primarily related to credential handling, command injection vulnerabilities, and network security. The skill requires admin credentials transmitted over HTTP to user-configurable endpoints, stores session tokens in predictable temporary locations, and lacks input validation for domain parameters enabling command injection attacks. While the skill's core functionality (managing DNS filtering via API) is legitimate, the implementation has significant security gaps. The skill should NOT be used in production without addressing the critical credential exposure and command injection vulnerabilities. Medium-severity issues around error handling and documentation transparency should also be resolved.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Insecure Network Communication",
+          "Missing Input Validation",
+          "Incomplete Security Documentation"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The description does mention 'HTTP API' which implies network communication, but explicit disclosure in manifest would be better. This is more of a transparency issue than active deception.",
+        "meta_exploitability": "N/A - not a direct security vulnerability",
+        "meta_impact": "Low - informational, helps users make informed decisions"
       }
     }
   ],
-  "scan_duration_seconds": 0.42024970054626465,
-  "duration_ms": 420,
+  "scan_duration_seconds": 40.0692822933197,
+  "duration_ms": 40069,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +152,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:10:19.240001"
+  "timestamp": "2026-02-05T17:57:34.376737"
 }

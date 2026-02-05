@@ -1,10 +1,10 @@
 {
   "skill_name": "base-trader",
-  "skill_path": "./skills/clawhub-base-trader",
-  "skill_directory": "./skills/clawhub-base-trader",
-  "is_safe": true,
-  "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "skill_path": "/workspace/skills/clawhub-base-trader",
+  "skill_directory": "/workspace/skills/clawhub-base-trader",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 12,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -42,10 +42,310 @@
         "scanner_category": "INJECTION ATTACK",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_base-trader_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Hardcoded Credential Path Exposure",
+      "description": "The skill hardcodes the path to Bankr API credentials at ~/.clawdbot/skills/bankr/config.json and references this configuration file multiple times. This creates a risk of credential exposure if the skill or its logs are shared, and establishes a predictable target for credential theft.",
+      "file_path": "SKILL.md",
+      "line_number": 13,
+      "snippet": "Bankr API configured at `~/.clawdbot/skills/bankr/config.json`",
+      "remediation": "Use environment variables or secure credential management systems instead of hardcoded file paths. Implement credential validation without exposing the storage location. Add warnings about protecting credential files.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) hardcoded credential paths creating exposure risk, (2) complete dependency on an unverified external trading tool (bankr) enabling tool poisoning, (3) command injection vulnerabilities in parameter handling, (4) lack of enforcement for stated safety limits allowing unbounded automated trading, and (5) deceptive framing of high-risk gambling as systematic trading. The skill handles financial transactions and credentials but lacks fundamental security controls like input validation, credential protection, and circuit breakers. The automated trading features could lead to significant financial loss if exploited or if the external bankr tool is compromised. The 'launch sniping' functionality promotes extremely high-risk behavior (80% expected loss rate) with inadequate warnings. Immediate remediation is required before this skill should be used in any production environment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Poisoning/External Dependency Risk",
+          "Command Injection",
+          "Unbounded Automation/Resource Abuse",
+          "Deceptive Content/Misleading Risk Framing"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_base-trader_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "External Tool Dependency Without Verification",
+      "description": "The skill depends entirely on an external 'bankr' tool located at ~/clawd/skills/bankr/scripts/bankr.sh with no verification of its integrity, authenticity, or behavior. All trading commands are passed directly to this external script, creating a tool poisoning risk where a compromised or malicious bankr tool could execute arbitrary actions.",
+      "file_path": "scripts/check-portfolio.sh",
+      "line_number": null,
+      "snippet": "BANKR_SCRIPT=\"$HOME/clawd/skills/bankr/scripts/bankr.sh\"\nif [ ! -f \"$BANKR_SCRIPT\" ]; then",
+      "remediation": "Implement cryptographic verification of the bankr tool (signature checking, hash validation). Add version pinning and integrity checks. Provide clear warnings about the external dependency and its security implications. Consider sandboxing or limiting the bankr tool's capabilities.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) hardcoded credential paths creating exposure risk, (2) complete dependency on an unverified external trading tool (bankr) enabling tool poisoning, (3) command injection vulnerabilities in parameter handling, (4) lack of enforcement for stated safety limits allowing unbounded automated trading, and (5) deceptive framing of high-risk gambling as systematic trading. The skill handles financial transactions and credentials but lacks fundamental security controls like input validation, credential protection, and circuit breakers. The automated trading features could lead to significant financial loss if exploited or if the external bankr tool is compromised. The 'launch sniping' functionality promotes extremely high-risk behavior (80% expected loss rate) with inadequate warnings. Immediate remediation is required before this skill should be used in any production environment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Poisoning/External Dependency Risk",
+          "Command Injection",
+          "Unbounded Automation/Resource Abuse",
+          "Deceptive Content/Misleading Risk Framing"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_base-trader_2",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Command Injection via Unvalidated Trade Parameters",
+      "description": "The log-trade.sh script accepts user-controlled parameters ($1-$6) and uses them directly in shell commands and JSON construction without validation or sanitization. Parameters like TOKEN, REASON, and TX could contain shell metacharacters or JSON injection payloads.",
+      "file_path": "scripts/log-trade.sh",
+      "line_number": null,
+      "snippet": "ACTION=$1\nTOKEN=$2\nAMOUNT_USD=$3\nPRICE=$4\nREASON=$5\nTX=$6",
+      "remediation": "Implement strict input validation for all parameters. Use proper JSON escaping (jq --arg for safe variable interpolation). Validate that ACTION is one of allowed values (BUY/SELL). Sanitize TOKEN names against a whitelist pattern. Validate numeric inputs (AMOUNT_USD, PRICE).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) hardcoded credential paths creating exposure risk, (2) complete dependency on an unverified external trading tool (bankr) enabling tool poisoning, (3) command injection vulnerabilities in parameter handling, (4) lack of enforcement for stated safety limits allowing unbounded automated trading, and (5) deceptive framing of high-risk gambling as systematic trading. The skill handles financial transactions and credentials but lacks fundamental security controls like input validation, credential protection, and circuit breakers. The automated trading features could lead to significant financial loss if exploited or if the external bankr tool is compromised. The 'launch sniping' functionality promotes extremely high-risk behavior (80% expected loss rate) with inadequate warnings. Immediate remediation is required before this skill should be used in any production environment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Poisoning/External Dependency Risk",
+          "Command Injection",
+          "Unbounded Automation/Resource Abuse",
+          "Deceptive Content/Misleading Risk Framing"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_base-trader_3",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "HIGH",
+      "title": "Unbounded Automated Trading Without Circuit Breakers",
+      "description": "The skill promotes automated trading strategies (DCA, limit orders, stop losses) but lacks implementation of the stated safety limits. The instructions mention 'MAX_DAILY_LOSS = -20%' and 'STOP TRADING FOR 24 HOURS' but provide no mechanism to enforce these limits, allowing unbounded automated execution that could drain funds.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "MAX_POSITION_SIZE = 10% of portfolio\nMAX_SINGLE_TRADE = $50 USD\nSTOP_LOSS = -15% from entry\nTAKE_PROFIT = +30% minimum target\nMAX_DAILY_LOSS = -20% of starting balance\n\nIf daily loss limit hit \u2192 STOP TRADING FOR 24 HOURS.",
+      "remediation": "Implement actual enforcement mechanisms for stated limits. Add portfolio tracking to calculate daily P&L. Create a circuit breaker that prevents trading when limits are exceeded. Store state to persist limits across sessions. Add mandatory confirmation for trades approaching limits.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) hardcoded credential paths creating exposure risk, (2) complete dependency on an unverified external trading tool (bankr) enabling tool poisoning, (3) command injection vulnerabilities in parameter handling, (4) lack of enforcement for stated safety limits allowing unbounded automated trading, and (5) deceptive framing of high-risk gambling as systematic trading. The skill handles financial transactions and credentials but lacks fundamental security controls like input validation, credential protection, and circuit breakers. The automated trading features could lead to significant financial loss if exploited or if the external bankr tool is compromised. The 'launch sniping' functionality promotes extremely high-risk behavior (80% expected loss rate) with inadequate warnings. Immediate remediation is required before this skill should be used in any production environment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Poisoning/External Dependency Risk",
+          "Command Injection",
+          "Unbounded Automation/Resource Abuse",
+          "Deceptive Content/Misleading Risk Framing"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_base-trader_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Deceptive Risk Framing and Gambling Promotion",
+      "description": "The skill presents high-risk cryptocurrency trading and 'launch sniping' (buying newly launched tokens) as systematic strategies, while acknowledging '90%+ of launches are rugs or scams' and '8 out of 10 snipes: Lose 50-100%'. The framing uses professional trading terminology to legitimize what is effectively gambling with extremely poor odds, potentially misleading users about the true risk.",
+      "file_path": "references/launch-sniping.md",
+      "line_number": null,
+      "snippet": "Expected Outcomes\n- 8 out of 10 snipes: Lose 50-100%\n- 1 out of 10 snipes: Break even or small profit\n- 1 out of 10 snipes: 5-20x gain",
+      "remediation": "Add prominent warnings about the gambling nature of these activities. Clearly state expected value calculations showing negative returns. Require explicit user acknowledgment of risks before enabling trading features. Consider removing or heavily restricting 'launch sniping' functionality.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) hardcoded credential paths creating exposure risk, (2) complete dependency on an unverified external trading tool (bankr) enabling tool poisoning, (3) command injection vulnerabilities in parameter handling, (4) lack of enforcement for stated safety limits allowing unbounded automated trading, and (5) deceptive framing of high-risk gambling as systematic trading. The skill handles financial transactions and credentials but lacks fundamental security controls like input validation, credential protection, and circuit breakers. The automated trading features could lead to significant financial loss if exploited or if the external bankr tool is compromised. The 'launch sniping' functionality promotes extremely high-risk behavior (80% expected loss rate) with inadequate warnings. Immediate remediation is required before this skill should be used in any production environment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Poisoning/External Dependency Risk",
+          "Command Injection",
+          "Unbounded Automation/Resource Abuse",
+          "Deceptive Content/Misleading Risk Framing"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_base-trader_5",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Sensitive Financial Data Logging Without Protection",
+      "description": "The skill logs all trades including amounts, tokens, reasons, and transaction hashes to data/trades.json without encryption or access controls. This creates a persistent record of financial activity that could be exposed through file system access, backups, or skill sharing.",
+      "file_path": "scripts/log-trade.sh",
+      "line_number": null,
+      "snippet": "TRADES_FILE=\"$(dirname \"$0\")/../data/trades.json\"\n...\nTRADE=$(cat <<EOF\n{\n  \"timestamp\": \"$TIMESTAMP\",\n  \"action\": \"$ACTION\",\n  \"token\": \"$TOKEN\",\n  \"amount_usd\": $AMOUNT_USD,\n  \"price\": $PRICE,\n  \"reason\": \"$REASON\",\n  \"tx\": \"$TX\"\n}\nEOF\n)",
+      "remediation": "Encrypt the trades.json file at rest. Implement access controls to restrict file permissions (chmod 600). Add options to disable logging or use ephemeral storage. Warn users that trade history is stored locally. Consider hashing or redacting sensitive fields.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) hardcoded credential paths creating exposure risk, (2) complete dependency on an unverified external trading tool (bankr) enabling tool poisoning, (3) command injection vulnerabilities in parameter handling, (4) lack of enforcement for stated safety limits allowing unbounded automated trading, and (5) deceptive framing of high-risk gambling as systematic trading. The skill handles financial transactions and credentials but lacks fundamental security controls like input validation, credential protection, and circuit breakers. The automated trading features could lead to significant financial loss if exploited or if the external bankr tool is compromised. The 'launch sniping' functionality promotes extremely high-risk behavior (80% expected loss rate) with inadequate warnings. Immediate remediation is required before this skill should be used in any production environment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Poisoning/External Dependency Risk",
+          "Command Injection",
+          "Unbounded Automation/Resource Abuse",
+          "Deceptive Content/Misleading Risk Framing"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_base-trader_6",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Unsafe JSON Manipulation with jq",
+      "description": "The log-trade.sh script uses jq to append trades to a JSON file, but constructs the JSON object using shell variable interpolation without proper escaping. While jq is used for the append operation, the initial JSON construction is vulnerable to injection if parameters contain special characters.",
+      "file_path": "scripts/log-trade.sh",
+      "line_number": null,
+      "snippet": "TRADE=$(cat <<EOF\n{\n  \"timestamp\": \"$TIMESTAMP\",\n  \"action\": \"$ACTION\",\n  \"token\": \"$TOKEN\",\n  \"amount_usd\": $AMOUNT_USD,\n  \"price\": $PRICE,\n  \"reason\": \"$REASON\",\n  \"tx\": \"$TX\"\n}\nEOF\n)",
+      "remediation": "Use jq's --arg flag for safe variable interpolation: jq --arg action \"$ACTION\" --arg token \"$TOKEN\" --argjson amount \"$AMOUNT_USD\" '. += [{action: $action, token: $token, amount_usd: $amount, ...}]'. This ensures proper JSON escaping and prevents injection.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) hardcoded credential paths creating exposure risk, (2) complete dependency on an unverified external trading tool (bankr) enabling tool poisoning, (3) command injection vulnerabilities in parameter handling, (4) lack of enforcement for stated safety limits allowing unbounded automated trading, and (5) deceptive framing of high-risk gambling as systematic trading. The skill handles financial transactions and credentials but lacks fundamental security controls like input validation, credential protection, and circuit breakers. The automated trading features could lead to significant financial loss if exploited or if the external bankr tool is compromised. The 'launch sniping' functionality promotes extremely high-risk behavior (80% expected loss rate) with inadequate warnings. Immediate remediation is required before this skill should be used in any production environment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Poisoning/External Dependency Risk",
+          "Command Injection",
+          "Unbounded Automation/Resource Abuse",
+          "Deceptive Content/Misleading Risk Framing"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_base-trader_7",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust in External Trading Commands",
+      "description": "The skill passes user-provided trading instructions directly to the external bankr.sh script without validation or sanitization. Instructions like 'Buy $X of TOKEN' are forwarded verbatim, creating a transitive trust issue where malicious input could exploit vulnerabilities in the bankr tool.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "~/clawd/skills/bankr/scripts/bankr.sh \"Buy $25 of TOKEN on Base\"\n~/clawd/skills/bankr/scripts/bankr.sh \"Set stop loss for TOKEN at -15%\"",
+      "remediation": "Implement input validation before passing commands to bankr. Parse and validate trading parameters (amounts, token names, percentages). Use structured command formats rather than natural language strings. Add allowlists for valid tokens and command patterns.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) hardcoded credential paths creating exposure risk, (2) complete dependency on an unverified external trading tool (bankr) enabling tool poisoning, (3) command injection vulnerabilities in parameter handling, (4) lack of enforcement for stated safety limits allowing unbounded automated trading, and (5) deceptive framing of high-risk gambling as systematic trading. The skill handles financial transactions and credentials but lacks fundamental security controls like input validation, credential protection, and circuit breakers. The automated trading features could lead to significant financial loss if exploited or if the external bankr tool is compromised. The 'launch sniping' functionality promotes extremely high-risk behavior (80% expected loss rate) with inadequate warnings. Immediate remediation is required before this skill should be used in any production environment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Poisoning/External Dependency Risk",
+          "Command Injection",
+          "Unbounded Automation/Resource Abuse",
+          "Deceptive Content/Misleading Risk Framing"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_base-trader_8",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill does not declare an 'allowed-tools' field in its YAML manifest, making it unclear which agent capabilities it requires. Given that the skill executes bash scripts and potentially Python code (referenced but not found), this omission reduces transparency about the skill's permissions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "allowed-tools: Not specified",
+      "remediation": "Add 'allowed-tools: [Bash, Read, Write]' to the YAML frontmatter to explicitly declare required capabilities. This improves transparency and allows users to make informed decisions about granting permissions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) hardcoded credential paths creating exposure risk, (2) complete dependency on an unverified external trading tool (bankr) enabling tool poisoning, (3) command injection vulnerabilities in parameter handling, (4) lack of enforcement for stated safety limits allowing unbounded automated trading, and (5) deceptive framing of high-risk gambling as systematic trading. The skill handles financial transactions and credentials but lacks fundamental security controls like input validation, credential protection, and circuit breakers. The automated trading features could lead to significant financial loss if exploited or if the external bankr tool is compromised. The 'launch sniping' functionality promotes extremely high-risk behavior (80% expected loss rate) with inadequate warnings. Immediate remediation is required before this skill should be used in any production environment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Poisoning/External Dependency Risk",
+          "Command Injection",
+          "Unbounded Automation/Resource Abuse",
+          "Deceptive Content/Misleading Risk Framing"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_base-trader_9",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing License and Compatibility Information",
+      "description": "The skill lacks license and compatibility declarations in its manifest, reducing transparency about usage rights and supported environments. This is particularly important for a financial trading tool where legal and operational clarity is essential.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "license: Not specified\ncompatibility: Not specified",
+      "remediation": "Add 'license: MIT' (or appropriate license) and 'compatibility: Claude.ai, Claude Code, API' to the YAML frontmatter to clarify usage terms and supported platforms.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks. The primary concerns are: (1) hardcoded credential paths creating exposure risk, (2) complete dependency on an unverified external trading tool (bankr) enabling tool poisoning, (3) command injection vulnerabilities in parameter handling, (4) lack of enforcement for stated safety limits allowing unbounded automated trading, and (5) deceptive framing of high-risk gambling as systematic trading. The skill handles financial transactions and credentials but lacks fundamental security controls like input validation, credential protection, and circuit breakers. The automated trading features could lead to significant financial loss if exploited or if the external bankr tool is compromised. The 'launch sniping' functionality promotes extremely high-risk behavior (80% expected loss rate) with inadequate warnings. Immediate remediation is required before this skill should be used in any production environment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Poisoning/External Dependency Risk",
+          "Command Injection",
+          "Unbounded Automation/Resource Abuse",
+          "Deceptive Content/Misleading Risk Framing"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.6418211460113525,
-  "duration_ms": 641,
+  "scan_duration_seconds": 60.03029131889343,
+  "duration_ms": 60030,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -53,5 +353,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:18:18.745336"
+  "timestamp": "2026-02-05T20:17:04.014087"
 }

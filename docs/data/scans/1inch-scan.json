@@ -1,30 +1,78 @@
 {
   "skill_name": "1inch",
-  "skill_path": "./skills/clawhub-1inch",
-  "skill_directory": "./skills/clawhub-1inch",
+  "skill_path": "/workspace/skills/clawhub-1inch",
+  "skill_directory": "/workspace/skills/clawhub-1inch",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_1inch_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded Referral Wallet Address for Fee Collection",
+      "description": "The skill contains a hardcoded Ethereum wallet address (0x890CACd9dEC1E1409C6598Da18DC3d634e600b45) configured to receive 0.3% referral fees from all swaps. While this is disclosed in the documentation, users may not realize that every transaction executed through this skill automatically sends fees to this third-party address. This creates a financial incentive structure that is embedded in the skill's configuration and cannot be easily modified by users.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "REFERRER_ADDRESS: 0x890CACd9dEC1E1409C6598Da18DC3d634e600b45, FEE_PERCENT: 0.3",
+      "remediation": "Make the referral configuration optional and clearly prompt users for consent before including referral fees. Consider allowing users to configure their own referrer address or opt out of fees entirely. Add prominent disclosure at skill activation time, not just in documentation.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill provides legitimate 1inch DEX aggregator functionality but has MEDIUM severity concerns around financial transparency and embedded fee collection. The hardcoded referral wallet address (0x890CACd9dEC1E1409C6598Da18DC3d634e600b45) receives 0.3% of all swap values, creating a financial incentive structure that may not be sufficiently disclosed to end users. While the fee is documented, it is not prominently featured in the skill description and users cannot easily opt out. The skill does not contain malicious code, data exfiltration, or prompt injection attempts. The primary concerns are around social engineering through insufficient disclosure of the fee structure and the hardcoded nature of the beneficiary address. Additional LOW severity issues include missing optional metadata fields and lack of error handling guidance. Recommended actions: enhance fee disclosure, make referral configuration optional, and add user consent mechanisms.",
+        "primary_threats": [
+          "Hardcoded Financial Beneficiary",
+          "Insufficient Fee Disclosure",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified this as a transparency issue. The fee IS disclosed but buried in documentation, not in the primary description where users make installation decisions. This is a classic social engineering pattern - technically truthful but structured to minimize visibility of financial incentives.",
+        "meta_exploitability": "Easy - Automatic on every transaction. Users who don't read the full documentation will unknowingly pay fees.",
+        "meta_impact": "Medium - Financial: 0.3% of all swap values goes to third party. For a $10,000 swap, that's $30. Over time and volume, this adds up. Trust: Users may feel deceived if they discover this later."
+      }
+    },
+    {
+      "id": "llm_finding_1inch_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Insufficient Disclosure of Financial Incentive Structure",
+      "description": "While the skill documentation mentions the 0.3% referral fee, the disclosure is buried in a table format and may not be sufficiently prominent for users to understand that they are paying fees on every transaction. The skill description ('Find the best swap rates') does not mention that rates include a mandatory 0.3% fee to a third party, which could be considered misleading by omission.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description: '1inch DEX aggregator. Find the best swap rates across 400+ liquidity sources on 12+ blockchains.' - No mention of embedded fees in primary description",
+      "remediation": "Update the skill description to explicitly mention the referral fee structure. Add a clear consent mechanism before executing swaps. Consider displaying the fee amount in the user's currency before transaction execution.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill provides legitimate 1inch DEX aggregator functionality but has MEDIUM severity concerns around financial transparency and embedded fee collection. The hardcoded referral wallet address (0x890CACd9dEC1E1409C6598Da18DC3d634e600b45) receives 0.3% of all swap values, creating a financial incentive structure that may not be sufficiently disclosed to end users. While the fee is documented, it is not prominently featured in the skill description and users cannot easily opt out. The skill does not contain malicious code, data exfiltration, or prompt injection attempts. The primary concerns are around social engineering through insufficient disclosure of the fee structure and the hardcoded nature of the beneficiary address. Additional LOW severity issues include missing optional metadata fields and lack of error handling guidance. Recommended actions: enhance fee disclosure, make referral configuration optional, and add user consent mechanisms.",
+        "primary_threats": [
+          "Hardcoded Financial Beneficiary",
+          "Insufficient Fee Disclosure",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a clear case of misleading marketing. The description emphasizes 'best rates' without disclosing that rates are reduced by fees. Multiple security principles violated: transparency, informed consent, user autonomy.",
+        "meta_exploitability": "Easy - Users install based on description, unaware of fee structure",
+        "meta_impact": "Medium - Reputational damage when users discover hidden fees, financial impact accumulates over usage"
       }
     }
   ],
-  "scan_duration_seconds": 0.3980536460876465,
-  "duration_ms": 398,
+  "scan_duration_seconds": 28.651439666748047,
+  "duration_ms": 28651,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:19:36.952735"
+  "timestamp": "2026-02-05T17:32:06.507551"
 }

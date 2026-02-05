@@ -1,30 +1,116 @@
 {
   "skill_name": "2captcha",
-  "skill_path": "./skills/clawhub-2captcha",
-  "skill_directory": "./skills/clawhub-2captcha",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-2captcha",
+  "skill_directory": "/workspace/skills/clawhub-2captcha",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_2captcha_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "Arbitrary Remote Code Execution via Unverified Script Download",
+      "description": "The installation instructions direct users to download and execute a bash script from GitHub without any integrity verification (no checksum, signature, or hash validation). The script is immediately made executable and placed in a system directory (/usr/local/bin/). An attacker who compromises the GitHub repository or performs a man-in-the-middle attack could inject malicious code that would be executed with the user's privileges. This represents arbitrary code execution with no security controls.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "curl -fsSL https://raw.githubusercontent.com/adinvadim/2captcha-cli/main/solve-captcha \\\n  -o /usr/local/bin/solve-captcha && chmod +x /usr/local/bin/solve-captcha",
+      "remediation": "1. Provide SHA256 checksums for the script and verify after download. 2. Use signed releases with GPG verification. 3. Host the tool in a package manager (apt, brew, pip) with built-in integrity checks. 4. Warn users about the security implications of executing remote scripts. 5. Consider bundling the script within the skill package instead of downloading from external sources.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks and ethical concerns. The primary threat is arbitrary remote code execution through unverified script downloads from GitHub, which could allow complete system compromise. Additionally, the skill instructs users to store API credentials in plaintext files, creating credential theft risks. Most concerning is the skill's explicit purpose: bypassing CAPTCHA security controls designed to prevent automated abuse. While CAPTCHA-solving services have legitimate uses (accessibility, authorized testing), this skill provides no ethical guidelines, legal warnings, or use restrictions. The combination of insecure installation practices, poor credential management, and facilitation of security control circumvention makes this skill unsuitable for distribution without major security and ethical improvements. The missing metadata (license, compatibility, allowed-tools) and broken reference (page.py) further indicate insufficient quality control.",
+        "primary_threats": [
+          "Arbitrary Code Execution",
+          "Credential Exposure",
+          "Security Control Circumvention",
+          "Supply Chain Risk",
+          "Missing Security Controls"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Clear supply chain attack vector with no integrity controls. LLM analyzer correctly identified this as arbitrary code execution risk. This is a well-known attack pattern (curl | bash without verification).",
+        "meta_exploitability": "Easy - requires compromising GitHub repo or MITM attack on HTTP connection",
+        "meta_impact": "Critical - arbitrary code execution with user privileges, potential system compromise"
+      }
+    },
+    {
+      "id": "llm_finding_2captcha_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded API Key Storage in Plaintext Configuration File",
+      "description": "The skill instructs users to store their 2Captcha API key in plaintext in ~/.config/2captcha/api-key without any encryption or access controls. API keys are sensitive credentials that provide access to paid services and should be protected. Storing them in plaintext makes them vulnerable to theft by malware, other users on shared systems, or accidental exposure through backups/logs. The skill also suggests using environment variables, but the primary instruction is plaintext file storage.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "mkdir -p ~/.config/2captcha\necho \"YOUR_API_KEY\" > ~/.config/2captcha/api-key",
+      "remediation": "1. Use system keychain/credential managers (macOS Keychain, Windows Credential Manager, Linux Secret Service). 2. Encrypt the API key file with user-specific encryption. 3. Set restrictive file permissions (chmod 600). 4. Prefer environment variables over file storage. 5. Warn users about the security implications of plaintext credential storage. 6. Consider using the agent's secure credential storage if available.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks and ethical concerns. The primary threat is arbitrary remote code execution through unverified script downloads from GitHub, which could allow complete system compromise. Additionally, the skill instructs users to store API credentials in plaintext files, creating credential theft risks. Most concerning is the skill's explicit purpose: bypassing CAPTCHA security controls designed to prevent automated abuse. While CAPTCHA-solving services have legitimate uses (accessibility, authorized testing), this skill provides no ethical guidelines, legal warnings, or use restrictions. The combination of insecure installation practices, poor credential management, and facilitation of security control circumvention makes this skill unsuitable for distribution without major security and ethical improvements. The missing metadata (license, compatibility, allowed-tools) and broken reference (page.py) further indicate insufficient quality control.",
+        "primary_threats": [
+          "Arbitrary Code Execution",
+          "Credential Exposure",
+          "Security Control Circumvention",
+          "Supply Chain Risk",
+          "Missing Security Controls"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Plaintext credential storage is a well-established security anti-pattern. While environment variables are mentioned as alternative, the primary instruction creates an unprotected file.",
+        "meta_exploitability": "Medium - requires local access or malware, but credentials are completely unprotected",
+        "meta_impact": "High - API key theft leads to unauthorized service usage and financial loss"
+      }
+    },
+    {
+      "id": "llm_finding_2captcha_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Facilitation of CAPTCHA Bypass for Potentially Malicious Automation",
+      "description": "The skill's stated purpose is to 'bypass captchas during web automation, account creation, or form submission.' CAPTCHAs exist as security controls to prevent automated abuse, bot attacks, spam, and fraudulent account creation. This skill explicitly facilitates circumventing these security measures. While there may be legitimate accessibility or testing use cases, the skill provides no ethical guidelines, warnings about terms of service violations, or restrictions on use. The workflow section specifically describes browser automation to inject CAPTCHA tokens, which is commonly used for malicious purposes including credential stuffing, spam, scraping protected content, and mass account creation for fraud.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description: Solve CAPTCHAs using 2Captcha service via CLI. Use for bypassing captchas during web automation, account creation, or form submission.\n\nWorkflow for Browser Automation section describes injecting tokens to bypass security controls.",
+      "remediation": "1. Add prominent warnings about legal and ethical implications. 2. Include terms of service compliance requirements. 3. Restrict use cases to legitimate purposes (accessibility, authorized testing). 4. Add ethical guidelines and responsible use policy. 5. Warn about potential account bans and legal consequences. 6. Consider whether this skill should be distributed at all given its primary use case for circumventing security controls.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks and ethical concerns. The primary threat is arbitrary remote code execution through unverified script downloads from GitHub, which could allow complete system compromise. Additionally, the skill instructs users to store API credentials in plaintext files, creating credential theft risks. Most concerning is the skill's explicit purpose: bypassing CAPTCHA security controls designed to prevent automated abuse. While CAPTCHA-solving services have legitimate uses (accessibility, authorized testing), this skill provides no ethical guidelines, legal warnings, or use restrictions. The combination of insecure installation practices, poor credential management, and facilitation of security control circumvention makes this skill unsuitable for distribution without major security and ethical improvements. The missing metadata (license, compatibility, allowed-tools) and broken reference (page.py) further indicate insufficient quality control.",
+        "primary_threats": [
+          "Arbitrary Code Execution",
+          "Credential Exposure",
+          "Security Control Circumvention",
+          "Supply Chain Risk",
+          "Missing Security Controls"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The ethical concern is valid, but CAPTCHA-solving services do have legitimate uses. The issue is lack of guidance, not inherent maliciousness. Severity reduced from HIGH to MEDIUM as this is about missing safeguards rather than active malicious behavior.",
+        "meta_exploitability": "N/A - This is an ethical/policy concern, not a technical vulnerability",
+        "meta_impact": "Medium - Could facilitate abuse of third-party services, but requires user intent"
       }
     }
   ],
-  "scan_duration_seconds": 0.43317413330078125,
-  "duration_ms": 433,
+  "scan_duration_seconds": 45.26281976699829,
+  "duration_ms": 45262,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +118,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:08:27.070950"
+  "timestamp": "2026-02-05T17:34:58.594431"
 }

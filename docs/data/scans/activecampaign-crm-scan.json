@@ -1,50 +1,113 @@
 {
   "skill_name": "activecampaign",
-  "skill_path": "./skills/clawhub-activecampaign",
-  "skill_directory": "./skills/clawhub-activecampaign",
+  "skill_path": "/workspace/skills/clawhub-activecampaign",
+  "skill_directory": "/workspace/skills/clawhub-activecampaign",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 2,
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_activecampaign_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Hardcoded Credentials in Configuration Files",
+      "description": "The skill instructs users to store API credentials in plaintext files (~/.config/activecampaign/url and ~/.config/activecampaign/api_key) without encryption or secure storage mechanisms. This creates a critical data exposure risk where credentials could be accessed by malicious processes, other users, or inadvertently committed to version control.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "echo \"https://youraccount.api-us1.com\" > ~/.config/activecampaign/url\necho \"your-api-key\" > ~/.config/activecampaign/api_key",
+      "remediation": "Use secure credential storage mechanisms such as system keychains (macOS Keychain, Windows Credential Manager, Linux Secret Service), encrypted credential stores, or require credentials only via environment variables. Implement file permissions (chmod 600) at minimum if file storage is necessary.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill package has severe security vulnerabilities that make it unsafe for deployment. The primary issues are: (1) hardcoded plaintext credential storage creating data exposure risks, (2) missing implementation binary creating tool shadowing/exploitation opportunities, (3) missing referenced files enabling supply chain attacks, and (4) incomplete package structure that may lead users to obtain components from untrusted sources. The skill cannot function as documented without external components, which creates multiple attack vectors. The package requires complete redesign with secure credential management, inclusion of all implementation files, and proper security controls before it can be safely used.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Exploitation/Shadowing",
+          "Supply Chain Attack",
+          "Incomplete Package/Deceptive Documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified insecure credential storage pattern. While this is documentation (not active code), it teaches users to create security vulnerabilities. The skill does mention environment variables as an alternative, which partially mitigates this.",
+        "meta_exploitability": "Medium - Requires user to follow insecure setup instructions, then credentials are exposed to any process with file system access",
+        "meta_impact": "High - Full API access credentials exposed, enabling unauthorized CRM access, data exfiltration, or manipulation"
       }
     },
     {
-      "id": "YARA_credential_harvesting_5ca596b969",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ACTIVECAMPAIGN_API_KEY=\"your-api-key",
-      "file_path": "SKILL.md",
-      "line_number": 28,
-      "snippet": "export ACTIVECAMPAIGN_API_KEY=\"your-api-key\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
+      "id": "llm_finding_activecampaign_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Missing Binary Implementation Creates Tool Exploitation Risk",
+      "description": "The skill declares a required binary 'activecampaign' in metadata but provides no implementation scripts. This creates a tool shadowing vulnerability where an attacker could provide a malicious 'activecampaign' binary that would be executed by the agent. The skill's extensive command examples would all execute this potentially malicious binary.",
+      "file_path": "YAML manifest",
+      "line_number": null,
+      "snippet": "requires: {bins: ['activecampaign'], env: ['ACTIVECAMPAIGN_URL', 'ACTIVECAMPAIGN_API_KEY']}",
+      "remediation": "Include the actual implementation of the 'activecampaign' binary as a Python or Bash script within the skill package. Verify binary integrity before execution. Do not rely on external binaries that could be replaced by attackers.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill package has severe security vulnerabilities that make it unsafe for deployment. The primary issues are: (1) hardcoded plaintext credential storage creating data exposure risks, (2) missing implementation binary creating tool shadowing/exploitation opportunities, (3) missing referenced files enabling supply chain attacks, and (4) incomplete package structure that may lead users to obtain components from untrusted sources. The skill cannot function as documented without external components, which creates multiple attack vectors. The package requires complete redesign with secure credential management, inclusion of all implementation files, and proper security controls before it can be safely used.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Exploitation/Shadowing",
+          "Supply Chain Attack",
+          "Incomplete Package/Deceptive Documentation"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM correctly identified that the skill references a binary that doesn't exist in the package. This is a legitimate supply chain risk - users must obtain the binary from somewhere, creating opportunity for tool shadowing.",
+        "meta_exploitability": "Medium - Requires attacker to provide malicious binary before legitimate one is installed, or compromise the installation source",
+        "meta_impact": "High - Malicious binary would execute with user's credentials and full API access"
+      }
+    },
+    {
+      "id": "llm_finding_activecampaign_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Missing Referenced Configuration Files Enable Supply Chain Attack",
+      "description": "The skill references critical files 'config.py' and 'sample.py' that are not included in the package. An attacker could provide malicious versions of these files that would be executed or imported by the agent, potentially exfiltrating credentials or manipulating CRM data.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Files referenced in instructions: config.py, sample.py (both not found)",
+      "remediation": "Include all referenced files within the skill package. If files are meant to be user-generated, provide secure templates and validate file contents before use. Never reference external files without integrity verification.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill package has severe security vulnerabilities that make it unsafe for deployment. The primary issues are: (1) hardcoded plaintext credential storage creating data exposure risks, (2) missing implementation binary creating tool shadowing/exploitation opportunities, (3) missing referenced files enabling supply chain attacks, and (4) incomplete package structure that may lead users to obtain components from untrusted sources. The skill cannot function as documented without external components, which creates multiple attack vectors. The package requires complete redesign with secure credential management, inclusion of all implementation files, and proper security controls before it can be safely used.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Tool Exploitation/Shadowing",
+          "Supply Chain Attack",
+          "Incomplete Package/Deceptive Documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The 'Referenced Files' section appears to be metadata rather than actual file dependencies. The skill functions with just SKILL.md and the JSON config sample. However, the ambiguity could confuse users or create supply chain risks if they try to obtain these files from untrusted sources.",
+        "meta_exploitability": "Low - Would require user to actively seek out and use malicious versions of these files",
+        "meta_impact": "Medium - If malicious versions were used, could compromise credential handling or API interactions"
       }
     }
   ],
-  "scan_duration_seconds": 0.3926267623901367,
-  "duration_ms": 392,
+  "scan_duration_seconds": 34.32866358757019,
+  "duration_ms": 34328,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:56:30.211795"
+  "timestamp": "2026-02-05T17:51:06.524799"
 }

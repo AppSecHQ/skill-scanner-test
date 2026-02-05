@@ -1,0 +1,84 @@
+{
+  "skill_name": "apewisdom",
+  "skill_path": "/workspace/skills/clawhub-apewisdom",
+  "skill_directory": "/workspace/skills/clawhub-apewisdom",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "llm_finding_apewisdom_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Unvalidated External API Data Exfiltration Risk",
+      "description": "The skill makes network requests to an external third-party API (apewisdom.io) without any validation of the response data or error handling for malicious payloads. While the API appears legitimate, the skill blindly trusts and processes external data that could contain malicious content or be compromised. The response data is directly parsed and displayed without sanitization, creating a potential vector for indirect prompt injection or data manipulation.",
+      "file_path": "scripts/scan_reddit.py",
+      "line_number": null,
+      "snippet": "response = requests.get(url)\nresponse.raise_for_status()\ndata = response.json()\nreturn data.get(\"results\", [])[:limit]",
+      "remediation": "1. Implement response validation to verify data structure and types before processing. 2. Add content sanitization for all string fields from the API. 3. Implement rate limiting and request timeouts. 4. Consider caching responses to reduce external dependencies. 5. Add integrity checks or use HTTPS certificate pinning for the API endpoint.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The apewisdom skill is a relatively straightforward Reddit sentiment scanner that fetches data from a third-party API. The primary security concern is the unvalidated trust placed in external API responses, which could be exploited if the API is compromised or returns malicious data. The skill does not attempt prompt injection, credential theft, or data exfiltration to attacker-controlled servers. However, it lacks important security metadata and proper error handling for network operations. The skill's behavior matches its stated purpose, and there are no hidden capabilities or deceptive elements. Overall risk level is MODERATE due to external API dependency without validation.",
+        "primary_threats": [
+          "Unvalidated external data trust",
+          "Missing security metadata",
+          "Network timeout risks"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The LLM analyzer correctly identifies lack of validation, but this is a documented API integration, not malicious exfiltration. The severity is overstated - this is a data quality/robustness issue, not a security threat.",
+        "meta_exploitability": "Low - Requires API compromise or MITM attack to inject malicious data",
+        "meta_impact": "Low - Could cause parsing errors or display unexpected data, but no credential theft or system compromise"
+      }
+    },
+    {
+      "id": "llm_finding_apewisdom_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Missing Request Timeout Configuration",
+      "description": "The network requests to the external API do not specify timeout parameters, which could lead to indefinite hanging if the API becomes unresponsive. This creates a potential availability issue where the agent could become blocked waiting for a response that never arrives.",
+      "file_path": "scripts/scan_reddit.py",
+      "line_number": 13,
+      "snippet": "response = requests.get(url)\n# No timeout parameter specified",
+      "remediation": "Add timeout parameters to all network requests:\n```python\nresponse = requests.get(url, timeout=10)\n```\nThis ensures requests fail gracefully rather than hanging indefinitely.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The apewisdom skill is a relatively straightforward Reddit sentiment scanner that fetches data from a third-party API. The primary security concern is the unvalidated trust placed in external API responses, which could be exploited if the API is compromised or returns malicious data. The skill does not attempt prompt injection, credential theft, or data exfiltration to attacker-controlled servers. However, it lacks important security metadata and proper error handling for network operations. The skill's behavior matches its stated purpose, and there are no hidden capabilities or deceptive elements. Overall risk level is MODERATE due to external API dependency without validation.",
+        "primary_threats": [
+          "Unvalidated external data trust",
+          "Missing security metadata",
+          "Network timeout risks"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Clear best practice violation - all network requests should have timeouts",
+        "meta_exploitability": "Medium - API downtime or network issues could block agent execution",
+        "meta_impact": "Low - Availability issue only, no data loss or security compromise"
+      }
+    }
+  ],
+  "scan_duration_seconds": 21.290176153182983,
+  "duration_ms": 21290,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-05T19:30:08.098300"
+}
