@@ -1,6 +1,6 @@
 # AI Agent Skills Security Scan Report
 
-**Generated:** 2026-02-05T10:43:55.504449
+**Generated:** 2026-02-05T16:16:50.542430
 **Scanner:** cisco-ai-skill-scanner
 **Analyzers:** behavioral, llm, meta, static, trigger
 
@@ -11,25 +11,25 @@
 | Metric | Count |
 |--------|-------|
 | Total Skills Scanned | 614 |
-| Safe Skills | 482 (79%) |
-| Skills with Issues | 132 (21%) |
+| Safe Skills | 483 (79%) |
+| Skills with Issues | 131 (21%) |
 | Scan Errors | 0 |
 
 ### Severity Breakdown
 
 | Severity | Count |
 |----------|-------|
-| CRITICAL | 361 |
+| CRITICAL | 360 |
 | HIGH | 181 |
 | MEDIUM | 611 |
-| LOW | 463 |
-| **Total Findings** | **1616** |
+| LOW | 457 |
+| **Total Findings** | **1609** |
 
 ### Findings by Category
 
 | Category | Count |
 |----------|-------|
-| policy_violation | 446 |
+| policy_violation | 440 |
 | command_injection | 327 |
 | data_exfiltration | 317 |
 | transitive_trust_abuse | 169 |
@@ -37,8 +37,8 @@
 | tool_chaining_abuse | 86 |
 | hardcoded_secrets | 78 |
 | skill_discovery_abuse | 37 |
-| prompt_injection | 24 |
 | social_engineering | 24 |
+| prompt_injection | 23 |
 | resource_abuse | 8 |
 | autonomy_abuse | 7 |
 | obfuscation | 5 |
@@ -194,414 +194,414 @@
 | 143 | [azure-ai-document-intelligence-dotnet](github-skills-azure-ai-document-intelligence-dotnet-scan.md) | microsoft | Yes | 2 | MEDIUM |
 | 144 | [azure-ai-evaluation-py](github-skills-azure-ai-evaluation-py-scan.md) | microsoft | Yes | 2 | MEDIUM |
 | 145 | [azure-monitor-opentelemetry-exporter-py](github-skills-azure-monitor-opentelemetry-exporter-py-scan.md) | microsoft | Yes | 2 | MEDIUM |
-| 146 | [azure-security-keyvault-keys-dotnet](github-skills-azure-security-keyvault-keys-dotnet-scan.md) | microsoft | **No** | 2 | **CRITICAL** |
-| 147 | [azure-security-keyvault-keys-java](github-skills-azure-security-keyvault-keys-java-scan.md) | microsoft | **No** | 2 | **CRITICAL** |
-| 148 | [base-trader](base-trader-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 149 | [botcoin-miner](botcoin-miner-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
-| 150 | [browse](browserbase-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 151 | [building-ai-agent-on-cloudflare](skills-building-ai-agent-on-cloudflare-scan.md) | cloudflare | **No** | 2 | **CRITICAL** |
-| 152 | [building-mcp-server-on-cloudflare](skills-building-mcp-server-on-cloudflare-scan.md) | cloudflare | **No** | 2 | **CRITICAL** |
-| 153 | [canvas-design](canvas-design-scan.md) | anthropic | Yes | 2 | MEDIUM |
-| 154 | [cargo-fuzz](plugins-testing-handbook-skills-skills-cargo-fuzz-scan.md) | trailofbits | **No** | 2 | **CRITICAL** |
-| 155 | [chart-image](chart-image-generator-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 156 | [clawdbot-security](clawdbot-security-audit-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
-| 157 | [clawhub](clawhub-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
-| 158 | [coding-agent](multi-coding-agent-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 159 | [cold-email](machfive-cold-email-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 160 | [create-auth-skill](create-auth-skill-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 161 | [ctxly](mymemory.bot-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
-| 162 | [daily-meeting-update](daily-meeting-update-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 163 | [dependency-updater](dependency-updater-scan.md) | skills.sh | **No** | 2 | **HIGH** |
-| 164 | [dev-browser](skills-dev-browser-scan.md) | sawyerhood | Yes | 2 | MEDIUM |
-| 165 | [diff-summary](git-diff-summarizer-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 166 | [doc-coauthoring](skills-doc-coauthoring-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 167 | [expo-api-routes](expo-api-routes-scan.md) | skills.sh | **No** | 2 | **CRITICAL** |
-| 168 | [ez-google](ez-google-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
-| 169 | [ffuf-web-fuzzing](ffuf-skill-scan.md) | jthack | Yes | 2 | MEDIUM |
-| 170 | [free-tool-strategy](free-tool-strategy-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 171 | [fuzzing-dictionary](plugins-testing-handbook-skills-skills-fuzzing-dictionary-scan.md) | trailofbits | **No** | 2 | **CRITICAL** |
-| 172 | [gcloud](google-cloud-platform-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
-| 173 | [google](google-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 174 | [google-imagen-3-hyperrealistic-landscape](google-imagen-3-%E8%B6%85%E5%86%99%E5%AE%9E%E9%A3%8E%E6%99%AF-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 175 | [hf-mcp](hf-mcp-skills-hf-mcp-scan.md) | huggingface | Yes | 2 | MEDIUM |
-| 176 | [insecure-defaults](plugins-insecure-defaults-skills-insecure-defaults-scan.md) | trailofbits | **No** | 2 | **HIGH** |
-| 177 | [instagram](instagram-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
-| 178 | [interpreting-culture-index](plugins-culture-index-skills-interpreting-culture-index-scan.md) | trailofbits | Yes | 2 | MEDIUM |
-| 179 | [launch-strategy](launch-strategy-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 180 | [linear-autopilot](linear-autopilot-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 181 | [llm](llm-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 182 | [mailgun](mailgun-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
-| 183 | [marketing-psychology](marketing-psychology-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 184 | [memory-hygiene](memory-hygiene-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
-| 185 | [memory-system-v2](memory-system-v2-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 186 | [modern-python](plugins-modern-python-skills-modern-python-scan.md) | trailofbits | Yes | 2 | MEDIUM |
-| 187 | [moltbot-ha](moltbot-home-assistant-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
-| 188 | [n8n-api](n8n-api-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
-| 189 | [near-email](near-email-skill-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 190 | [nextjs-expert](nextjs-expert-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 191 | [obsidian-tasks](obsidian-tasks-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 192 | [opencode-controller](opencode-controller-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 193 | [paypal](paypal-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
-| 194 | [primer-x402](primer-x402-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 195 | [rei](rei-clawd-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 196 | [reposit](reposit-collective-intelligence-for-ai-agents-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
-| 197 | [search-reddit](search-reddit-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
-| 198 | [semgrep-rule-variant-creator](plugins-semgrep-rule-variant-creator-skills-semgrep-rule-variant-creator-scan.md) | trailofbits | **No** | 2 | **CRITICAL** |
-| 199 | [senior-architect](senior-architect-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 200 | [ship-learn-next](ship-learn-next-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 201 | [stock-evaluator-v3](stock-evaluator-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 202 | [subtitles](subtitles-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 203 | [system_monitor](system-monitor-scan.md) | clawhub.ai | Yes | 2 | LOW |
-| 204 | [talent-de-cv](digital-identity%2C-cv-%26-resume-creator-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 205 | [taskmaster](taskmaster-ai-cost-optimizer-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 206 | [trading-coach](trading-coach-scan.md) | clawhub.ai | Yes | 2 | LOW |
-| 207 | [twitter-openclaw](x-twitter-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 208 | [ui-test](ui-test-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
-| 209 | [upgrade-stripe](skills-upgrade-stripe-scan.md) | stripe | **No** | 2 | **CRITICAL** |
-| 210 | [verification-before-completion](verification-before-completion-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 211 | [video-transcript](video-transcript-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 212 | [writing-skills](writing-skills-scan.md) | skills.sh | Yes | 2 | MEDIUM |
-| 213 | [wycheproof](plugins-testing-handbook-skills-skills-wycheproof-scan.md) | trailofbits | **No** | 2 | **CRITICAL** |
-| 214 | [x402](x402-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 215 | [youtube-playlist](youtube-playlist-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
-| 216 | [10-of-my-most-popular-text-to-image-series-prompts-78b0897e](test-skill-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 217 | [1inch](1inch-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 218 | [2captcha](2captcha-cli-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 219 | [ab-test-setup](ab-test-setup-scan.md) | skills.sh | Yes | 1 | LOW |
-| 220 | [academic-deep-research](academic-deep-research-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 221 | [actual-budget](actual-budget-cli-to-interact-with-the-actual-budget-api-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 222 | [address-sanitizer](plugins-testing-handbook-skills-skills-address-sanitizer-scan.md) | trailofbits | Yes | 1 | LOW |
-| 223 | [adguard](adguard-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 224 | [agent-builder](agent-builder-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 225 | [agent-money-tracker](intelligent-budget-tracker-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 226 | [agentarcade](agent-arcade-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 227 | [agents-sdk](skills-agents-sdk-scan.md) | cloudflare | Yes | 1 | LOW |
-| 228 | [aifs](aifs-http-file-system-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 229 | [airc](airc-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 230 | [algorand-vulnerability-scanner](plugins-building-secure-contracts-skills-algorand-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
-| 231 | [algorithmic-art](algorithmic-art-scan.md) | skills.sh | Yes | 1 | MEDIUM |
-| 232 | [anterior-cingulate-memory](anterior-cingulate-memory-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 233 | [antigravity-image-gen](antigravity-image-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 234 | [api-designer](api-designer-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 235 | [api-docs-gen](api-docs-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 236 | [ask-questions-if-underspecified](plugins-ask-questions-if-underspecified-skills-ask-questions-if-underspecified-scan.md) | trailofbits | Yes | 1 | LOW |
-| 237 | [audit-context-building](plugins-audit-context-building-skills-audit-context-building-scan.md) | trailofbits | Yes | 1 | LOW |
-| 238 | [audit-prep-assistant](plugins-building-secure-contracts-skills-audit-prep-assistant-scan.md) | trailofbits | Yes | 1 | LOW |
-| 239 | [auto-animate](auto-animate-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 240 | [auto-updater](auto-updater-skill-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 241 | [aws-cost-operations](plugins-aws-cost-ops-skills-aws-cost-operations-scan.md) | zxkane | Yes | 1 | LOW |
-| 242 | [aws-infra](aws-infra-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 243 | [aws-mcp-setup](plugins-aws-common-skills-aws-mcp-setup-scan.md) | zxkane | Yes | 1 | LOW |
-| 244 | [aws-serverless-eda](plugins-serverless-eda-skills-aws-serverless-eda-scan.md) | zxkane | Yes | 1 | LOW |
-| 245 | [azure-ai-voicelive-dotnet](github-skills-azure-ai-voicelive-dotnet-scan.md) | microsoft | Yes | 1 | MEDIUM |
-| 246 | [azure-communication-callautomation-java](github-skills-azure-communication-callautomation-java-scan.md) | microsoft | Yes | 1 | MEDIUM |
-| 247 | [azure-communication-chat-java](github-skills-azure-communication-chat-java-scan.md) | microsoft | Yes | 1 | MEDIUM |
-| 248 | [azure-containerregistry-py](github-skills-azure-containerregistry-py-scan.md) | microsoft | Yes | 1 | MEDIUM |
-| 249 | [azure-mgmt-apicenter-py](github-skills-azure-mgmt-apicenter-py-scan.md) | microsoft | Yes | 1 | MEDIUM |
-| 250 | [azure-mgmt-apimanagement-dotnet](github-skills-azure-mgmt-apimanagement-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
-| 251 | [azure-resource-manager-postgresql-dotnet](github-skills-azure-resource-manager-postgresql-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
-| 252 | [azure-resource-manager-redis-dotnet](github-skills-azure-resource-manager-redis-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
-| 253 | [azure-resource-manager-sql-dotnet](github-skills-azure-resource-manager-sql-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
-| 254 | [azure-search-documents-dotnet](github-skills-azure-search-documents-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
-| 255 | [azure-search-documents-py](github-skills-azure-search-documents-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 256 | [azure-security-keyvault-secrets-java](github-skills-azure-security-keyvault-secrets-java-scan.md) | microsoft | Yes | 1 | LOW |
-| 257 | [azure-servicebus-dotnet](github-skills-azure-servicebus-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
-| 258 | [azure-servicebus-py](github-skills-azure-servicebus-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 259 | [azure-speech-to-text-rest-py](github-skills-azure-speech-to-text-rest-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 260 | [azure-storage-blob-java](github-skills-azure-storage-blob-java-scan.md) | microsoft | Yes | 1 | LOW |
-| 261 | [azure-storage-blob-py](github-skills-azure-storage-blob-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 262 | [azure-storage-file-datalake-py](github-skills-azure-storage-file-datalake-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 263 | [azure-storage-file-share-py](github-skills-azure-storage-file-share-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 264 | [azure-storage-queue-py](github-skills-azure-storage-queue-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 265 | [bags](sagb-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 266 | [basal-ganglia-memory](basal-ganglia-memory-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 267 | [base-trading-agent](base-trading-agent-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 268 | [bat-cat](bat-cat-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 269 | [binance-pay](binance-pay-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 270 | [birthday-reminder](Birthday%20Reminder-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
-| 271 | [browser-agent](browser-agent-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 272 | [burpsuite-project-parser](plugins-burpsuite-project-parser-skills-scan.md) | trailofbits | Yes | 1 | LOW |
-| 273 | [bybit-trading](bybit-trading-agent-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 274 | [cairo-vulnerability-scanner](plugins-building-secure-contracts-skills-cairo-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
-| 275 | [calendar](calendar-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 276 | [capability-evolver](capability-evolver-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 277 | [captions](captions-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
-| 278 | [chirp](chirp-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 279 | [chromadb-memory](chromadb-memory-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 280 | [ci-gen](ci-cd-pipeline-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 281 | [claude-chrome](claude-chrome-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 282 | [claude-in-chrome-troubleshooting](plugins-claude-in-chrome-troubleshooting-skills-claude-in-chrome-troubleshooting-scan.md) | trailofbits | Yes | 1 | LOW |
-| 283 | [clawbridge](clawbridge-find-your-connections-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 284 | [clawbrowser](clawbrowser-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 285 | [clawdhub](clawdhub-cli-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 286 | [clawflows](clawflows-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 287 | [clawkey](clawkey-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 288 | [clawlist](clawlist-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 289 | [clawops](clawops-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 290 | [code-explain](code-explainer-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 291 | [code-maturity-assessor](plugins-building-secure-contracts-skills-code-maturity-assessor-scan.md) | trailofbits | Yes | 1 | LOW |
-| 292 | [codemod-gen](codemod-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 293 | [codeql](plugins-static-analysis-skills-codeql-scan.md) | trailofbits | Yes | 1 | LOW |
-| 294 | [codeql](plugins-testing-handbook-skills-skills-codeql-scan.md) | trailofbits | Yes | 1 | LOW |
-| 295 | [codex](codex-scan.md) | skills.sh | Yes | 1 | LOW |
-| 296 | [coding-agent](coding-agent-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 297 | [commit-work](commit-work-scan.md) | skills.sh | Yes | 1 | LOW |
-| 298 | [competitor-alternatives](competitor-alternatives-scan.md) | skills.sh | Yes | 1 | LOW |
-| 299 | [compound-engineering](compound-engineering-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 300 | [compound-engineering](compound-interest-calculator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 301 | [core-vitals-fixer](core-web-vitals-optimizer-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 302 | [cosmos-vulnerability-scanner](plugins-building-secure-contracts-skills-cosmos-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
-| 303 | [coverage-analysis](plugins-testing-handbook-skills-skills-coverage-analysis-scan.md) | trailofbits | Yes | 1 | LOW |
-| 304 | [cron-mastery](cron-mastery-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 305 | [crypto-wallet](crypto-wallet-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 306 | [daily-ai-news](daily-ai-news-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 307 | [database](database-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 308 | [defi](defi-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 309 | [deps-analyzer](deps-checker-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 310 | [diagram-gen](diagram-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 311 | [differential-review](plugins-differential-review-skills-differential-review-scan.md) | trailofbits | Yes | 1 | LOW |
-| 312 | [discord-chat](discord-chat-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 313 | [discord-voice](discord-voice-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 314 | [dispatching-parallel-agents](dispatching-parallel-agents-scan.md) | skills.sh | Yes | 1 | LOW |
-| 315 | [doc-coauthoring](doc-coauthoring-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 316 | [dockerfile-gen](dockerfile-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 317 | [docx](docx-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
-| 318 | [docx](skills-docx-scan.md) | anthropic | Yes | 1 | MEDIUM |
-| 319 | [dont-hack-me](dont-hack-me-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 320 | [dotnet-expert](dotnet-expert-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 321 | [dwarf-expert](plugins-dwarf-expert-skills-dwarf-expert-scan.md) | trailofbits | Yes | 1 | LOW |
-| 322 | [dwlf](a-clawdbot-skill-that-gives-your-agent-native-access-to-dwlf-%E2%80%94-a-market-analysis-platform-for-crypto-and-stocks.-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 323 | [email](email-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 324 | [email-best-practices](email-best-practices-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 325 | [email-sequence](email-sequence-scan.md) | skills.sh | Yes | 1 | LOW |
-| 326 | [entry-point-analyzer](plugins-entry-point-analyzer-skills-entry-point-analyzer-scan.md) | trailofbits | Yes | 1 | LOW |
-| 327 | [error-guard](error-guard-%E2%80%94-control%E2%80%91plane-safety-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 328 | [error-handler-gen](error-handler-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 329 | [eslint-gen](eslint-config-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 330 | [exa-web-search-free](exa-web-search-free-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 331 | [excel](excel-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 332 | [executing-plans](executing-plans-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 333 | [fastapi-router-py](github-skills-fastapi-router-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 334 | [feast](feast-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 335 | [feishu-api-docs](feishu-api-docs-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 336 | [feishu-bridge](feishu-bridge-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 337 | [find-skills](find-skills-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 338 | [finishing-a-development-branch](finishing-a-development-branch-scan.md) | skills.sh | Yes | 1 | LOW |
-| 339 | [fix-review](plugins-fix-review-skills-fix-review-scan.md) | trailofbits | Yes | 1 | LOW |
-| 340 | [form-cro](form-cro-scan.md) | skills.sh | Yes | 1 | LOW |
-| 341 | [foundry](foundry-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 342 | [frontend-ui-dark-ts](github-skills-frontend-ui-dark-ts-scan.md) | microsoft | Yes | 1 | LOW |
-| 343 | [fuzzing-obstacles](plugins-testing-handbook-skills-skills-fuzzing-obstacles-scan.md) | trailofbits | Yes | 1 | LOW |
-| 344 | [gaussian-process-mlp-hybrid](ai-%E7%BC%96%E7%A0%81-prompt-skill-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 345 | [gitclaw](gitclaw-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 346 | [github-action-gen](github-action-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 347 | [github-issue-creator](github-skills-github-issue-creator-scan.md) | microsoft | Yes | 1 | LOW |
-| 348 | [githunt](githunt-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 349 | [gitlab-cli-skills](gitlab-cli-skills-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 350 | [gitlab-manager](gitlab-manager-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 351 | [google-calendar](google-calendar-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 352 | [guidelines-advisor](plugins-building-secure-contracts-skills-guidelines-advisor-scan.md) | trailofbits | Yes | 1 | LOW |
-| 353 | [habitica](habitica-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 354 | [hackernews](hacker-news-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 355 | [harness-writing](plugins-testing-handbook-skills-skills-harness-writing-scan.md) | trailofbits | Yes | 1 | LOW |
-| 356 | [health-tracker](healthcheck-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 357 | [hosted-agents-v2-py](github-skills-hosted-agents-v2-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 358 | [hugging-face-cli](skills-hugging-face-cli-scan.md) | huggingface | Yes | 1 | LOW |
-| 359 | [hugging-face-trackio](skills-hugging-face-trackio-scan.md) | huggingface | Yes | 1 | LOW |
-| 360 | [humanize](humanize-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 361 | [hybrid-memory](hybrid-memory-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 362 | [insula-memory](insula-memory-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 363 | [intodns](intodns-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 364 | [json-canvas](skills-json-canvas-scan.md) | kepano | Yes | 1 | LOW |
-| 365 | [juicebox-v5](juicy-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 366 | [landing-gen](landing-page-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 367 | [language-learning](language-learning-tutor-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 368 | [lighthouse-fixer](lighthouse-score-fixer-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 369 | [lightning](lightning-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 370 | [linkedin](linkedin-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 371 | [lobster](lobster-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 372 | [local-pandoc](md-to-office-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 373 | [m365-agents-dotnet](github-skills-m365-agents-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
-| 374 | [m365-agents-py](github-skills-m365-agents-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 375 | [mcp-builder](github-skills-mcp-builder-scan.md) | microsoft | Yes | 1 | LOW |
-| 376 | [mcps](mcps-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 377 | [memory-setup](memory-setup-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 378 | [mermaid-diagrams](mermaid-diagrams-scan.md) | skills.sh | Yes | 1 | LOW |
-| 379 | [microsoft-azure-webjobs-extensions-authentication-events-dotnet](github-skills-microsoft-azure-webjobs-extensions-authentication-events-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
-| 380 | [molt-identity](molt-identity-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 381 | [nano-banana-pro](nano-banana-pro-image-generation-%26-editing-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 382 | [nano-pdf](nano-pdf-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 383 | [next-best-practices](next-best-practices-scan.md) | skills.sh | Yes | 1 | LOW |
-| 384 | [notion](notion-api-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 385 | [notion](notion-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 386 | [npkill](npkill-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 387 | [nuxt](nuxt-scan.md) | skills.sh | Yes | 1 | LOW |
-| 388 | [obsidian-bases](skills-obsidian-bases-scan.md) | kepano | Yes | 1 | LOW |
-| 389 | [obsidian-markdown](skills-obsidian-markdown-scan.md) | kepano | Yes | 1 | LOW |
-| 390 | [obsidian-sync](obsidian-sync-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 391 | [onboarding-cro](onboarding-cro-scan.md) | skills.sh | Yes | 1 | LOW |
-| 392 | [openclaw](comprehensive-skill-for-installing%2C-configuring%2C-and-managing-the-openclaw-ecosystem-gateway%2C-channels%2C-models%2C-automation%2C-nodes%2C-and-deployment-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 393 | [openclaw-checkpoint](openclaw-checkpoint-personal-ai-assistant-backup-%26-recovery-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 394 | [openocean](openocean-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 395 | [openpet](openpet-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 396 | [ossfuzz](plugins-testing-handbook-skills-skills-ossfuzz-scan.md) | trailofbits | Yes | 1 | LOW |
-| 397 | [paid-ads](paid-ads-scan.md) | skills.sh | Yes | 1 | LOW |
-| 398 | [para-second-brain](para-second-brain-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 399 | [payment](payment-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 400 | [paywall-upgrade-cro](paywall-upgrade-cro-scan.md) | skills.sh | Yes | 1 | LOW |
-| 401 | [pdd](pdd-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 402 | [perf-auditor](performance-auditor-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 403 | [podcast-generation](github-skills-podcast-generation-scan.md) | microsoft | Yes | 1 | LOW |
-| 404 | [polymarket](polymarket-trading-skill-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 405 | [popup-cro](popup-cro-scan.md) | skills.sh | Yes | 1 | LOW |
-| 406 | [property-based-testing](plugins-property-based-testing-skills-property-based-testing-scan.md) | trailofbits | Yes | 1 | LOW |
-| 407 | [pydantic-models-py](github-skills-pydantic-models-py-scan.md) | microsoft | Yes | 1 | LOW |
-| 408 | [qmd](qmd-external-knowledge-base-search-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 409 | [railway](railway-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 410 | [ralph-loop](ralph-loop-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 411 | [react-expert](react-expert-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 412 | [react-flow-node-ts](github-skills-react-flow-node-ts-scan.md) | microsoft | Yes | 1 | LOW |
-| 413 | [readwise-mcp](readwise-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 414 | [receiving-code-review](receiving-code-review-scan.md) | skills.sh | Yes | 1 | LOW |
-| 415 | [redis](redis-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 416 | [referral-program](referral-program-scan.md) | skills.sh | Yes | 1 | LOW |
-| 417 | [remotion-video-toolkit](remotion-video-toolkit-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 418 | [requesting-code-review](requesting-code-review-scan.md) | skills.sh | Yes | 1 | LOW |
-| 419 | [research-paper-writer](research-paper-writer-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 420 | [resume-builder](resume-builder-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 421 | [rssaurus-cli](rssaurus-agent-friendly-rss-feed-reader-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 422 | [ruzzy](plugins-testing-handbook-skills-skills-ruzzy-scan.md) | trailofbits | Yes | 1 | LOW |
-| 423 | [schema-markup](schema-markup-scan.md) | skills.sh | Yes | 1 | LOW |
-| 424 | [secure-workflow-guide](plugins-building-secure-contracts-skills-secure-workflow-guide-scan.md) | trailofbits | Yes | 1 | LOW |
-| 425 | [semgrep](plugins-testing-handbook-skills-skills-semgrep-scan.md) | trailofbits | Yes | 1 | LOW |
-| 426 | [sendclaw](sendclaw-email-without-human-permission-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 427 | [senior-devops](senior-devops-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 428 | [seo-audit](seo-audit-scan.md) | skills.sh | Yes | 1 | LOW |
-| 429 | [sharp-edges](plugins-sharp-edges-skills-sharp-edges-scan.md) | trailofbits | Yes | 1 | LOW |
-| 430 | [shorten](url-shortener-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 431 | [signup-flow-cro](signup-flow-cro-scan.md) | skills.sh | Yes | 1 | LOW |
-| 432 | [skill-creator](github-skills-skill-creator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 433 | [solana-vulnerability-scanner](plugins-building-secure-contracts-skills-solana-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
-| 434 | [sora-2-nature-documentary](sora-2-%E8%87%AA%E7%84%B6%E7%BA%AA%E5%BD%95%E7%89%87-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 435 | [soulcraft](soulcraft-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 436 | [spec-to-code-compliance](plugins-spec-to-code-compliance-skills-spec-to-code-compliance-scan.md) | trailofbits | Yes | 1 | LOW |
-| 437 | [spring-boot-engineer](spring-boot-engineer-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 438 | [sql-assistant](sql-assistant-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 439 | [sql-pro](sql-pro-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 440 | [ssh-essentials](ssh-essentials-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 441 | [stealthy-auto-browse](stealthy-auto-browse-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 442 | [stock-market-pro](stock-market-pro-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 443 | [streme-launcher](streme-token-launcher-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 444 | [stripe-best-practices](skills-stripe-best-practices-scan.md) | stripe | Yes | 1 | LOW |
-| 445 | [subagent-driven-development](subagent-driven-development-scan.md) | skills.sh | Yes | 1 | LOW |
-| 446 | [substrate-vulnerability-scanner](plugins-building-secure-contracts-skills-substrate-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
-| 447 | [swift-expert](swift-expert-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 448 | [tailwind-design-system](tailwind-design-system-scan.md) | skills.sh | Yes | 1 | LOW |
-| 449 | [taskr](taskr-remote-task-tracking-for-ai-agents-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 450 | [telegram-auto-topic](telegram-auto-topic-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 451 | [telegram-pairing-customization](%E6%80%BB%E6%98%AF%E5%93%8D%E5%BA%94%E6%9C%AA%E9%85%8D%E5%AF%B9%E7%94%A8%E6%88%B7%E7%9A%84-start-%E6%B6%88%E6%81%AF-always-respond-to-start-messages-from-unpaired-users-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 452 | [template-skill](template-skill-scan.md) | skills.sh | Yes | 1 | LOW |
-| 453 | [tg](telegram-cli-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 454 | [token-integration-analyzer](plugins-building-secure-contracts-skills-token-integration-analyzer-scan.md) | trailofbits | Yes | 1 | LOW |
-| 455 | [ton-vulnerability-scanner](plugins-building-secure-contracts-skills-ton-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
-| 456 | [trade-signal](trade-singal-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 457 | [transcribe](transcribe-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 458 | [turborepo](turborepo-scan.md) | skills.sh | Yes | 1 | LOW |
-| 459 | [twitter](twitter-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 460 | [undetectable-ai](undetectable-ai-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 461 | [using-git-worktrees](using-git-worktrees-scan.md) | skills.sh | Yes | 1 | LOW |
-| 462 | [using-superpowers](using-superpowers-scan.md) | skills.sh | Yes | 1 | LOW |
-| 463 | [variant-analysis](plugins-variant-analysis-skills-variant-analysis-scan.md) | trailofbits | Yes | 1 | LOW |
-| 464 | [vestaboard](vestaboard-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 465 | [vue](vue-scan.md) | skills.sh | Yes | 1 | LOW |
-| 466 | [watch-my-money](watch-my-money-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 467 | [web-perf](skills-web-perf-scan.md) | cloudflare | Yes | 1 | LOW |
-| 468 | [webapp-testing](skills-webapp-testing-scan.md) | anthropic | Yes | 1 | MEDIUM |
-| 469 | [webapp-testing](webapp-testing-scan.md) | anthropic | Yes | 1 | MEDIUM |
-| 470 | [webhook-gen](webhook-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 471 | [wordpress-pro](wordpress-pro-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 472 | [writing-clearly-and-concisely](writing-clearly-and-concisely-scan.md) | skills.sh | Yes | 1 | LOW |
-| 473 | [writing-plans](writing-plans-scan.md) | skills.sh | Yes | 1 | LOW |
-| 474 | [x-trends](x-twitter-trends-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 475 | [yahoo-finance](yahoo-finance-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 476 | [youtube-channels](youtube-channels-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
-| 477 | [youtube-data](youtube-data-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
-| 478 | [youtube-full](youtube-full-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
-| 479 | [youtube-watcher](youtube-watcher-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 480 | [yt-video-downloader](youtube-video-downloader-scan.md) | clawhub.ai | Yes | 1 | LOW |
-| 481 | [zustand-store-ts](github-skills-zustand-store-ts-scan.md) | microsoft | Yes | 1 | LOW |
-| 482 | [agent-framework-azure-ai-py](github-skills-agent-framework-azure-ai-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 483 | [agent-md-refactor](agent-md-refactor-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 484 | [agenticflow-skills](agenticflow-skills-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 485 | [alby-bitcoin-payments-cli-skill](alby-bitcoin-payments-cli-skill-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 486 | [algorithmic-art](skills-algorithmic-art-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 487 | [analytics-tracking](analytics-tracking-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 488 | [artifacts-builder](artifacts-builder-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 489 | [audit-website](audit-website-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 490 | [azd-deployment](github-skills-azd-deployment-scan.md) | microsoft | Yes | 0 | SAFE |
-| 491 | [azure-ai-agents-persistent-dotnet](github-skills-azure-ai-agents-persistent-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 492 | [azure-ai-agents-persistent-java](github-skills-azure-ai-agents-persistent-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 493 | [azure-ai-anomalydetector-java](github-skills-azure-ai-anomalydetector-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 494 | [azure-ai-contentsafety-java](github-skills-azure-ai-contentsafety-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 495 | [azure-ai-contentsafety-py](github-skills-azure-ai-contentsafety-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 496 | [azure-ai-formrecognizer-java](github-skills-azure-ai-formrecognizer-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 497 | [azure-ai-ml-py](github-skills-azure-ai-ml-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 498 | [azure-ai-openai-dotnet](github-skills-azure-ai-openai-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 499 | [azure-ai-projects-dotnet](github-skills-azure-ai-projects-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 500 | [azure-ai-projects-java](github-skills-azure-ai-projects-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 501 | [azure-ai-projects-py](github-skills-azure-ai-projects-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 502 | [azure-ai-textanalytics-py](github-skills-azure-ai-textanalytics-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 503 | [azure-ai-transcription-py](github-skills-azure-ai-transcription-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 504 | [azure-ai-translation-document-py](github-skills-azure-ai-translation-document-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 505 | [azure-ai-translation-text-py](github-skills-azure-ai-translation-text-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 506 | [azure-ai-vision-imageanalysis-java](github-skills-azure-ai-vision-imageanalysis-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 507 | [azure-ai-vision-imageanalysis-py](github-skills-azure-ai-vision-imageanalysis-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 508 | [azure-ai-voicelive-java](github-skills-azure-ai-voicelive-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 509 | [azure-ai-voicelive-py](github-skills-azure-ai-voicelive-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 510 | [azure-appconfiguration-java](github-skills-azure-appconfiguration-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 511 | [azure-appconfiguration-py](github-skills-azure-appconfiguration-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 512 | [azure-communication-callingserver-java](github-skills-azure-communication-callingserver-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 513 | [azure-communication-common-java](github-skills-azure-communication-common-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 514 | [azure-communication-sms-java](github-skills-azure-communication-sms-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 515 | [azure-compute-batch-java](github-skills-azure-compute-batch-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 516 | [azure-cosmos-db-py](github-skills-azure-cosmos-db-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 517 | [azure-cosmos-java](github-skills-azure-cosmos-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 518 | [azure-cosmos-py](github-skills-azure-cosmos-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 519 | [azure-data-tables-java](github-skills-azure-data-tables-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 520 | [azure-data-tables-py](github-skills-azure-data-tables-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 521 | [azure-eventgrid-dotnet](github-skills-azure-eventgrid-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 522 | [azure-eventgrid-java](github-skills-azure-eventgrid-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 523 | [azure-eventgrid-py](github-skills-azure-eventgrid-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 524 | [azure-eventhub-dotnet](github-skills-azure-eventhub-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 525 | [azure-eventhub-py](github-skills-azure-eventhub-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 526 | [azure-identity-dotnet](github-skills-azure-identity-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 527 | [azure-identity-java](github-skills-azure-identity-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 528 | [azure-identity-py](github-skills-azure-identity-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 529 | [azure-keyvault-py](github-skills-azure-keyvault-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 530 | [azure-maps-search-dotnet](github-skills-azure-maps-search-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 531 | [azure-messaging-webpubsub-java](github-skills-azure-messaging-webpubsub-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 532 | [azure-messaging-webpubsubservice-py](github-skills-azure-messaging-webpubsubservice-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 533 | [azure-mgmt-apicenter-dotnet](github-skills-azure-mgmt-apicenter-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 534 | [azure-mgmt-apimanagement-py](github-skills-azure-mgmt-apimanagement-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 535 | [azure-mgmt-applicationinsights-dotnet](github-skills-azure-mgmt-applicationinsights-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 536 | [azure-mgmt-arizeaiobservabilityeval-dotnet](github-skills-azure-mgmt-arizeaiobservabilityeval-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 537 | [azure-mgmt-botservice-dotnet](github-skills-azure-mgmt-botservice-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 538 | [azure-mgmt-botservice-py](github-skills-azure-mgmt-botservice-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 539 | [azure-mgmt-fabric-dotnet](github-skills-azure-mgmt-fabric-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 540 | [azure-mgmt-mongodbatlas-dotnet](github-skills-azure-mgmt-mongodbatlas-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 541 | [azure-mgmt-weightsandbiases-dotnet](github-skills-azure-mgmt-weightsandbiases-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 542 | [azure-microsoft-playwright-testing-ts](github-skills-azure-microsoft-playwright-testing-ts-scan.md) | microsoft | Yes | 0 | SAFE |
-| 543 | [azure-monitor-ingestion-java](github-skills-azure-monitor-ingestion-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 544 | [azure-monitor-ingestion-py](github-skills-azure-monitor-ingestion-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 545 | [azure-monitor-opentelemetry-exporter-java](github-skills-azure-monitor-opentelemetry-exporter-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 546 | [azure-monitor-opentelemetry-py](github-skills-azure-monitor-opentelemetry-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 547 | [azure-monitor-query-java](github-skills-azure-monitor-query-java-scan.md) | microsoft | Yes | 0 | SAFE |
-| 548 | [azure-monitor-query-py](github-skills-azure-monitor-query-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 549 | [azure-postgres-ts](github-skills-azure-postgres-ts-scan.md) | microsoft | Yes | 0 | SAFE |
-| 550 | [azure-resource-manager-cosmosdb-dotnet](github-skills-azure-resource-manager-cosmosdb-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 551 | [azure-resource-manager-durabletask-dotnet](github-skills-azure-resource-manager-durabletask-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 552 | [azure-resource-manager-mysql-dotnet](github-skills-azure-resource-manager-mysql-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 553 | [azure-resource-manager-playwright-dotnet](github-skills-azure-resource-manager-playwright-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 146 | [azure-security-keyvault-keys-java](github-skills-azure-security-keyvault-keys-java-scan.md) | microsoft | **No** | 2 | **CRITICAL** |
+| 147 | [base-trader](base-trader-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 148 | [botcoin-miner](botcoin-miner-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
+| 149 | [browse](browserbase-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 150 | [building-ai-agent-on-cloudflare](skills-building-ai-agent-on-cloudflare-scan.md) | cloudflare | **No** | 2 | **CRITICAL** |
+| 151 | [building-mcp-server-on-cloudflare](skills-building-mcp-server-on-cloudflare-scan.md) | cloudflare | **No** | 2 | **CRITICAL** |
+| 152 | [canvas-design](canvas-design-scan.md) | anthropic | Yes | 2 | MEDIUM |
+| 153 | [cargo-fuzz](plugins-testing-handbook-skills-skills-cargo-fuzz-scan.md) | trailofbits | **No** | 2 | **CRITICAL** |
+| 154 | [chart-image](chart-image-generator-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 155 | [clawdbot-security](clawdbot-security-audit-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
+| 156 | [clawhub](clawhub-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
+| 157 | [coding-agent](multi-coding-agent-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 158 | [cold-email](machfive-cold-email-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 159 | [create-auth-skill](create-auth-skill-scan.md) | skills.sh | Yes | 2 | MEDIUM |
+| 160 | [ctxly](mymemory.bot-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
+| 161 | [daily-meeting-update](daily-meeting-update-scan.md) | skills.sh | Yes | 2 | MEDIUM |
+| 162 | [dependency-updater](dependency-updater-scan.md) | skills.sh | **No** | 2 | **HIGH** |
+| 163 | [dev-browser](skills-dev-browser-scan.md) | sawyerhood | Yes | 2 | MEDIUM |
+| 164 | [diff-summary](git-diff-summarizer-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 165 | [doc-coauthoring](skills-doc-coauthoring-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 166 | [expo-api-routes](expo-api-routes-scan.md) | skills.sh | **No** | 2 | **CRITICAL** |
+| 167 | [ez-google](ez-google-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
+| 168 | [ffuf-web-fuzzing](ffuf-skill-scan.md) | jthack | Yes | 2 | MEDIUM |
+| 169 | [free-tool-strategy](free-tool-strategy-scan.md) | skills.sh | Yes | 2 | MEDIUM |
+| 170 | [fuzzing-dictionary](plugins-testing-handbook-skills-skills-fuzzing-dictionary-scan.md) | trailofbits | **No** | 2 | **CRITICAL** |
+| 171 | [gcloud](google-cloud-platform-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
+| 172 | [google](google-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 173 | [google-imagen-3-hyperrealistic-landscape](google-imagen-3-%E8%B6%85%E5%86%99%E5%AE%9E%E9%A3%8E%E6%99%AF-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 174 | [hf-mcp](hf-mcp-skills-hf-mcp-scan.md) | huggingface | Yes | 2 | MEDIUM |
+| 175 | [insecure-defaults](plugins-insecure-defaults-skills-insecure-defaults-scan.md) | trailofbits | **No** | 2 | **HIGH** |
+| 176 | [instagram](instagram-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
+| 177 | [interpreting-culture-index](plugins-culture-index-skills-interpreting-culture-index-scan.md) | trailofbits | Yes | 2 | MEDIUM |
+| 178 | [launch-strategy](launch-strategy-scan.md) | skills.sh | Yes | 2 | MEDIUM |
+| 179 | [linear-autopilot](linear-autopilot-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 180 | [llm](llm-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 181 | [mailgun](mailgun-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
+| 182 | [marketing-psychology](marketing-psychology-scan.md) | skills.sh | Yes | 2 | MEDIUM |
+| 183 | [memory-hygiene](memory-hygiene-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
+| 184 | [memory-system-v2](memory-system-v2-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 185 | [modern-python](plugins-modern-python-skills-modern-python-scan.md) | trailofbits | Yes | 2 | MEDIUM |
+| 186 | [moltbot-ha](moltbot-home-assistant-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
+| 187 | [n8n-api](n8n-api-scan.md) | clawhub.ai | **No** | 2 | **HIGH** |
+| 188 | [near-email](near-email-skill-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 189 | [nextjs-expert](nextjs-expert-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 190 | [obsidian-tasks](obsidian-tasks-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 191 | [opencode-controller](opencode-controller-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 192 | [paypal](paypal-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
+| 193 | [primer-x402](primer-x402-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 194 | [rei](rei-clawd-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 195 | [reposit](reposit-collective-intelligence-for-ai-agents-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
+| 196 | [search-reddit](search-reddit-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
+| 197 | [semgrep-rule-variant-creator](plugins-semgrep-rule-variant-creator-skills-semgrep-rule-variant-creator-scan.md) | trailofbits | **No** | 2 | **CRITICAL** |
+| 198 | [senior-architect](senior-architect-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 199 | [ship-learn-next](ship-learn-next-scan.md) | skills.sh | Yes | 2 | MEDIUM |
+| 200 | [stock-evaluator-v3](stock-evaluator-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 201 | [subtitles](subtitles-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 202 | [system_monitor](system-monitor-scan.md) | clawhub.ai | Yes | 2 | LOW |
+| 203 | [talent-de-cv](digital-identity%2C-cv-%26-resume-creator-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 204 | [taskmaster](taskmaster-ai-cost-optimizer-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 205 | [trading-coach](trading-coach-scan.md) | clawhub.ai | Yes | 2 | LOW |
+| 206 | [twitter-openclaw](x-twitter-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 207 | [ui-test](ui-test-scan.md) | clawhub.ai | **No** | 2 | **CRITICAL** |
+| 208 | [upgrade-stripe](skills-upgrade-stripe-scan.md) | stripe | **No** | 2 | **CRITICAL** |
+| 209 | [verification-before-completion](verification-before-completion-scan.md) | skills.sh | Yes | 2 | MEDIUM |
+| 210 | [video-transcript](video-transcript-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 211 | [writing-skills](writing-skills-scan.md) | skills.sh | Yes | 2 | MEDIUM |
+| 212 | [wycheproof](plugins-testing-handbook-skills-skills-wycheproof-scan.md) | trailofbits | **No** | 2 | **CRITICAL** |
+| 213 | [x402](x402-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 214 | [youtube-playlist](youtube-playlist-scan.md) | clawhub.ai | Yes | 2 | MEDIUM |
+| 215 | [10-of-my-most-popular-text-to-image-series-prompts-78b0897e](test-skill-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 216 | [1inch](1inch-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 217 | [2captcha](2captcha-cli-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 218 | [ab-test-setup](ab-test-setup-scan.md) | skills.sh | Yes | 1 | LOW |
+| 219 | [academic-deep-research](academic-deep-research-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 220 | [actual-budget](actual-budget-cli-to-interact-with-the-actual-budget-api-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 221 | [address-sanitizer](plugins-testing-handbook-skills-skills-address-sanitizer-scan.md) | trailofbits | Yes | 1 | LOW |
+| 222 | [adguard](adguard-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 223 | [agent-builder](agent-builder-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 224 | [agent-money-tracker](intelligent-budget-tracker-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 225 | [agentarcade](agent-arcade-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 226 | [agents-sdk](skills-agents-sdk-scan.md) | cloudflare | Yes | 1 | LOW |
+| 227 | [aifs](aifs-http-file-system-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 228 | [airc](airc-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 229 | [algorand-vulnerability-scanner](plugins-building-secure-contracts-skills-algorand-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
+| 230 | [algorithmic-art](algorithmic-art-scan.md) | skills.sh | Yes | 1 | MEDIUM |
+| 231 | [anterior-cingulate-memory](anterior-cingulate-memory-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 232 | [antigravity-image-gen](antigravity-image-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 233 | [api-designer](api-designer-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 234 | [api-docs-gen](api-docs-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 235 | [ask-questions-if-underspecified](plugins-ask-questions-if-underspecified-skills-ask-questions-if-underspecified-scan.md) | trailofbits | Yes | 1 | LOW |
+| 236 | [audit-context-building](plugins-audit-context-building-skills-audit-context-building-scan.md) | trailofbits | Yes | 1 | LOW |
+| 237 | [audit-prep-assistant](plugins-building-secure-contracts-skills-audit-prep-assistant-scan.md) | trailofbits | Yes | 1 | LOW |
+| 238 | [auto-animate](auto-animate-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 239 | [auto-updater](auto-updater-skill-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 240 | [aws-cost-operations](plugins-aws-cost-ops-skills-aws-cost-operations-scan.md) | zxkane | Yes | 1 | LOW |
+| 241 | [aws-infra](aws-infra-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 242 | [aws-mcp-setup](plugins-aws-common-skills-aws-mcp-setup-scan.md) | zxkane | Yes | 1 | LOW |
+| 243 | [aws-serverless-eda](plugins-serverless-eda-skills-aws-serverless-eda-scan.md) | zxkane | Yes | 1 | LOW |
+| 244 | [azure-ai-voicelive-dotnet](github-skills-azure-ai-voicelive-dotnet-scan.md) | microsoft | Yes | 1 | MEDIUM |
+| 245 | [azure-communication-callautomation-java](github-skills-azure-communication-callautomation-java-scan.md) | microsoft | Yes | 1 | MEDIUM |
+| 246 | [azure-communication-chat-java](github-skills-azure-communication-chat-java-scan.md) | microsoft | Yes | 1 | MEDIUM |
+| 247 | [azure-containerregistry-py](github-skills-azure-containerregistry-py-scan.md) | microsoft | Yes | 1 | MEDIUM |
+| 248 | [azure-mgmt-apicenter-py](github-skills-azure-mgmt-apicenter-py-scan.md) | microsoft | Yes | 1 | MEDIUM |
+| 249 | [azure-mgmt-apimanagement-dotnet](github-skills-azure-mgmt-apimanagement-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
+| 250 | [azure-security-keyvault-secrets-java](github-skills-azure-security-keyvault-secrets-java-scan.md) | microsoft | Yes | 1 | LOW |
+| 251 | [azure-servicebus-dotnet](github-skills-azure-servicebus-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
+| 252 | [azure-servicebus-py](github-skills-azure-servicebus-py-scan.md) | microsoft | Yes | 1 | LOW |
+| 253 | [azure-speech-to-text-rest-py](github-skills-azure-speech-to-text-rest-py-scan.md) | microsoft | Yes | 1 | LOW |
+| 254 | [azure-storage-blob-java](github-skills-azure-storage-blob-java-scan.md) | microsoft | Yes | 1 | LOW |
+| 255 | [azure-storage-blob-py](github-skills-azure-storage-blob-py-scan.md) | microsoft | Yes | 1 | LOW |
+| 256 | [azure-storage-file-datalake-py](github-skills-azure-storage-file-datalake-py-scan.md) | microsoft | Yes | 1 | LOW |
+| 257 | [azure-storage-file-share-py](github-skills-azure-storage-file-share-py-scan.md) | microsoft | Yes | 1 | LOW |
+| 258 | [azure-storage-queue-py](github-skills-azure-storage-queue-py-scan.md) | microsoft | Yes | 1 | LOW |
+| 259 | [bags](sagb-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 260 | [basal-ganglia-memory](basal-ganglia-memory-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 261 | [base-trading-agent](base-trading-agent-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 262 | [bat-cat](bat-cat-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 263 | [binance-pay](binance-pay-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 264 | [birthday-reminder](Birthday%20Reminder-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
+| 265 | [browser-agent](browser-agent-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 266 | [burpsuite-project-parser](plugins-burpsuite-project-parser-skills-scan.md) | trailofbits | Yes | 1 | LOW |
+| 267 | [bybit-trading](bybit-trading-agent-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 268 | [cairo-vulnerability-scanner](plugins-building-secure-contracts-skills-cairo-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
+| 269 | [calendar](calendar-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 270 | [capability-evolver](capability-evolver-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 271 | [captions](captions-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
+| 272 | [chirp](chirp-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 273 | [chromadb-memory](chromadb-memory-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 274 | [ci-gen](ci-cd-pipeline-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 275 | [claude-chrome](claude-chrome-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 276 | [claude-in-chrome-troubleshooting](plugins-claude-in-chrome-troubleshooting-skills-claude-in-chrome-troubleshooting-scan.md) | trailofbits | Yes | 1 | LOW |
+| 277 | [clawbridge](clawbridge-find-your-connections-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 278 | [clawbrowser](clawbrowser-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 279 | [clawdhub](clawdhub-cli-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 280 | [clawflows](clawflows-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 281 | [clawkey](clawkey-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 282 | [clawlist](clawlist-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 283 | [clawops](clawops-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 284 | [code-explain](code-explainer-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 285 | [code-maturity-assessor](plugins-building-secure-contracts-skills-code-maturity-assessor-scan.md) | trailofbits | Yes | 1 | LOW |
+| 286 | [codemod-gen](codemod-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 287 | [codeql](plugins-static-analysis-skills-codeql-scan.md) | trailofbits | Yes | 1 | LOW |
+| 288 | [codeql](plugins-testing-handbook-skills-skills-codeql-scan.md) | trailofbits | Yes | 1 | LOW |
+| 289 | [codex](codex-scan.md) | skills.sh | Yes | 1 | LOW |
+| 290 | [coding-agent](coding-agent-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 291 | [commit-work](commit-work-scan.md) | skills.sh | Yes | 1 | LOW |
+| 292 | [competitor-alternatives](competitor-alternatives-scan.md) | skills.sh | Yes | 1 | LOW |
+| 293 | [compound-engineering](compound-engineering-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 294 | [compound-engineering](compound-interest-calculator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 295 | [core-vitals-fixer](core-web-vitals-optimizer-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 296 | [cosmos-vulnerability-scanner](plugins-building-secure-contracts-skills-cosmos-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
+| 297 | [coverage-analysis](plugins-testing-handbook-skills-skills-coverage-analysis-scan.md) | trailofbits | Yes | 1 | LOW |
+| 298 | [cron-mastery](cron-mastery-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 299 | [crypto-wallet](crypto-wallet-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 300 | [daily-ai-news](daily-ai-news-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 301 | [database](database-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 302 | [defi](defi-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 303 | [deps-analyzer](deps-checker-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 304 | [diagram-gen](diagram-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 305 | [differential-review](plugins-differential-review-skills-differential-review-scan.md) | trailofbits | Yes | 1 | LOW |
+| 306 | [discord-chat](discord-chat-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 307 | [discord-voice](discord-voice-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 308 | [dispatching-parallel-agents](dispatching-parallel-agents-scan.md) | skills.sh | Yes | 1 | LOW |
+| 309 | [doc-coauthoring](doc-coauthoring-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 310 | [dockerfile-gen](dockerfile-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 311 | [docx](docx-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
+| 312 | [docx](skills-docx-scan.md) | anthropic | Yes | 1 | MEDIUM |
+| 313 | [dont-hack-me](dont-hack-me-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 314 | [dotnet-expert](dotnet-expert-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 315 | [dwarf-expert](plugins-dwarf-expert-skills-dwarf-expert-scan.md) | trailofbits | Yes | 1 | LOW |
+| 316 | [dwlf](a-clawdbot-skill-that-gives-your-agent-native-access-to-dwlf-%E2%80%94-a-market-analysis-platform-for-crypto-and-stocks.-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 317 | [email](email-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 318 | [email-best-practices](email-best-practices-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 319 | [email-sequence](email-sequence-scan.md) | skills.sh | Yes | 1 | LOW |
+| 320 | [entry-point-analyzer](plugins-entry-point-analyzer-skills-entry-point-analyzer-scan.md) | trailofbits | Yes | 1 | LOW |
+| 321 | [error-guard](error-guard-%E2%80%94-control%E2%80%91plane-safety-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 322 | [error-handler-gen](error-handler-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 323 | [eslint-gen](eslint-config-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 324 | [exa-web-search-free](exa-web-search-free-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 325 | [excel](excel-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 326 | [executing-plans](executing-plans-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 327 | [fastapi-router-py](github-skills-fastapi-router-py-scan.md) | microsoft | Yes | 1 | LOW |
+| 328 | [feast](feast-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 329 | [feishu-api-docs](feishu-api-docs-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 330 | [feishu-bridge](feishu-bridge-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 331 | [find-skills](find-skills-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 332 | [finishing-a-development-branch](finishing-a-development-branch-scan.md) | skills.sh | Yes | 1 | LOW |
+| 333 | [fix-review](plugins-fix-review-skills-fix-review-scan.md) | trailofbits | Yes | 1 | LOW |
+| 334 | [form-cro](form-cro-scan.md) | skills.sh | Yes | 1 | LOW |
+| 335 | [foundry](foundry-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 336 | [frontend-ui-dark-ts](github-skills-frontend-ui-dark-ts-scan.md) | microsoft | Yes | 1 | LOW |
+| 337 | [fuzzing-obstacles](plugins-testing-handbook-skills-skills-fuzzing-obstacles-scan.md) | trailofbits | Yes | 1 | LOW |
+| 338 | [gaussian-process-mlp-hybrid](ai-%E7%BC%96%E7%A0%81-prompt-skill-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 339 | [gitclaw](gitclaw-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 340 | [github-action-gen](github-action-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 341 | [github-issue-creator](github-skills-github-issue-creator-scan.md) | microsoft | Yes | 1 | LOW |
+| 342 | [githunt](githunt-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 343 | [gitlab-cli-skills](gitlab-cli-skills-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 344 | [gitlab-manager](gitlab-manager-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 345 | [google-calendar](google-calendar-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 346 | [guidelines-advisor](plugins-building-secure-contracts-skills-guidelines-advisor-scan.md) | trailofbits | Yes | 1 | LOW |
+| 347 | [habitica](habitica-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 348 | [hackernews](hacker-news-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 349 | [harness-writing](plugins-testing-handbook-skills-skills-harness-writing-scan.md) | trailofbits | Yes | 1 | LOW |
+| 350 | [health-tracker](healthcheck-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 351 | [hosted-agents-v2-py](github-skills-hosted-agents-v2-py-scan.md) | microsoft | Yes | 1 | LOW |
+| 352 | [hugging-face-cli](skills-hugging-face-cli-scan.md) | huggingface | Yes | 1 | LOW |
+| 353 | [hugging-face-trackio](skills-hugging-face-trackio-scan.md) | huggingface | Yes | 1 | LOW |
+| 354 | [humanize](humanize-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 355 | [hybrid-memory](hybrid-memory-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 356 | [insula-memory](insula-memory-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 357 | [intodns](intodns-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 358 | [json-canvas](skills-json-canvas-scan.md) | kepano | Yes | 1 | LOW |
+| 359 | [juicebox-v5](juicy-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 360 | [landing-gen](landing-page-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 361 | [language-learning](language-learning-tutor-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 362 | [lighthouse-fixer](lighthouse-score-fixer-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 363 | [lightning](lightning-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 364 | [linkedin](linkedin-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 365 | [lobster](lobster-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 366 | [local-pandoc](md-to-office-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 367 | [m365-agents-dotnet](github-skills-m365-agents-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
+| 368 | [m365-agents-py](github-skills-m365-agents-py-scan.md) | microsoft | Yes | 1 | LOW |
+| 369 | [mcp-builder](github-skills-mcp-builder-scan.md) | microsoft | Yes | 1 | LOW |
+| 370 | [mcps](mcps-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 371 | [memory-setup](memory-setup-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 372 | [mermaid-diagrams](mermaid-diagrams-scan.md) | skills.sh | Yes | 1 | LOW |
+| 373 | [microsoft-azure-webjobs-extensions-authentication-events-dotnet](github-skills-microsoft-azure-webjobs-extensions-authentication-events-dotnet-scan.md) | microsoft | Yes | 1 | LOW |
+| 374 | [molt-identity](molt-identity-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 375 | [nano-banana-pro](nano-banana-pro-image-generation-%26-editing-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 376 | [nano-pdf](nano-pdf-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 377 | [next-best-practices](next-best-practices-scan.md) | skills.sh | Yes | 1 | LOW |
+| 378 | [notion](notion-api-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 379 | [notion](notion-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 380 | [npkill](npkill-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 381 | [nuxt](nuxt-scan.md) | skills.sh | Yes | 1 | LOW |
+| 382 | [obsidian-bases](skills-obsidian-bases-scan.md) | kepano | Yes | 1 | LOW |
+| 383 | [obsidian-markdown](skills-obsidian-markdown-scan.md) | kepano | Yes | 1 | LOW |
+| 384 | [obsidian-sync](obsidian-sync-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 385 | [onboarding-cro](onboarding-cro-scan.md) | skills.sh | Yes | 1 | LOW |
+| 386 | [openclaw](comprehensive-skill-for-installing%2C-configuring%2C-and-managing-the-openclaw-ecosystem-gateway%2C-channels%2C-models%2C-automation%2C-nodes%2C-and-deployment-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 387 | [openclaw-checkpoint](openclaw-checkpoint-personal-ai-assistant-backup-%26-recovery-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 388 | [openocean](openocean-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 389 | [openpet](openpet-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 390 | [ossfuzz](plugins-testing-handbook-skills-skills-ossfuzz-scan.md) | trailofbits | Yes | 1 | LOW |
+| 391 | [paid-ads](paid-ads-scan.md) | skills.sh | Yes | 1 | LOW |
+| 392 | [para-second-brain](para-second-brain-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 393 | [payment](payment-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 394 | [paywall-upgrade-cro](paywall-upgrade-cro-scan.md) | skills.sh | Yes | 1 | LOW |
+| 395 | [pdd](pdd-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 396 | [perf-auditor](performance-auditor-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 397 | [podcast-generation](github-skills-podcast-generation-scan.md) | microsoft | Yes | 1 | LOW |
+| 398 | [polymarket](polymarket-trading-skill-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 399 | [popup-cro](popup-cro-scan.md) | skills.sh | Yes | 1 | LOW |
+| 400 | [property-based-testing](plugins-property-based-testing-skills-property-based-testing-scan.md) | trailofbits | Yes | 1 | LOW |
+| 401 | [pydantic-models-py](github-skills-pydantic-models-py-scan.md) | microsoft | Yes | 1 | LOW |
+| 402 | [qmd](qmd-external-knowledge-base-search-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 403 | [railway](railway-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 404 | [ralph-loop](ralph-loop-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 405 | [react-expert](react-expert-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 406 | [react-flow-node-ts](github-skills-react-flow-node-ts-scan.md) | microsoft | Yes | 1 | LOW |
+| 407 | [readwise-mcp](readwise-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 408 | [receiving-code-review](receiving-code-review-scan.md) | skills.sh | Yes | 1 | LOW |
+| 409 | [redis](redis-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 410 | [referral-program](referral-program-scan.md) | skills.sh | Yes | 1 | LOW |
+| 411 | [remotion-video-toolkit](remotion-video-toolkit-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 412 | [requesting-code-review](requesting-code-review-scan.md) | skills.sh | Yes | 1 | LOW |
+| 413 | [research-paper-writer](research-paper-writer-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 414 | [resume-builder](resume-builder-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 415 | [rssaurus-cli](rssaurus-agent-friendly-rss-feed-reader-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 416 | [ruzzy](plugins-testing-handbook-skills-skills-ruzzy-scan.md) | trailofbits | Yes | 1 | LOW |
+| 417 | [schema-markup](schema-markup-scan.md) | skills.sh | Yes | 1 | LOW |
+| 418 | [secure-workflow-guide](plugins-building-secure-contracts-skills-secure-workflow-guide-scan.md) | trailofbits | Yes | 1 | LOW |
+| 419 | [semgrep](plugins-testing-handbook-skills-skills-semgrep-scan.md) | trailofbits | Yes | 1 | LOW |
+| 420 | [sendclaw](sendclaw-email-without-human-permission-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 421 | [senior-devops](senior-devops-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 422 | [seo-audit](seo-audit-scan.md) | skills.sh | Yes | 1 | LOW |
+| 423 | [sharp-edges](plugins-sharp-edges-skills-sharp-edges-scan.md) | trailofbits | Yes | 1 | LOW |
+| 424 | [shorten](url-shortener-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 425 | [signup-flow-cro](signup-flow-cro-scan.md) | skills.sh | Yes | 1 | LOW |
+| 426 | [skill-creator](github-skills-skill-creator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 427 | [solana-vulnerability-scanner](plugins-building-secure-contracts-skills-solana-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
+| 428 | [sora-2-nature-documentary](sora-2-%E8%87%AA%E7%84%B6%E7%BA%AA%E5%BD%95%E7%89%87-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 429 | [soulcraft](soulcraft-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 430 | [spec-to-code-compliance](plugins-spec-to-code-compliance-skills-spec-to-code-compliance-scan.md) | trailofbits | Yes | 1 | LOW |
+| 431 | [spring-boot-engineer](spring-boot-engineer-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 432 | [sql-assistant](sql-assistant-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 433 | [sql-pro](sql-pro-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 434 | [ssh-essentials](ssh-essentials-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 435 | [stealthy-auto-browse](stealthy-auto-browse-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 436 | [stock-market-pro](stock-market-pro-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 437 | [streme-launcher](streme-token-launcher-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 438 | [stripe-best-practices](skills-stripe-best-practices-scan.md) | stripe | Yes | 1 | LOW |
+| 439 | [subagent-driven-development](subagent-driven-development-scan.md) | skills.sh | Yes | 1 | LOW |
+| 440 | [substrate-vulnerability-scanner](plugins-building-secure-contracts-skills-substrate-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
+| 441 | [swift-expert](swift-expert-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 442 | [tailwind-design-system](tailwind-design-system-scan.md) | skills.sh | Yes | 1 | LOW |
+| 443 | [taskr](taskr-remote-task-tracking-for-ai-agents-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 444 | [telegram-auto-topic](telegram-auto-topic-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 445 | [telegram-pairing-customization](%E6%80%BB%E6%98%AF%E5%93%8D%E5%BA%94%E6%9C%AA%E9%85%8D%E5%AF%B9%E7%94%A8%E6%88%B7%E7%9A%84-start-%E6%B6%88%E6%81%AF-always-respond-to-start-messages-from-unpaired-users-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 446 | [template-skill](template-skill-scan.md) | skills.sh | Yes | 1 | LOW |
+| 447 | [tg](telegram-cli-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 448 | [token-integration-analyzer](plugins-building-secure-contracts-skills-token-integration-analyzer-scan.md) | trailofbits | Yes | 1 | LOW |
+| 449 | [ton-vulnerability-scanner](plugins-building-secure-contracts-skills-ton-vulnerability-scanner-scan.md) | trailofbits | Yes | 1 | LOW |
+| 450 | [trade-signal](trade-singal-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 451 | [transcribe](transcribe-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 452 | [turborepo](turborepo-scan.md) | skills.sh | Yes | 1 | LOW |
+| 453 | [twitter](twitter-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 454 | [undetectable-ai](undetectable-ai-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 455 | [using-git-worktrees](using-git-worktrees-scan.md) | skills.sh | Yes | 1 | LOW |
+| 456 | [using-superpowers](using-superpowers-scan.md) | skills.sh | Yes | 1 | LOW |
+| 457 | [variant-analysis](plugins-variant-analysis-skills-variant-analysis-scan.md) | trailofbits | Yes | 1 | LOW |
+| 458 | [vestaboard](vestaboard-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 459 | [vue](vue-scan.md) | skills.sh | Yes | 1 | LOW |
+| 460 | [watch-my-money](watch-my-money-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 461 | [web-perf](skills-web-perf-scan.md) | cloudflare | Yes | 1 | LOW |
+| 462 | [webapp-testing](skills-webapp-testing-scan.md) | anthropic | Yes | 1 | MEDIUM |
+| 463 | [webapp-testing](webapp-testing-scan.md) | anthropic | Yes | 1 | MEDIUM |
+| 464 | [webhook-gen](webhook-generator-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 465 | [wordpress-pro](wordpress-pro-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 466 | [writing-clearly-and-concisely](writing-clearly-and-concisely-scan.md) | skills.sh | Yes | 1 | LOW |
+| 467 | [writing-plans](writing-plans-scan.md) | skills.sh | Yes | 1 | LOW |
+| 468 | [x-trends](x-twitter-trends-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 469 | [yahoo-finance](yahoo-finance-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 470 | [youtube-channels](youtube-channels-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
+| 471 | [youtube-data](youtube-data-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
+| 472 | [youtube-full](youtube-full-scan.md) | clawhub.ai | Yes | 1 | MEDIUM |
+| 473 | [youtube-watcher](youtube-watcher-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 474 | [yt-video-downloader](youtube-video-downloader-scan.md) | clawhub.ai | Yes | 1 | LOW |
+| 475 | [zustand-store-ts](github-skills-zustand-store-ts-scan.md) | microsoft | Yes | 1 | LOW |
+| 476 | [agent-framework-azure-ai-py](github-skills-agent-framework-azure-ai-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 477 | [agent-md-refactor](agent-md-refactor-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 478 | [agenticflow-skills](agenticflow-skills-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 479 | [alby-bitcoin-payments-cli-skill](alby-bitcoin-payments-cli-skill-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 480 | [algorithmic-art](skills-algorithmic-art-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 481 | [analytics-tracking](analytics-tracking-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 482 | [artifacts-builder](artifacts-builder-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 483 | [audit-website](audit-website-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 484 | [azd-deployment](github-skills-azd-deployment-scan.md) | microsoft | Yes | 0 | SAFE |
+| 485 | [azure-ai-agents-persistent-dotnet](github-skills-azure-ai-agents-persistent-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 486 | [azure-ai-agents-persistent-java](github-skills-azure-ai-agents-persistent-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 487 | [azure-ai-anomalydetector-java](github-skills-azure-ai-anomalydetector-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 488 | [azure-ai-contentsafety-java](github-skills-azure-ai-contentsafety-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 489 | [azure-ai-contentsafety-py](github-skills-azure-ai-contentsafety-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 490 | [azure-ai-formrecognizer-java](github-skills-azure-ai-formrecognizer-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 491 | [azure-ai-ml-py](github-skills-azure-ai-ml-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 492 | [azure-ai-openai-dotnet](github-skills-azure-ai-openai-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 493 | [azure-ai-projects-dotnet](github-skills-azure-ai-projects-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 494 | [azure-ai-projects-java](github-skills-azure-ai-projects-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 495 | [azure-ai-projects-py](github-skills-azure-ai-projects-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 496 | [azure-ai-textanalytics-py](github-skills-azure-ai-textanalytics-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 497 | [azure-ai-transcription-py](github-skills-azure-ai-transcription-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 498 | [azure-ai-translation-document-py](github-skills-azure-ai-translation-document-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 499 | [azure-ai-translation-text-py](github-skills-azure-ai-translation-text-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 500 | [azure-ai-vision-imageanalysis-java](github-skills-azure-ai-vision-imageanalysis-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 501 | [azure-ai-vision-imageanalysis-py](github-skills-azure-ai-vision-imageanalysis-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 502 | [azure-ai-voicelive-java](github-skills-azure-ai-voicelive-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 503 | [azure-ai-voicelive-py](github-skills-azure-ai-voicelive-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 504 | [azure-appconfiguration-java](github-skills-azure-appconfiguration-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 505 | [azure-appconfiguration-py](github-skills-azure-appconfiguration-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 506 | [azure-communication-callingserver-java](github-skills-azure-communication-callingserver-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 507 | [azure-communication-common-java](github-skills-azure-communication-common-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 508 | [azure-communication-sms-java](github-skills-azure-communication-sms-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 509 | [azure-compute-batch-java](github-skills-azure-compute-batch-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 510 | [azure-cosmos-db-py](github-skills-azure-cosmos-db-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 511 | [azure-cosmos-java](github-skills-azure-cosmos-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 512 | [azure-cosmos-py](github-skills-azure-cosmos-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 513 | [azure-data-tables-java](github-skills-azure-data-tables-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 514 | [azure-data-tables-py](github-skills-azure-data-tables-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 515 | [azure-eventgrid-dotnet](github-skills-azure-eventgrid-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 516 | [azure-eventgrid-java](github-skills-azure-eventgrid-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 517 | [azure-eventgrid-py](github-skills-azure-eventgrid-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 518 | [azure-eventhub-dotnet](github-skills-azure-eventhub-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 519 | [azure-eventhub-py](github-skills-azure-eventhub-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 520 | [azure-identity-dotnet](github-skills-azure-identity-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 521 | [azure-identity-java](github-skills-azure-identity-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 522 | [azure-identity-py](github-skills-azure-identity-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 523 | [azure-keyvault-py](github-skills-azure-keyvault-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 524 | [azure-maps-search-dotnet](github-skills-azure-maps-search-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 525 | [azure-messaging-webpubsub-java](github-skills-azure-messaging-webpubsub-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 526 | [azure-messaging-webpubsubservice-py](github-skills-azure-messaging-webpubsubservice-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 527 | [azure-mgmt-apicenter-dotnet](github-skills-azure-mgmt-apicenter-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 528 | [azure-mgmt-apimanagement-py](github-skills-azure-mgmt-apimanagement-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 529 | [azure-mgmt-applicationinsights-dotnet](github-skills-azure-mgmt-applicationinsights-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 530 | [azure-mgmt-arizeaiobservabilityeval-dotnet](github-skills-azure-mgmt-arizeaiobservabilityeval-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 531 | [azure-mgmt-botservice-dotnet](github-skills-azure-mgmt-botservice-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 532 | [azure-mgmt-botservice-py](github-skills-azure-mgmt-botservice-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 533 | [azure-mgmt-fabric-dotnet](github-skills-azure-mgmt-fabric-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 534 | [azure-mgmt-mongodbatlas-dotnet](github-skills-azure-mgmt-mongodbatlas-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 535 | [azure-mgmt-weightsandbiases-dotnet](github-skills-azure-mgmt-weightsandbiases-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 536 | [azure-microsoft-playwright-testing-ts](github-skills-azure-microsoft-playwright-testing-ts-scan.md) | microsoft | Yes | 0 | SAFE |
+| 537 | [azure-monitor-ingestion-java](github-skills-azure-monitor-ingestion-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 538 | [azure-monitor-ingestion-py](github-skills-azure-monitor-ingestion-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 539 | [azure-monitor-opentelemetry-exporter-java](github-skills-azure-monitor-opentelemetry-exporter-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 540 | [azure-monitor-opentelemetry-py](github-skills-azure-monitor-opentelemetry-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 541 | [azure-monitor-query-java](github-skills-azure-monitor-query-java-scan.md) | microsoft | Yes | 0 | SAFE |
+| 542 | [azure-monitor-query-py](github-skills-azure-monitor-query-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 543 | [azure-postgres-ts](github-skills-azure-postgres-ts-scan.md) | microsoft | Yes | 0 | SAFE |
+| 544 | [azure-resource-manager-cosmosdb-dotnet](github-skills-azure-resource-manager-cosmosdb-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 545 | [azure-resource-manager-durabletask-dotnet](github-skills-azure-resource-manager-durabletask-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 546 | [azure-resource-manager-mysql-dotnet](github-skills-azure-resource-manager-mysql-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 547 | [azure-resource-manager-playwright-dotnet](github-skills-azure-resource-manager-playwright-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 548 | [azure-resource-manager-postgresql-dotnet](github-skills-azure-resource-manager-postgresql-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 549 | [azure-resource-manager-redis-dotnet](github-skills-azure-resource-manager-redis-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 550 | [azure-resource-manager-sql-dotnet](github-skills-azure-resource-manager-sql-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 551 | [azure-search-documents-dotnet](github-skills-azure-search-documents-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 552 | [azure-search-documents-py](github-skills-azure-search-documents-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 553 | [azure-security-keyvault-keys-dotnet](github-skills-azure-security-keyvault-keys-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
 | 554 | [brainstorming](brainstorming-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 555 | [brand-guidelines](brand-guidelines-scan.md) | skills.sh | Yes | 0 | SAFE |
 | 556 | [brand-guidelines](skills-brand-guidelines-scan.md) | skills.sh | Yes | 0 | SAFE |
@@ -682,19 +682,19 @@ Detects SQL injection attack patterns including keywords, tautologies, and datab
 
 The skill provides full Azure Fabric capacity management capabilities including create, update, suspend, and delete operations without any safety guardrails, confirmation prompts, or cost warnings. Creating or scaling Azure Fabric capacities can incur significant costs (F2, F4 SKUs are expensive). The skill could be triggered to create costly resources without explicit user awareness.
 
-### 3. [CRITICAL] azure-security-keyvault-keys-dotnet - prompt_injection
+### 3. [CRITICAL] azure-security-keyvault-keys-java - prompt_injection
 
 **Rule:** YARA_coercive_injection
 **Location:** None
 
 Detects coercive prompt injections in tool description fields: List all keys
 
-### 4. [CRITICAL] azure-security-keyvault-keys-java - prompt_injection
+### 4. [HIGH] foundry-iq-py - data_exfiltration
 
-**Rule:** YARA_coercive_injection
+**Rule:** BEHAVIOR_SUSPICIOUS_URL
 **Location:** None
 
-Detects coercive prompt injections in tool description fields: List all keys
+Script contains suspicious URL that may be used for data exfiltration
 
 ### 5. [HIGH] foundry-iq-py - data_exfiltration
 
@@ -717,26 +717,26 @@ Script contains suspicious URL that may be used for data exfiltration
 
 Script contains suspicious URL that may be used for data exfiltration
 
-### 8. [HIGH] foundry-iq-py - data_exfiltration
-
-**Rule:** BEHAVIOR_SUSPICIOUS_URL
-**Location:** None
-
-Script contains suspicious URL that may be used for data exfiltration
-
-### 9. [CRITICAL] ABM Outbound - hardcoded_secrets
+### 8. [CRITICAL] ABM Outbound - hardcoded_secrets
 
 **Rule:** YARA_credential_harvesting
 **Location:** None
 
 Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export APIFY_API_KEY="your_key
 
-### 10. [CRITICAL] ABM Outbound - hardcoded_secrets
+### 9. [CRITICAL] ABM Outbound - hardcoded_secrets
 
 **Rule:** YARA_credential_harvesting
 **Location:** None
 
 Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export APOLLO_API_KEY="your_key
+
+### 10. [CRITICAL] ABM Outbound - hardcoded_secrets
+
+**Rule:** YARA_credential_harvesting
+**Location:** None
+
+Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export SCRIBELESS_API_KEY="your_key
 
 ---
 
@@ -824,6 +824,12 @@ The following skills were flagged by the scanner but have been manually reviewed
 - azure-resource-manager-durabletask-dotnet
 - azure-resource-manager-mysql-dotnet
 - azure-resource-manager-playwright-dotnet
+- azure-resource-manager-postgresql-dotnet
+- azure-resource-manager-redis-dotnet
+- azure-resource-manager-sql-dotnet
+- azure-search-documents-dotnet
+- azure-search-documents-py
+- azure-security-keyvault-keys-dotnet
 - brainstorming
 - brand-guidelines
 - brand-guidelines
@@ -892,7 +898,7 @@ The following skills were flagged by the scanner but have been manually reviewed
 
 - **Scanner:** cisco-ai-skill-scanner
 - **Analyzers:** behavioral_analyzer, llm_analyzer, meta_analyzer, static_analyzer, trigger_analyzer
-- **Scan Date:** 2026-02-05T10:43:55.504449
+- **Scan Date:** 2026-02-05T16:16:50.542430
 
 ### Limitations
 
