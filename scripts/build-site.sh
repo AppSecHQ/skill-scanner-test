@@ -17,7 +17,16 @@ mkdir -p "$SCANS_DIR"
 cp "$RESULTS_DIR/summary-report.json" "$DATA_DIR/summary.json"
 
 # Copy individual scan files
-cp "$RESULTS_DIR"/*-scan.json "$SCANS_DIR/"
+cp "$RESULTS_DIR"/*-scan.json "$SCANS_DIR/" 2>/dev/null || true
+
+# Copy dotfile scans with renamed filenames (GitHub Pages doesn't serve dotfiles)
+for f in "$RESULTS_DIR"/.*-scan.json; do
+    [ -f "$f" ] || continue
+    base=$(basename "$f")
+    # Remove leading dot
+    newname="${base#.}"
+    cp "$f" "$SCANS_DIR/$newname"
+done
 
 # Verify repo_url coverage (populated upstream by generate_report.py)
 python3 -c "

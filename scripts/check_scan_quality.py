@@ -265,7 +265,7 @@ def main():
         result["file"] = str(json_file)
         result["skill_name"] = data.get("skill_name", "")
         result["skill_path"] = data.get("skill_path", "")
-        result["output_stem"] = json_file.stem.replace("-scan", "")
+        result["output_stem"] = json_file.stem.replace("-scan", "").lstrip(".")
         result["duration"] = data.get("scan_duration_seconds", 0)
         result["findings_count"] = data.get("findings_count", 0)
         classifications.append(result)

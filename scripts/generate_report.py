@@ -54,8 +54,9 @@ def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict
     source_lookup = _build_source_lookup(skills_dir)
     url_lookup = _build_url_lookup(skills_dir)
 
-    # Process each scan result
-    for json_file in sorted(results_dir.glob("*-scan.json")):
+    # Process each scan result (including dotfiles)
+    scan_files = set(results_dir.glob("*-scan.json")) | set(results_dir.glob(".*-scan.json"))
+    for json_file in sorted(scan_files):
         try:
             with open(json_file) as f:
                 result = json.load(f)
@@ -110,7 +111,7 @@ def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict
         skill_name = result.get("skill_name", "")
         source = _detect_source(short_path, skill_name, source_lookup)
         repo_url = _derive_repo_url(short_path, skill_name, source, url_lookup)
-        scan_md = json_file.with_suffix("").name + ".md"  # e.g. "clickup-skill-scan.md"
+        scan_md = json_file.with_suffix("").name.lstrip(".") + ".md"  # e.g. "clickup-skill-scan.md"
         findings["skills"].append({
             "name": skill_name,
             "path": short_path or None,

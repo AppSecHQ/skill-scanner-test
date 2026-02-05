@@ -621,7 +621,7 @@ def scan_adhoc_repos(
             if rel_path == Path("."):
                 skill_name = repo_to_dirname(repo)
             else:
-                skill_name = str(rel_path).replace("/", "-")
+                skill_name = str(rel_path).replace("/", "-").lstrip(".")
 
             result = run_scan(
                 skill_path=skill_path,
