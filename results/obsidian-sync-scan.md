@@ -1,33 +1,53 @@
 # Agent Skill Security Scan Report
 
 **Skill:** obsidian-sync
-**Directory:** ./skills/clawhub-obsidian-sync
-**Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-02T03:07:54.129102
+**Directory:** /workspace/skills/clawhub-obsidian-sync
+**Status:** [FAIL] ISSUES FOUND
+**Max Severity:** HIGH
+**Scan Duration:** 37.24s
+**Timestamp:** 2026-02-06T05:29:48.755680
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 3
 - **Critical:** 0
-- **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **High:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### HIGH Severity
 
-#### [LOW] Skill does not specify a license
+#### [HIGH] Hardcoded Authentication Token in Service Configuration
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The systemd service configuration example includes a hardcoded placeholder token 'your-token-here' in the Environment variable. Users may deploy this without changing it, or may store sensitive tokens in plaintext systemd files that could be exposed through misconfiguration or system compromise.
+
+### MEDIUM Severity
+
+#### [MEDIUM] Network Service Exposure Without Explicit Security Warnings
+
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
+
+**Description:** The skill instructs users to expose a local sync server via Tailscale without prominent warnings about authentication requirements, token security, or the risks of exposing file system access over the network. While authentication is mentioned, the ease of exposure via 'tailscale serve' may lead users to deploy without fully understanding security implications.
+
+#### [MEDIUM] Missing Script File Creates Tool Execution Risk
+
+**Severity:** MEDIUM
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
+**Location:** SKILL.md
+
+**Description:** The instructions reference 'Obsidian.py' but this file is not found in the skill package. Additionally, the systemd service and quick start examples reference 'sync-server.mjs' which is also not provided. Users cannot verify the actual behavior of the sync server code, creating a trust gap where malicious code could be substituted or the missing files could contain vulnerabilities.
 
 ## Analyzers
 

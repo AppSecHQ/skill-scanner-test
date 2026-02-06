@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** simmer
-**Directory:** ./skills/clawhub-simmer
+**Directory:** /workspace/skills/clawhub-simmer
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.68s
-**Timestamp:** 2026-02-03T16:12:47.519531
+**Scan Duration:** 0.28s
+**Timestamp:** 2026-02-06T07:37:11.061209
 
 ## Summary
 

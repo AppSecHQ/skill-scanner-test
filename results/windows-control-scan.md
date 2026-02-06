@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** windows-control
-**Directory:** ./skills/clawhub-windows-control
+**Directory:** /workspace/skills/clawhub-windows-control
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 4.70s
-**Timestamp:** 2026-02-02T03:06:01.638830
+**Scan Duration:** 4.71s
+**Timestamp:** 2026-02-06T07:53:38.929449
 
 ## Summary
 

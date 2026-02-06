@@ -1,10 +1,10 @@
 {
   "skill_name": "imap-smtp-email",
-  "skill_path": "./skills/clawhub-imap-smtp-email",
-  "skill_directory": "./skills/clawhub-imap-smtp-email",
-  "is_safe": true,
-  "max_severity": "MEDIUM",
-  "findings_count": 4,
+  "skill_path": "/workspace/skills/clawhub-imap-smtp-email",
+  "skill_directory": "/workspace/skills/clawhub-imap-smtp-email",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 11,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -81,10 +81,206 @@
         "threat_type": "TOOL CHAINING ABUSE",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_imap-smtp-email_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Email Credentials in Environment Configuration",
+      "description": "The skill requires users to store email credentials (IMAP_USER, IMAP_PASS, SMTP_USER, SMTP_PASS) in a .env file or environment variables. While this is a common pattern, it creates significant credential exposure risk if the .env file is accidentally committed to version control, shared, or accessed by other processes. The setup.sh script actively prompts users to enter credentials and writes them to disk in plaintext. Email credentials provide access to potentially sensitive communications and could be used for account takeover.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "IMAP_PASS=your_password\nSMTP_PASS=your_password\nThe setup.sh script prompts for and stores credentials in plaintext .env file",
+      "remediation": "1. Add .env to .gitignore and document this requirement prominently. 2. Recommend using app-specific passwords rather than account passwords (especially for Gmail). 3. Consider implementing credential encryption at rest. 4. Add warnings about credential security in documentation. 5. Implement secure credential storage using system keychains where possible.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This email management skill presents MODERATE to HIGH security risks primarily related to credential handling and data access. The skill's core functionality (IMAP/SMTP email access) is legitimate and matches its description, but it handles highly sensitive data (email credentials and content) with insufficient safeguards. Key concerns include: (1) plaintext credential storage in .env files, (2) broad unrestricted access to email content and attachments, (3) email sending capability without explicit confirmation requirements, (4) potential command injection vectors in script execution, and (5) ability to disable TLS certificate validation. The skill would benefit from additional security controls including mandatory user confirmation for sensitive operations, credential encryption, input validation, and more comprehensive security documentation. The missing 'allowed-tools' declaration and incomplete documentation also reduce transparency. Users should exercise caution and implement additional safeguards when using this skill with sensitive email accounts.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage, email access)",
+          "Command Injection (script parameter handling)",
+          "Social Engineering (missing security metadata)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_imap-smtp-email_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Unrestricted Email Access and Data Exposure",
+      "description": "The skill provides broad access to email content including the ability to read all emails, download attachments, and search across mailboxes without apparent restrictions. The 'check' command can retrieve recent emails, 'fetch' can access full email content by UID, and 'download' can extract all attachments. This creates risk of excessive data collection if the agent autonomously accesses more emails than necessary for the user's stated task. Email content often contains sensitive personal information, financial data, and confidential communications.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "node scripts/imap.js check [--limit 10]\nnode scripts/imap.js fetch <uid>\nnode scripts/imap.js download <uid>\nCommands allow unrestricted access to email content and attachments",
+      "remediation": "1. Implement explicit user confirmation before accessing email content. 2. Add logging of all email access operations. 3. Limit the scope of email searches to user-specified criteria only. 4. Warn users before downloading attachments. 5. Consider implementing access controls or rate limiting.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This email management skill presents MODERATE to HIGH security risks primarily related to credential handling and data access. The skill's core functionality (IMAP/SMTP email access) is legitimate and matches its description, but it handles highly sensitive data (email credentials and content) with insufficient safeguards. Key concerns include: (1) plaintext credential storage in .env files, (2) broad unrestricted access to email content and attachments, (3) email sending capability without explicit confirmation requirements, (4) potential command injection vectors in script execution, and (5) ability to disable TLS certificate validation. The skill would benefit from additional security controls including mandatory user confirmation for sensitive operations, credential encryption, input validation, and more comprehensive security documentation. The missing 'allowed-tools' declaration and incomplete documentation also reduce transparency. Users should exercise caution and implement additional safeguards when using this skill with sensitive email accounts.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage, email access)",
+          "Command Injection (script parameter handling)",
+          "Social Engineering (missing security metadata)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_imap-smtp-email_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Email Sending Capability Without Explicit Safeguards",
+      "description": "The skill includes SMTP functionality to send emails with attachments. While this is the stated purpose, there are no apparent safeguards mentioned to prevent misuse such as: sending emails without user confirmation, sending to unintended recipients, or being used for spam/phishing if the agent is compromised or manipulated. The SMTP configuration allows specifying a default sender address (SMTP_FROM) which could be used to impersonate the user.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "SMTP_HOST=smtp.gmail.com\nSMTP_PORT=587\nSMTP_USER=your@gmail.com\nSMTP_FROM=your@gmail.com\nSMTP commands allow sending email with attachments",
+      "remediation": "1. Require explicit user confirmation before sending any email. 2. Display full email details (to, from, subject, body, attachments) for user review before sending. 3. Implement rate limiting on email sending. 4. Log all sent emails. 5. Add warnings about email sending in the documentation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This email management skill presents MODERATE to HIGH security risks primarily related to credential handling and data access. The skill's core functionality (IMAP/SMTP email access) is legitimate and matches its description, but it handles highly sensitive data (email credentials and content) with insufficient safeguards. Key concerns include: (1) plaintext credential storage in .env files, (2) broad unrestricted access to email content and attachments, (3) email sending capability without explicit confirmation requirements, (4) potential command injection vectors in script execution, and (5) ability to disable TLS certificate validation. The skill would benefit from additional security controls including mandatory user confirmation for sensitive operations, credential encryption, input validation, and more comprehensive security documentation. The missing 'allowed-tools' declaration and incomplete documentation also reduce transparency. Users should exercise caution and implement additional safeguards when using this skill with sensitive email accounts.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage, email access)",
+          "Command Injection (script parameter handling)",
+          "Social Engineering (missing security metadata)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_imap-smtp-email_3",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk in Node.js Script Execution",
+      "description": "The skill executes Node.js scripts (imap.js, smtp.js) with command-line arguments that may include user-provided data such as email UIDs, mailbox names, search criteria, file paths, and email addresses. If these arguments are not properly sanitized in the Node.js scripts, they could be vulnerable to command injection attacks. The documentation shows examples like 'node scripts/imap.js search [options]' where options could include user-controlled strings.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "node scripts/imap.js fetch <uid>\nnode scripts/imap.js download <uid> [--dir <path>] [--file <filename>]\nnode scripts/smtp.js send --to <email> --subject <subject>\nUser-controlled parameters passed to shell commands",
+      "remediation": "1. Review imap.js and smtp.js for proper input validation and sanitization. 2. Use parameterized command execution rather than string concatenation. 3. Validate all user inputs against expected formats (email addresses, UIDs, paths). 4. Implement allowlists for mailbox names and file paths. 5. Escape or reject special shell characters in all user inputs.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This email management skill presents MODERATE to HIGH security risks primarily related to credential handling and data access. The skill's core functionality (IMAP/SMTP email access) is legitimate and matches its description, but it handles highly sensitive data (email credentials and content) with insufficient safeguards. Key concerns include: (1) plaintext credential storage in .env files, (2) broad unrestricted access to email content and attachments, (3) email sending capability without explicit confirmation requirements, (4) potential command injection vectors in script execution, and (5) ability to disable TLS certificate validation. The skill would benefit from additional security controls including mandatory user confirmation for sensitive operations, credential encryption, input validation, and more comprehensive security documentation. The missing 'allowed-tools' declaration and incomplete documentation also reduce transparency. Users should exercise caution and implement additional safeguards when using this skill with sensitive email accounts.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage, email access)",
+          "Command Injection (script parameter handling)",
+          "Social Engineering (missing security metadata)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_imap-smtp-email_4",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "TLS Certificate Validation Can Be Disabled",
+      "description": "The configuration allows setting IMAP_REJECT_UNAUTHORIZED=false and SMTP_REJECT_UNAUTHORIZED=false to bypass TLS certificate validation for self-signed certificates. While this may be necessary for some corporate environments, it exposes users to man-in-the-middle attacks where an attacker could intercept email credentials and content. The documentation mentions this option without adequate security warnings.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "IMAP_REJECT_UNAUTHORIZED=true     # Set to false for self-signed certs\nSMTP_REJECT_UNAUTHORIZED=true     # Set to false for self-signed certs",
+      "remediation": "1. Add prominent security warnings about disabling certificate validation. 2. Recommend this only for trusted internal networks. 3. Suggest obtaining proper certificates instead. 4. Default to true and require explicit opt-out. 5. Log warnings when certificate validation is disabled.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This email management skill presents MODERATE to HIGH security risks primarily related to credential handling and data access. The skill's core functionality (IMAP/SMTP email access) is legitimate and matches its description, but it handles highly sensitive data (email credentials and content) with insufficient safeguards. Key concerns include: (1) plaintext credential storage in .env files, (2) broad unrestricted access to email content and attachments, (3) email sending capability without explicit confirmation requirements, (4) potential command injection vectors in script execution, and (5) ability to disable TLS certificate validation. The skill would benefit from additional security controls including mandatory user confirmation for sensitive operations, credential encryption, input validation, and more comprehensive security documentation. The missing 'allowed-tools' declaration and incomplete documentation also reduce transparency. Users should exercise caution and implement additional safeguards when using this skill with sensitive email accounts.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage, email access)",
+          "Command Injection (script parameter handling)",
+          "Social Engineering (missing security metadata)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_imap-smtp-email_5",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Security Metadata and Tool Restrictions",
+      "description": "The skill manifest is missing important security metadata: no 'allowed-tools' specification, no 'license' field, and no 'compatibility' information. The absence of 'allowed-tools' means there are no declared restrictions on which agent tools can be used, making it harder for users to assess the skill's capabilities and potential risks. While this is optional per the spec, it represents a missed opportunity for transparency.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "allowed-tools: Not specified\nlicense: Not specified\ncompatibility: Not specified",
+      "remediation": "1. Add 'allowed-tools' field specifying [Bash, Read, Write] to document actual tool usage. 2. Add license information (e.g., MIT, Apache-2.0). 3. Add compatibility field noting requirements (Node.js, network access). 4. Consider adding version field for tracking. 5. Add author/maintainer information for accountability.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This email management skill presents MODERATE to HIGH security risks primarily related to credential handling and data access. The skill's core functionality (IMAP/SMTP email access) is legitimate and matches its description, but it handles highly sensitive data (email credentials and content) with insufficient safeguards. Key concerns include: (1) plaintext credential storage in .env files, (2) broad unrestricted access to email content and attachments, (3) email sending capability without explicit confirmation requirements, (4) potential command injection vectors in script execution, and (5) ability to disable TLS certificate validation. The skill would benefit from additional security controls including mandatory user confirmation for sensitive operations, credential encryption, input validation, and more comprehensive security documentation. The missing 'allowed-tools' declaration and incomplete documentation also reduce transparency. Users should exercise caution and implement additional safeguards when using this skill with sensitive email accounts.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage, email access)",
+          "Command Injection (script parameter handling)",
+          "Social Engineering (missing security metadata)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_imap-smtp-email_6",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Incomplete Documentation - Referenced Files Not Found",
+      "description": "The instruction body references three files (last.py, file.py, an.py) that were not found in the skill package. This appears to be corrupted or incomplete documentation, potentially from a truncated markdown section. While not a direct security threat, incomplete documentation could lead to user confusion or unexpected behavior if users attempt to use features that don't exist or are improperly documented.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Files referenced in instructions: last.py, file.py, an.py\nAll three files marked as 'not found'",
+      "remediation": "1. Remove references to non-existent files from documentation. 2. Complete the truncated documentation sections. 3. Verify all referenced files are included in the package. 4. Add validation to ensure documentation matches actual package contents.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This email management skill presents MODERATE to HIGH security risks primarily related to credential handling and data access. The skill's core functionality (IMAP/SMTP email access) is legitimate and matches its description, but it handles highly sensitive data (email credentials and content) with insufficient safeguards. Key concerns include: (1) plaintext credential storage in .env files, (2) broad unrestricted access to email content and attachments, (3) email sending capability without explicit confirmation requirements, (4) potential command injection vectors in script execution, and (5) ability to disable TLS certificate validation. The skill would benefit from additional security controls including mandatory user confirmation for sensitive operations, credential encryption, input validation, and more comprehensive security documentation. The missing 'allowed-tools' declaration and incomplete documentation also reduce transparency. Users should exercise caution and implement additional safeguards when using this skill with sensitive email accounts.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage, email access)",
+          "Command Injection (script parameter handling)",
+          "Social Engineering (missing security metadata)"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.41584062576293945,
-  "duration_ms": 415,
+  "scan_duration_seconds": 46.649163484573364,
+  "duration_ms": 46649,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -92,5 +288,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:58:42.204943"
+  "timestamp": "2026-02-06T03:20:55.935037"
 }

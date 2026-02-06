@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** youtube-transcript
-**Directory:** ./skills/clawhub-youtube-transcript
+**Directory:** /workspace/skills/clawhub-youtube-transcript
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 0.75s
-**Timestamp:** 2026-02-03T15:54:02.256881
+**Scan Duration:** 0.67s
+**Timestamp:** 2026-02-06T07:54:24.694200
 
 ## Summary
 

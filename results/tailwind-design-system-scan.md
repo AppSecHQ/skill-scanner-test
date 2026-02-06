@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** tailwind-design-system
-**Directory:** ./skills/wshobson-agents/plugins/frontend-mobile-development/skills/tailwind-design-system
+**Directory:** /workspace/skills/wshobson-agents/plugins/frontend-mobile-development/skills/tailwind-design-system
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-02T02:56:48.965809
+**Scan Duration:** 0.18s
+**Timestamp:** 2026-02-06T07:50:45.137826
 
 ## Summary
 

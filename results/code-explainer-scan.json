@@ -1,30 +1,80 @@
 {
   "skill_name": "code-explain",
-  "skill_path": "./skills/clawhub-ai-explain",
-  "skill_directory": "./skills/clawhub-ai-explain",
+  "skill_path": "/workspace/skills/clawhub-ai-explain",
+  "skill_directory": "/workspace/skills/clawhub-ai-explain",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_code-explain_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Skill Description - External NPM Package Masquerading as Agent Skill",
+      "description": "The skill presents itself as an agent skill package but actually instructs users to run an external NPM package ('npx ai-explain'). This is deceptive because: (1) Agent skills should contain local SKILL.md + scripts, not redirect to external executables, (2) The instructions show bash commands to run 'npx ai-explain' which downloads and executes code from npm registry, not from the skill package itself, (3) No actual implementation is provided in the skill package - it's just documentation for an external tool, (4) This creates a trust boundary violation where users think they're using a vetted local skill but are actually executing remote code.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "```bash\nnpx ai-explain ./src/utils/crypto.ts\n```\nAll usage examples show 'npx ai-explain' commands, which execute external npm packages, not local skill scripts.",
+      "remediation": "If this is meant to be an agent skill: (1) Include actual Python/Bash implementation scripts in the package, (2) Remove references to external 'npx' commands, (3) Provide self-contained functionality. If this is meant to be documentation for an external tool, it should not be packaged as an agent skill.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill package presents MEDIUM security concerns primarily due to deceptive packaging and undisclosed external dependencies. The skill masquerades as a local agent skill but actually directs users to execute an external npm package ('npx ai-explain'), creating a trust boundary violation. More critically, it requires users to provide OpenAI API keys and sends potentially sensitive code (including authentication, cryptography, and payment handling code based on examples) to external APIs without prominent disclosure. The skill lacks actual implementation files and references a missing stdin.py file. While no active malicious behavior is detected, the deceptive presentation and inadequate disclosure of external data transmission create meaningful security and privacy risks, especially for users analyzing proprietary or sensitive codebases.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Packaging)",
+          "Data Exfiltration Risk (Undisclosed External API Transmission)",
+          "Missing Implementation Files",
+          "Trust Boundary Violation"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill content clearly shows zero local implementation - only SKILL.md exists with instructions to run external npm commands. This is objectively deceptive packaging.",
+        "meta_exploitability": "Easy - users will unknowingly execute arbitrary npm packages thinking they're using a vetted local skill",
+        "meta_impact": "High - complete trust boundary violation, users execute unvetted remote code with their credentials and sensitive codebases"
+      }
+    },
+    {
+      "id": "llm_finding_code-explain_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Undisclosed External API Dependency and Credential Requirement",
+      "description": "The skill requires OPENAI_API_KEY environment variable but this critical requirement is only mentioned briefly at the end. This creates security risks: (1) Users may unknowingly expose their OpenAI API keys to an external npm package, (2) The skill description 'Explain complex code in plain English' does not disclose that it sends code to OpenAI's external servers, (3) Sensitive code (crypto.ts, jwt.ts, payment handling code shown in examples) would be transmitted to third-party APIs, (4) No disclosure about data handling, retention, or privacy implications of sending code to OpenAI.",
+      "file_path": "SKILL.md",
+      "line_number": 45,
+      "snippet": "Requirements section states: 'Node.js 18+. OPENAI_API_KEY required.' Usage examples show sensitive code files: './src/auth/jwt.ts', './src/utils/crypto.ts', context flag mentions 'This handles payments'",
+      "remediation": "(1) Prominently disclose in description that code is sent to OpenAI APIs, (2) Warn users about sending sensitive/proprietary code to external services, (3) Document data retention and privacy policies, (4) Consider implementing local analysis options that don't require external API calls, (5) Add explicit consent prompts before transmitting code externally.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill package presents MEDIUM security concerns primarily due to deceptive packaging and undisclosed external dependencies. The skill masquerades as a local agent skill but actually directs users to execute an external npm package ('npx ai-explain'), creating a trust boundary violation. More critically, it requires users to provide OpenAI API keys and sends potentially sensitive code (including authentication, cryptography, and payment handling code based on examples) to external APIs without prominent disclosure. The skill lacks actual implementation files and references a missing stdin.py file. While no active malicious behavior is detected, the deceptive presentation and inadequate disclosure of external data transmission create meaningful security and privacy risks, especially for users analyzing proprietary or sensitive codebases.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Packaging)",
+          "Data Exfiltration Risk (Undisclosed External API Transmission)",
+          "Missing Implementation Files",
+          "Trust Boundary Violation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The requirement for OPENAI_API_KEY definitively proves external API transmission. Examples explicitly show sensitive code types (auth, crypto, payments) being analyzed.",
+        "meta_exploitability": "Easy - users will paste sensitive code without realizing it's transmitted externally",
+        "meta_impact": "High - exposure of proprietary code, trade secrets, embedded credentials to third-party API"
       }
     }
   ],
-  "scan_duration_seconds": 0.5451920032501221,
-  "duration_ms": 545,
+  "scan_duration_seconds": 32.992427110672,
+  "duration_ms": 32992,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:16:34.022943"
+  "timestamp": "2026-02-05T22:35:26.864020"
 }

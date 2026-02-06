@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** technews
-**Directory:** ./skills/clawhub-technews
+**Directory:** /workspace/skills/clawhub-technews
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 2.70s
-**Timestamp:** 2026-02-03T16:13:57.353660
+**Scan Duration:** 2.52s
+**Timestamp:** 2026-02-06T07:51:01.769009
 
 ## Summary
 

@@ -1,46 +1,46 @@
 {
   "skill_name": "Meta Tags - SEO Tag Generator",
-  "skill_path": "./skills/clawhub-meta-tags",
-  "skill_directory": "./skills/clawhub-meta-tags",
+  "skill_path": "/workspace/skills/clawhub-meta-tags",
+  "skill_directory": "/workspace/skills/clawhub-meta-tags",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 2,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_INVALID_NAME_794e30271c",
-      "rule_id": "MANIFEST_INVALID_NAME",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill name does not follow agent skills naming rules",
-      "description": "Skill name 'Meta Tags - SEO Tag Generator' is invalid. Agent skills require lowercase letters, numbers, and hyphens only, with a maximum length of 64 characters.",
+      "id": "llm_finding_Meta Tags - SEO Tag Generator_0",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Unverified Third-Party Package Installation",
+      "description": "The skill instructs installation of an npm package '@lxgicstudios/meta-tags' from a third-party source without any verification, version pinning, or security validation. This creates supply chain risk as the package could be compromised, contain malicious code, or be subject to typosquatting attacks. The skill provides no provenance information, security audit details, or package integrity verification.",
       "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Rename the skill to match `[a-z0-9-]{1,64}` (e.g., 'pdf-processing')",
-      "analyzer": "static",
+      "line_number": 7,
+      "snippet": "```bash\nnpm install -g @lxgicstudios/meta-tags\n```\nand\n```bash\nnpx @lxgicstudios/meta-tags -t \"Page Title\" -d \"Description\" -u \"https://example.com\"\n```",
+      "remediation": "1. Specify exact package version (e.g., @lxgicstudios/meta-tags@1.2.3) instead of unpinned installation. 2. Provide package verification instructions (npm audit, checksum validation). 3. Include provenance information (npm registry stats, GitHub stars, maintainer info). 4. Warn users to review package contents before installation. 5. Consider providing alternative verification methods or suggesting users inspect the package source code first.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is a wrapper for an external npm package that generates SEO meta tags. The primary security concern is the unverified third-party package installation without version pinning or security validation, creating supply chain risk. The skill itself contains no malicious code, prompt injection attempts, or data exfiltration patterns. However, it lacks important metadata (license, compatibility, allowed-tools) and provides no guidance on error handling or resource limits. The skill appears legitimate in purpose (SEO meta tag generation) but requires users to trust an external package without verification mechanisms. Overall risk is MODERATE due to supply chain concerns, but there are no indicators of intentionally malicious behavior.",
+        "primary_threats": [
+          "Supply Chain Risk (unverified package installation)",
+          "Missing Security Metadata",
+          "Lack of Error Handling Guidance"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified supply chain risk. The skill is a wrapper around an external npm package with no verification mechanism. This is a legitimate security concern for any skill that instructs users to install third-party code.",
+        "meta_exploitability": "Medium - Requires attacker to compromise the npm package or perform typosquatting attack",
+        "meta_impact": "High - If package is compromised, arbitrary code execution on user's system with npm install privileges"
       }
     }
   ],
-  "scan_duration_seconds": 0.3605353832244873,
-  "duration_ms": 360,
+  "scan_duration_seconds": 24.781047344207764,
+  "duration_ms": 24781,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -48,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:08:16.169985"
+  "timestamp": "2026-02-06T04:35:07.218199"
 }

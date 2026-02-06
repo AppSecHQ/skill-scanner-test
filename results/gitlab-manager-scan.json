@@ -1,30 +1,82 @@
 {
   "skill_name": "gitlab-manager",
-  "skill_path": "./skills/clawhub-gitlab-manager",
-  "skill_directory": "./skills/clawhub-gitlab-manager",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-gitlab-manager",
+  "skill_directory": "/workspace/skills/clawhub-gitlab-manager",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_gitlab-manager_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Overly Permissive API Token Requirement",
+      "description": "The skill requires a GitLab Personal Access Token with full 'api' scope, which grants extensive permissions including: read/write access to all repositories, ability to create/delete projects, modify user settings, access confidential issues, and manage group memberships. This violates the principle of least privilege. If the token is compromised through the missing script or other means, an attacker gains full control over the user's GitLab account. The skill's stated functionality (create repos, list MRs, comment, create issues) could operate with more restricted scopes like 'read_api' + 'write_repository'.",
+      "file_path": "SKILL.md",
+      "line_number": 7,
+      "snippet": "- **GITLAB_TOKEN**: A Personal Access Token with `api` scope must be set in the environment.",
+      "remediation": "(1) Use minimal required scopes: 'read_api' for listing, 'write_repository' for comments/issues, 'api' only if absolutely necessary, (2) Document exactly why full 'api' scope is needed, (3) Implement scope validation in the script, (4) Consider using project-specific access tokens instead of personal tokens, (5) Add warnings about token permissions in documentation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This GitLab Manager skill presents MULTIPLE HIGH-SEVERITY security risks that require immediate attention before deployment. The most critical issue is the MISSING SCRIPT FILE (scripts/gitlab_api.js) - the entire skill depends on a Node.js script that is not included in the package, making security verification impossible and creating a supply chain attack vector. The skill also requires an overly permissive API token (full 'api' scope) when more restricted permissions would suffice, violating least privilege principles. Additional concerns include potential command injection risks from unvalidated user input, insecure credential handling via environment variables, and missing security metadata. The skill cannot be considered safe for use until the actual script is provided for review and the token permissions are scoped down. The missing script is particularly concerning as it would have full access to the user's GitLab account via the API token.",
+        "primary_threats": [
+          "Missing critical script file (supply chain risk)",
+          "Overly permissive API token requirements",
+          "Potential command injection in script invocation",
+          "Insecure credential handling via environment variables",
+          "Missing security metadata and documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The script's actual operations (verified in gitlab_api.js) only use standard GitLab API endpoints for repo creation, MR listing, commenting, and issue creation. These do not require full 'api' scope. This is a clear violation of least privilege principle.",
+        "meta_exploitability": "Medium - Requires user to create overly permissive token, but if compromised grants full GitLab account access",
+        "meta_impact": "High - Full GitLab account compromise if token is leaked or stolen"
+      }
+    },
+    {
+      "id": "llm_finding_gitlab-manager_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment Variable Credential Exposure Risk",
+      "description": "The skill requires GITLAB_TOKEN to be set as an environment variable, which creates multiple security risks: (1) Environment variables are visible to all processes run by the user, (2) They may be logged in shell history or process listings, (3) Child processes inherit them automatically, (4) They persist across commands in the same session. If the agent or any spawned process is compromised, the token is immediately accessible. The examples show the token being passed inline (GITLAB_TOKEN=...), which is particularly dangerous as it may appear in shell history files.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "GITLAB_TOKEN=... ./scripts/gitlab_api.js create_repo \"new-tool\" \"A cool new tool\" \"private\"\nGITLAB_TOKEN=... ./scripts/gitlab_api.js list_mrs \"jorgermp/my-tool\" \"opened\"",
+      "remediation": "(1) Use a secure credential store (system keychain, encrypted config file), (2) Implement token rotation and expiration, (3) Never show tokens in examples - use placeholder text, (4) Add warnings about not storing tokens in shell history, (5) Consider using GitLab's OAuth flow instead of personal tokens, (6) Implement token validation before use.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This GitLab Manager skill presents MULTIPLE HIGH-SEVERITY security risks that require immediate attention before deployment. The most critical issue is the MISSING SCRIPT FILE (scripts/gitlab_api.js) - the entire skill depends on a Node.js script that is not included in the package, making security verification impossible and creating a supply chain attack vector. The skill also requires an overly permissive API token (full 'api' scope) when more restricted permissions would suffice, violating least privilege principles. Additional concerns include potential command injection risks from unvalidated user input, insecure credential handling via environment variables, and missing security metadata. The skill cannot be considered safe for use until the actual script is provided for review and the token permissions are scoped down. The missing script is particularly concerning as it would have full access to the user's GitLab account via the API token.",
+        "primary_threats": [
+          "Missing critical script file (supply chain risk)",
+          "Overly permissive API token requirements",
+          "Potential command injection in script invocation",
+          "Insecure credential handling via environment variables",
+          "Missing security metadata and documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The documentation explicitly shows insecure credential handling patterns that will result in tokens being stored in shell history. This is a well-known security anti-pattern.",
+        "meta_exploitability": "Medium - Requires access to user's shell history or process listing, but this is common in shared environments",
+        "meta_impact": "High - Token exposure leads to GitLab account compromise"
       }
     }
   ],
-  "scan_duration_seconds": 0.4145033359527588,
-  "duration_ms": 414,
+  "scan_duration_seconds": 45.14042806625366,
+  "duration_ms": 45140,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +84,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T03:07:47.271694"
+  "timestamp": "2026-02-06T02:24:05.589437"
 }

@@ -1,82 +1,53 @@
 # Agent Skill Security Scan Report
 
 **Skill:** home-assistant
-**Directory:** ./skills/clawhub-home-assistant
+**Directory:** /workspace/skills/clawhub-home-assistant
 **Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T15:55:05.237992
+**Max Severity:** HIGH
+**Scan Duration:** 35.49s
+**Timestamp:** 2026-02-06T03:02:36.174070
 
 ## Summary
 
-- **Total Findings:** 6
-- **Critical:** 2
-- **High:** 0
-- **Medium:** 3
-- **Low:** 1
+- **Total Findings:** 3
+- **Critical:** 0
+- **High:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
+### HIGH Severity
 
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
+#### [HIGH] Hardcoded Credential Storage in User Home Directory
 
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:21
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
 
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export HA_TOKEN="your-long-lived-access-token
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/ha.sh:82
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: <script_name>
+**Description:** The skill instructs users to store Home Assistant credentials (long-lived access tokens) in plaintext configuration files at ~/.config/home-assistant/config.json or as environment variables. Long-lived access tokens provide full API access to Home Assistant, which controls physical smart home devices. Storing these in plaintext creates a significant credential exposure risk if the user's system is compromised.
 
 ### MEDIUM Severity
 
-#### [MEDIUM] TRANSITIVE TRUST ABUSE detected by YARA
+#### [MEDIUM] Command Injection Risk in Shell Script
 
 **Severity:** MEDIUM
-**Category:** transitive_trust_abuse
-**Rule ID:** YARA_transitive_trust_abuse
-**Location:** SKILL.md:61
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
+**Location:** scripts/ha.sh
 
-**Description:** Detects skills that delegate trust to untrusted external content: Run Scripts
+**Description:** The bash script ha.sh uses user-provided entity_id values directly in curl commands and string interpolation without proper validation or sanitization. While the script uses proper quoting in most places, the entity_id is used in URL construction and JSON payloads where special characters could potentially cause issues. An attacker who can control entity_id input could potentially inject malicious commands or manipulate API calls.
 
-#### [MEDIUM] TRANSITIVE TRUST ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** transitive_trust_abuse
-**Rule ID:** YARA_transitive_trust_abuse
-**Location:** scripts/ha.sh:81
-
-**Description:** Detects skills that delegate trust to untrusted external content: Run script
-
-#### [MEDIUM] TRANSITIVE TRUST ABUSE detected by YARA
+#### [MEDIUM] Unrestricted Network Access Without Tool Declaration
 
 **Severity:** MEDIUM
-**Category:** transitive_trust_abuse
-**Rule ID:** YARA_transitive_trust_abuse
-**Location:** scripts/ha.sh:154
-
-**Description:** Detects skills that delegate trust to untrusted external content: Run script
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill makes extensive network calls to external Home Assistant instances via curl but does not declare any allowed-tools restrictions in the manifest. While the skill's purpose legitimately requires network access, the absence of tool declarations means there are no documented restrictions on what the skill can do. The skill could potentially be modified to make unauthorized network calls without detection.
 
 ## Analyzers
 

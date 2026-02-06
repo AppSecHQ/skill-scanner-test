@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** browser-use
-**Directory:** ./skills/browser-use-browser-use/skills/browser-use
+**Directory:** /workspace/skills/browser-use-browser-use/skills/browser-use
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 43.57s
-**Timestamp:** 2026-02-01T09:42:52.124662
+**Scan Duration:** 44.76s
+**Timestamp:** 2026-02-05T21:02:27.978021
 
 ## Summary
 
@@ -20,43 +20,43 @@
 
 ### HIGH Severity
 
-#### [HIGH] Unrestricted Browser Automation with External Command Execution
+#### [HIGH] Arbitrary Command Execution via Bash Tool with Unvalidated User Input
 
 **Severity:** HIGH
-**Category:** unauthorized_tool_use
-**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
-**Location:** SKILL.md
-
-**Description:** The skill grants unrestricted browser automation capabilities through the browser-use CLI tool, which can navigate to arbitrary URLs, execute JavaScript, interact with web pages, and access user's authenticated browser sessions. The allowed-tools restriction 'Bash(browser-use:*)' permits execution of any browser-use command without validation of target URLs or actions. This enables potential data exfiltration, credential theft via phishing sites, and unauthorized actions on authenticated web services.
-
-#### [HIGH] Authenticated Session Access and Credential Exposure Risk
-
-**Severity:** HIGH
-**Category:** data_exfiltration
-**Rule ID:** LLM_DATA_EXFILTRATION
-**Location:** SKILL.md
-
-**Description:** The 'real' browser mode explicitly accesses the user's Chrome browser with all cookies, extensions, and logged-in sessions. This provides the skill with access to authenticated sessions across all websites where the user is logged in (email, banking, social media, etc.). Combined with screenshot and state extraction capabilities, this creates a direct path for credential theft and session hijacking.
-
-### MEDIUM Severity
-
-#### [MEDIUM] Data Exfiltration via Screenshot and State Commands
-
-**Severity:** MEDIUM
-**Category:** data_exfiltration
-**Rule ID:** LLM_DATA_EXFILTRATION
-**Location:** SKILL.md
-
-**Description:** The skill can extract page content through 'browser-use state' (returns all page elements and text) and 'browser-use screenshot' (captures visual content as base64). When combined with navigation to arbitrary URLs and form interaction capabilities, this enables systematic data harvesting from any accessible web page, including sensitive information displayed in authenticated sessions.
-
-#### [MEDIUM] Arbitrary Form Submission and Web Interaction Without Validation
-
-**Severity:** MEDIUM
 **Category:** command_injection
 **Rule ID:** LLM_COMMAND_INJECTION
 **Location:** SKILL.md
 
-**Description:** The skill can interact with any web form through click, type, input, and select commands without validation of target sites or data being submitted. This enables unauthorized actions on behalf of the user including form submissions, button clicks, and data entry on any website. Combined with authenticated session access, this could perform unauthorized transactions, posts, or account modifications.
+**Description:** The skill uses 'allowed-tools: Bash(browser-use:*)' which permits execution of arbitrary bash commands with the 'browser-use' prefix. The instructions demonstrate passing user-controlled URLs, text input, and file paths directly to shell commands without any validation or sanitization. This creates command injection vulnerabilities where malicious input could escape the browser-use context and execute arbitrary system commands.
+
+#### [HIGH] Unrestricted Network Access and Data Exfiltration Risk
+
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
+
+**Description:** The skill enables arbitrary web navigation and interaction without any restrictions on target domains or data handling. The 'browser-use --browser real' mode explicitly accesses the user's actual Chrome browser with all logged-in sessions, cookies, and credentials. Combined with screenshot and state extraction capabilities, this creates significant data exfiltration risks. An attacker could navigate to credential-harvesting sites, extract session tokens, or capture sensitive information from authenticated sessions.
+
+### MEDIUM Severity
+
+#### [MEDIUM] Resource Exhaustion via Persistent Browser Sessions
+
+**Severity:** MEDIUM
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
+**Location:** SKILL.md
+
+**Description:** The skill maintains persistent browser sessions across commands without documented timeout, session limits, or resource cleanup mechanisms. The instructions emphasize that 'Browser stays open between commands' which could lead to resource exhaustion through accumulated browser instances, memory leaks, or unbounded session growth. No cleanup or session management commands are documented.
+
+#### [MEDIUM] Incomplete Security Metadata and Missing Risk Warnings
+
+**Severity:** MEDIUM
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
+**Location:** SKILL.md
+
+**Description:** The skill manifest lacks critical security metadata including license information and compatibility specifications. More importantly, the instructions do not include any security warnings about the significant risks of browser automation, credential exposure in 'real' browser mode, or command injection vulnerabilities. Users are not informed about the security implications of granting this skill access to their authenticated browser sessions.
 
 ## Analyzers
 

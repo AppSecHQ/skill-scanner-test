@@ -1,134 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** multi-llm
-**Directory:** ./skills/clawhub-mlti-llm-fallback
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.41s
-**Timestamp:** 2026-02-03T16:20:00.348684
+**Directory:** /workspace/skills/clawhub-mlti-llm-fallback
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 29.87s
+**Timestamp:** 2026-02-06T04:58:02.982759
 
 ## Summary
 
-- **Total Findings:** 12
-- **Critical:** 11
+- **Total Findings:** 2
+- **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
+### MEDIUM Severity
 
-#### [CRITICAL] INJECTION ATTACK detected by YARA
+#### [MEDIUM] Command Injection Risk via Unvalidated User Input in Model Selection
 
-**Severity:** CRITICAL
+**Severity:** MEDIUM
 **Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/fallback-demo.sh:8
+**Rule ID:** LLM_COMMAND_INJECTION
+**Location:** scripts/select-model.sh
 
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0;31m
+**Description:** The scripts use user input directly in shell commands and curl requests without proper validation or sanitization. The user-provided task description is passed to grep patterns and used in API calls, which could allow command injection if malicious input contains shell metacharacters or escape sequences.
 
-#### [CRITICAL] INJECTION ATTACK detected by YARA
+#### [MEDIUM] Potential Resource Exhaustion via Unbounded Model Fallback Attempts
 
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/fallback-demo.sh:9
+**Severity:** MEDIUM
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
+**Location:** scripts/select-model.sh
 
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0;32m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/fallback-demo.sh:10
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[1;33m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/fallback-demo.sh:11
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0;34m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/fallback-demo.sh:12
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0;36m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/fallback-demo.sh:13
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/select-model.sh:10
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0;32m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/select-model.sh:11
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[1;33m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/select-model.sh:12
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0;36m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/select-model.sh:13
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0;31m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/select-model.sh:14
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0m
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The fallback mechanism attempts multiple models sequentially without timeout limits or maximum retry bounds. If all models in the fallback chain are unavailable or slow to respond, this could cause extended delays or resource exhaustion. The scripts make multiple curl requests without overall timeout constraints.
 
 ## Analyzers
 

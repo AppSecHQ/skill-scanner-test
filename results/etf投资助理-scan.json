@@ -1,146 +1,113 @@
 {
   "skill_name": "etf-assistant",
-  "skill_path": "./skills/clawhub-etf-assistant",
-  "skill_directory": "./skills/clawhub-etf-assistant",
+  "skill_path": "/workspace/skills/clawhub-etf-assistant",
+  "skill_directory": "/workspace/skills/clawhub-etf-assistant",
   "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 7,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_etf-assistant_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Unvalidated External Network Calls to Yahoo Finance API",
+      "description": "The skill makes HTTP requests to Yahoo Finance API (query1.finance.yahoo.com) without any validation, error handling, or security controls. While Yahoo Finance is a legitimate service, the skill does not validate responses, implement rate limiting, or handle potential data exfiltration risks. The API calls include user-provided ETF codes that are directly interpolated into URLs without sanitization, creating potential for URL manipulation. Additionally, the skill processes and displays external data without validation, which could be exploited for indirect prompt injection if the API response contains malicious content.",
+      "file_path": "etf-assistant.sh",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "curl -s \"https://query1.finance.yahoo.com/v8/finance/chart/${code}.SS?interval=1d&range=1d\" | jq -r '.chart.result[0].meta | \"\u5f53\u524d\u4ef7\u683c: \\(.regularMarketPrice) CNY\\n\u6da8\u8dcc\u5e45: \\(.regularMarketChangePercent)%\"'",
+      "remediation": "1. Implement input validation for ETF codes (whitelist alphanumeric characters only). 2. Add response validation to ensure data conforms to expected schema. 3. Implement rate limiting to prevent API abuse. 4. Add error handling for network failures. 5. Consider caching responses to reduce external dependencies. 6. Sanitize all data received from external APIs before displaying to users.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This ETF investment assistant skill presents MODERATE security risks primarily related to external network dependencies and input handling. The skill makes unvalidated HTTP requests to Yahoo Finance API and processes external data without proper validation, creating risks for data integrity and potential indirect prompt injection. Additionally, user inputs are not properly sanitized before being used in shell commands and URLs, creating command injection risks. However, the skill does not appear to contain intentionally malicious code, hardcoded credentials, or data exfiltration to attacker-controlled servers. The primary concerns are defensive security practices around external API integration and input validation. The skill would benefit from input sanitization, response validation, and explicit tool declarations in the manifest.",
+        "primary_threats": [
+          "Unvalidated External Network Calls",
+          "Command Injection Risk",
+          "Transitive Trust in API Responses",
+          "Missing Input Validation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The skill makes external network calls with user input, but to a legitimate financial data API. No sensitive data is being sent out, only ETF codes for public market data queries.",
+        "meta_exploitability": "Low - Limited to querying different stock codes, no sensitive data exposure",
+        "meta_impact": "Low - Could query unintended stock codes, but no data exfiltration or system compromise"
       }
     },
     {
-      "id": "YARA_script_injection_d14c690d21",
-      "rule_id": "YARA_script_injection",
+      "id": "llm_finding_etf-assistant_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
       "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;31m",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk via Unsanitized User Input",
+      "description": "The skill accepts user input (ETF codes, search keywords, amounts) and directly interpolates them into shell commands and curl URLs without proper sanitization or validation. While the script uses some basic parameter handling, there is no input validation to prevent special characters or command injection attempts. For example, the 'search' command uses grep with user input, and the 'price' command interpolates codes directly into URLs. An attacker could potentially inject shell metacharacters to execute arbitrary commands.",
       "file_path": "etf-assistant.sh",
-      "line_number": 11,
-      "snippet": "BLUE='\\033[0;34m'",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_0f4e5f3718",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;32m",
-      "file_path": "etf-assistant.sh",
-      "line_number": 12,
-      "snippet": "NC='\\033[0m' # No Color",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_1e8d13fddc",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[1;33m",
-      "file_path": "etf-assistant.sh",
-      "line_number": 13,
-      "snippet": "",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_408d3cda44",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;34m",
-      "file_path": "etf-assistant.sh",
-      "line_number": 15,
-      "snippet": "ETF_LIST=\"510300:\u6caa\u6df1300ETF",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_408d3cda44",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0m",
-      "file_path": "etf-assistant.sh",
-      "line_number": 15,
-      "snippet": "ETF_LIST=\"510300:\u6caa\u6df1300ETF",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "TRIGGER_SHORT_741a803f",
-      "rule_id": "TRIGGER_DESCRIPTION_TOO_SHORT",
-      "category": "social_engineering",
-      "severity": "LOW",
-      "title": "Skill description is too short",
-      "description": "Description has only 3 words. Short descriptions may not provide enough context for the agent to determine when this skill should be used.",
-      "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Expand the description to at least 10-20 words explaining the skill's purpose, capabilities, and appropriate use cases.",
-      "analyzer": "trigger",
+      "snippet": "cmd_search() { local keyword=$1; echo \"$ETF_LIST\" | grep -i \"$keyword\"; } and curl -s \"https://query1.finance.yahoo.com/v8/finance/chart/${code}.SS?interval=1d&range=1d\"",
+      "remediation": "1. Implement strict input validation using regex patterns (e.g., ETF codes should match ^[0-9]{6}$). 2. Use parameter expansion with proper quoting. 3. Validate all numeric inputs (amounts, years) before use in calculations. 4. Implement a whitelist of allowed ETF codes from the ETF_LIST. 5. Escape or reject special characters in search keywords. 6. Use safer alternatives to grep with user input (e.g., case statements).",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This ETF investment assistant skill presents MODERATE security risks primarily related to external network dependencies and input handling. The skill makes unvalidated HTTP requests to Yahoo Finance API and processes external data without proper validation, creating risks for data integrity and potential indirect prompt injection. Additionally, user inputs are not properly sanitized before being used in shell commands and URLs, creating command injection risks. However, the skill does not appear to contain intentionally malicious code, hardcoded credentials, or data exfiltration to attacker-controlled servers. The primary concerns are defensive security practices around external API integration and input validation. The skill would benefit from input sanitization, response validation, and explicit tool declarations in the manifest.",
+        "primary_threats": [
+          "Unvalidated External Network Calls",
+          "Command Injection Risk",
+          "Transitive Trust in API Responses",
+          "Missing Input Validation"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "User input is passed to grep, but grep itself doesn't execute shell commands. The risk is limited to regex injection causing DoS or unexpected matches, not arbitrary command execution.",
+        "meta_exploitability": "Medium - Requires crafting special regex patterns, limited impact",
+        "meta_impact": "Low - Could cause unexpected search results or grep errors, but no command execution"
+      }
+    },
+    {
+      "id": "llm_finding_etf-assistant_2",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust in External API Responses",
+      "description": "The skill unconditionally trusts and processes data from Yahoo Finance API without validation. If the API is compromised or returns malicious content, the skill will process and display it to the user. The jq parsing and echo statements could potentially execute or display harmful content if the API response contains unexpected data structures or malicious payloads. This creates a transitive trust vulnerability where the skill delegates trust to an external, uncontrolled data source.",
+      "file_path": "etf-assistant.sh",
+      "line_number": null,
+      "snippet": "curl -s \"https://query1.finance.yahoo.com/v8/finance/chart/${code}.SS\" | jq -r '.chart.result[0].meta | ...' - No validation of response structure or content before processing",
+      "remediation": "1. Implement response validation to verify expected JSON schema. 2. Sanitize all fields extracted from API responses before display. 3. Add error handling for malformed or unexpected responses. 4. Implement content security policies for displayed data. 5. Consider using a more restrictive JSON parser with schema validation. 6. Add logging for suspicious API responses.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This ETF investment assistant skill presents MODERATE security risks primarily related to external network dependencies and input handling. The skill makes unvalidated HTTP requests to Yahoo Finance API and processes external data without proper validation, creating risks for data integrity and potential indirect prompt injection. Additionally, user inputs are not properly sanitized before being used in shell commands and URLs, creating command injection risks. However, the skill does not appear to contain intentionally malicious code, hardcoded credentials, or data exfiltration to attacker-controlled servers. The primary concerns are defensive security practices around external API integration and input validation. The skill would benefit from input sanitization, response validation, and explicit tool declarations in the manifest.",
+        "primary_threats": [
+          "Unvalidated External Network Calls",
+          "Command Injection Risk",
+          "Transitive Trust in API Responses",
+          "Missing Input Validation"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The skill does trust external data, but the impact is limited because the data is only displayed, not executed. The python3 JSON parsing provides some implicit validation.",
+        "meta_exploitability": "Low - Requires compromising Yahoo Finance API or MITM attack",
+        "meta_impact": "Low - Could display malformed data, but no code execution or data exfiltration"
       }
     }
   ],
-  "scan_duration_seconds": 0.3382556438446045,
-  "duration_ms": 338,
+  "scan_duration_seconds": 35.75366806983948,
+  "duration_ms": 35753,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -148,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:14:54.517170"
+  "timestamp": "2026-02-06T00:52:12.538411"
 }

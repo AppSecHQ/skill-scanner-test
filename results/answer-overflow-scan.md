@@ -1,44 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** answeroverflow
-**Directory:** ./skills/clawhub-answeroverflow
+**Directory:** /workspace/skills/clawhub-answeroverflow
 **Status:** [OK] SAFE
-**Max Severity:** MEDIUM
-**Scan Duration:** 0.73s
-**Timestamp:** 2026-02-03T16:00:06.169086
+**Max Severity:** SAFE
+**Scan Duration:** 15.59s
+**Timestamp:** 2026-02-05T19:25:06.748629
 
 ## Summary
 
-- **Total Findings:** 2
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 1
-- **Low:** 1
+- **Medium:** 0
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### MEDIUM Severity
-
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:7
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: Perfect
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

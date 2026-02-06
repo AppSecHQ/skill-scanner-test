@@ -1,30 +1,109 @@
 {
   "skill_name": "crypto-wallet",
-  "skill_path": "./skills/clawhub-crypto-wallet",
-  "skill_directory": "./skills/clawhub-crypto-wallet",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-crypto-wallet",
+  "skill_directory": "/workspace/skills/clawhub-crypto-wallet",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_crypto-wallet_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Missing Implementation Creates Critical Security Gap",
+      "description": "The skill claims to manage cryptocurrency wallets and send tokens across multiple blockchains, but contains NO implementation code whatsoever. This creates a critical security risk because: (1) The agent would need to improvise implementation, potentially creating insecure wallet handling code on-the-fly, (2) There is no secure key management implementation, (3) Transaction signing logic is absent, (4) No validation or safety checks exist in code. The skill promises 'Send tokens (with confirmation)' but provides no mechanism to safely handle private keys, sign transactions, or validate addresses. This is effectively a prompt that could lead the agent to generate dangerous cryptocurrency handling code without proper security controls.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Features list includes 'Send tokens (with confirmation)' and 'Check wallet balances' but no Python/Bash scripts exist to implement these security-critical operations. The skill would require the agent to generate wallet management code dynamically.",
+      "remediation": "Either: (1) Remove this skill entirely - cryptocurrency wallet management should not be handled by AI agents due to extreme security sensitivity, OR (2) Provide complete, audited implementation with: secure key storage (hardware wallet integration), transaction signing with multi-factor confirmation, address validation, rate limiting, and comprehensive error handling. Recommend option 1 - this use case is inappropriate for agent skills.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks and should NOT be used in its current form. The fundamental issue is that it claims to provide cryptocurrency wallet management capabilities (checking balances, sending tokens, viewing transactions across 6 blockchains) but contains ZERO implementation code. This creates a dangerous situation where: (1) Users might trust the skill with sensitive financial operations based on its professional presentation, (2) The agent would need to generate wallet management code on-the-fly without security review, (3) No secure key management, transaction signing, or validation logic exists, (4) The skill cannot deliver on its stated capabilities. Beyond the missing implementation, the use case itself (AI agent managing cryptocurrency wallets) is fundamentally inappropriate for agent skills due to the extreme security sensitivity of private key handling and irreversible financial transactions. RECOMMENDATION: Remove this skill entirely. If cryptocurrency integration is needed, it should be through secure, audited external services with hardware wallet integration, not agent-generated code.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure Risk (no secure key management)",
+          "Tool Exploitation (phantom capabilities without implementation)",
+          "Social Engineering (deceptive capability claims)",
+          "Availability Risk (undefined error handling for financial operations)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified the core issue: skill promises security-critical financial operations but provides no implementation. This is verified by checking the skill package - only SKILL.md exists, no scripts/ directory. The use case itself (AI-managed crypto wallets) is fundamentally inappropriate for agent skills.",
+        "meta_exploitability": "High - Users would trust the skill based on its description and attempt to use it for real financial operations, potentially leading the agent to generate insecure wallet code",
+        "meta_impact": "Critical - Financial loss from insecure transaction handling, private key exposure, or incorrect balance reporting. Cryptocurrency transactions are irreversible."
+      }
+    },
+    {
+      "id": "llm_finding_crypto-wallet_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Phantom Tool Declaration - No Implementation for Claimed Capabilities",
+      "description": "The skill declares it can perform security-critical operations (check balances, send tokens, view transaction history) across multiple blockchains but provides zero implementation. This is tool poisoning through omission - the skill's metadata claims capabilities that don't exist in code form. The agent would be forced to either: (1) Fail to execute the skill's stated purpose, or (2) Generate implementation code on-the-fly without security review. The 'requires: bins: [curl, jq]' suggests network operations but no scripts use these tools.",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "YAML declares 'requires: bins: [curl, jq]' implying network API calls, but no scripts exist. Instructions promise 'Send 0.1 ETH to 0x...' functionality with no implementation.",
+      "remediation": "Provide complete implementation scripts that match declared capabilities, or remove capability claims from the description. For cryptocurrency operations, implementation must include: API endpoint validation, rate limiting, transaction simulation/dry-run, and explicit user confirmation workflows.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks and should NOT be used in its current form. The fundamental issue is that it claims to provide cryptocurrency wallet management capabilities (checking balances, sending tokens, viewing transactions across 6 blockchains) but contains ZERO implementation code. This creates a dangerous situation where: (1) Users might trust the skill with sensitive financial operations based on its professional presentation, (2) The agent would need to generate wallet management code on-the-fly without security review, (3) No secure key management, transaction signing, or validation logic exists, (4) The skill cannot deliver on its stated capabilities. Beyond the missing implementation, the use case itself (AI agent managing cryptocurrency wallets) is fundamentally inappropriate for agent skills due to the extreme security sensitivity of private key handling and irreversible financial transactions. RECOMMENDATION: Remove this skill entirely. If cryptocurrency integration is needed, it should be through secure, audited external services with hardware wallet integration, not agent-generated code.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure Risk (no secure key management)",
+          "Tool Exploitation (phantom capabilities without implementation)",
+          "Social Engineering (deceptive capability claims)",
+          "Availability Risk (undefined error handling for financial operations)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified by examining skill package structure - no scripts/ directory exists. The 'requires: bins' declaration creates false expectations of implementation.",
+        "meta_exploitability": "Medium - Requires user to attempt using the skill, at which point the agent would need to improvise implementation",
+        "meta_impact": "High - Could lead to insecure blockchain interactions, failed transactions, or incorrect financial data"
+      }
+    },
+    {
+      "id": "llm_finding_crypto-wallet_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Deceptive Capability Claims - Cryptocurrency Operations Without Code",
+      "description": "The skill description and instructions create false expectations of a functional cryptocurrency wallet manager. Users would reasonably expect this skill to safely handle their crypto assets based on the detailed feature list (balance checking, sending tokens, transaction history, portfolio overview across 6 blockchains). However, the complete absence of implementation code means the skill cannot deliver on these promises. This is social engineering through misleading metadata - users might trust the skill with sensitive wallet operations based on its professional presentation, unaware that no vetted security code exists.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Description: 'Multi-chain cryptocurrency wallet management. Check balances, send tokens, view transaction history' but zero implementation files. Features section lists 6 specific capabilities with no code to execute them.",
+      "remediation": "Update description to accurately reflect that this is a template/placeholder, not a functional wallet manager. Add prominent warnings that cryptocurrency operations require security-audited implementation. Consider removing this skill entirely as the use case (AI agent managing crypto wallets) presents unacceptable security risks.",
+      "analyzer": "llm",
       "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks and should NOT be used in its current form. The fundamental issue is that it claims to provide cryptocurrency wallet management capabilities (checking balances, sending tokens, viewing transactions across 6 blockchains) but contains ZERO implementation code. This creates a dangerous situation where: (1) Users might trust the skill with sensitive financial operations based on its professional presentation, (2) The agent would need to generate wallet management code on-the-fly without security review, (3) No secure key management, transaction signing, or validation logic exists, (4) The skill cannot deliver on its stated capabilities. Beyond the missing implementation, the use case itself (AI agent managing cryptocurrency wallets) is fundamentally inappropriate for agent skills due to the extreme security sensitivity of private key handling and irreversible financial transactions. RECOMMENDATION: Remove this skill entirely. If cryptocurrency integration is needed, it should be through secure, audited external services with hardware wallet integration, not agent-generated code.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure Risk (no secure key management)",
+          "Tool Exploitation (phantom capabilities without implementation)",
+          "Social Engineering (deceptive capability claims)",
+          "Availability Risk (undefined error handling for financial operations)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
         "meta_reviewed": true
       }
     }
   ],
-  "scan_duration_seconds": 0.32744836807250977,
-  "duration_ms": 327,
+  "scan_duration_seconds": 46.006808280944824,
+  "duration_ms": 46006,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +111,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:00:24.521320"
+  "timestamp": "2026-02-05T23:36:38.839447"
 }

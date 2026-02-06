@@ -1,10 +1,10 @@
 {
   "skill_name": "kimi-integration",
-  "skill_path": "./skills/clawhub-kimi-integration",
-  "skill_directory": "./skills/clawhub-kimi-integration",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 9,
+  "skill_path": "/workspace/skills/clawhub-kimi-integration",
+  "skill_directory": "/workspace/skills/clawhub-kimi-integration",
+  "is_safe": true,
+  "max_severity": "LOW",
+  "findings_count": 2,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -19,172 +19,44 @@
       "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
       "analyzer": "static",
       "metadata": {
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Manifest clearly lacks these optional fields. This is informational only - not a security issue.",
+        "meta_exploitability": "None - informational only",
+        "meta_impact": "Minimal - reduces transparency but does not affect functionality"
       }
     },
     {
-      "id": "YARA_credential_harvesting_1d887315f0",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export MOONSHOT_API_KEY=\"sk-your-moonshot-key",
-      "file_path": "SKILL.md",
-      "line_number": 46,
-      "snippet": "export MOONSHOT_API_KEY=\"sk-your-moonshot-key-here\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
+      "id": "llm_finding_kimi-integration_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Referenced File: different.py",
+      "description": "The SKILL.md instructions reference a file 'different.py' that is not included in the skill package. This could indicate incomplete packaging, a documentation error, or potentially a missing malicious component. However, since the file is not present and cannot be analyzed, this represents a minor documentation inconsistency rather than an active threat.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Referenced file 'different.py' mentioned in instructions but not found in package",
+      "remediation": "Either include the referenced different.py file in the skill package, or remove the reference from the documentation if it's not needed. Ensure all referenced files are properly packaged with the skill.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_6d62d4f590",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export KIMICODE_API_KEY=\"sk-your-kimicode-key",
-      "file_path": "SKILL.md",
-      "line_number": 139,
-      "snippet": "export KIMICODE_API_KEY=\"sk-your-kimicode-key-here\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_9d836b3e8b",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;31m",
-      "file_path": "scripts/test_kimi_connection.sh",
-      "line_number": 7,
-      "snippet": "RED='\\033[0;31m'",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_360e07734f",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;32m",
-      "file_path": "scripts/test_kimi_connection.sh",
-      "line_number": 8,
-      "snippet": "GREEN='\\033[0;32m'",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_e1a9ffe4f6",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[1;33m",
-      "file_path": "scripts/test_kimi_connection.sh",
-      "line_number": 9,
-      "snippet": "YELLOW='\\033[1;33m'",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_16ec0431fe",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0m",
-      "file_path": "scripts/test_kimi_connection.sh",
-      "line_number": 10,
-      "snippet": "NC='\\033[0m' # No Color",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_714b8395ea",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export MOONSHOT_API_KEY",
-      "file_path": "scripts/test_kimi_connection.sh",
-      "line_number": 18,
-      "snippet": "echo \"   Set it with: export MOONSHOT_API_KEY='sk-...'\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_30dffae963",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export KIMICODE_API_KEY",
-      "file_path": "scripts/test_kimi_connection.sh",
-      "line_number": 46,
-      "snippet": "echo \"   Set it with: export KIMICODE_API_KEY='sk-...'\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is a legitimate configuration guide for integrating Kimi AI models into Clawdbot. The skill provides documentation and a connection testing script without any malicious behavior. The primary issues are minor documentation inconsistencies: a missing referenced file (different.py), and missing optional metadata fields. The test script (test_kimi_connection.sh) performs legitimate API connectivity tests using environment variables for credentials, which is the correct security practice. No prompt injection, data exfiltration, command injection, or other security threats were detected. The skill is SAFE for use, with only minor documentation improvements recommended.",
+        "primary_threats": [],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "File is explicitly listed in 'Referenced Files' section but not present in the skill package. This is a clear documentation inconsistency.",
+        "meta_exploitability": "None - documentation issue only",
+        "meta_impact": "Minimal - may cause confusion for users looking for the referenced file"
       }
     }
   ],
-  "scan_duration_seconds": 0.6091809272766113,
-  "duration_ms": 609,
+  "scan_duration_seconds": 19.495203256607056,
+  "duration_ms": 19495,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -192,5 +64,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:19:18.443623"
+  "timestamp": "2026-02-06T03:45:54.766970"
 }

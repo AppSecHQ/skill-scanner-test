@@ -1,44 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** mailgun
-**Directory:** ./skills/clawhub-mailgun
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.51s
-**Timestamp:** 2026-02-03T16:03:17.048060
+**Directory:** /workspace/skills/clawhub-mailgun
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 22.76s
+**Timestamp:** 2026-02-06T04:19:53.699686
 
 ## Summary
 
 - **Total Findings:** 2
-- **Critical:** 1
+- **Critical:** 0
 - **High:** 0
-- **Medium:** 0
+- **Medium:** 1
 - **Low:** 1
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
+### MEDIUM Severity
 
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
+#### [MEDIUM] Environment Variable Exposure Risk
 
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:10
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** scripts/send_email.sh
 
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export MAILGUN_API_KEY="key-xxxxx"      # Your Mailgun private API key
+**Description:** The skill requires sensitive credentials (MAILGUN_API_KEY) to be stored in environment variables and uses them in shell scripts. While environment variables are a common practice, the script directly passes these credentials to curl commands, which could expose them in process listings, shell history, or logs. The skill also encourages storing credentials in shell configuration files (~/.zshrc, ~/.bash_profile) which may have overly permissive file permissions.
 
 ### LOW Severity
 
-#### [LOW] Skill does not specify a license
+#### [LOW] No Timeout or Rate Limiting in API Calls
 
 **Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
+**Location:** scripts/send_email.sh
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The curl command in send_email.sh does not specify a timeout, which could cause the script to hang indefinitely if the Mailgun API is unresponsive. Additionally, there is no rate limiting logic to prevent rapid successive calls that could exhaust API quotas or trigger rate limits (100 emails/hour on free tier).
 
 ## Analyzers
 

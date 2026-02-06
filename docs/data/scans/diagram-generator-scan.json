@@ -1,10 +1,10 @@
 {
   "skill_name": "diagram-gen",
-  "skill_path": "./skills/clawhub-diagram-gen",
-  "skill_directory": "./skills/clawhub-diagram-gen",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-diagram-gen",
+  "skill_directory": "/workspace/skills/clawhub-diagram-gen",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 3,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -19,12 +19,84 @@
       "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
       "analyzer": "static",
       "metadata": {
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified by checking SKILL.md content - license is stated in body but missing from YAML frontmatter.",
+        "meta_exploitability": "N/A - metadata issue",
+        "meta_impact": "Low - informational, affects discoverability and automated license compliance checks"
+      }
+    },
+    {
+      "id": "llm_finding_diagram-gen_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Hardcoded External Dependency Requires API Key Without Disclosure",
+      "description": "The skill requires OPENAI_API_KEY environment variable but this is only mentioned in a requirements section, not prominently disclosed in the description or manifest. The skill will access and potentially transmit user code to OpenAI's API without explicit user consent in the main description. This constitutes unauthorized data exfiltration of potentially sensitive source code to a third-party service.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Requirements section states: 'Needs OPENAI_API_KEY environment variable' and 'Reads your source files to understand the structure'. The skill sends user code to OpenAI API but the description only says 'Generate Mermaid diagrams from your codebase' without disclosing external API usage.",
+      "remediation": "1. Add prominent disclosure in the description field that code will be sent to OpenAI API. 2. Require explicit user consent before transmitting code. 3. Add data handling policy explaining what data is sent externally. 4. Consider adding allowed-tools declaration and local-only processing option.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH security risks primarily due to undisclosed external data transmission. While the skill's stated purpose (generating Mermaid diagrams) is legitimate, it conceals that user source code will be sent to OpenAI's API, requiring an API key that's only mentioned in fine print. The description uses social engineering tactics ('Zero config', 'Just works') to obscure the actual requirements and data handling behavior. The skill lacks proper metadata declarations (allowed-tools, compatibility) and transparency about its external dependencies. Most concerning is the potential for sensitive source code and credentials to be transmitted to third-party services without explicit user consent or prominent disclosure. The skill requires significant transparency improvements and proper security controls before it can be considered safe for use with potentially sensitive codebases.",
+        "primary_threats": [
+          "Data Exfiltration to External API",
+          "Social Engineering via Deceptive Marketing",
+          "Missing Tool Restrictions",
+          "Undisclosed External Dependencies",
+          "Potential Credential Exposure"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code clearly shows user source files are read (collectFiles), truncated to 12KB, and sent to OpenAI API. This is verifiable in src/index.ts lines 18-32. The description does not prominently disclose this external transmission.",
+        "meta_exploitability": "Easy - automatic on skill execution",
+        "meta_impact": "High - potential exposure of proprietary code, trade secrets, or embedded credentials to third-party service"
+      }
+    },
+    {
+      "id": "llm_finding_diagram-gen_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Deceptive Description Conceals External API Dependency",
+      "description": "The skill description claims 'One command. Zero config. Just works' and 'No install needed. Just run with npx' but conceals that it requires OPENAI_API_KEY configuration and sends user code to external servers. This is social engineering through misleading marketing that obscures the actual data handling behavior.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description: 'One command. Zero config. Just works.' vs Reality: Requires OPENAI_API_KEY environment variable and transmits code to OpenAI. The 'zero config' claim is false and the external data transmission is not disclosed upfront.",
+      "remediation": "1. Update description to clearly state 'Requires OpenAI API key' and 'Sends code to OpenAI for analysis'. 2. Remove misleading 'zero config' claims. 3. Add data privacy notice in the description. 4. Be transparent about external dependencies in the manifest.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH security risks primarily due to undisclosed external data transmission. While the skill's stated purpose (generating Mermaid diagrams) is legitimate, it conceals that user source code will be sent to OpenAI's API, requiring an API key that's only mentioned in fine print. The description uses social engineering tactics ('Zero config', 'Just works') to obscure the actual requirements and data handling behavior. The skill lacks proper metadata declarations (allowed-tools, compatibility) and transparency about its external dependencies. Most concerning is the potential for sensitive source code and credentials to be transmitted to third-party services without explicit user consent or prominent disclosure. The skill requires significant transparency improvements and proper security controls before it can be considered safe for use with potentially sensitive codebases.",
+        "primary_threats": [
+          "Data Exfiltration to External API",
+          "Social Engineering via Deceptive Marketing",
+          "Missing Tool Restrictions",
+          "Undisclosed External Dependencies",
+          "Potential Credential Exposure"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The code in src/index.ts line 6 instantiates OpenAI client without explicit key parameter, meaning it requires OPENAI_API_KEY environment variable. The 'zero config' claim is demonstrably false.",
+        "meta_exploitability": "N/A - not a security exploit, but misleading UX",
+        "meta_impact": "Medium - user frustration, potential for users to run tool without proper API key setup leading to errors"
       }
     }
   ],
-  "scan_duration_seconds": 0.40337109565734863,
-  "duration_ms": 403,
+  "scan_duration_seconds": 38.79875731468201,
+  "duration_ms": 38798,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +104,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:17:50.195636"
+  "timestamp": "2026-02-06T00:06:00.233220"
 }

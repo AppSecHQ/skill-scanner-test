@@ -1,44 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** llm
-**Directory:** ./skills/clawhub-llm
+**Directory:** /workspace/skills/clawhub-llm
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.36s
-**Timestamp:** 2026-02-03T16:00:13.958431
+**Scan Duration:** 30.56s
+**Timestamp:** 2026-02-06T04:12:09.354399
 
 ## Summary
 
 - **Total Findings:** 2
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 1
-- **Low:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### MEDIUM Severity
 
-#### [MEDIUM] Potential Anthropic brand impersonation
+#### [MEDIUM] Missing API Key Security Guidance and Potential Credential Exposure
 
 **Severity:** MEDIUM
-**Category:** social_engineering
-**Rule ID:** SOCIAL_ENG_ANTHROPIC_IMPERSONATION
-**Location:** SKILL.md
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md:1
 
-**Description:** Skill name or description contains 'Anthropic', suggesting official affiliation
+**Description:** The skill integrates with multiple commercial LLM providers (OpenAI, Anthropic, Google) that require API keys for authentication. However, there is no documentation about secure credential management, no guidance on environment variable usage, and no warnings about API key exposure risks. Users may inadvertently expose credentials through insecure storage or logging. The skill's 'always: true' flag means it's automatically active, increasing the risk surface for credential misuse.
 
-### LOW Severity
+#### [MEDIUM] Unbounded Streaming and Resource Consumption Risk
 
-#### [LOW] Skill does not specify a license
+**Severity:** MEDIUM
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
+**Location:** SKILL.md:17
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill advertises 'streaming responses' as a feature without any documented limits, timeouts, or resource controls. Streaming from LLM providers can consume significant bandwidth and processing resources. Without proper bounds, malicious or accidental misuse could lead to excessive API costs, bandwidth exhaustion, or denial of service through unbounded streaming operations. The 'always: true' flag means this risk is present in every agent session.
 
 ## Analyzers
 

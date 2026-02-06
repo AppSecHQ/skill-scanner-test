@@ -1,46 +1,78 @@
 {
   "skill_name": "llm",
-  "skill_path": "./skills/clawhub-llm",
-  "skill_directory": "./skills/clawhub-llm",
+  "skill_path": "/workspace/skills/clawhub-llm",
+  "skill_directory": "/workspace/skills/clawhub-llm",
   "is_safe": true,
   "max_severity": "MEDIUM",
   "findings_count": 2,
   "findings": [
     {
-      "id": "SOCIAL_ENG_ANTHROPIC_IMPERSONATION_7cd4bd28d6",
-      "rule_id": "SOCIAL_ENG_ANTHROPIC_IMPERSONATION",
-      "category": "social_engineering",
+      "id": "llm_finding_llm_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "Potential Anthropic brand impersonation",
-      "description": "Skill name or description contains 'Anthropic', suggesting official affiliation",
+      "title": "External API Integration Without Implementation Details",
+      "description": "The skill claims to integrate with multiple external LLM providers (OpenAI, Anthropic, Google, local models) but provides no implementation scripts. This creates uncertainty about how API credentials are handled, whether data is transmitted securely, and if there are any hardcoded secrets. The 'always: True' flag in clawdbot metadata suggests automatic activation, which could lead to unintended API calls.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Do not impersonate official skills or use unauthorized branding",
-      "analyzer": "static",
+      "snippet": "Supported Providers: OpenAI, Anthropic, Google, Ollama, LM Studio. Metadata shows 'always: True' but no Python/Bash scripts provided.",
+      "remediation": "Provide implementation scripts so security reviewers can verify: (1) API credentials are sourced from environment variables, not hardcoded, (2) Network calls use HTTPS, (3) User data is not logged or exfiltrated, (4) Error handling prevents credential leakage. Add allowed-tools: [Bash] or [Python] to match implementation.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security concerns primarily due to lack of implementation transparency. While the concept of multi-provider LLM integration is legitimate, the absence of any Python or Bash scripts makes it impossible to verify critical security properties: API credential handling, data transmission security, input sanitization, and prevention of data exfiltration. The 'always: True' automatic activation flag combined with external API dependencies creates risk of unintended API calls and cost accumulation. The skill requires external binaries (curl, jq) which could be vectors for command injection if user input is not properly sanitized. Missing metadata (license, compatibility, allowed-tools) reduces transparency. The skill would benefit from: (1) providing implementation scripts for security review, (2) documenting credential management practices, (3) reconsidering automatic activation, (4) adding proper metadata fields.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unverified API credential handling)",
+          "Availability Disruption (automatic activation without user control)",
+          "Missing Implementation Transparency"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The skill description claims external API integration but provides no code to verify security properties. This is a legitimate transparency concern, though not evidence of actual malicious behavior.",
+        "meta_exploitability": "Unknown - no implementation provided to assess",
+        "meta_impact": "Medium - if implemented insecurely, could lead to credential exposure or data exfiltration"
       }
     },
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_llm_4",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Automatic Activation Without User Control",
+      "description": "The clawdbot metadata specifies 'always: True', meaning this skill is automatically active without explicit user invocation. Combined with external API integrations, this could lead to unintended API calls, token consumption, or cost accumulation without user awareness or consent.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "clawdbot: {'emoji': '\ud83d\udd2e', 'always': True, 'requires': {'bins': ['curl', 'jq']}}",
+      "remediation": "Consider changing 'always: True' to 'always: False' to require explicit user activation. If automatic activation is necessary, add clear documentation about when the skill activates and potential costs. Implement rate limiting and user confirmation for API calls.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security concerns primarily due to lack of implementation transparency. While the concept of multi-provider LLM integration is legitimate, the absence of any Python or Bash scripts makes it impossible to verify critical security properties: API credential handling, data transmission security, input sanitization, and prevention of data exfiltration. The 'always: True' automatic activation flag combined with external API dependencies creates risk of unintended API calls and cost accumulation. The skill requires external binaries (curl, jq) which could be vectors for command injection if user input is not properly sanitized. Missing metadata (license, compatibility, allowed-tools) reduces transparency. The skill would benefit from: (1) providing implementation scripts for security review, (2) documenting credential management practices, (3) reconsidering automatic activation, (4) adding proper metadata fields.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unverified API credential handling)",
+          "Availability Disruption (automatic activation without user control)",
+          "Missing Implementation Transparency"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "LOW",
+        "meta_confidence_reason": "While 'always: True' is present, there's no code showing it actually makes automatic API calls. This is more of a best-practice recommendation than a confirmed threat.",
+        "meta_exploitability": "Low - requires implementation that makes automatic API calls",
+        "meta_impact": "Low - potential for unintended API costs if implemented poorly"
       }
     }
   ],
-  "scan_duration_seconds": 0.7000277042388916,
-  "duration_ms": 700,
+  "scan_duration_seconds": 26.42345690727234,
+  "duration_ms": 26423,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -48,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:00:11.453185"
+  "timestamp": "2026-02-06T04:10:49.746705"
 }

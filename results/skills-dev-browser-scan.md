@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** dev-browser
-**Directory:** ./skills/SawyerHood-dev-browser/skills/dev-browser
+**Directory:** /workspace/skills/SawyerHood-dev-browser/skills/dev-browser
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.39s
-**Timestamp:** 2026-02-03T14:19:03.593964
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:47:11.894537
 
 ## Summary
 

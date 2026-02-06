@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** writing-clearly-and-concisely
-**Directory:** ./skills/softaworks-agent-toolkit/skills/writing-clearly-and-concisely
+**Directory:** /workspace/skills/softaworks-agent-toolkit/skills/writing-clearly-and-concisely
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-02T02:56:44.542683
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:53:46.716974
 
 ## Summary
 

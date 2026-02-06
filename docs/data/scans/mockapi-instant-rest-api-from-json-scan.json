@@ -1,66 +1,110 @@
 {
   "skill_name": "MockAPI - Instant REST API from JSON",
-  "skill_path": "./skills/clawhub-mockapi",
-  "skill_directory": "./skills/clawhub-mockapi",
+  "skill_path": "/workspace/skills/clawhub-mockapi",
+  "skill_directory": "/workspace/skills/clawhub-mockapi",
   "is_safe": true,
   "max_severity": "MEDIUM",
   "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_INVALID_NAME_794e30271c",
-      "rule_id": "MANIFEST_INVALID_NAME",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill name does not follow agent skills naming rules",
-      "description": "Skill name 'MockAPI - Instant REST API from JSON' is invalid. Agent skills require lowercase letters, numbers, and hyphens only, with a maximum length of 64 characters.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Rename the skill to match `[a-z0-9-]{1,64}` (e.g., 'pdf-processing')",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_e00d8fae03",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
+      "id": "llm_finding_MockAPI - Instant REST API from JSON_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
       "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
+      "title": "Misleading Skill Description - Not an Agent Skill",
+      "description": "The skill presents itself as 'MockAPI - Instant REST API from JSON' but is actually documentation for an external npm package (@lxgicstudios/mockapi), not a functional agent skill. The SKILL.md contains only installation instructions and usage documentation for a third-party CLI tool, with no actual agent instructions or executable code. This is deceptive packaging that misleads users about what they're installing.",
       "file_path": "SKILL.md",
-      "line_number": 3,
-      "snippet": "Create a REST API from a JSON file. Perfect for frontend development, testing, prototyping.",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
+      "line_number": 1,
+      "snippet": "# MockAPI\n\nCreate a REST API from a JSON file...\n\n## Installation\n\n```bash\nnpm install -g @lxgicstudios/mockapi\n```",
+      "remediation": "Either: (1) Remove this skill as it provides no agent functionality, or (2) Rewrite it as a proper agent skill with clear instructions on when/how the agent should help users with MockAPI, including proper YAML frontmatter with allowed-tools declarations.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill has MEDIUM severity security concerns. The primary issue is that it's not actually a functional agent skill - it's merely documentation for an external npm package disguised as a skill. This is deceptive packaging (social engineering). The skill contains no agent instructions, no executable code, and provides no actual agent functionality. Additionally, it references a missing 'a.py' file with no explanation, and instructs users to globally install an unpinned third-party npm package without security warnings. The skill lacks proper metadata (license, compatibility, allowed-tools). While there's no active malicious code present, the deceptive nature and potential for tool exploitation via external package installation warrant caution. This appears to be either a misunderstanding of what agent skills are, or an attempt to use the skills system for package promotion/distribution.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Skill Packaging)",
+          "Tool Exploitation (Unverified External Package Installation)",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified this as deceptive packaging. The SKILL.md is 100% documentation with zero agent instructions. No code files exist except a missing 'a.py' reference. This fundamentally misunderstands or misrepresents what an agent skill is.",
+        "meta_exploitability": "N/A - Not exploitable as malicious, but misleading",
+        "meta_impact": "Medium - Clutters skill repository with non-functional content, wastes user time, potentially damages trust in skills ecosystem"
+      }
+    },
+    {
+      "id": "llm_finding_MockAPI - Instant REST API from JSON_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Referenced File - Potential Hidden Payload",
+      "description": "The skill references a file 'a.py' in its instructions but this file is not found in the package. This could indicate: (1) incomplete packaging, (2) a removed malicious payload, or (3) an error in the skill structure. The presence of a Python file reference with no context is suspicious given the skill claims to be about an npm package.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Referenced Files: Files referenced in instructions: a.py\n**Referenced File: a.py** (not found)",
+      "remediation": "Investigate why 'a.py' is referenced. If it's not needed, remove the reference. If it should exist, include it in the package with clear documentation of its purpose. Ensure all referenced files are present and their purpose is documented.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill has MEDIUM severity security concerns. The primary issue is that it's not actually a functional agent skill - it's merely documentation for an external npm package disguised as a skill. This is deceptive packaging (social engineering). The skill contains no agent instructions, no executable code, and provides no actual agent functionality. Additionally, it references a missing 'a.py' file with no explanation, and instructs users to globally install an unpinned third-party npm package without security warnings. The skill lacks proper metadata (license, compatibility, allowed-tools). While there's no active malicious code present, the deceptive nature and potential for tool exploitation via external package installation warrant caution. This appears to be either a misunderstanding of what agent skills are, or an attempt to use the skills system for package promotion/distribution.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Skill Packaging)",
+          "Tool Exploitation (Unverified External Package Installation)",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The missing file is suspicious but not necessarily malicious. Could be packaging error, copy-paste mistake, or removed content. Without more context, it's unclear if this was intentional or accidental. Reclassified from data_exfiltration to policy_violation since there's no evidence of actual exfiltration.",
+        "meta_exploitability": "N/A - File doesn't exist, so no exploitability",
+        "meta_impact": "Low - Indicates poor quality control but no active threat"
+      }
+    },
+    {
+      "id": "llm_finding_MockAPI - Instant REST API from JSON_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Potential Tool Exploitation via External Package Installation",
+      "description": "The skill instructs users to install an external npm package (@lxgicstudios/mockapi) globally without any version pinning, integrity checks, or security warnings. While the skill itself contains no executable code, it serves as a vector to get users to install and run arbitrary third-party code. The package could be compromised, typosquatted, or malicious. There's no verification of package authenticity or provenance.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```bash\nnpm install -g @lxgicstudios/mockapi\n```\n\nNo version specified, no integrity hash, no security warnings.",
+      "remediation": "If this skill is to remain: (1) Pin to a specific verified version (e.g., @lxgicstudios/mockapi@1.2.3), (2) Include npm integrity hashes, (3) Add security warnings about installing third-party packages, (4) Verify the package exists and is legitimate, (5) Consider whether agent skills should recommend global package installations at all.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill has MEDIUM severity security concerns. The primary issue is that it's not actually a functional agent skill - it's merely documentation for an external npm package disguised as a skill. This is deceptive packaging (social engineering). The skill contains no agent instructions, no executable code, and provides no actual agent functionality. Additionally, it references a missing 'a.py' file with no explanation, and instructs users to globally install an unpinned third-party npm package without security warnings. The skill lacks proper metadata (license, compatibility, allowed-tools). While there's no active malicious code present, the deceptive nature and potential for tool exploitation via external package installation warrant caution. This appears to be either a misunderstanding of what agent skills are, or an attempt to use the skills system for package promotion/distribution.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Skill Packaging)",
+          "Tool Exploitation (Unverified External Package Installation)",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM correctly identified the supply chain risk. The npm install command is unpinned and global, which is a legitimate security concern even if the package itself is benign.",
+        "meta_exploitability": "Medium - Requires user to follow installation instructions, but global npm installs are common developer practice",
+        "meta_impact": "Medium - If package is compromised, could lead to arbitrary code execution on user's system"
       }
     }
   ],
-  "scan_duration_seconds": 0.37996339797973633,
-  "duration_ms": 379,
+  "scan_duration_seconds": 28.549270391464233,
+  "duration_ms": 28549,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -68,5 +112,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T03:07:30.602608"
+  "timestamp": "2026-02-06T04:37:27.888913"
 }

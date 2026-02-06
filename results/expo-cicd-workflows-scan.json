@@ -1,18 +1,86 @@
 {
   "skill_name": "expo-cicd-workflows",
-  "skill_path": "./skills/expo-skills/plugins/expo-deployment/skills/expo-cicd-workflows",
-  "skill_directory": "./skills/expo-skills/plugins/expo-deployment/skills/expo-cicd-workflows",
+  "skill_path": "/workspace/skills/expo-skills/plugins/expo-deployment/skills/expo-cicd-workflows",
+  "skill_directory": "/workspace/skills/expo-skills/plugins/expo-deployment/skills/expo-cicd-workflows",
   "is_safe": true,
-  "max_severity": "SAFE",
-  "findings_count": 0,
-  "findings": [],
-  "scan_duration_seconds": 0.40331196784973145,
-  "duration_ms": 403,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "llm_finding_expo-cicd-workflows_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded External API Endpoint Without Validation",
+      "description": "The skill fetches external resources from api.expo.dev and raw.githubusercontent.com without any validation or integrity checks. While these are legitimate Expo domains, the skill trusts the content implicitly and uses it to generate workflow files that will execute in CI/CD pipelines. An attacker compromising these endpoints or performing a man-in-the-middle attack could inject malicious schema definitions or documentation that leads to unsafe workflow generation.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```bash\nnode {baseDir}/scripts/fetch.js <url>\n```\n\nFetches from:\n1. https://api.expo.dev/v2/workflows/schema\n2. https://raw.githubusercontent.com/expo/expo/refs/heads/main/docs/pages/eas/workflows/syntax.mdx\n3. https://raw.githubusercontent.com/expo/expo/refs/heads/main/docs/pages/eas/workflows/pre-packaged-jobs.mdx",
+      "remediation": "Implement integrity verification: (1) Pin expected schema versions or use content hashes to verify fetched resources, (2) Validate JSON schema structure before using it for validation, (3) Use HTTPS certificate pinning or verify TLS certificates, (4) Add checksum verification for cached responses, (5) Consider bundling known-good versions of schemas as fallbacks.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Expo CI/CD workflow skill has MEDIUM overall security risk. The primary concerns are: (1) Transitive trust in external documentation and schema resources from api.expo.dev and GitHub without integrity verification, creating indirect prompt injection risks if those sources are compromised, (2) Missing script files that are referenced in instructions, preventing verification of their security controls, (3) Potential for resource exhaustion in validation operations. The skill's core functionality (generating CI/CD workflows) is legitimate, but the reliance on external, unverified content for critical schema and documentation creates a supply chain risk. The skill would benefit from integrity verification of external resources, inclusion of missing scripts for review, and more defensive validation patterns.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Data Exposure Risk",
+          "Missing Security Controls",
+          "Resource Exhaustion Potential"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The network requests are legitimate and necessary for the skill's documented purpose. This is more about transparency than a security vulnerability. The LLM analyzer flagged this as data exfiltration, but it's actually normal API usage.",
+        "meta_exploitability": "N/A - This is legitimate functionality",
+        "meta_impact": "Low - Informational only, no actual data exfiltration occurs"
+      }
+    },
+    {
+      "id": "llm_finding_expo-cicd-workflows_1",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust in External Documentation Content",
+      "description": "The skill instructs the agent to fetch and follow external documentation from GitHub (syntax.mdx, pre-packaged-jobs.mdx) without any content validation. The instruction explicitly states 'Do not rely on memorized values; these resources evolve as new features are added.' This creates a transitive trust relationship where the agent will follow whatever instructions or examples are present in the external markdown files. If these files were compromised or contained malicious examples, the agent would incorporate them into generated workflows.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```markdown\n2. **Syntax Documentation** \u2014 https://raw.githubusercontent.com/expo/expo/refs/heads/main/docs/pages/eas/workflows/syntax.mdx\n   - Overview of workflow YAML syntax\n   - Examples and English explanations\n\n3. **Pre-packaged Jobs** \u2014 https://raw.githubusercontent.com/expo/expo/refs/heads/main/docs/pages/eas/workflows/pre-packaged-jobs.mdx\n\nDo not rely on memorized values; these resources evolve as new features are added.\n```",
+      "remediation": "(1) Implement content validation for fetched markdown files, (2) Parse and sanitize examples before using them, (3) Validate that fetched content matches expected structure/format, (4) Add warnings when external content changes significantly, (5) Consider using versioned/tagged documentation URLs instead of 'main' branch, (6) Implement a review step before incorporating external examples into generated code.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Expo CI/CD workflow skill has MEDIUM overall security risk. The primary concerns are: (1) Transitive trust in external documentation and schema resources from api.expo.dev and GitHub without integrity verification, creating indirect prompt injection risks if those sources are compromised, (2) Missing script files that are referenced in instructions, preventing verification of their security controls, (3) Potential for resource exhaustion in validation operations. The skill's core functionality (generating CI/CD workflows) is legitimate, but the reliance on external, unverified content for critical schema and documentation creates a supply chain risk. The skill would benefit from integrity verification of external resources, inclusion of missing scripts for review, and more defensive validation patterns.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Data Exposure Risk",
+          "Missing Security Controls",
+          "Resource Exhaustion Potential"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The code clearly fetches external content without verification. While the domains are legitimate, this creates a supply chain risk if those sources are compromised. The fetch.js implementation confirms no integrity checks are performed.",
+        "meta_exploitability": "Medium - Requires compromising Expo's infrastructure or performing MITM attack",
+        "meta_impact": "Medium - Could lead to generation of malicious CI/CD workflows that execute in production pipelines"
+      }
+    }
+  ],
+  "scan_duration_seconds": 36.85407853126526,
+  "duration_ms": 36854,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer"
+    "trigger_analyzer",
+    "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T02:55:00.027373"
+  "timestamp": "2026-02-06T01:03:29.202209"
 }

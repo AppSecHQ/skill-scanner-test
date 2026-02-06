@@ -1,50 +1,80 @@
 {
   "skill_name": "mailgun",
-  "skill_path": "./skills/clawhub-mailgun",
-  "skill_directory": "./skills/clawhub-mailgun",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
+  "skill_path": "/workspace/skills/clawhub-mailgun",
+  "skill_directory": "/workspace/skills/clawhub-mailgun",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_mailgun_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Credentials in Environment Variables",
+      "description": "The skill requires sensitive API credentials (MAILGUN_API_KEY) to be stored in shell configuration files (~/.zshrc or ~/.bash_profile). While environment variables are a common practice, the instructions explicitly guide users to hardcode credentials in persistent shell configuration files, which increases exposure risk if these files are accidentally committed to version control, backed up insecurely, or accessed by other processes.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "```bash\nexport MAILGUN_API_KEY=\"key-xxxxx\"      # Your Mailgun private API key\nexport MAILGUN_DOMAIN=\"mg.yourdomain.com\"  # Your Mailgun domain\nexport MAILGUN_FROM=\"Sender <noreply@mg.yourdomain.com>\"  # Default sender\nexport MAILGUN_DEFAULT_TO=\"you@email.com\"  # Default recipient (optional)\n```",
+      "remediation": "Recommend using a more secure credential management approach: (1) Use a dedicated secrets manager (e.g., 1Password CLI, AWS Secrets Manager, HashiCorp Vault), (2) Store credentials in a separate .env file with restricted permissions (chmod 600) that is explicitly excluded from version control, (3) Add warnings about never committing credentials to git repositories, (4) Consider using Mailgun's API key scoping to limit permissions.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Mailgun email sender skill is a straightforward implementation for sending emails via the Mailgun API. The skill has a clear purpose and reasonable functionality, but exhibits several security concerns primarily around credential management and input validation. The most significant issues are: (1) guidance to store API credentials in shell configuration files without adequate security warnings, and (2) lack of input validation on user-provided email parameters that could lead to injection issues. The skill does not contain malicious code, data exfiltration attempts, or prompt injection attacks. The missing optional metadata fields (license, compatibility, allowed-tools) reduce transparency but are not security threats. Overall, this skill is functional but needs security hardening around credential management and input validation before production use.",
+        "primary_threats": [
+          "Credential exposure risk",
+          "Command injection potential",
+          "Missing input validation",
+          "Insufficient error handling"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a legitimate documentation concern. The instructions do guide users to store credentials in a way that could be risky if not handled carefully. However, environment variables are a standard practice, so this is about improving guidance, not fixing a vulnerability.",
+        "meta_exploitability": "Low - Requires user error (committing config files, insecure backups). Not directly exploitable by the skill itself.",
+        "meta_impact": "Medium - If credentials are exposed through user error, could lead to unauthorized email sending and API abuse."
       }
     },
     {
-      "id": "YARA_credential_harvesting_495ff0b05a",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export MAILGUN_API_KEY=\"key-xxxxx\"      # Your Mailgun private API key",
-      "file_path": "SKILL.md",
-      "line_number": 10,
-      "snippet": "export MAILGUN_API_KEY=\"key-xxxxx\"      # Your Mailgun private API key",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
+      "id": "llm_finding_mailgun_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Potential Command Injection via Unvalidated Email Parameters",
+      "description": "The bash script accepts user-provided subject and body parameters without proper validation or sanitization before passing them to curl via -F flags. While curl's -F flag provides some protection, special characters in subject/body could potentially cause unexpected behavior or be exploited in certain contexts. The script does not validate email format, length limits, or sanitize special characters.",
+      "file_path": "scripts/send_email.sh",
+      "line_number": null,
+      "snippet": "```bash\nSUBJECT=\"$1\"\nBODY=\"$2\"\nTO=\"${3:-$MAILGUN_DEFAULT_TO}\"\nFROM=\"${4:-$MAILGUN_FROM}\"\n```\nThese variables are used directly in curl without validation:\n```bash\n-F subject=\"$SUBJECT\" \\\n-F text=\"$BODY\"\n```",
+      "remediation": "Add input validation: (1) Validate email addresses using regex patterns, (2) Implement length limits for subject (e.g., 998 chars per RFC 2822) and body, (3) Sanitize or escape special characters that could cause issues, (4) Consider using curl's --data-urlencode for safer parameter encoding, (5) Add validation to reject potentially malicious patterns.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Mailgun email sender skill is a straightforward implementation for sending emails via the Mailgun API. The skill has a clear purpose and reasonable functionality, but exhibits several security concerns primarily around credential management and input validation. The most significant issues are: (1) guidance to store API credentials in shell configuration files without adequate security warnings, and (2) lack of input validation on user-provided email parameters that could lead to injection issues. The skill does not contain malicious code, data exfiltration attempts, or prompt injection attacks. The missing optional metadata fields (license, compatibility, allowed-tools) reduce transparency but are not security threats. Overall, this skill is functional but needs security hardening around credential management and input validation before production use.",
+        "primary_threats": [
+          "Credential exposure risk",
+          "Command injection potential",
+          "Missing input validation",
+          "Insufficient error handling"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "curl's -F flag does provide protection against basic shell injection, but lack of validation could still cause issues with malformed input or extremely long strings. The risk is real but mitigated by curl's handling.",
+        "meta_exploitability": "Medium - Requires crafting specific input that bypasses curl's -F protection. Not trivial but possible with edge cases.",
+        "meta_impact": "Medium - Could cause script failure, malformed emails, or in worst case, unexpected command behavior."
       }
     }
   ],
-  "scan_duration_seconds": 0.36455249786376953,
-  "duration_ms": 364,
+  "scan_duration_seconds": 38.338741064071655,
+  "duration_ms": 38338,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:03:06.599477"
+  "timestamp": "2026-02-06T04:18:30.508914"
 }

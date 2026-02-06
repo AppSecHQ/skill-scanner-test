@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** rssaurus-cli
-**Directory:** ./skills/clawhub-rssaurus
+**Directory:** /workspace/skills/clawhub-rssaurus
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T16:14:16.829235
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:36:09.601004
 
 ## Summary
 

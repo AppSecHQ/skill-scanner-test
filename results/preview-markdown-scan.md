@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** preview-markdown
-**Directory:** ./skills/clawhub-preview-markdown
+**Directory:** /workspace/skills/clawhub-preview-markdown
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T16:18:40.607614
+**Scan Duration:** 0.28s
+**Timestamp:** 2026-02-06T07:34:50.962875
 
 ## Summary
 

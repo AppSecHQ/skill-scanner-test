@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** openclaw-optimizer
-**Directory:** ./skills/clawhub-startclaw-optimizer
+**Directory:** /workspace/skills/clawhub-startclaw-optimizer
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 1.21s
-**Timestamp:** 2026-02-03T16:02:39.341540
+**Scan Duration:** 1.08s
+**Timestamp:** 2026-02-06T07:50:01.826799
 
 ## Summary
 

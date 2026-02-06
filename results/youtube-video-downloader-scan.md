@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** yt-video-downloader
-**Directory:** ./skills/clawhub-yt-video-downloader
+**Directory:** /workspace/skills/clawhub-yt-video-downloader
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.40s
-**Timestamp:** 2026-02-03T16:09:40.328351
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:54:28.518408
 
 ## Summary
 

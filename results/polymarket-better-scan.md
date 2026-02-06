@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** Better Polymarket
-**Directory:** ./skills/clawhub-polymarket-all-in-one
+**Directory:** /workspace/skills/clawhub-polymarket-all-in-one
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 2.11s
-**Timestamp:** 2026-02-03T16:11:23.928097
+**Scan Duration:** 2.10s
+**Timestamp:** 2026-02-06T07:34:39.905514
 
 ## Summary
 

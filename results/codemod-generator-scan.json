@@ -1,30 +1,113 @@
 {
   "skill_name": "codemod-gen",
-  "skill_path": "./skills/clawhub-ai-codemod",
-  "skill_directory": "./skills/clawhub-ai-codemod",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-ai-codemod",
+  "skill_directory": "/workspace/skills/clawhub-ai-codemod",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_codemod-gen_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded External API Key Requirement",
+      "description": "The skill requires users to set an OPENAI_API_KEY environment variable to function. This creates a credential exposure risk as the skill executes an external npx command that will access this API key. Users may unknowingly expose their OpenAI credentials to third-party code they haven't audited. The skill provides no transparency about how this key is used or transmitted.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Requirements section states: 'Needs OPENAI_API_KEY environment variable' and 'npx ai-codemod' command will access this credential",
+      "remediation": "1. Clearly document what the OPENAI_API_KEY is used for and where data is sent. 2. Warn users about credential exposure risks when running third-party npx packages. 3. Consider implementing the codemod generation locally instead of relying on external packages that access API keys. 4. Provide audit information about the ai-codemod package's behavior.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks. The primary concerns are: (1) requiring users to expose OPENAI_API_KEY to unvetted third-party code executed via npx, (2) no supply chain security (unpinned package versions, no integrity checks), and (3) misleading simplicity claims that obscure security prerequisites. The skill delegates all functionality to an external npm package (ai-codemod) without providing transparency about what that package does with user credentials or code. While the core concept (codemod generation) is legitimate, the implementation creates credential exposure and supply chain attack vectors. The skill would benefit from either implementing codemod generation locally or providing much stronger security guidance and package verification steps.",
+        "primary_threats": [
+          "Credential Exposure (OPENAI_API_KEY)",
+          "Supply Chain Attack (unvetted npx package)",
+          "Social Engineering (misleading simplicity claims)",
+          "Resource Exhaustion (unbounded codebase transformations)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "While the concern about credential exposure is valid, this is standard practice for AI CLI tools (similar to how GitHub CLI requires GH_TOKEN). The risk is elevated by the supply chain issue (finding #2) but is not inherently malicious. Downgraded from HIGH to MEDIUM because requiring API keys for AI functionality is expected behavior.",
+        "meta_exploitability": "Medium - Requires the ai-codemod package to be compromised or malicious. The key exposure itself is by design for the tool to function.",
+        "meta_impact": "Medium - Exposed API key could lead to unauthorized OpenAI API usage (financial cost) or if the package is malicious, key exfiltration. However, OpenAI keys are scoped to API access only, not broader system access."
+      }
+    },
+    {
+      "id": "llm_finding_codemod-gen_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Unvetted Third-Party Code Execution via npx",
+      "description": "The skill instructs users to execute 'npx ai-codemod' which downloads and runs arbitrary code from npm without any version pinning, integrity checks, or security verification. This is a supply chain attack vector - the package could be compromised, typosquatted, or malicious. Users are instructed to run this with their OPENAI_API_KEY exposed in the environment.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Quick Start section: 'npx ai-codemod \"convert class components to functional\"' - no version specified, no integrity hash, no security verification",
+      "remediation": "1. Pin to a specific version (e.g., npx ai-codemod@1.2.3). 2. Provide package integrity hashes for verification. 3. Link to the package's npm page and GitHub repo for user audit. 4. Warn users to review the package source before running. 5. Consider implementing codemod generation directly in the skill instead of delegating to external packages.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks. The primary concerns are: (1) requiring users to expose OPENAI_API_KEY to unvetted third-party code executed via npx, (2) no supply chain security (unpinned package versions, no integrity checks), and (3) misleading simplicity claims that obscure security prerequisites. The skill delegates all functionality to an external npm package (ai-codemod) without providing transparency about what that package does with user credentials or code. While the core concept (codemod generation) is legitimate, the implementation creates credential exposure and supply chain attack vectors. The skill would benefit from either implementing codemod generation locally or providing much stronger security guidance and package verification steps.",
+        "primary_threats": [
+          "Credential Exposure (OPENAI_API_KEY)",
+          "Supply Chain Attack (unvetted npx package)",
+          "Social Engineering (misleading simplicity claims)",
+          "Resource Exhaustion (unbounded codebase transformations)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified supply chain risk. The skill delegates ALL functionality to an external npm package without version pinning or integrity verification. This is a well-documented attack vector (e.g., event-stream incident, ua-parser-js compromise).",
+        "meta_exploitability": "Medium - Requires attacker to compromise the ai-codemod npm package or create a typosquat. However, unpinned versions mean users automatically get compromised updates.",
+        "meta_impact": "High - Arbitrary code execution with access to user's filesystem, environment variables (including OPENAI_API_KEY), and codebase. Could lead to credential theft, code injection, or data exfiltration."
+      }
+    },
+    {
+      "id": "llm_finding_codemod-gen_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Simplicity Claims",
+      "description": "The skill claims 'Zero config. Just works' and 'No install needed' but actually requires Node.js 18+, OPENAI_API_KEY environment variable setup, and npx availability. This social engineering through oversimplification could lead users to run the tool without understanding the prerequisites or security implications.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Claims 'One command. Zero config. Just works' but Requirements section reveals: 'Node.js 18+ recommended. Needs OPENAI_API_KEY environment variable'",
+      "remediation": "1. Be transparent about all requirements upfront. 2. Move prerequisites to the top of the documentation. 3. Clearly explain the OPENAI_API_KEY requirement before encouraging usage. 4. Remove misleading 'zero config' claims.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks. The primary concerns are: (1) requiring users to expose OPENAI_API_KEY to unvetted third-party code executed via npx, (2) no supply chain security (unpinned package versions, no integrity checks), and (3) misleading simplicity claims that obscure security prerequisites. The skill delegates all functionality to an external npm package (ai-codemod) without providing transparency about what that package does with user credentials or code. While the core concept (codemod generation) is legitimate, the implementation creates credential exposure and supply chain attack vectors. The skill would benefit from either implementing codemod generation locally or providing much stronger security guidance and package verification steps.",
+        "primary_threats": [
+          "Credential Exposure (OPENAI_API_KEY)",
+          "Supply Chain Attack (unvetted npx package)",
+          "Social Engineering (misleading simplicity claims)",
+          "Resource Exhaustion (unbounded codebase transformations)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is common marketing language in developer tools ('zero config', 'just works'). While technically inaccurate, it's not intentionally deceptive. The requirements ARE documented, just not prominently. This is more of a UX/documentation issue than a security threat.",
+        "meta_exploitability": "Low - Not directly exploitable. Could lead to user confusion or running tool without understanding prerequisites.",
+        "meta_impact": "Low - May cause users to run tool unprepared, but unlikely to cause direct harm. Main risk is users not understanding the API key requirement before execution."
       }
     }
   ],
-  "scan_duration_seconds": 0.30204129219055176,
-  "duration_ms": 302,
+  "scan_duration_seconds": 36.49764895439148,
+  "duration_ms": 36497,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:58:46.832970"
+  "timestamp": "2026-02-05T22:38:23.686667"
 }

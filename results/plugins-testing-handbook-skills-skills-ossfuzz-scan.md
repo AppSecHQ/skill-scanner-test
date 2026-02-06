@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** ossfuzz
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/ossfuzz
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/ossfuzz
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T14:15:21.453777
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:34:04.406354
 
 ## Summary
 

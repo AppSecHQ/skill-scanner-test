@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** undetectable-ai
-**Directory:** ./skills/clawhub-undetectable-ai
+**Directory:** /workspace/skills/clawhub-undetectable-ai
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.31s
-**Timestamp:** 2026-02-02T03:05:26.574235
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:52:16.347193
 
 ## Summary
 

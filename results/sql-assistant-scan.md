@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** sql-assistant
-**Directory:** ./skills/clawhub-sql-assistant
+**Directory:** /workspace/skills/clawhub-sql-assistant
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T15:56:18.574453
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:49:49.340244
 
 ## Summary
 

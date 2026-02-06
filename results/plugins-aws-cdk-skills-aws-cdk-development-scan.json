@@ -1,622 +1,78 @@
 {
   "skill_name": "aws-cdk-development",
-  "skill_path": "./skills/zxkane-aws-skills/plugins/aws-cdk/skills/aws-cdk-development",
-  "skill_directory": "./skills/zxkane-aws-skills/plugins/aws-cdk/skills/aws-cdk-development",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 31,
+  "skill_path": "/workspace/skills/zxkane-aws-skills/plugins/aws-cdk/skills/aws-cdk-development",
+  "skill_directory": "/workspace/skills/zxkane-aws-skills/plugins/aws-cdk/skills/aws-cdk-development",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_aws-cdk-development_0",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Overly Permissive Tool Access - Unrestricted Bash Commands",
+      "description": "The skill declares allowed-tools with wildcard patterns that grant excessive permissions. Specifically, 'Bash(cdk *)' allows execution of ANY cdk command, 'Bash(npm *)' allows ANY npm command, 'Bash(npx *)' allows ANY npx command, and 'Bash(aws cloudformation *)' allows ANY CloudFormation command. This creates tool exploitation risks where malicious or unintended commands could be executed under the guise of legitimate CDK operations. For example, 'npm install' could install malicious packages, 'cdk destroy' could delete infrastructure, or 'aws cloudformation delete-stack' could remove critical resources.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "allowed-tools: mcp__cdk__*, mcp__aws-mcp__*, mcp__awsdocs__*, Bash(cdk *), Bash(npm *), Bash(npx *), Bash(aws cloudformation *), Bash(aws sts get-caller-identity)",
+      "remediation": "Restrict allowed-tools to specific, necessary commands only. Instead of wildcards, enumerate exact commands needed: ['Bash(cdk synth)', 'Bash(cdk deploy)', 'Bash(cdk diff)', 'Bash(npm install)', 'Bash(aws cloudformation describe-stacks)', 'Bash(aws sts get-caller-identity)']. Avoid patterns that allow destructive operations like 'cdk destroy', 'npm uninstall', or 'aws cloudformation delete-stack' unless explicitly required and documented.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The aws-cdk-development skill is generally well-structured for AWS CDK infrastructure development with appropriate educational content and validation tooling. However, it exhibits MEDIUM severity tool exploitation risks due to overly permissive Bash command wildcards that could allow destructive operations (cdk destroy, npm malicious installs, CloudFormation stack deletion). The skill correctly uses internal reference files (references/cdk-patterns.md) which is normal and expected behavior. Minor issues include missing license/compatibility metadata (LOW severity) and potential resource exhaustion in validation scripts without timeouts (LOW severity). No data exfiltration, credential theft, prompt injection, or hardcoded secrets were detected. The skill does not make external network calls or access sensitive credential files. The validation script is purely local analysis tooling.",
+        "primary_threats": [
+          "Tool Exploitation (overly permissive command wildcards)",
+          "Missing metadata transparency",
+          "Potential resource exhaustion in validation"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that wildcard patterns allow destructive operations. This is a legitimate concern for CDK skills where 'cdk destroy' or 'npm install malicious-package' could cause significant damage. The skill's purpose requires some of these commands, but the wildcards are overly broad.",
+        "meta_exploitability": "Medium - Requires agent to be tricked into executing destructive commands, but wildcards make this easier than explicit command lists",
+        "meta_impact": "High - Could result in infrastructure deletion (cdk destroy), malicious package installation (npm install), or stack deletion (aws cloudformation delete-stack)"
       }
     },
     {
-      "id": "ALLOWED_TOOLS_BASH_VIOLATION_99e73b580e",
-      "rule_id": "ALLOWED_TOOLS_BASH_VIOLATION",
-      "category": "unauthorized_tool_use",
-      "severity": "HIGH",
-      "title": "Code executes bash but Bash tool not in allowed-tools",
-      "description": "Skill restricts tools to ['mcp__cdk__*', 'mcp__aws-mcp__*', 'mcp__awsdocs__*', 'Bash(cdk *)', 'Bash(npm *)', 'Bash(npx *)', 'Bash(aws cloudformation *)', 'Bash(aws sts get-caller-identity)'] but code executes bash commands",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'Bash' to allowed-tools or remove bash execution from code",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "ALLOWED_TOOLS_GREP_VIOLATION_68dce9b2fe",
-      "rule_id": "ALLOWED_TOOLS_GREP_VIOLATION",
-      "category": "unauthorized_tool_use",
+      "id": "llm_finding_aws-cdk-development_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
       "severity": "LOW",
-      "title": "Code uses search/grep patterns but Grep tool not in allowed-tools",
-      "description": "Skill restricts tools to ['mcp__cdk__*', 'mcp__aws-mcp__*', 'mcp__awsdocs__*', 'Bash(cdk *)', 'Bash(npm *)', 'Bash(npx *)', 'Bash(aws cloudformation *)', 'Bash(aws sts get-caller-identity)'] but code uses regex search patterns",
-      "file_path": null,
+      "title": "Missing License and Compatibility Metadata",
+      "description": "The skill manifest does not specify 'license' or 'compatibility' fields. While this is not a direct security threat, it represents incomplete metadata that could mislead users about usage rights and supported environments. Users cannot determine if the skill is safe to use in their legal/compliance context or whether it will work in their specific Claude environment (Claude.ai, Claude Code, API).",
+      "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'Grep' to allowed-tools or remove regex search operations",
-      "analyzer": "static",
+      "snippet": "license: Not specified, compatibility: Not specified",
+      "remediation": "Add explicit license field (e.g., 'license: MIT', 'license: Apache-2.0') and compatibility field (e.g., 'compatibility: Works in Claude.ai, Claude Code, API with AWS credentials') to the YAML frontmatter. This improves transparency and helps users make informed decisions about skill adoption.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_e518ad404e",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 10,
-      "snippet": "# - CloudFormation template size and resource count checks",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_9467dca4ee",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 185,
-      "snippet": "info \"\ud83d\udca1 Note: This script focuses on template and meta-level validation.\"",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_599706a5ce",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 191,
-      "snippet": "",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_83ed7df00f",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 193,
-      "snippet": "TEMPLATES=$(find \"${PROJECT_ROOT}/cdk.out\" -name \"*.template.json\" 2>/dev/null || echo \"\")",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_83ed7df00f",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: TEMPLATE",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 193,
-      "snippet": "TEMPLATES=$(find \"${PROJECT_ROOT}/cdk.out\" -name \"*.template.json\" 2>/dev/null || echo \"\")",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_83ed7df00f",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 193,
-      "snippet": "TEMPLATES=$(find \"${PROJECT_ROOT}/cdk.out\" -name \"*.template.json\" 2>/dev/null || echo \"\")",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_4ca6bfb24a",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: TEMPLATE",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 195,
-      "snippet": "if [ -z \"$TEMPLATES\" ]; then",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_a5a644ecbb",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 196,
-      "snippet": "error \"No CloudFormation templates found in cdk.out/\"",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_94ef79484a",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: TEMPLATE",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 200,
-      "snippet": "TEMPLATE_COUNT=$(echo \"$TEMPLATES\" | wc -l)",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_94ef79484a",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: TEMPLATE",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 200,
-      "snippet": "TEMPLATE_COUNT=$(echo \"$TEMPLATES\" | wc -l)",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_4ffc9335c1",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: TEMPLATE",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 201,
-      "snippet": "success \"Found ${TEMPLATE_COUNT} CloudFormation template(s)\"",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_7110660e15",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 203,
-      "snippet": "# Validate each template",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_d502f65b5b",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 204,
-      "snippet": "for template in $TEMPLATES; do",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_d502f65b5b",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 204,
-      "snippet": "for template in $TEMPLATES; do",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_5c2fb9e548",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: TEMPLATE",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 205,
-      "snippet": "STACK_NAME=$(basename \"$template\" .template.json)",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_5c2fb9e548",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 205,
-      "snippet": "STACK_NAME=$(basename \"$template\" .template.json)",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_5c2fb9e548",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 205,
-      "snippet": "STACK_NAME=$(basename \"$template\" .template.json)",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_008478a788",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 208,
-      "snippet": "TEMPLATE_SIZE=$(wc -c < \"$template\")",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_008478a788",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: TEMPLATE",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 208,
-      "snippet": "TEMPLATE_SIZE=$(wc -c < \"$template\")",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_418611f1cd",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 209,
-      "snippet": "MAX_SIZE=51200 # 50KB warning threshold",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_c71ca8fa07",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: TEMPLATE",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 211,
-      "snippet": "if [ \"$TEMPLATE_SIZE\" -gt \"$MAX_SIZE\" ]; then",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_aba947752f",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: Template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 212,
-      "snippet": "warning \"${STACK_NAME}: Template size (${TEMPLATE_SIZE} bytes) is large\"",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_aba947752f",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: TEMPLATE",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 212,
-      "snippet": "warning \"${STACK_NAME}: Template size (${TEMPLATE_SIZE} bytes) is large\"",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_e0631ff497",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: template",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 217,
-      "snippet": "RESOURCE_COUNT=$(jq '.Resources | length' \"$template\" 2>/dev/null || echo 0)",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$documentation_context",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_e5f7f4433f",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;31m",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 35,
-      "snippet": "RED='\\033[0;31m'",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_5a9441cd82",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;32m",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 36,
-      "snippet": "GREEN='\\033[0;32m'",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_760bfaf938",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[1;33m",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 37,
-      "snippet": "YELLOW='\\033[1;33m'",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_2294d247d9",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0m",
-      "file_path": "scripts/validate-stack.sh",
-      "line_number": 38,
-      "snippet": "NC='\\033[0m' # No Color",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The aws-cdk-development skill is generally well-structured for AWS CDK infrastructure development with appropriate educational content and validation tooling. However, it exhibits MEDIUM severity tool exploitation risks due to overly permissive Bash command wildcards that could allow destructive operations (cdk destroy, npm malicious installs, CloudFormation stack deletion). The skill correctly uses internal reference files (references/cdk-patterns.md) which is normal and expected behavior. Minor issues include missing license/compatibility metadata (LOW severity) and potential resource exhaustion in validation scripts without timeouts (LOW severity). No data exfiltration, credential theft, prompt injection, or hardcoded secrets were detected. The skill does not make external network calls or access sensitive credential files. The validation script is purely local analysis tooling.",
+        "primary_threats": [
+          "Tool Exploitation (overly permissive command wildcards)",
+          "Missing metadata transparency",
+          "Potential resource exhaustion in validation"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Missing metadata is objectively verifiable from the manifest. This is a transparency issue rather than a security threat.",
+        "meta_exploitability": "N/A - Not exploitable, informational only",
+        "meta_impact": "Low - Users cannot determine usage rights or environment compatibility"
       }
     }
   ],
-  "scan_duration_seconds": 0.5732460021972656,
-  "duration_ms": 573,
+  "scan_duration_seconds": 43.02697682380676,
+  "duration_ms": 43026,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -624,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:28:33.479833"
+  "timestamp": "2026-02-06T06:33:49.370868"
 }

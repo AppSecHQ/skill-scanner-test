@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** MockAPI - Instant REST API from JSON
-**Directory:** ./skills/clawhub-mockapi
+**Directory:** /workspace/skills/clawhub-mockapi
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.42s
-**Timestamp:** 2026-02-02T03:07:32.798621
+**Scan Duration:** 30.13s
+**Timestamp:** 2026-02-06T04:39:07.240210
 
 ## Summary
 
@@ -20,14 +20,14 @@
 
 ### MEDIUM Severity
 
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
+#### [MEDIUM] Misleading Skill Description - Not an Agent Skill
 
 **Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:3
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
+**Location:** SKILL.md:1
 
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: Perfect
+**Description:** The skill presents itself as 'MockAPI - Instant REST API from JSON' with instructions to install and run an npm package (@lxgicstudios/mockapi). However, this is NOT an agent skill package - it's documentation for an external CLI tool. Agent skills should contain SKILL.md with instructions for the agent to follow, plus optional Python/Bash scripts the agent executes. This skill contains no executable scripts and instead instructs users to install and run external software via npm/npx commands. The description 'Free CLI tool for frontend developers' confirms this is external tooling, not an agent capability extension.
 
 ### LOW Severity
 
@@ -40,14 +40,13 @@
 
 **Description:** Skill name 'MockAPI - Instant REST API from JSON' is invalid. Agent skills require lowercase letters, numbers, and hyphens only, with a maximum length of 64 characters.
 
-#### [LOW] Skill does not specify a license
+#### [LOW] Missing Referenced File - Potential Code Execution Risk
 
 **Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill references a file 'a.py' in its instructions, but this file is not found in the skill package. If this file were present and contained malicious code, it could pose a security risk. The absence of the file prevents analysis of potential threats. This could indicate incomplete packaging, a typo, or intentional obfuscation.
 
 ## Analyzers
 

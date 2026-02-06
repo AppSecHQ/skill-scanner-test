@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** ship-learn-next
-**Directory:** ./skills/softaworks-agent-toolkit/skills/ship-learn-next
+**Directory:** /workspace/skills/softaworks-agent-toolkit/skills/ship-learn-next
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-02T02:57:11.427266
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:37:03.767401
 
 ## Summary
 

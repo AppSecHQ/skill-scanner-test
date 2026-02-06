@@ -1,30 +1,80 @@
 {
   "skill_name": "openpet",
-  "skill_path": "./skills/clawhub-openpet",
-  "skill_directory": "./skills/clawhub-openpet",
+  "skill_path": "/workspace/skills/clawhub-openpet",
+  "skill_directory": "/workspace/skills/clawhub-openpet",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_openpet_0",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Autonomous Cron Job Without User Consent",
+      "description": "The skill requires setting up a cron job 'openpet-tick' that runs every 2 hours to decay pet stats and send alerts. This creates an autonomous background process that operates without explicit user confirmation for each execution. The cron job modifies pet state, checks death conditions, and sends platform alerts automatically, which could lead to unexpected resource usage and notification spam if users are not actively managing their pets.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Set up cron job `openpet-tick` every 2 hours:\n- hunger +15, happiness -10, energy -5\n- Clamp all stats 0-100\n- Check death conditions\n- Alert owner if critical (hunger >80 or happiness <20)\n- Increment age daily",
+      "remediation": "1. Add explicit user opt-in for cron job activation during pet creation\n2. Implement rate limiting on alerts to prevent notification spam\n3. Add user controls to pause/resume the cron job\n4. Document the autonomous behavior clearly in the skill description\n5. Consider requiring periodic user confirmation to keep the cron job active",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The OpenPet skill is a virtual pet game with MEDIUM security concerns primarily related to autonomous behavior and resource usage. The skill implements an unbounded cron job that runs every 2 hours without explicit user consent, potentially leading to resource consumption and notification spam. The cross-platform alert system lacks rate limiting, which could result in excessive notifications. Several referenced files are missing from the package (message.py, unknown.py, templates/sprites.json), indicating incomplete implementation that may cause runtime errors. The skill does not exhibit critical threats like data exfiltration, credential theft, or prompt injection. However, the autonomous cron job and alert system require better user controls and rate limiting. The missing optional metadata fields (license, compatibility, allowed-tools) reduce transparency but are low severity issues. Overall, this skill needs improvements to autonomous behavior controls and package completeness before production use.",
+        "primary_threats": [
+          "Unbounded Autonomy",
+          "Resource Consumption",
+          "Alert Spam",
+          "Incomplete Implementation"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The SKILL.md explicitly describes an autonomous cron job that runs without user interaction. While this is a legitimate game mechanic (Tamagotchi-style pets require periodic care), the lack of opt-in consent and rate limiting creates potential for unwanted notifications and resource usage.",
+        "meta_exploitability": "Low - Requires agent to actually implement the cron job, but once active, runs autonomously",
+        "meta_impact": "Medium - Could cause notification spam and minor resource consumption, but no data theft or system compromise"
+      }
+    },
+    {
+      "id": "llm_finding_openpet_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Cross-Platform Alert System Without Rate Limiting",
+      "description": "The skill sends alerts to users across multiple platforms (Discord, WhatsApp, Telegram, Signal) when pet conditions are critical. There is no rate limiting, cooldown period, or user preference system for these alerts. This could result in alert spam if multiple pets reach critical states simultaneously, or if the cron job triggers repeatedly while conditions remain critical. The lack of delivery confirmation or error handling could also lead to failed alert attempts consuming resources.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Send to user's origin platform when:\n- Pet is hungry (>80): '\ud83c\udf56 {name} is starving!'\n- Pet is sad (<20): '\ud83d\ude22 {name} misses you!'\n- Pet died: '\ud83d\udc80 {name} has passed away...'\n- Evolution: '\u2728 {name} evolved into a {species}!'",
+      "remediation": "1. Implement alert cooldown periods (e.g., max one alert per condition per 24 hours)\n2. Add user preferences for alert frequency and types\n3. Batch multiple alerts into a single message\n4. Implement exponential backoff for failed delivery attempts\n5. Add opt-out mechanism for users who don't want alerts",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The OpenPet skill is a virtual pet game with MEDIUM security concerns primarily related to autonomous behavior and resource usage. The skill implements an unbounded cron job that runs every 2 hours without explicit user consent, potentially leading to resource consumption and notification spam. The cross-platform alert system lacks rate limiting, which could result in excessive notifications. Several referenced files are missing from the package (message.py, unknown.py, templates/sprites.json), indicating incomplete implementation that may cause runtime errors. The skill does not exhibit critical threats like data exfiltration, credential theft, or prompt injection. However, the autonomous cron job and alert system require better user controls and rate limiting. The missing optional metadata fields (license, compatibility, allowed-tools) reduce transparency but are low severity issues. Overall, this skill needs improvements to autonomous behavior controls and package completeness before production use.",
+        "primary_threats": [
+          "Unbounded Autonomy",
+          "Resource Consumption",
+          "Alert Spam",
+          "Incomplete Implementation"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The alert system is described but implementation details are missing. The concern is valid for a production system, but severity is reduced because: 1) immortalMode is ON by default (pets don't die), 2) alerts only trigger on specific thresholds, 3) the cron runs every 2 hours, limiting maximum alert frequency.",
+        "meta_exploitability": "Low - Requires specific conditions (critical stats) and cron job implementation",
+        "meta_impact": "Low - Notification annoyance, not a security threat"
       }
     }
   ],
-  "scan_duration_seconds": 0.3406538963317871,
-  "duration_ms": 340,
+  "scan_duration_seconds": 28.927874326705933,
+  "duration_ms": 28927,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T03:06:42.796174"
+  "timestamp": "2026-02-06T05:55:57.643778"
 }

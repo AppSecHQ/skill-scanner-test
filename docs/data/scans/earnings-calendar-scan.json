@@ -1,236 +1,78 @@
 {
   "skill_name": "earnings-calendar",
-  "skill_path": "./skills/clawhub-earnings-calendar",
-  "skill_directory": "./skills/clawhub-earnings-calendar",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 11,
+  "skill_path": "/workspace/skills/clawhub-earnings-calendar",
+  "skill_directory": "/workspace/skills/clawhub-earnings-calendar",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
+      "id": "llm_finding_earnings-calendar_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "API Key Exposure Risk via User Prompt in Web Environment",
+      "description": "The skill prompts users to enter their FMP API key directly during execution in web environments where no environment variable is available. This creates a risk of API key exposure through chat logs, session storage, or inadvertent sharing. While the skill states the key is 'stored only for current session', there is no evidence of secure handling, encryption, or automatic cleanup of the API key after use.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "#### 3.2 Prompt User for [API Key] (Web Environment)\n\nIf environment variable is not set, prompt user to provide API key interactively. The skill documentation states 'API key will be requested during skill execution (stored only for current session)' but does not specify secure handling mechanisms.",
+      "remediation": "1. Add explicit warnings about API key security when prompting users\n2. Implement secure credential handling with automatic cleanup\n3. Recommend environment variable setup over interactive entry\n4. Consider using secure credential storage mechanisms\n5. Add documentation about API key rotation best practices",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The earnings-calendar skill is a legitimate financial data retrieval tool with a clear, focused purpose. The skill uses the Financial Modeling Prep API to fetch upcoming earnings announcements for mid-cap and above US stocks. The code is well-structured, transparent, and does not contain malicious functionality such as data exfiltration, command injection, or prompt injection attempts. The primary security concern is the handling of API keys in web environments where users must provide credentials interactively, creating potential exposure risks. The skill also lacks some optional metadata fields and could benefit from improved rate limiting. Overall, this skill poses LOW to MEDIUM risk and is suitable for use with minor improvements to credential handling practices.",
+        "primary_threats": [
+          "API Key Exposure",
+          "Missing Metadata",
+          "Rate Limiting"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that API keys entered in chat sessions could be exposed through conversation sharing or logs. This is a legitimate concern for web environments, though the actual risk is LOW-MEDIUM given the free-tier API has limited value.",
+        "meta_exploitability": "Low - Requires user to share conversation or have session intercepted",
+        "meta_impact": "Low-Medium - Exposed free-tier API key allows 250 calls/day, limited financial impact"
+      }
+    },
+    {
+      "id": "llm_finding_earnings-calendar_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
       "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_0b325498a1",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import requests",
+      "title": "Unbounded API Request Without Rate Limiting",
+      "description": "The Python scripts make external API requests to Financial Modeling Prep without implementing client-side rate limiting or retry backoff mechanisms. While the FMP free tier has a 250 calls/day limit, the scripts do not implement protective measures against accidental rate limit exhaustion or handle rate limit errors gracefully. This could lead to service disruption if the skill is used repeatedly in a short time period.",
       "file_path": "scripts/fetch_earnings_fmp.py",
-      "line_number": 23,
-      "snippet": "import requests",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+requests",
-        "matched_text": "import requests",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_ENV_VARS_2bf949a284",
-      "rule_id": "DATA_EXFIL_ENV_VARS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Reading environment variables that may contain secrets",
-      "description": "Pattern detected: os.environ.get('FMP_API_KEY",
-      "file_path": "scripts/fetch_earnings_fmp.py",
-      "line_number": 304,
-      "snippet": "api_key = os.environ.get('FMP_API_KEY')",
-      "remediation": "Minimize access to environment variables. Document why needed",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
-        "matched_text": "os.environ.get('FMP_API_KEY",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_SENSITIVE_FILES_c00f09835e",
-      "rule_id": "DATA_EXFIL_SENSITIVE_FILES",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Accessing sensitive system or credential files",
-      "description": "Pattern detected: open(filepath",
-      "file_path": "scripts/generate_report.py",
-      "line_number": 36,
-      "snippet": "with open(filepath, 'r') as f:",
-      "remediation": "Do not access credential files or sensitive system files",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "open\\s*\\(\\s*filepath",
-        "matched_text": "open(filepath",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "TOOL_MISMATCH_NETWORK_214e3911e2",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
-      "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
-      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
+      "snippet": "The fetch_earnings_calendar method makes direct requests.get() calls without rate limiting:\n\n```python\nresponse = requests.get(url, timeout=30)\nif response.status_code != 200:\n    print(f\"ERROR: FMP API request failed: {response.status_code}\", file=sys.stderr)\n    return None\n```\n\nNo retry logic, exponential backoff, or rate limit handling is implemented.",
+      "remediation": "1. Implement client-side rate limiting to prevent API exhaustion\n2. Add exponential backoff for failed requests\n3. Handle HTTP 429 (Too Many Requests) responses gracefully\n4. Add request caching to reduce redundant API calls\n5. Document rate limit considerations in user-facing documentation",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DESC_BEHAVIOR_MISMATCH_b27e0e2c07",
-      "rule_id": "SOCIAL_ENG_MISLEADING_DESC",
-      "category": "social_engineering",
-      "severity": "MEDIUM",
-      "title": "Potential description-behavior mismatch",
-      "description": "Skill performs actions not reflected in its description",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Ensure description accurately reflects all skill capabilities",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "ENV_VAR_EXFILTRATION_f9d13c91e9",
-      "rule_id": "BEHAVIOR_ENV_VAR_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Environment variable access with network calls detected",
-      "description": "Script accesses environment variables and makes network calls in skills/clawhub-earnings-calendar/scripts/fetch_earnings_fmp.py",
-      "file_path": "skills/clawhub-earnings-calendar/scripts/fetch_earnings_fmp.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable harvesting or network transmission",
-      "analyzer": "behavioral",
-      "metadata": {
-        "has_network": true,
-        "has_env_access": true,
-        "suspicious_urls": [
-          "https://financialmodelingprep.com/api/v3"
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The earnings-calendar skill is a legitimate financial data retrieval tool with a clear, focused purpose. The skill uses the Financial Modeling Prep API to fetch upcoming earnings announcements for mid-cap and above US stocks. The code is well-structured, transparent, and does not contain malicious functionality such as data exfiltration, command injection, or prompt injection attempts. The primary security concern is the handling of API keys in web environments where users must provide credentials interactively, creating potential exposure risks. The skill also lacks some optional metadata fields and could benefit from improved rate limiting. Overall, this skill poses LOW to MEDIUM risk and is suitable for use with minor improvements to credential handling practices.",
+        "primary_threats": [
+          "API Key Exposure",
+          "Missing Metadata",
+          "Rate Limiting"
         ],
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "ENV_VAR_HARVESTING_6f28252f20",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/clawhub-earnings-calendar/scripts/fetch_earnings_fmp.py",
-      "file_path": "skills/clawhub-earnings-calendar/scripts/fetch_earnings_fmp.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_d27333bd87",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://financialmodelingprep.com/api/v3",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-earnings-calendar/scripts/fetch_earnings_fmp.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://financialmodelingprep.com/api/v3",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "CROSSFILE_EXFILTRATION_CHAIN_9d869f7157",
-      "rule_id": "BEHAVIOR_CROSSFILE_EXFILTRATION_CHAIN",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Cross-file exfiltration chain: 1 files",
-      "description": "Multi-file exfiltration chain detected: scripts/fetch_earnings_fmp.py collect data \u2192 encode \u2192 scripts/fetch_earnings_fmp.py transmit to network",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review data flow across files: scripts/fetch_earnings_fmp.py",
-      "analyzer": "behavioral",
-      "metadata": {
-        "files_involved": [
-          "scripts/fetch_earnings_fmp.py"
-        ],
-        "threat_type": "exfiltration_chain",
-        "evidence": {
-          "collection_files": [
-            "scripts/fetch_earnings_fmp.py"
-          ],
-          "encoding_files": [],
-          "network_files": [
-            "scripts/fetch_earnings_fmp.py"
-          ]
-        },
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "CROSSFILE_ENV_VAR_EXFILTRATION_c861d486d6",
-      "rule_id": "BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Cross-file env var exfiltration: 1 files",
-      "description": "Environment variable access with network calls in scripts/fetch_earnings_fmp.py",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review data flow across files: scripts/fetch_earnings_fmp.py",
-      "analyzer": "behavioral",
-      "metadata": {
-        "files_involved": [
-          "scripts/fetch_earnings_fmp.py"
-        ],
-        "threat_type": "env_var_exfiltration",
-        "evidence": {
-          "env_var_files": [
-            "scripts/fetch_earnings_fmp.py"
-          ],
-          "network_files": [
-            "scripts/fetch_earnings_fmp.py"
-          ]
-        },
-        "meta_reviewed": true
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The script does detect 429 errors and provides user feedback, but lacks automatic retry logic. This is a best practice improvement rather than a critical security issue.",
+        "meta_exploitability": "Low - Requires repeated manual execution to hit rate limits",
+        "meta_impact": "Low - Service disruption only, no data loss or security breach"
       }
     }
   ],
-  "scan_duration_seconds": 1.3578224182128906,
-  "duration_ms": 1357,
+  "scan_duration_seconds": 25.640073776245117,
+  "duration_ms": 25640,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -238,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:11:00.164970"
+  "timestamp": "2026-02-06T00:36:38.991710"
 }

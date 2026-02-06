@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** system_monitor
-**Directory:** ./skills/clawhub-system-monitor
+**Directory:** /workspace/skills/clawhub-system-monitor
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.36s
-**Timestamp:** 2026-02-03T15:54:55.501904
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:50:41.401057
 
 ## Summary
 

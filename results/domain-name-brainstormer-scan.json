@@ -1,90 +1,45 @@
 {
   "skill_name": "domain-name-brainstormer",
-  "skill_path": "./skills/softaworks-agent-toolkit/skills/domain-name-brainstormer",
-  "skill_directory": "./skills/softaworks-agent-toolkit/skills/domain-name-brainstormer",
+  "skill_path": "/workspace/skills/softaworks-agent-toolkit/skills/domain-name-brainstormer",
+  "skill_directory": "/workspace/skills/softaworks-agent-toolkit/skills/domain-name-brainstormer",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 4,
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_domain-name-brainstormer_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Capability Claims - Domain Availability Checking Not Implemented",
+      "description": "The skill description and instructions claim to 'check availability across multiple TLDs' and 'verifies which domains are actually available', but no implementation exists. The skill contains no Python/Bash scripts to perform actual domain availability checks via WHOIS, DNS queries, or domain registrar APIs. The example output shows 'Available' status markers (\u2713) implying real availability verification, but this is deceptive - the agent would only be generating fictional availability data without actual verification capability.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Description claims: 'checks availability across multiple TLDs (.com, .io, .dev, .ai, etc.)' and 'Verifies which domains are actually available'. Example output shows '\u2713 snippetbox.com - Clear, memorable, available!' but no scripts exist to perform this verification.",
+      "remediation": "Either: (1) Remove all claims about checking actual domain availability and rebrand as a 'domain name idea generator' only, or (2) Implement actual domain availability checking via Python script using libraries like python-whois, dnspython, or domain registrar APIs with proper error handling and rate limiting.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_e00d8fae03",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
-      "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: perfect",
-      "file_path": "SKILL.md",
-      "line_number": 3,
-      "snippet": "This skill helps you find the perfect domain name for your project by generating creative options and checking what's actually available to register.",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_54f1cf7d51",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
-      "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
-      "file_path": "SKILL.md",
-      "line_number": 73,
-      "snippet": "4. \u2713 snippet.dev - Perfect extension for developers",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_5a7984c2ea",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
-      "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
-      "file_path": "SKILL.md",
-      "line_number": 89,
-      "snippet": "- Perfect for developer audience",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is a domain name brainstorming tool with MODERATE security concerns primarily related to misleading capability claims rather than active security threats. The skill claims to check domain availability across multiple TLDs but provides no implementation to actually perform this verification - no scripts, no API calls, no WHOIS lookups. This constitutes social engineering through deceptive descriptions (AITech-2.1). The skill would generate fictional availability data, potentially misleading users. However, there are NO active security threats like data exfiltration, prompt injection, command injection, or credential theft. The skill is essentially a text generation template without executable code. The missing optional metadata fields (license, compatibility, allowed-tools) reduce transparency but are low severity. Primary recommendation: Either implement actual domain checking functionality or rebrand as an 'idea generator' without availability claims.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Capability Claims)",
+          "Misleading Content (Fictional Availability Data)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that the skill claims domain checking functionality but provides no implementation. Verified by examining the skill package - only markdown files exist, no Python/Bash scripts for WHOIS/DNS queries.",
+        "meta_exploitability": "Low - No direct security exploit, but users may waste time/money attempting to register domains that are already taken",
+        "meta_impact": "Medium - User frustration, wasted time, potential financial loss if users attempt bulk registration based on false availability data"
       }
     }
   ],
-  "scan_duration_seconds": 0.49481201171875,
-  "duration_ms": 494,
+  "scan_duration_seconds": 25.42520570755005,
+  "duration_ms": 25425,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -92,5 +47,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T02:56:12.363631"
+  "timestamp": "2026-02-06T00:28:35.375874"
 }

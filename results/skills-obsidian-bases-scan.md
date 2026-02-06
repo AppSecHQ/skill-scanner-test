@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** obsidian-bases
-**Directory:** ./skills/kepano-obsidian-skills/skills/obsidian-bases
+**Directory:** /workspace/skills/kepano-obsidian-skills/skills/obsidian-bases
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.44s
-**Timestamp:** 2026-02-03T14:16:43.341290
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:48:43.636070
 
 ## Summary
 

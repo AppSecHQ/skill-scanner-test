@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** testing-handbook-generator
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/testing-handbook-generator
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/testing-handbook-generator
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.42s
-**Timestamp:** 2026-02-03T14:14:52.859066
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:34:15.249846
 
 ## Summary
 

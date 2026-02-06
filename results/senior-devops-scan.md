@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** senior-devops
-**Directory:** ./skills/clawhub-senior-devops
+**Directory:** /workspace/skills/clawhub-senior-devops
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.45s
-**Timestamp:** 2026-02-03T16:14:47.121310
+**Scan Duration:** 0.38s
+**Timestamp:** 2026-02-06T07:36:49.752777
 
 ## Summary
 

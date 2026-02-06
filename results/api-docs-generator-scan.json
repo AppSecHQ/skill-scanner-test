@@ -1,30 +1,116 @@
 {
   "skill_name": "api-docs-gen",
-  "skill_path": "./skills/clawhub-api-docs-gen",
-  "skill_directory": "./skills/clawhub-api-docs-gen",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-api-docs-gen",
+  "skill_directory": "/workspace/skills/clawhub-api-docs-gen",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_api-docs-gen_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Hardcoded External API Dependency with Required Credentials",
+      "description": "The skill requires an OPENAI_API_KEY environment variable to function, which means it will access and potentially transmit user code to OpenAI's external servers. The skill reads user route files containing potentially sensitive business logic, API structures, and implementation details, then sends this data to a third-party service (OpenAI) without explicit user consent or disclosure in the description. This constitutes data exfiltration of proprietary code to external servers.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Requirements section states: 'Needs OPENAI_API_KEY environment variable' and 'How It Works' section reveals: 'uses GPT-4o-mini to infer request/response shapes'. The tool reads user's route files and sends them to OpenAI's API.",
+      "remediation": "1. Explicitly disclose in the description that user code will be sent to OpenAI's servers. 2. Add a consent prompt before transmitting any code. 3. Provide a local-only alternative that doesn't require external API calls. 4. Document data retention policies and privacy implications. 5. Consider implementing local parsing without AI inference as the default option.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to undisclosed external data transmission. While marketed as a simple local documentation generator ('Zero config. Just works'), it actually sends user code to OpenAI's API, potentially exposing proprietary business logic, API implementations, and hardcoded credentials. The description is deceptive through omission, failing to disclose the OPENAI_API_KEY requirement and external data transmission. Additional concerns include unverified npm package execution via npx without version pinning, and the high likelihood of credential exposure from route files. The skill requires significant transparency improvements and user consent mechanisms before it can be considered safe for use with sensitive codebases.",
+        "primary_threats": [
+          "Data Exfiltration to External Servers",
+          "Deceptive Description/Social Engineering",
+          "Uncontrolled External Code Execution",
+          "Credential Exposure Risk",
+          "Supply Chain Attack Vector"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code explicitly shows readFileSync() \u2192 openai.chat.completions.create() data flow. The LLM analyzer correctly identified this, and the actual implementation in src/index.ts confirms external data transmission. The SKILL.md description says 'Zero config. Just works' but omits the OPENAI_API_KEY requirement and external API calls.",
+        "meta_exploitability": "Easy - User runs 'npx ai-api-docs ./routes' without realizing their code is sent externally. No authentication or confirmation required.",
+        "meta_impact": "Critical - Exposure of proprietary API implementations, business logic, and potentially hardcoded credentials (API keys, database passwords, JWT secrets) to third-party servers. Data sent to OpenAI is subject to their data retention and usage policies."
+      }
+    },
+    {
+      "id": "llm_finding_api-docs-gen_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Deceptive Description Omits Critical External Dependency",
+      "description": "The skill description claims 'One command. Zero config. Just works' and 'No install needed. Just run with npx', but fails to disclose that it requires an OPENAI_API_KEY environment variable and sends user code to external servers. This is social engineering through omission - the description makes it sound like a simple local tool when it actually transmits potentially sensitive code to third-party services. Users may unknowingly expose proprietary API implementations.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description: 'Generate API documentation from route files. Use when you need markdown or OpenAPI specs fast.' vs Reality (line 45): 'Needs OPENAI_API_KEY environment variable' and sends code to OpenAI API. The marketing language 'Zero config. Just works' contradicts the requirement for API key configuration.",
+      "remediation": "1. Update description to clearly state: 'Sends your code to OpenAI API for analysis - requires OPENAI_API_KEY'. 2. Add privacy/security warnings in the description. 3. Disclose data transmission in the 'What It Does' section. 4. Be transparent about external dependencies upfront.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to undisclosed external data transmission. While marketed as a simple local documentation generator ('Zero config. Just works'), it actually sends user code to OpenAI's API, potentially exposing proprietary business logic, API implementations, and hardcoded credentials. The description is deceptive through omission, failing to disclose the OPENAI_API_KEY requirement and external data transmission. Additional concerns include unverified npm package execution via npx without version pinning, and the high likelihood of credential exposure from route files. The skill requires significant transparency improvements and user consent mechanisms before it can be considered safe for use with sensitive codebases.",
+        "primary_threats": [
+          "Data Exfiltration to External Servers",
+          "Deceptive Description/Social Engineering",
+          "Uncontrolled External Code Execution",
+          "Credential Exposure Risk",
+          "Supply Chain Attack Vector"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The description objectively omits critical information about external dependencies and data transmission. The marketing language 'Zero config' contradicts the requirement for API key configuration. This is verifiable by comparing the description to the actual requirements.",
+        "meta_exploitability": "Easy - Users trust the 'Zero config' claim and run the tool without reading the full documentation, unknowingly exposing their code.",
+        "meta_impact": "High - Users make uninformed decisions about data privacy and may expose sensitive code without realizing it. Violates principle of informed consent."
+      }
+    },
+    {
+      "id": "llm_finding_api-docs-gen_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Uncontrolled External Tool Execution via npx",
+      "description": "The skill instructs the agent to execute 'npx ai-api-docs' which downloads and runs arbitrary code from npm registries without version pinning or integrity verification. This creates a supply chain attack vector where a compromised or malicious npm package could execute arbitrary code on the user's system. The tool name 'ai-api-docs' is not a well-known package and could be subject to typosquatting or package takeover.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "All examples use 'npx ai-api-docs' without version specification: 'npx ai-api-docs ./src/routes/', 'npx ai-api-docs ./src/routes/ --format openapi', etc. No package verification, no version pinning, no integrity checks.",
+      "remediation": "1. Specify exact package version: 'npx ai-api-docs@1.2.3'. 2. Add package integrity verification. 3. Verify package authenticity and publisher before recommending. 4. Consider bundling the tool as a Python/Bash script within the skill instead of relying on external npm packages. 5. Add warnings about verifying package source before execution.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to undisclosed external data transmission. While marketed as a simple local documentation generator ('Zero config. Just works'), it actually sends user code to OpenAI's API, potentially exposing proprietary business logic, API implementations, and hardcoded credentials. The description is deceptive through omission, failing to disclose the OPENAI_API_KEY requirement and external data transmission. Additional concerns include unverified npm package execution via npx without version pinning, and the high likelihood of credential exposure from route files. The skill requires significant transparency improvements and user consent mechanisms before it can be considered safe for use with sensitive codebases.",
+        "primary_threats": [
+          "Data Exfiltration to External Servers",
+          "Deceptive Description/Social Engineering",
+          "Uncontrolled External Code Execution",
+          "Credential Exposure Risk",
+          "Supply Chain Attack Vector"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The package appears legitimate based on the provided source code, but the lack of version pinning is a real supply chain risk. This is a best practice violation rather than an active threat. The package name 'ai-api-docs' is not a well-known package, increasing typosquatting risk.",
+        "meta_exploitability": "Medium - Requires attacker to compromise the npm package or perform typosquatting. Not immediately exploitable but creates attack surface.",
+        "meta_impact": "Medium - If package is compromised, arbitrary code execution on user's system. However, the package source appears legitimate currently."
       }
     }
   ],
-  "scan_duration_seconds": 0.530186653137207,
-  "duration_ms": 530,
+  "scan_duration_seconds": 39.415595054626465,
+  "duration_ms": 39415,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +118,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:18:09.350164"
+  "timestamp": "2026-02-05T19:33:08.457999"
 }

@@ -1,42 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** ClawDoro
-**Directory:** ./skills/clawhub-pomodoro
+**Directory:** /workspace/skills/clawhub-pomodoro
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.31s
-**Timestamp:** 2026-02-03T16:06:13.359473
+**Max Severity:** SAFE
+**Scan Duration:** 22.72s
+**Timestamp:** 2026-02-05T22:08:27.145846
 
 ## Summary
 
-- **Total Findings:** 2
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 2
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill name does not follow agent skills naming rules
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_INVALID_NAME
-**Location:** SKILL.md
-
-**Description:** Skill name 'ClawDoro' is invalid. Agent skills require lowercase letters, numbers, and hyphens only, with a maximum length of 64 characters.
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

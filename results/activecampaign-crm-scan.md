@@ -1,44 +1,53 @@
 # Agent Skill Security Scan Report
 
 **Skill:** activecampaign
-**Directory:** ./skills/clawhub-activecampaign
+**Directory:** /workspace/skills/clawhub-activecampaign
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.42s
-**Timestamp:** 2026-02-03T15:56:32.470408
+**Scan Duration:** 30.27s
+**Timestamp:** 2026-02-05T17:52:53.503052
 
 ## Summary
 
-- **Total Findings:** 2
+- **Total Findings:** 3
 - **Critical:** 1
-- **High:** 0
+- **High:** 2
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### CRITICAL Severity
 
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
+#### [CRITICAL] Hardcoded Credentials in Configuration Files
 
 **Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:28
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ACTIVECAMPAIGN_API_KEY="your-api-key
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill instructs users to store API credentials in plaintext files (~/.config/activecampaign/url and ~/.config/activecampaign/api_key) without encryption or secure storage mechanisms. This creates a critical data exposure risk where credentials can be easily accessed by malicious actors or other processes on the system.
+
+### HIGH Severity
+
+#### [HIGH] Missing Binary Dependency Without Verification
+
+**Severity:** HIGH
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
+**Location:** YAML frontmatter
+
+**Description:** The skill requires an 'activecampaign' binary (specified in openclaw.requires.bins) but provides no information about where to obtain it, how to verify its authenticity, or its provenance. This creates a supply chain risk where users might install malicious binaries from untrusted sources.
+
+#### [HIGH] Missing Referenced Configuration Files
+
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
+
+**Description:** The skill references critical configuration files (config.py, sample.py) that are not found in the package. These files are mentioned in instructions for field configuration and initialization but are absent, creating uncertainty about what code would actually execute and potential for malicious file substitution.
 
 ## Analyzers
 

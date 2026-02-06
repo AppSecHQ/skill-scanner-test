@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** aws-mcp-setup
-**Directory:** ./skills/zxkane-aws-skills/plugins/aws-common/skills/aws-mcp-setup
+**Directory:** /workspace/skills/zxkane-aws-skills/plugins/aws-common/skills/aws-mcp-setup
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.31s
-**Timestamp:** 2026-02-03T14:28:22.394094
+**Max Severity:** SAFE
+**Scan Duration:** 19.92s
+**Timestamp:** 2026-02-06T06:37:33.871040
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

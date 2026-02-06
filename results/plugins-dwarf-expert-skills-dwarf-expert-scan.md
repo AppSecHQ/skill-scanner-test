@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** dwarf-expert
-**Directory:** ./skills/trailofbits-skills/plugins/dwarf-expert/skills/dwarf-expert
+**Directory:** /workspace/skills/trailofbits-skills/plugins/dwarf-expert/skills/dwarf-expert
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.41s
-**Timestamp:** 2026-02-03T14:12:26.833629
+**Max Severity:** SAFE
+**Scan Duration:** 23.40s
+**Timestamp:** 2026-02-06T07:03:23.500130
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

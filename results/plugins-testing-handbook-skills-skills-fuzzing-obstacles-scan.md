@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** fuzzing-obstacles
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/fuzzing-obstacles
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/fuzzing-obstacles
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T14:14:57.476479
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:33:49.847991
 
 ## Summary
 

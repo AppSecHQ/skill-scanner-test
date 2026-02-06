@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** local-falcon
-**Directory:** ./skills/clawhub-local-visibility-skill
+**Directory:** /workspace/skills/clawhub-local-visibility-skill
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 3.06s
-**Timestamp:** 2026-02-03T16:03:50.951241
+**Scan Duration:** 7.92s
+**Timestamp:** 2026-02-06T04:14:40.251269
 
 ## Summary
 

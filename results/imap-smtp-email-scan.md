@@ -1,62 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** imap-smtp-email
-**Directory:** ./skills/clawhub-imap-smtp-email
-**Status:** [OK] SAFE
-**Max Severity:** MEDIUM
-**Scan Duration:** 0.65s
-**Timestamp:** 2026-02-03T15:58:44.707883
+**Directory:** /workspace/skills/clawhub-imap-smtp-email
+**Status:** [FAIL] ISSUES FOUND
+**Max Severity:** HIGH
+**Scan Duration:** 29.08s
+**Timestamp:** 2026-02-06T03:23:02.111893
 
 ## Summary
 
-- **Total Findings:** 4
+- **Total Findings:** 2
 - **Critical:** 0
-- **High:** 0
-- **Medium:** 3
-- **Low:** 1
+- **High:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
+### HIGH Severity
+
+#### [HIGH] Hardcoded Credential Storage in Plain Text .env File
+
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** setup.sh
+
+**Description:** The skill instructs users to store email credentials (IMAP_PASS, SMTP_PASS) in a plain text .env file without encryption or secure storage mechanisms. Email credentials provide full access to user's email account, enabling reading all messages, sending emails on behalf of the user, and potentially accessing sensitive personal/business information. The setup.sh script actively prompts users to enter passwords which are then written to disk in plain text.
+
 ### MEDIUM Severity
 
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
+#### [MEDIUM] Missing allowed-tools Declaration
 
 **Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** SKILL.md:3
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: Read, search, and manage email via IMAP protocol. Send email
-
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** SKILL.md:63
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: Fetch full email
-
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** setup.sh:124
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: read -p "Email address: " EMAIL
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill does not declare allowed-tools in its YAML manifest, making it unclear what agent capabilities are required. Given that the skill executes Node.js scripts (node scripts/imap.js), it requires Bash tool access at minimum. The absence of this declaration reduces transparency about the skill's execution requirements and potential security boundaries.
 
 ## Analyzers
 

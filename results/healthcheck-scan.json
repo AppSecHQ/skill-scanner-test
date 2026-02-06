@@ -1,10 +1,10 @@
 {
   "skill_name": "health-tracker",
-  "skill_path": "./skills/clawhub-healthcheck",
-  "skill_directory": "./skills/clawhub-healthcheck",
+  "skill_path": "/workspace/skills/clawhub-healthcheck",
+  "skill_directory": "/workspace/skills/clawhub-healthcheck",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 5,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -21,10 +21,122 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_health-tracker_0",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Autonomy with Auto-Logging Without User Consent",
+      "description": "The skill implements an 'auto-log' feature that automatically records water intake entries (with 0 cups) if the user does not respond within 15 minutes of a reminder. This creates an unbounded autonomous behavior where the system makes decisions and modifies user data without explicit consent. The auto-log entries are marked as automatic but still pollute the user's health tracking data, potentially affecting statistics and habit calculations. This represents a form of availability disruption through unwanted automated actions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Auto-log section states: 'N\u1ebfu kh\u00f4ng tr\u1ea3 l\u1eddi sau 15 ph\u00fat \u2192 T\u1ef1 \u0111\u1ed9ng ghi: {cups: 0, auto: true, note: \"T\u1ef1 \u0111\u1ed9ng ghi nh\u1eadn - kh\u00f4ng ph\u1ea3n h\u1ed3i\"}'. This means the system will continuously create entries without user interaction.",
+      "remediation": "Remove the auto-log feature or require explicit user opt-in with clear warnings. If retained, implement: (1) User confirmation before enabling auto-log, (2) Maximum limit on consecutive auto-logs, (3) Clear visual distinction in statistics between real and auto-logged entries, (4) Easy way to disable the feature, (5) Option to bulk-delete auto-logged entries.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The health-tracker skill presents MEDIUM security risk primarily due to unbounded autonomous behavior (auto-logging without consent) and missing tool declarations. The skill's core functionality (tracking water intake and sleep) is legitimate, but implementation choices create autonomy and transparency concerns. The auto-log feature that writes data without user interaction after 15 minutes represents an availability disruption pattern. Missing 'allowed-tools' declaration reduces transparency about required permissions. Additional minor issues include incomplete metadata and unpinned dependencies. The skill does NOT contain data exfiltration, prompt injection, or malicious code. With remediation of the auto-log behavior and addition of proper tool declarations, this skill could be considered safe for use.",
+        "primary_threats": [
+          "Unbounded Autonomy",
+          "Tool Exploitation",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_health-tracker_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "LOW",
+      "title": "Undeclared Tool Usage and Missing Tool Restrictions",
+      "description": "The skill declares three tools (log_water, log_sleep, view_stats) in its documentation but does not specify 'allowed-tools' in the YAML manifest. While this field is optional, the skill's behavior suggests it needs Write access (to modify health-data.json) and potentially Bash/Python (for node-cron scheduling). The absence of declared tool restrictions means the skill could potentially use any available agent tools without user awareness, creating a tool exploitation risk.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML manifest shows 'allowed-tools: Not specified' but the skill clearly requires file write operations ('L\u01b0u t\u1ea1i: ./health-data.json') and mentions npm package installation ('npm install node-cron'). The tools section describes data persistence but doesn't declare which agent tools are needed.",
+      "remediation": "Add 'allowed-tools' field to YAML manifest specifying exactly which tools are required (e.g., [Write, Read] for data persistence). If scheduling requires Bash/Python execution, declare those explicitly. This provides transparency and allows users to understand the skill's capabilities before activation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The health-tracker skill presents MEDIUM security risk primarily due to unbounded autonomous behavior (auto-logging without consent) and missing tool declarations. The skill's core functionality (tracking water intake and sleep) is legitimate, but implementation choices create autonomy and transparency concerns. The auto-log feature that writes data without user interaction after 15 minutes represents an availability disruption pattern. Missing 'allowed-tools' declaration reduces transparency about required permissions. Additional minor issues include incomplete metadata and unpinned dependencies. The skill does NOT contain data exfiltration, prompt injection, or malicious code. With remediation of the auto-log behavior and addition of proper tool declarations, this skill could be considered safe for use.",
+        "primary_threats": [
+          "Unbounded Autonomy",
+          "Tool Exploitation",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_health-tracker_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Provenance and Security Metadata",
+      "description": "The skill's YAML manifest lacks critical security metadata including license information and compatibility declarations. While 'author' is specified as 'Your Name' (a placeholder), there is no license field to indicate usage rights and liability. The absence of compatibility information means users cannot assess whether the skill is safe for their environment (Claude.ai, Claude Code, API). This represents a minor information disclosure issue affecting user decision-making.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML shows: 'license: Not specified', 'compatibility: Not specified', 'author: Your Name' (placeholder value). Only version (1.0.0) and tags are provided.",
+      "remediation": "Add complete metadata: (1) Specify a valid license (MIT, Apache-2.0, etc.), (2) Declare compatibility environments, (3) Replace placeholder author with real identity or organization, (4) Consider adding repository URL for transparency and updates.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The health-tracker skill presents MEDIUM security risk primarily due to unbounded autonomous behavior (auto-logging without consent) and missing tool declarations. The skill's core functionality (tracking water intake and sleep) is legitimate, but implementation choices create autonomy and transparency concerns. The auto-log feature that writes data without user interaction after 15 minutes represents an availability disruption pattern. Missing 'allowed-tools' declaration reduces transparency about required permissions. Additional minor issues include incomplete metadata and unpinned dependencies. The skill does NOT contain data exfiltration, prompt injection, or malicious code. With remediation of the auto-log behavior and addition of proper tool declarations, this skill could be considered safe for use.",
+        "primary_threats": [
+          "Unbounded Autonomy",
+          "Tool Exploitation",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_health-tracker_3",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "External Dependency Without Version Pinning",
+      "description": "The skill requires 'node-cron' npm package for scheduling functionality but does not specify a version constraint. This creates a supply chain risk where future versions could introduce breaking changes, vulnerabilities, or malicious code. While not immediately exploitable, unpinned dependencies are a security best practice violation that could lead to availability issues or unexpected behavior.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Installation instructions show: 'npm install node-cron' without version specification (e.g., 'node-cron@^3.0.0' or 'node-cron@3.0.2').",
+      "remediation": "Pin the node-cron dependency to a specific version or version range: 'npm install node-cron@^3.0.0'. Document the tested version in the README. Consider adding a package.json file to the skill package with locked dependencies.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The health-tracker skill presents MEDIUM security risk primarily due to unbounded autonomous behavior (auto-logging without consent) and missing tool declarations. The skill's core functionality (tracking water intake and sleep) is legitimate, but implementation choices create autonomy and transparency concerns. The auto-log feature that writes data without user interaction after 15 minutes represents an availability disruption pattern. Missing 'allowed-tools' declaration reduces transparency about required permissions. Additional minor issues include incomplete metadata and unpinned dependencies. The skill does NOT contain data exfiltration, prompt injection, or malicious code. With remediation of the auto-log behavior and addition of proper tool declarations, this skill could be considered safe for use.",
+        "primary_threats": [
+          "Unbounded Autonomy",
+          "Tool Exploitation",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.5566673278808594,
-  "duration_ms": 556,
+  "scan_duration_seconds": 31.19271206855774,
+  "duration_ms": 31192,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +144,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:56:07.691799"
+  "timestamp": "2026-02-06T02:55:01.575484"
 }

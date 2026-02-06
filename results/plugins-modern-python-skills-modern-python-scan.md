@@ -1,44 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** modern-python
-**Directory:** ./skills/trailofbits-skills/plugins/modern-python/skills/modern-python
+**Directory:** /workspace/skills/trailofbits-skills/plugins/modern-python/skills/modern-python
 **Status:** [OK] SAFE
-**Max Severity:** MEDIUM
-**Scan Duration:** 0.44s
-**Timestamp:** 2026-02-03T14:13:54.518040
+**Max Severity:** SAFE
+**Scan Duration:** 6.62s
+**Timestamp:** 2026-02-06T07:12:45.514414
 
 ## Summary
 
-- **Total Findings:** 2
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 1
-- **Low:** 1
+- **Medium:** 0
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### MEDIUM Severity
-
-#### [MEDIUM] TRANSITIVE TRUST ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** transitive_trust_abuse
-**Rule ID:** YARA_transitive_trust_abuse
-**Location:** SKILL.md:98
-
-**Description:** Detects skills that delegate trust to untrusted external content: Run code
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

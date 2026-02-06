@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** sendclaw
-**Directory:** ./skills/clawhub-sendclaw
+**Directory:** /workspace/skills/clawhub-sendclaw
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.57s
-**Timestamp:** 2026-02-03T16:06:37.554143
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:36:40.405083
 
 ## Summary
 

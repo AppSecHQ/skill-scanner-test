@@ -1,10 +1,10 @@
 {
   "skill_name": "azure-eventhub-java",
-  "skill_path": "./skills/microsoft-agent-skills/.github/skills/azure-eventhub-java",
-  "skill_directory": "./skills/microsoft-agent-skills/.github/skills/azure-eventhub-java",
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-eventhub-java",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-eventhub-java",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 2,
+  "findings_count": 5,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -41,10 +41,82 @@
         "threat_type": "INJECTION ATTACK",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_azure-eventhub-java_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Critical Metadata Fields",
+      "description": "The skill manifest is missing several important metadata fields including 'license', 'compatibility', and 'allowed-tools'. While these fields are optional per the agent skills specification, their absence makes it difficult to assess the skill's intended usage constraints and compatibility requirements. This is particularly relevant for a skill that provides SDK documentation and may influence code generation.",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "YAML frontmatter missing: license, compatibility, allowed-tools fields",
+      "remediation": "Add complete metadata to the YAML frontmatter:\n- license: Specify the license (e.g., MIT, Apache-2.0)\n- compatibility: Specify target environments (e.g., 'Works in Claude.ai, Claude Code, API')\n- allowed-tools: Specify which agent tools can be used (e.g., [Read, Write, Python] if code generation is intended)",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Azure Event Hubs Java SDK skill is primarily a documentation/reference skill with LOW severity issues. The skill contains no executable scripts, no data exfiltration attempts, no prompt injection, and no malicious code. The main concerns are: (1) missing optional metadata fields that would help clarify the skill's intended usage, (2) an incomplete code example that could lead to resource management issues if used as-is, and (3) references to non-existent Python files that appear to be packaging artifacts. These are documentation quality issues rather than security threats. The skill appears safe for use as a reference guide, but the incomplete code example should be completed to prevent potential resource leaks in generated code.",
+        "primary_threats": [],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_azure-eventhub-java_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Incomplete Code Example with Potential Resource Issue",
+      "description": "The instruction body contains an incomplete code example in the 'Send Event Batch' section. The code snippet ends abruptly with 'batch = producer.createBatch();' without proper completion, error handling, or resource cleanup. If an agent were to generate code based on this incomplete example, it could result in resource leaks (unclosed producers) or infinite loops if the batch-full condition is not properly handled.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Code snippet ends with:\n```java\nif (!batch.tryAdd(event)) {\n    producer.send(batch);\n    batch = producer.createBatch();\n```\nNo closing braces, no final batch send, no resource cleanup, no error handling.",
+      "remediation": "Complete the code example with:\n1. Proper loop termination\n2. Final batch send after loop\n3. Resource cleanup (producer.close())\n4. Error handling for batch creation failures\n5. Try-with-resources pattern for automatic cleanup",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Azure Event Hubs Java SDK skill is primarily a documentation/reference skill with LOW severity issues. The skill contains no executable scripts, no data exfiltration attempts, no prompt injection, and no malicious code. The main concerns are: (1) missing optional metadata fields that would help clarify the skill's intended usage, (2) an incomplete code example that could lead to resource management issues if used as-is, and (3) references to non-existent Python files that appear to be packaging artifacts. These are documentation quality issues rather than security threats. The skill appears safe for use as a reference guide, but the incomplete code example should be completed to prevent potential resource leaks in generated code.",
+        "primary_threats": [],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_azure-eventhub-java_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Referenced Files Not Found in Package",
+      "description": "The skill references three Python files (beginning.py, specific.py, end.py) that are not included in the skill package. This creates misleading documentation as users or agents may expect these files to exist. The references appear to be artifacts or errors in the skill packaging process, as the skill is focused on Java SDK documentation and should not reference Python files.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Referenced files not found: beginning.py, specific.py, end.py",
+      "remediation": "Remove references to non-existent Python files from the skill package, or if these files are intended to be part of the skill, include them in the package with appropriate content. Verify that all file references in the documentation correspond to actual files in the skill package.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Azure Event Hubs Java SDK skill is primarily a documentation/reference skill with LOW severity issues. The skill contains no executable scripts, no data exfiltration attempts, no prompt injection, and no malicious code. The main concerns are: (1) missing optional metadata fields that would help clarify the skill's intended usage, (2) an incomplete code example that could lead to resource management issues if used as-is, and (3) references to non-existent Python files that appear to be packaging artifacts. These are documentation quality issues rather than security threats. The skill appears safe for use as a reference guide, but the incomplete code example should be completed to prevent potential resource leaks in generated code.",
+        "primary_threats": [],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.5072436332702637,
-  "duration_ms": 507,
+  "scan_duration_seconds": 21.549187898635864,
+  "duration_ms": 21549,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +124,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:21:44.917180"
+  "timestamp": "2026-02-05T14:34:09.751075"
 }

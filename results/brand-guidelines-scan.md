@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** brand-guidelines
-**Directory:** ./skills/anthropics-skills/skills/brand-guidelines
+**Directory:** /workspace/skills/anthropics-skills/skills/brand-guidelines
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-02T02:54:15.556684
+**Scan Duration:** 5.32s
+**Timestamp:** 2026-02-05T20:49:43.307934
 
 ## Summary
 

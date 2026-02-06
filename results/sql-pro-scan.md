@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** sql-pro
-**Directory:** ./skills/clawhub-sql-pro
+**Directory:** /workspace/skills/clawhub-sql-pro
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T16:13:02.132322
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:49:52.951830
 
 ## Summary
 

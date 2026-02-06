@@ -1,30 +1,41 @@
 {
   "skill_name": "perf-auditor",
-  "skill_path": "./skills/clawhub-perf-auditor",
-  "skill_directory": "./skills/clawhub-perf-auditor",
+  "skill_path": "/workspace/skills/clawhub-perf-auditor",
+  "skill_directory": "/workspace/skills/clawhub-perf-auditor",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_perf-auditor_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Deceptive Skill Description - External Tool Masquerading as Agent Skill",
+      "description": "The skill description and instructions describe an external npm package (npx ai-lighthouse) rather than an actual agent skill with executable code. The SKILL.md contains only documentation for running an external tool via 'npx ai-lighthouse', with no Python/Bash scripts provided. This creates a mismatch between what users expect (an agent skill that performs audits) and what is delivered (instructions to run an external npm package). Users may be misled into thinking this is a self-contained skill when it actually requires external package execution.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Quick Start section shows: 'npx ai-lighthouse https://mysite.com' - This is an external npm package call, not agent skill functionality. No Python/Bash scripts are included to implement the described functionality.",
+      "remediation": "Either: (1) Include actual Python/Bash scripts that implement the Lighthouse audit functionality within the skill package, or (2) Clearly document in the description that this skill provides instructions for using an external npm tool rather than being a self-contained agent skill. Update the description to: 'Instructions for running the ai-lighthouse npm package to perform performance audits' to set accurate expectations.",
+      "analyzer": "llm",
       "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill package has MEDIUM security concerns primarily due to deceptive presentation. The skill masquerades as an agent skill but actually provides documentation for an external npm package (ai-lighthouse) without including any executable scripts. This creates a significant mismatch between user expectations and actual functionality. The skill is not inherently malicious - it does not attempt data exfiltration, prompt injection, or credential theft. However, the lack of actual implementation code combined with instructions to run external tools (npx) creates ambiguity about what the agent would actually execute. The missing manifest metadata (license, compatibility, allowed-tools) and embedded promotional content are minor issues. If this skill were to include actual scripts that execute 'npx ai-lighthouse', additional security analysis would be needed to assess the risks of running external npm packages.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Description)",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
         "meta_reviewed": true
       }
     }
   ],
-  "scan_duration_seconds": 0.3577389717102051,
-  "duration_ms": 357,
+  "scan_duration_seconds": 29.03218698501587,
+  "duration_ms": 29032,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +43,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:18:42.739052"
+  "timestamp": "2026-02-06T06:17:39.775971"
 }

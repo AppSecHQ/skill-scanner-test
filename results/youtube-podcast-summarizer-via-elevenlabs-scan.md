@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** youtube-voice-summarizer
-**Directory:** ./skills/clawhub-youtube-voice-summarizer-elevenlabs
+**Directory:** /workspace/skills/clawhub-youtube-voice-summarizer-elevenlabs
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.29s
-**Timestamp:** 2026-02-02T03:07:45.439853
+**Scan Duration:** 0.19s
+**Timestamp:** 2026-02-06T07:54:20.066354
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** qmd
-**Directory:** ./skills/clawhub-qmd-external
+**Directory:** /workspace/skills/clawhub-qmd-external
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.39s
-**Timestamp:** 2026-02-03T15:55:32.872238
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:35:02.119269
 
 ## Summary
 

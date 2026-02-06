@@ -1,90 +1,46 @@
 {
   "skill_name": "glm-coding-agent",
-  "skill_path": "./skills/clawhub-glm-coding-agent",
-  "skill_directory": "./skills/clawhub-glm-coding-agent",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 4,
+  "skill_path": "/workspace/skills/clawhub-glm-coding-agent",
+  "skill_directory": "/workspace/skills/clawhub-glm-coding-agent",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_glm-coding-agent_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Credential Exposure via OpenClaw Config File Access",
+      "description": "The skill reads API keys from the OpenClaw configuration file (~/.openclaw/openclaw.json on Unix, %USERPROFILE%\\.openclaw\\openclaw.json on Windows) and exports them as environment variables (ANTHROPIC_AUTH_TOKEN). While reading from a local config file is a common pattern, this creates a potential credential exposure risk if the skill is used in an untrusted context or if the config file permissions are misconfigured. The API key is then passed to the claude CLI tool via environment variable, which could be logged or exposed through process listings.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "API_KEY=$(jq -r '.models.providers.zai.apiKey // empty' \"$CONFIG_FILE\" 2>/dev/null)\nexport ANTHROPIC_AUTH_TOKEN=\"$API_KEY\"",
+      "remediation": "1. Ensure OpenClaw config file has restrictive permissions (chmod 600 on Unix)\n2. Consider using more secure credential storage (OS keychain/credential manager)\n3. Avoid exporting credentials as environment variables when possible\n4. Add warnings in documentation about config file security\n5. Implement credential validation before use",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_9310c447ab",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.z.ai/api/anthropic/v1/models`",
-      "file_path": "SKILL.md",
-      "line_number": 426,
-      "snippet": "\u2192 Try being more specific in your prompt, or switch to Claude Opus for that task",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_ed13b19e41",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ANTHROPIC_AUTH_TOKEN=\"$API_KEY",
-      "file_path": "SKILL.md",
-      "line_number": 74,
-      "snippet": "export ANTHROPIC_AUTH_TOKEN=\"$API_KEY\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_47498adf0b",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
-      "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
-      "file_path": "SKILL.md",
-      "line_number": 463,
-      "snippet": "git worktree add -b fix/issue-55 /tmp/issue-55 main",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The glm-coding-agent skill is a wrapper for the Claude Code CLI that integrates with GLM 4.7 via Z.AI's API. The skill implements a git-based safety workflow for code changes. Security analysis reveals MEDIUM severity concerns around credential handling (reading API keys from config files and exposing via environment variables) and LOW severity issues with missing optional metadata and external binary dependencies. The skill does not contain prompt injection, data exfiltration to external servers, or malicious code execution. The primary security concern is credential exposure risk, which can be mitigated through proper file permissions and secure credential storage practices. The skill's behavior matches its description and does not exhibit deceptive characteristics.",
+        "primary_threats": [
+          "Credential exposure via config file access",
+          "Missing security metadata",
+          "Unpinned external binary dependency"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is standard CLI credential management (reading from config, passing via env var), not malicious. The risk is real but mitigated by: (1) reading from user's own config file, (2) no exfiltration to external servers, (3) standard practice for Anthropic CLI tools. Severity is MEDIUM because misconfigured permissions could expose credentials, but this is user configuration issue, not skill malice.",
+        "meta_exploitability": "Low - Requires misconfigured file permissions (world-readable config) or process inspection access",
+        "meta_impact": "Medium - API key exposure could allow unauthorized API usage, but limited to Z.AI endpoint"
       }
     }
   ],
-  "scan_duration_seconds": 0.36820387840270996,
-  "duration_ms": 368,
+  "scan_duration_seconds": 23.701104640960693,
+  "duration_ms": 23701,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -92,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:03:58.599760"
+  "timestamp": "2026-02-06T02:26:37.214062"
 }

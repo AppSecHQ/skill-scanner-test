@@ -1,62 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** humanize-ai-text
-**Directory:** ./skills/clawhub-humanize-ai-text
+**Directory:** /workspace/skills/clawhub-humanize-ai-text
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 1.69s
-**Timestamp:** 2026-02-03T15:53:33.165379
+**Scan Duration:** 29.85s
+**Timestamp:** 2026-02-06T03:08:00.582164
 
 ## Summary
 
-- **Total Findings:** 4
+- **Total Findings:** 2
 - **Critical:** 0
 - **High:** 1
 - **Medium:** 1
-- **Low:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### HIGH Severity
 
-#### [HIGH] Python scripts present but Python tool not in allowed-tools
+#### [HIGH] Skill Designed to Facilitate Academic Dishonesty and Detector Evasion
 
 **Severity:** HIGH
-**Category:** unauthorized_tool_use
-**Rule ID:** ALLOWED_TOOLS_PYTHON_VIOLATION
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
+**Location:** SKILL.md
 
-**Description:** Skill restricts tools to ['Read', 'Write', 'StrReplace', 'Shell', 'Glob'] but includes Python scripts
+**Description:** The skill's explicit purpose is to 'bypass detection' and make AI-generated content 'undetectable' by academic integrity tools like Turnitin, GPTZero, and Originality.ai. The description states it 'rewrites ChatGPT, Claude, and GPT content to sound natural and pass AI detectors' and 'makes robotic AI writing undetectable.' This is designed to facilitate academic dishonesty, plagiarism, and circumvention of content authenticity verification systems. The skill actively promotes deceptive practices by helping users misrepresent AI-generated content as human-written work.
 
 ### MEDIUM Severity
 
-#### [MEDIUM] CODE EXECUTION detected by YARA
+#### [MEDIUM] Deceptive Framing as Educational Tool
 
 **Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** SKILL.md:66
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): " | python 
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
-
-#### [LOW] Code uses search/grep patterns but Grep tool not in allowed-tools
-
-**Severity:** LOW
-**Category:** unauthorized_tool_use
-**Rule ID:** ALLOWED_TOOLS_GREP_VIOLATION
-
-**Description:** Skill restricts tools to ['Read', 'Write', 'StrReplace', 'Shell', 'Glob'] but code uses regex search patterns
+**Description:** The skill frames itself as being 'based on Wikipedia's comprehensive Signs of AI Writing guide' to appear educational and legitimate, when its actual purpose is to help users evade AI detection systems. This creates a false sense of academic legitimacy around a tool designed for deceptive practices. The Wikipedia reference is used as social proof to make the detector evasion appear scholarly rather than unethical.
 
 ## Analyzers
 

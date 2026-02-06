@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** zotero
-**Directory:** ./skills/clawhub-zotero
+**Directory:** /workspace/skills/clawhub-zotero
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 31.78s
-**Timestamp:** 2026-02-03T16:12:33.394683
+**Scan Duration:** 30.24s
+**Timestamp:** 2026-02-06T07:56:00.177656
 
 ## Summary
 

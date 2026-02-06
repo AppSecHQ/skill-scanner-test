@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** session-handoff
-**Directory:** ./skills/softaworks-agent-toolkit/skills/session-handoff
+**Directory:** /workspace/skills/softaworks-agent-toolkit/skills/session-handoff
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 3.41s
-**Timestamp:** 2026-02-02T02:57:21.834968
+**Scan Duration:** 3.23s
+**Timestamp:** 2026-02-06T07:37:00.162477
 
 ## Summary
 

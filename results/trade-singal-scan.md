@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** trade-signal
-**Directory:** ./skills/clawhub-trade-signal
+**Directory:** /workspace/skills/clawhub-trade-signal
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T16:07:26.399793
+**Scan Duration:** 0.29s
+**Timestamp:** 2026-02-06T07:51:37.718363
 
 ## Summary
 

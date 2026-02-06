@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** youtube-watcher
-**Directory:** ./skills/clawhub-youtube-watchar
+**Directory:** /workspace/skills/clawhub-youtube-watchar
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.59s
-**Timestamp:** 2026-02-03T16:02:31.357082
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:54:32.288463
 
 ## Summary
 

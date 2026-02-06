@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** codeql
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/codeql
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/codeql
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.39s
-**Timestamp:** 2026-02-03T14:15:11.596653
+**Scan Duration:** 0.19s
+**Timestamp:** 2026-02-06T07:33:35.093435
 
 ## Summary
 

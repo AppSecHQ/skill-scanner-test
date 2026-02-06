@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** hugging-face-cli
-**Directory:** ./skills/huggingface-skills/skills/hugging-face-cli
+**Directory:** /workspace/skills/huggingface-skills/skills/hugging-face-cli
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T14:18:24.991423
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:47:27.726547
 
 ## Summary
 

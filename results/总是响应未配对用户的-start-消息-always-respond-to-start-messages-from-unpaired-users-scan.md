@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** telegram-pairing-customization
-**Directory:** ./skills/clawhub-telegram-pairing-customization
+**Directory:** /workspace/skills/clawhub-telegram-pairing-customization
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.50s
-**Timestamp:** 2026-02-03T16:05:48.996080
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:56:08.050276
 
 ## Summary
 

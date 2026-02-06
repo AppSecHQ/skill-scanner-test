@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** redis
-**Directory:** ./skills/clawhub-redis
+**Directory:** /workspace/skills/clawhub-redis
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T16:19:50.608231
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:35:39.527685
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** taskmaster
-**Directory:** ./skills/clawhub-taskmaster
+**Directory:** /workspace/skills/clawhub-taskmaster
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.69s
-**Timestamp:** 2026-02-03T16:08:09.122489
+**Scan Duration:** 0.57s
+**Timestamp:** 2026-02-06T07:50:49.590552
 
 ## Summary
 

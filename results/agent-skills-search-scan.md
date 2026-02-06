@@ -1,72 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** agnxi-search
-**Directory:** ./skills/clawhub-agnxi-search-skill
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** HIGH
-**Scan Duration:** 0.67s
-**Timestamp:** 2026-02-03T16:14:12.561344
+**Directory:** /workspace/skills/clawhub-agnxi-search-skill
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 28.95s
+**Timestamp:** 2026-02-05T18:40:18.546935
 
 ## Summary
 
-- **Total Findings:** 5
+- **Total Findings:** 2
 - **Critical:** 0
-- **High:** 2
+- **High:** 0
 - **Medium:** 2
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### HIGH Severity
-
-#### [HIGH] Suspicious URL detected: http://www.sitemaps.org/schemas/sitemap/0.9
-
-**Severity:** HIGH
-**Category:** data_exfiltration
-**Rule ID:** BEHAVIOR_SUSPICIOUS_URL
-**Location:** skills/clawhub-agnxi-search-skill/search.py
-
-**Description:** Script contains suspicious URL that may be used for data exfiltration
-
-#### [HIGH] Suspicious URL detected: https://agnxi.com/sitemap.xml
-
-**Severity:** HIGH
-**Category:** data_exfiltration
-**Rule ID:** BEHAVIOR_SUSPICIOUS_URL
-**Location:** skills/clawhub-agnxi-search-skill/search.py
-
-**Description:** Script contains suspicious URL that may be used for data exfiltration
-
 ### MEDIUM Severity
 
-#### [MEDIUM] HTTP client library imports that enable external communication
+#### [MEDIUM] Transitive Trust in External XML Content
 
 **Severity:** MEDIUM
-**Category:** data_exfiltration
-**Rule ID:** DATA_EXFIL_NETWORK_REQUESTS
-**Location:** search.py:3
+**Category:** prompt_injection
+**Rule ID:** LLM_PROMPT_INJECTION
+**Location:** search.py
 
-**Description:** Pattern detected: import urllib.request
+**Description:** The skill downloads and parses XML content from an external source (agnxi.com sitemap) without validation. If the external site is compromised or returns malicious XML, the skill could be exploited through XML injection, XXE attacks, or by following malicious URLs embedded in the sitemap. The skill trusts external content implicitly.
 
-#### [MEDIUM] Undeclared network usage
+#### [MEDIUM] Missing Resource Limits and Error Handling
 
 **Severity:** MEDIUM
-**Category:** unauthorized_tool_use
-**Rule ID:** TOOL_ABUSE_UNDECLARED_NETWORK
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
+**Location:** search.py
 
-**Description:** Skill code uses network libraries but doesn't declare network requirement
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The script lacks timeout controls, size limits on downloaded content, and proper error handling for network operations. This could lead to resource exhaustion if the remote server returns extremely large responses, hangs indefinitely, or causes the script to consume excessive memory/CPU.
 
 ## Analyzers
 

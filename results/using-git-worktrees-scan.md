@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** using-git-worktrees
-**Directory:** ./skills/obra-superpowers/skills/using-git-worktrees
+**Directory:** /workspace/skills/obra-superpowers/skills/using-git-worktrees
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-02T02:56:01.644128
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:52:31.286245
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** web-perf
-**Directory:** ./skills/cloudflare-skills/skills/web-perf
+**Directory:** /workspace/skills/cloudflare-skills/skills/web-perf
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.39s
-**Timestamp:** 2026-02-03T14:17:32.104831
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:49:10.274341
 
 ## Summary
 

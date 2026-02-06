@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** Search Realtime Information
-**Directory:** ./skills/clawhub-super-websearch-realtime
+**Directory:** /workspace/skills/clawhub-super-websearch-realtime
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.86s
-**Timestamp:** 2026-02-03T16:18:26.001811
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:35:27.534474
 
 ## Summary
 

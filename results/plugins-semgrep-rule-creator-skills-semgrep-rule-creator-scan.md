@@ -1,80 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** semgrep-rule-creator
-**Directory:** ./skills/trailofbits-skills/plugins/semgrep-rule-creator/skills/semgrep-rule-creator
+**Directory:** /workspace/skills/trailofbits-skills/plugins/semgrep-rule-creator/skills/semgrep-rule-creator
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T14:12:57.853645
+**Scan Duration:** 33.02s
+**Timestamp:** 2026-02-06T07:15:35.980274
 
 ## Summary
 
-- **Total Findings:** 6
+- **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 5
-- **Low:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### MEDIUM Severity
 
-#### [MEDIUM] CODE EXECUTION detected by YARA
+#### [MEDIUM] Transitive Trust Abuse via WebFetch Tool
 
 **Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** SKILL.md:90
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): eval(user_input)
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** SKILL.md:90
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): eval("safe_literal")
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** SKILL.md:61
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): os.system(
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** SKILL.md:66
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): os.system(
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** SKILL.md:61
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): system("rm " + $
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** prompt_injection
+**Rule ID:** LLM_PROMPT_INJECTION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill declares 'WebFetch' in allowed-tools and instructs users to 'Fetch external documentation' before writing rules. This creates a transitive trust risk where the agent may follow instructions from untrusted external web content. If external documentation contains malicious instructions (e.g., 'ignore safety guidelines', 'execute this code'), the agent could be indirectly manipulated through content fetched from the web.
 
 ## Analyzers
 

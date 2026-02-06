@@ -1,30 +1,150 @@
 {
   "skill_name": "compound-engineering",
-  "skill_path": "./skills/clawhub-ai-compound",
-  "skill_directory": "./skills/clawhub-ai-compound",
+  "skill_path": "/workspace/skills/clawhub-ai-compound",
+  "skill_directory": "/workspace/skills/clawhub-ai-compound",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 4,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_compound-engineering_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse - Agent Follows Untrusted Session Content",
+      "description": "The skill instructs the agent to automatically review and extract learnings from 'all sessions from last 24 hours' without validation. This creates a transitive trust vulnerability where the agent will follow and incorporate instructions or patterns found in previous sessions, which may contain malicious user input or prompt injection attempts. An attacker could inject malicious instructions in one session that get extracted and incorporated into MEMORY.md, affecting future agent behavior.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Review all sessions from the last 24 hours. For each session, extract: 1) Key learnings and patterns... Update MEMORY.md with a summary.",
+      "remediation": "Implement content validation and sanitization before extracting learnings. Add explicit filtering to exclude instruction-like patterns (e.g., 'ignore previous', 'you are now'). Require human review before updating core memory files. Add a whitelist of acceptable learning types.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "MEDIUM RISK - This skill implements an automated learning system with several security concerns. The primary risks are transitive trust abuse (automatically incorporating untrusted session content into agent instructions), tool poisoning (modifying core instruction files without validation), and unbounded autonomy (automated execution without oversight). The skill's core concept of extracting learnings from sessions and updating memory files creates a feedback loop where malicious input in one session can permanently affect agent behavior. While the functionality is innovative, it requires significant security hardening including content validation, human-in-the-loop approval for instruction changes, and safeguards against command injection in git operations. The missing script files and lack of allowed-tools declaration reduce auditability. Recommended for use only in trusted environments with additional security controls.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Tool Poisoning",
+          "Unbounded Autonomy",
+          "Command Injection Risk",
+          "Automated Instruction Modification"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a real architectural vulnerability. The skill's core design creates a feedback loop where untrusted session content becomes trusted agent instructions without validation. This is a textbook AITech-1.2 (Indirect Prompt Injection) scenario.",
+        "meta_exploitability": "Medium - Requires attacker to inject malicious content in a session, wait for nightly review, then exploit in future sessions",
+        "meta_impact": "High - Permanent modification of agent behavior through memory poisoning. Could lead to data exfiltration, unauthorized actions, or complete agent compromise"
+      }
+    },
+    {
+      "id": "llm_finding_compound-engineering_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Tool Poisoning via Automated Memory Updates",
+      "description": "The skill automatically modifies MEMORY.md and AGENTS.md files that likely contain agent instructions or behavioral guidelines. By extracting 'patterns' and 'workflow changes' from sessions and writing them to these files, an attacker could poison the agent's instruction set. Malicious patterns injected in sessions would be automatically incorporated into the agent's core instructions during nightly reviews.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Update: MEMORY.md with significant long-term learnings, memory/YYYY-MM-DD.md with today's details, AGENTS.md if workflow changes needed",
+      "remediation": "Require explicit human approval before modifying core instruction files (MEMORY.md, AGENTS.md). Implement a review queue where extracted learnings are staged for approval. Add integrity checks to prevent instruction-like content from being written to memory files. Use append-only logs instead of direct file modification.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "MEDIUM RISK - This skill implements an automated learning system with several security concerns. The primary risks are transitive trust abuse (automatically incorporating untrusted session content into agent instructions), tool poisoning (modifying core instruction files without validation), and unbounded autonomy (automated execution without oversight). The skill's core concept of extracting learnings from sessions and updating memory files creates a feedback loop where malicious input in one session can permanently affect agent behavior. While the functionality is innovative, it requires significant security hardening including content validation, human-in-the-loop approval for instruction changes, and safeguards against command injection in git operations. The missing script files and lack of allowed-tools declaration reduce auditability. Recommended for use only in trusted environments with additional security controls.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Tool Poisoning",
+          "Unbounded Autonomy",
+          "Command Injection Risk",
+          "Automated Instruction Modification"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a valid tool poisoning risk. AGENTS.md is explicitly mentioned as a file for 'workflow changes', which means modifying agent behavior. Combined with unvalidated session extraction, this is a clear attack vector.",
+        "meta_exploitability": "Medium - Requires multi-step attack (inject \u2192 extract \u2192 apply), but fully automated once set up",
+        "meta_impact": "Critical - Direct modification of agent instruction files enables complete behavioral control"
+      }
+    },
+    {
+      "id": "llm_finding_compound-engineering_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Autonomy - Automated Execution Without Confirmation",
+      "description": "The skill sets up automated cron jobs (nightly at 10:30 PM, hourly snapshots) that execute without user confirmation or oversight. This creates availability risks through unbounded autonomous operation. The agent will continuously scan sessions, modify files, and commit changes to git automatically, potentially causing resource exhaustion, repository pollution, or runaway automation if the review logic encounters errors or edge cases.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "30 22 * * * clawdbot cron run compound-nightly... 0 * * * * clawdbot cron run compound-hourly... Commit changes to git.",
+      "remediation": "Add confirmation prompts before executing automated reviews. Implement rate limiting and circuit breakers to prevent runaway execution. Add monitoring and alerting for review job failures. Require user approval before committing changes to git. Provide dry-run mode to preview changes before applying them.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "MEDIUM RISK - This skill implements an automated learning system with several security concerns. The primary risks are transitive trust abuse (automatically incorporating untrusted session content into agent instructions), tool poisoning (modifying core instruction files without validation), and unbounded autonomy (automated execution without oversight). The skill's core concept of extracting learnings from sessions and updating memory files creates a feedback loop where malicious input in one session can permanently affect agent behavior. While the functionality is innovative, it requires significant security hardening including content validation, human-in-the-loop approval for instruction changes, and safeguards against command injection in git operations. The missing script files and lack of allowed-tools declaration reduce auditability. Recommended for use only in trusted environments with additional security controls.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Tool Poisoning",
+          "Unbounded Autonomy",
+          "Command Injection Risk",
+          "Automated Instruction Modification"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a legitimate concern about unbounded automation, but the severity is reduced because: 1) The automation is documented and intentional, 2) It's local file operations, not network calls, 3) Git provides rollback capability. Still worth addressing with safeguards.",
+        "meta_exploitability": "Low - Requires the skill to be installed and cron jobs active. Not directly exploitable by external attackers.",
+        "meta_impact": "Medium - Could cause repository pollution, disk space issues, or annoying automated commits, but unlikely to cause critical system damage"
+      }
+    },
+    {
+      "id": "llm_finding_compound-engineering_3",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Git Command Injection Risk via Automated Commits",
+      "description": "The skill instructs the agent to automatically commit changes to git with a message pattern 'compound: daily review YYYY-MM-D'. If the agent constructs git commands using shell execution with unsanitized date strings or extracted content, this could lead to command injection. An attacker could craft session content that, when extracted and used in commit messages, injects malicious shell commands.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Commit changes with message 'compound: daily review YYYY-MM-D'",
+      "remediation": "Use git library APIs instead of shell commands. Sanitize all content before using in commit messages. Use parameterized git commands. Validate date formats strictly. Escape special characters in commit messages. Consider using fixed commit message templates.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "MEDIUM RISK - This skill implements an automated learning system with several security concerns. The primary risks are transitive trust abuse (automatically incorporating untrusted session content into agent instructions), tool poisoning (modifying core instruction files without validation), and unbounded autonomy (automated execution without oversight). The skill's core concept of extracting learnings from sessions and updating memory files creates a feedback loop where malicious input in one session can permanently affect agent behavior. While the functionality is innovative, it requires significant security hardening including content validation, human-in-the-loop approval for instruction changes, and safeguards against command injection in git operations. The missing script files and lack of allowed-tools declaration reduce auditability. Recommended for use only in trusted environments with additional security controls.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Tool Poisoning",
+          "Unbounded Autonomy",
+          "Command Injection Risk",
+          "Automated Instruction Modification"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "LOW",
+        "meta_confidence_reason": "This is theoretical risk without evidence of actual vulnerable code. The skill instructions don't show shell execution, and the date format is controlled. Modern git clients escape commit messages properly. Flagging as LOW severity precautionary measure.",
+        "meta_exploitability": "Very Low - Would require agent to use shell execution AND attacker to control date format or commit message content",
+        "meta_impact": "Medium - If exploitable, could lead to arbitrary command execution, but likelihood is very low"
       }
     }
   ],
-  "scan_duration_seconds": 0.3158721923828125,
-  "duration_ms": 315,
+  "scan_duration_seconds": 34.32775354385376,
+  "duration_ms": 34327,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +152,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:54:22.074978"
+  "timestamp": "2026-02-05T23:00:32.961385"
 }

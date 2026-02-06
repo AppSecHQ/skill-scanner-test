@@ -1,33 +1,41 @@
 # Agent Skill Security Scan Report
 
 **Skill:** database
-**Directory:** ./skills/clawhub-database
+**Directory:** /workspace/skills/clawhub-database
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T16:19:55.565095
+**Max Severity:** MEDIUM
+**Scan Duration:** 29.50s
+**Timestamp:** 2026-02-05T23:52:43.457021
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 2
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### MEDIUM Severity
 
-#### [LOW] Skill does not specify a license
+#### [MEDIUM] Missing Implementation Scripts for Database Operations
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
+
+**Description:** The skill claims to provide database management capabilities (PostgreSQL, MySQL, SQLite, MongoDB, Redis) including queries, schema management, data export/import, backup/restore, and performance monitoring. However, no Python or Bash scripts are provided to implement these features. This creates a tool exploitation risk where the agent may attempt to execute database operations without proper validation, error handling, or security controls that would normally be implemented in dedicated scripts.
+
+#### [MEDIUM] SQL Injection Risk Without Implementation Controls
+
+**Severity:** MEDIUM
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill accepts arbitrary SQL queries from users ('Run query: SELECT * FROM users LIMIT 10') but provides no script implementation to sanitize or validate these queries. Without proper parameterization or input validation in code, this creates a command injection vector where malicious SQL could be executed directly against databases. The markdown instructions alone cannot enforce security controls.
 
 ## Analyzers
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** rei
-**Directory:** ./skills/clawhub-rei
+**Directory:** /workspace/skills/clawhub-rei
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.36s
-**Timestamp:** 2026-02-03T16:20:40.350918
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:35:47.267217
 
 ## Summary
 

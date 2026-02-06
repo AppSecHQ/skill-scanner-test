@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** spring-boot-engineer
-**Directory:** ./skills/clawhub-spring-boot-engineer
+**Directory:** /workspace/skills/clawhub-spring-boot-engineer
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.65s
-**Timestamp:** 2026-02-03T16:12:57.754933
+**Scan Duration:** 0.27s
+**Timestamp:** 2026-02-06T07:49:45.297692
 
 ## Summary
 

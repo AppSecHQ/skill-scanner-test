@@ -1,30 +1,184 @@
 {
   "skill_name": "gitclaw",
-  "skill_path": "./skills/clawhub-gitclaw",
-  "skill_directory": "./skills/clawhub-gitclaw",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-gitclaw",
+  "skill_directory": "/workspace/skills/clawhub-gitclaw",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 5,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_gitclaw_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Unrestricted Command Execution with sudo Privileges",
+      "description": "The skill executes numerous system commands with sudo privileges (apt-get, dnf, yum, pacman, zypper, apk, systemctl, service) without user confirmation or validation. This allows arbitrary package installation and system service manipulation. The instructions explicitly state 'Do everything automatically and quietly' which bypasses user oversight for privileged operations.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "sudo apt-get update && sudo apt-get install -y git, sudo systemctl enable --now cron, sudo dnf install -y cronie, sudo yum install -y cronie, sudo pacman -S --noconfirm cronie, sudo apk add dcron, sudo rc-update add dcron default",
+      "remediation": "Require explicit user confirmation before executing any sudo commands. Implement a whitelist of allowed package managers and commands. Add validation to ensure commands are only executed when necessary. Remove the 'automatically and quietly' directive for privileged operations.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks due to unrestricted sudo command execution, automated system modifications, and silent background operations. While the functionality (GitHub backup) is legitimate, the implementation bypasses user oversight for privileged operations by design ('do everything automatically and quietly'). The skill installs packages, modifies system services, creates cron jobs, and pushes data to GitHub with minimal user interaction after initial setup. The missing allowed-tools declaration and incomplete description further obscure the skill's true system impact. Recommended actions: Require explicit confirmation for all sudo operations, add allowed-tools restrictions, improve transparency about system modifications, and implement safeguards against sensitive data exposure.",
+        "primary_threats": [
+          "Command Injection / Privileged Execution",
+          "Availability Disruption (Automated Cron Jobs)",
+          "Data Exfiltration Risk (Automated GitHub Uploads)",
+          "Tool Exploitation (Missing Restrictions)",
+          "Social Engineering (Incomplete Description)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that the skill explicitly bypasses user confirmation ('do everything automatically and quietly') while executing privileged commands. The code clearly shows multiple sudo operations across different package managers. This is a design-level security issue, not a false positive.",
+        "meta_exploitability": "Easy - Agent follows instructions to execute sudo commands without user interaction",
+        "meta_impact": "Critical - Arbitrary package installation, system service modification, potential privilege escalation"
+      }
+    },
+    {
+      "id": "llm_finding_gitclaw_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "HIGH",
+      "title": "Automated Cron Job Installation Without User Control",
+      "description": "The skill automatically installs and configures cron jobs that will execute git operations periodically (default every 60 minutes) without clear user visibility or easy removal mechanism. The 'do everything automatically and quietly' directive means users may not be aware of background processes consuming resources and making network calls.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Backup frequency in minutes (default: 60), Do everything automatically and quietly, Only message the user when you need inputs or operations fail",
+      "remediation": "Require explicit user confirmation before installing cron jobs. Provide clear documentation on how to view, modify, or remove the cron job. Display the cron schedule to the user before installation. Implement a mechanism for users to easily disable the automation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks due to unrestricted sudo command execution, automated system modifications, and silent background operations. While the functionality (GitHub backup) is legitimate, the implementation bypasses user oversight for privileged operations by design ('do everything automatically and quietly'). The skill installs packages, modifies system services, creates cron jobs, and pushes data to GitHub with minimal user interaction after initial setup. The missing allowed-tools declaration and incomplete description further obscure the skill's true system impact. Recommended actions: Require explicit confirmation for all sudo operations, add allowed-tools restrictions, improve transparency about system modifications, and implement safeguards against sensitive data exposure.",
+        "primary_threats": [
+          "Command Injection / Privileged Execution",
+          "Availability Disruption (Automated Cron Jobs)",
+          "Data Exfiltration Risk (Automated GitHub Uploads)",
+          "Tool Exploitation (Missing Restrictions)",
+          "Social Engineering (Incomplete Description)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The code clearly shows automated cron installation without removal instructions. The 'quietly' directive confirms lack of user visibility. This is a legitimate availability/resource concern.",
+        "meta_exploitability": "Easy - Cron job is installed automatically and runs indefinitely",
+        "meta_impact": "High - Continuous resource usage, network calls, potential data exposure if workspace contains sensitive files"
+      }
+    },
+    {
+      "id": "llm_finding_gitclaw_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Automated GitHub Repository Creation and Data Upload",
+      "description": "The skill automatically creates GitHub repositories (public or private) and pushes workspace data without explicit per-operation user confirmation. While it asks for initial repository settings, subsequent automated commits and pushes happen silently. This could lead to unintended data exposure, especially if sensitive files are in the workspace.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "back up / sync / mirror the OpenClaw workspace, set up periodic commits and pushes, Do everything automatically and quietly",
+      "remediation": "Implement .gitignore validation to prevent sensitive file uploads. Warn users about potential sensitive data in workspace before first push. Require confirmation for public repository creation. Provide clear documentation about what data will be backed up. Consider implementing a dry-run mode showing what would be committed.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks due to unrestricted sudo command execution, automated system modifications, and silent background operations. While the functionality (GitHub backup) is legitimate, the implementation bypasses user oversight for privileged operations by design ('do everything automatically and quietly'). The skill installs packages, modifies system services, creates cron jobs, and pushes data to GitHub with minimal user interaction after initial setup. The missing allowed-tools declaration and incomplete description further obscure the skill's true system impact. Recommended actions: Require explicit confirmation for all sudo operations, add allowed-tools restrictions, improve transparency about system modifications, and implement safeguards against sensitive data exposure.",
+        "primary_threats": [
+          "Command Injection / Privileged Execution",
+          "Availability Disruption (Automated Cron Jobs)",
+          "Data Exfiltration Risk (Automated GitHub Uploads)",
+          "Tool Exploitation (Missing Restrictions)",
+          "Social Engineering (Incomplete Description)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The code explicitly uses 'git add -A' which stages all files, and the automated cron job pushes without review. This is a real data exposure risk if sensitive files are in the workspace.",
+        "meta_exploitability": "Medium - Requires sensitive files to be in workspace, but workspace often contains config files and credentials",
+        "meta_impact": "High - Potential exposure of credentials, API keys, private data to GitHub (even private repos can be compromised)"
+      }
+    },
+    {
+      "id": "llm_finding_gitclaw_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing allowed-tools Declaration with Extensive System Modifications",
+      "description": "The skill performs extensive system operations (package installation, service management, cron configuration, git operations, GitHub API calls) but does not declare any allowed-tools restrictions in the manifest. This makes it impossible for users or the agent to validate that the skill's operations are within expected boundaries.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "allowed-tools: Not specified, but skill executes: sudo commands, package managers (apt-get, dnf, yum, pacman, zypper, apk, brew), systemctl/service commands, crontab modifications, git operations, gh CLI operations",
+      "remediation": "Add allowed-tools declaration specifying [Bash, Python] at minimum. Document all system-level operations in the description. Consider splitting functionality into separate skills with more limited scope (e.g., one for setup, one for sync operations).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks due to unrestricted sudo command execution, automated system modifications, and silent background operations. While the functionality (GitHub backup) is legitimate, the implementation bypasses user oversight for privileged operations by design ('do everything automatically and quietly'). The skill installs packages, modifies system services, creates cron jobs, and pushes data to GitHub with minimal user interaction after initial setup. The missing allowed-tools declaration and incomplete description further obscure the skill's true system impact. Recommended actions: Require explicit confirmation for all sudo operations, add allowed-tools restrictions, improve transparency about system modifications, and implement safeguards against sensitive data exposure.",
+        "primary_threats": [
+          "Command Injection / Privileged Execution",
+          "Availability Disruption (Automated Cron Jobs)",
+          "Data Exfiltration Risk (Automated GitHub Uploads)",
+          "Tool Exploitation (Missing Restrictions)",
+          "Social Engineering (Incomplete Description)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The manifest clearly shows 'allowed-tools: Not specified' while the skill performs extensive system operations. This is a factual metadata issue.",
+        "meta_exploitability": "Low - This is a metadata issue, not a direct exploit",
+        "meta_impact": "Medium - Lack of transparency about tool usage, prevents framework-level security controls"
+      }
+    },
+    {
+      "id": "llm_finding_gitclaw_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Incomplete Description Masks Privileged System Operations",
+      "description": "The skill description states it will 'back up the OpenClaw agent workspace to a GitHub repo' but does not disclose that it will automatically install system packages with sudo, modify system services (cron), or execute privileged commands. This is misleading about the skill's actual scope and system impact.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "description: Back up the OpenClaw agent workspace to a GitHub repo and keep it synced via a cron-driven commit/push script. (Does not mention: sudo operations, package installation, system service modification, automated background processes)",
+      "remediation": "Update description to explicitly state: 'Installs git, GitHub CLI, and cron if needed (requires sudo). Configures automated background sync via cron. Modifies system services.' Add a security notice about privileged operations.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks due to unrestricted sudo command execution, automated system modifications, and silent background operations. While the functionality (GitHub backup) is legitimate, the implementation bypasses user oversight for privileged operations by design ('do everything automatically and quietly'). The skill installs packages, modifies system services, creates cron jobs, and pushes data to GitHub with minimal user interaction after initial setup. The missing allowed-tools declaration and incomplete description further obscure the skill's true system impact. Recommended actions: Require explicit confirmation for all sudo operations, add allowed-tools restrictions, improve transparency about system modifications, and implement safeguards against sensitive data exposure.",
+        "primary_threats": [
+          "Command Injection / Privileged Execution",
+          "Availability Disruption (Automated Cron Jobs)",
+          "Data Exfiltration Risk (Automated GitHub Uploads)",
+          "Tool Exploitation (Missing Restrictions)",
+          "Social Engineering (Incomplete Description)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The description is factually incomplete compared to the actual operations performed. This is a transparency issue that could mislead users.",
+        "meta_exploitability": "Low - This is a transparency issue, not a direct exploit",
+        "meta_impact": "Medium - Users may unknowingly grant sudo access without understanding full scope"
       }
     }
   ],
-  "scan_duration_seconds": 0.41133904457092285,
-  "duration_ms": 411,
+  "scan_duration_seconds": 34.6003942489624,
+  "duration_ms": 34600,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +186,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:09:21.662654"
+  "timestamp": "2026-02-06T02:08:32.819621"
 }

@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** property-based-testing
-**Directory:** ./skills/trailofbits-skills/plugins/property-based-testing/skills/property-based-testing
+**Directory:** /workspace/skills/trailofbits-skills/plugins/property-based-testing/skills/property-based-testing
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T14:13:06.956364
+**Max Severity:** SAFE
+**Scan Duration:** 11.67s
+**Timestamp:** 2026-02-06T07:14:05.662869
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

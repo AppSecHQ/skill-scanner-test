@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** agenticflow-skills
-**Directory:** ./skills/clawhub-agenticflow-skill
+**Directory:** /workspace/skills/clawhub-agenticflow-skill
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.41s
-**Timestamp:** 2026-02-03T15:56:14.360036
+**Scan Duration:** 5.94s
+**Timestamp:** 2026-02-05T18:44:33.365272
 
 ## Summary
 

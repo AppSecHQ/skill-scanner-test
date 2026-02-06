@@ -1,127 +1,11 @@
 {
   "skill_name": "gold_price_mcp",
-  "skill_path": "./skills/clawhub-gold-price-mcp",
-  "skill_directory": "./skills/clawhub-gold-price-mcp",
-  "is_safe": false,
-  "max_severity": "HIGH",
-  "findings_count": 9,
+  "skill_path": "/workspace/skills/clawhub-gold-price-mcp",
+  "skill_directory": "/workspace/skills/clawhub-gold-price-mcp",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
-    {
-      "id": "MANIFEST_INVALID_NAME_794e30271c",
-      "rule_id": "MANIFEST_INVALID_NAME",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill name does not follow agent skills naming rules",
-      "description": "Skill name 'gold_price_mcp' is invalid. Agent skills require lowercase letters, numbers, and hyphens only, with a maximum length of 64 characters.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Rename the skill to match `[a-z0-9-]{1,64}` (e.g., 'pdf-processing')",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "COMMAND_INJECTION_USER_INPUT_35c4955273",
-      "rule_id": "COMMAND_INJECTION_USER_INPUT",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "User input used in command substitution - potential injection risk",
-      "description": "Pattern detected: $(dirname \"$0\")",
-      "file_path": "run.sh",
-      "line_number": 4,
-      "snippet": "chmod +x \"$(dirname \"$0\")/gold-price-mcp.py\"",
-      "remediation": "Validate and sanitize all user inputs before using in commands",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "\\$\\([^)]*\\$[0-9]+[^)]*\\)",
-        "matched_text": "$(dirname \"$0\")",
-        "aitech": "AITech-9.1",
-        "aitech_name": "Model or Agentic System Manipulation",
-        "scanner_category": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "COMMAND_INJECTION_USER_INPUT_cb248ab820",
-      "rule_id": "COMMAND_INJECTION_USER_INPUT",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "User input used in command substitution - potential injection risk",
-      "description": "Pattern detected: $(dirname \"$0\")",
-      "file_path": "run.sh",
-      "line_number": 7,
-      "snippet": "\"$(dirname \"$0\")/gold-price-mcp.py\" \"$@\"",
-      "remediation": "Validate and sanitize all user inputs before using in commands",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "\\$\\([^)]*\\$[0-9]+[^)]*\\)",
-        "matched_text": "$(dirname \"$0\")",
-        "aitech": "AITech-9.1",
-        "aitech_name": "Model or Agentic System Manipulation",
-        "scanner_category": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_c60fb29edb",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import httpx",
-      "file_path": "gold-price-mcp.py",
-      "line_number": 11,
-      "snippet": "import httpx",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+httpx",
-        "matched_text": "import httpx",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_81d34ea6a8",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import httpx",
-      "file_path": "test_api.py",
-      "line_number": 8,
-      "snippet": "import httpx",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+httpx",
-        "matched_text": "import httpx",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
     {
       "id": "TOOL_MISMATCH_NETWORK_7df9b75abd",
       "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
@@ -135,45 +19,48 @@
       "remediation": "Declare network usage in compatibility field or remove network calls",
       "analyzer": "static",
       "metadata": {
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill clearly makes network calls (httpx.AsyncClient.get), and the manifest is missing the allowed-tools field entirely.",
+        "meta_exploitability": "N/A - This is a metadata issue, not an exploitable vulnerability",
+        "meta_impact": "Low - Reduces transparency about skill capabilities but doesn't create a security risk"
       }
     },
     {
-      "id": "SUSPICIOUS_URL_5a07f9bde8",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "id": "llm_finding_gold_price_mcp_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://api.chnwt.dev/thai-gold-api/latest",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-gold-price-mcp/gold-price-mcp.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
+      "severity": "MEDIUM",
+      "title": "External API Dependency Without Validation or Provenance",
+      "description": "The skill makes HTTP requests to an external third-party API (https://api.chnwt.dev/thai-gold-api/latest) without any validation of response integrity, HTTPS certificate pinning, or documented provenance. While the API appears to be for legitimate gold price data, there is no verification mechanism to ensure the data hasn't been tampered with or that the API endpoint remains trustworthy. An attacker who compromises the API domain or performs a man-in-the-middle attack could inject malicious data into the agent's context.",
+      "file_path": "gold-price-mcp.py",
+      "line_number": 17,
+      "snippet": "API_URL = \"https://api.chnwt.dev/thai-gold-api/latest\"",
+      "remediation": "1. Document the API provenance and ownership in the manifest. 2. Implement response validation (schema checking, signature verification if available). 3. Add error handling for unexpected response formats. 4. Consider adding rate limiting to prevent abuse. 5. Document the external dependency clearly in the description field.",
+      "analyzer": "llm",
       "metadata": {
-        "url": "https://api.chnwt.dev/thai-gold-api/latest",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "TRIGGER_SHORT_42b4c5f5",
-      "rule_id": "TRIGGER_DESCRIPTION_TOO_SHORT",
-      "category": "social_engineering",
-      "severity": "LOW",
-      "title": "Skill description is too short",
-      "description": "Description has only 1 words. Short descriptions may not provide enough context for the agent to determine when this skill should be used.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Expand the description to at least 10-20 words explaining the skill's purpose, capabilities, and appropriate use cases.",
-      "analyzer": "trigger",
-      "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is a relatively straightforward MCP (Model Context Protocol) service that fetches Thai gold prices from an external API. The code quality is reasonable with proper async/await patterns and error handling. However, there are MEDIUM severity concerns around the external API dependency lacking validation and provenance documentation. The skill makes network calls to a third-party domain without any integrity verification, which could be exploited if the API is compromised. LOW severity issues include missing manifest metadata (license, compatibility, allowed-tools) and hardcoded Python version requirements. The skill does NOT contain prompt injection, data exfiltration to attacker-controlled servers, credential theft, or command injection vulnerabilities. The external API call is for legitimate data retrieval, not malicious exfiltration. Overall, this skill appears to be a legitimate utility with some security hygiene improvements needed around dependency management and metadata documentation.",
+        "primary_threats": [
+          "External API Dependency Without Validation",
+          "Missing Manifest Metadata",
+          "Hardcoded Dependencies"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that external API calls without validation pose a supply chain risk. The code does check status='success' but doesn't validate the actual data structure comprehensively.",
+        "meta_exploitability": "Medium - Requires compromising the external API domain or MITM attack",
+        "meta_impact": "Medium - Could inject malicious data into agent context, potentially leading to incorrect decisions based on manipulated gold prices"
       }
     }
   ],
-  "scan_duration_seconds": 0.3387947082519531,
-  "duration_ms": 338,
+  "scan_duration_seconds": 30.0244140625,
+  "duration_ms": 30024,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -181,5 +68,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:59:31.774255"
+  "timestamp": "2026-02-06T02:29:31.352404"
 }

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** botcoin-miner
-**Directory:** ./skills/clawhub-botcoin-miner
+**Directory:** /workspace/skills/clawhub-botcoin-miner
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T16:12:38.027189
+**Scan Duration:** 370.25s
+**Timestamp:** 2026-02-05T20:40:32.116586
 
 ## Summary
 

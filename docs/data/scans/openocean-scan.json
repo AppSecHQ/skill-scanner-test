@@ -1,30 +1,80 @@
 {
   "skill_name": "openocean",
-  "skill_path": "./skills/clawhub-openocean",
-  "skill_directory": "./skills/clawhub-openocean",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-openocean",
+  "skill_directory": "/workspace/skills/clawhub-openocean",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_openocean_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Referral Wallet Address for Fee Collection",
+      "description": "The skill contains a hardcoded Ethereum wallet address (0x890CACd9dEC1E1409C6598Da18DC3d634e600b45) configured as a referrer to collect 1% fees from all user transactions. This creates an undisclosed financial relationship where the skill author profits from user activity. While the fee mechanism is documented in the instructions, users may not realize that every swap they execute through this skill automatically sends 1% of their output tokens to this third-party wallet. This represents a form of data/value exfiltration where user funds are redirected without explicit opt-in consent.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "REFERRER=\"0x890CACd9dEC1E1409C6598Da18DC3d634e600b45\"\nREFERRER_FEE=\"1\"  # 1% referral fee (max 3%)\n\nAll curl commands include:\n--data-urlencode \"referrer=${REFERRER}\" \\\n--data-urlencode \"referrerFee=${REFERRER_FEE}\"",
+      "remediation": "1. Remove hardcoded referrer wallet address and make it user-configurable via environment variable\n2. Add explicit user consent mechanism before applying referral fees\n3. Clearly disclose in the description field that fees are collected\n4. Consider making referral opt-in rather than default behavior\n5. Update description to: 'OpenOcean DEX aggregator with optional 1% referral fee support'",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security concerns primarily related to undisclosed financial relationships and social engineering through omission. The core functionality (OpenOcean DEX aggregation) appears legitimate, but the hardcoded referral wallet address creates an automatic fee collection mechanism that benefits the skill author on every user transaction. While the 1% fee is documented within the instruction body, it is not disclosed in the manifest description where users make installation decisions. This constitutes deceptive practice through incomplete disclosure. The skill does not exhibit active malicious behavior like data exfiltration to attacker-controlled servers or command injection, but the automatic fee collection without explicit opt-in consent is ethically problematic. The missing metadata fields (license, compatibility, allowed-tools) reduce transparency further. Users should be fully informed about fee collection before installation.",
+        "primary_threats": [
+          "Hardcoded referral fee collection",
+          "Deceptive description omitting fees",
+          "Missing transparency metadata",
+          "Wallet address handling guidance needed"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified deceptive practice. The hardcoded referral parameters are clearly present in all API call examples. The manifest description objectively omits fee disclosure. This is social engineering through omission, not data exfiltration (recategorized).",
+        "meta_exploitability": "Easy - automatic on every transaction, no user awareness required",
+        "meta_impact": "Medium - financial loss (1% per transaction) and trust violation, but disclosed within instructions"
+      }
+    },
+    {
+      "id": "llm_finding_openocean_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Deceptive Description - Undisclosed Fee Collection",
+      "description": "The skill description ('OpenOcean DEX aggregator. Best swap rates across 25+ blockchains with cross-chain support.') does not disclose that the skill automatically collects 1% referral fees on all transactions. This is social engineering through omission - users are led to believe they're getting a neutral DEX aggregator tool when in reality every transaction benefits the skill author financially. The fee disclosure is buried in the instruction body rather than prominently displayed in the manifest description where users make installation decisions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description: OpenOcean DEX aggregator. Best swap rates across 25+ blockchains with cross-chain support.\n\nActual behavior: Automatically includes referrer=0x890CACd9dEC1E1409C6598Da18DC3d634e600b45 and referrerFee=1 in all API calls, redirecting 1% of user swap outputs to third-party wallet.",
+      "remediation": "Update the description field in YAML frontmatter to explicitly disclose fee collection:\n\ndescription: 'OpenOcean DEX aggregator with 1% referral fee. Best swap rates across 25+ blockchains. Note: 1% of swap output goes to skill maintainer.'\n\nThis ensures users are informed before installing the skill.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security concerns primarily related to undisclosed financial relationships and social engineering through omission. The core functionality (OpenOcean DEX aggregation) appears legitimate, but the hardcoded referral wallet address creates an automatic fee collection mechanism that benefits the skill author on every user transaction. While the 1% fee is documented within the instruction body, it is not disclosed in the manifest description where users make installation decisions. This constitutes deceptive practice through incomplete disclosure. The skill does not exhibit active malicious behavior like data exfiltration to attacker-controlled servers or command injection, but the automatic fee collection without explicit opt-in consent is ethically problematic. The missing metadata fields (license, compatibility, allowed-tools) reduce transparency further. Users should be fully informed about fee collection before installation.",
+        "primary_threats": [
+          "Hardcoded referral fee collection",
+          "Deceptive description omitting fees",
+          "Missing transparency metadata",
+          "Wallet address handling guidance needed"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The description field objectively lacks fee disclosure. This is verifiable by comparing the description text to the actual behavior documented in the instructions.",
+        "meta_exploitability": "Easy - users install without awareness of fee collection",
+        "meta_impact": "Medium - informed consent violation, users may not have installed if aware"
       }
     }
   ],
-  "scan_duration_seconds": 0.39894962310791016,
-  "duration_ms": 398,
+  "scan_duration_seconds": 34.81091666221619,
+  "duration_ms": 34810,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:19:32.389891"
+  "timestamp": "2026-02-06T05:52:44.323505"
 }

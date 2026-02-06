@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** stock-market-pro
-**Directory:** ./skills/clawhub-stock-market-pro
+**Directory:** /workspace/skills/clawhub-stock-market-pro
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.29s
-**Timestamp:** 2026-02-03T15:54:19.627304
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:50:19.287404
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** bags
-**Directory:** ./skills/clawhub-testing-sagb
+**Directory:** /workspace/skills/clawhub-testing-sagb
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.42s
-**Timestamp:** 2026-02-02T03:06:05.739906
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:36:13.293853
 
 ## Summary
 

@@ -1,53 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** gemini-nano-banana-pro-portraits
-**Directory:** ./skills/clawhub-gemini-nano-banana-pro-portraits
+**Directory:** /workspace/skills/clawhub-gemini-nano-banana-pro-portraits
 **Status:** [OK] SAFE
-**Max Severity:** MEDIUM
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T16:07:31.012294
+**Max Severity:** SAFE
+**Scan Duration:** 1039.12s
+**Timestamp:** 2026-02-06T01:55:12.076653
 
 ## Summary
 
-- **Total Findings:** 3
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 2
-- **Low:** 1
+- **Medium:** 0
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### MEDIUM Severity
-
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:279
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: Flawless
-
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:285
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: perfect
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

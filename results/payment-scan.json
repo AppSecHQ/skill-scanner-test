@@ -1,30 +1,80 @@
 {
   "skill_name": "payment",
-  "skill_path": "./skills/clawhub-payment",
-  "skill_directory": "./skills/clawhub-payment",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-payment",
+  "skill_directory": "/workspace/skills/clawhub-payment",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_payment_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Tool Shadowing Risk - Missing Implementation Creates Execution Ambiguity",
+      "description": "The skill declares 'always: True' in clawdbot metadata, meaning it will be automatically activated for payment-related queries. However, there are NO script files implementing the claimed functionality (invoicing, payment processing, refunds, transaction tracking). This creates a 'tool shadowing' scenario where the agent may attempt to fulfill payment requests using unrestricted Bash/Python execution since no safe implementation exists. The agent could generate arbitrary payment-processing code at runtime without guardrails.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Metadata shows 'always: True' and 'requires: {bins: [curl, jq]}' suggesting network operations, but zero implementation scripts exist. Agent will have to improvise payment processing logic, potentially executing unsafe curl commands to payment APIs.",
+      "remediation": "1. Provide complete, security-reviewed implementation scripts for all claimed features. 2. Remove 'always: True' until safe implementation exists. 3. Add input validation and sanitization in scripts before any payment API calls. 4. Implement rate limiting and transaction amount caps. 5. Add explicit user confirmation steps before any financial transactions.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This payment processing skill presents SIGNIFICANT SECURITY RISKS due to the complete absence of implementation code despite claiming comprehensive payment functionality. The combination of 'always: True' auto-activation, missing credential management implementation, and lack of security controls creates a dangerous scenario where the agent would improvise financial transaction code at runtime. The skill appears to be an incomplete template or placeholder that should NOT be used for actual payment processing without substantial security hardening. Key risks include potential credential exposure, tool shadowing leading to unsafe payment API calls, missing resource controls, and misleading capability claims. This skill requires complete implementation with security review before any production use.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure Risk",
+          "Tool Shadowing/Missing Implementation",
+          "Resource Exhaustion Risk",
+          "Misleading Capability Claims"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that this is a template-only skill with no implementation. The claim of payment processing capabilities without any code is objectively verifiable from the file listing.",
+        "meta_exploitability": "Medium - Requires user to actually attempt payment operations, but then agent would generate unsafe code",
+        "meta_impact": "High - Financial operations without security controls could lead to credential exposure, incorrect transactions, or data leaks"
+      }
+    },
+    {
+      "id": "llm_finding_payment_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Capability Claims Without Implementation",
+      "description": "The skill description and features list claim comprehensive payment processing capabilities (invoicing, payment processing, refunds, transaction tracking, multiple gateway support) but contains zero implementation code. This is deceptive as users may believe the skill provides secure, tested payment functionality when in reality the agent would need to generate payment-handling code on-the-fly, which is extremely risky for financial operations.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Features section lists: 'Create and send invoices', 'Process payments', 'Track payment status', 'Refund management', 'Payment history' and claims support for Stripe, PayPal, Square, and crypto payments. However, 'Script Files: No script files found.'",
+      "remediation": "1. Either implement all claimed features with security-reviewed code, or clearly document that this is a template/framework requiring user implementation. 2. Add prominent warnings that payment processing requires secure implementation and should not be improvised. 3. Provide reference implementations or links to official SDK documentation. 4. Remove specific gateway claims (Stripe, PayPal, etc.) until implementations exist.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This payment processing skill presents SIGNIFICANT SECURITY RISKS due to the complete absence of implementation code despite claiming comprehensive payment functionality. The combination of 'always: True' auto-activation, missing credential management implementation, and lack of security controls creates a dangerous scenario where the agent would improvise financial transaction code at runtime. The skill appears to be an incomplete template or placeholder that should NOT be used for actual payment processing without substantial security hardening. Key risks include potential credential exposure, tool shadowing leading to unsafe payment API calls, missing resource controls, and misleading capability claims. This skill requires complete implementation with security review before any production use.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure Risk",
+          "Tool Shadowing/Missing Implementation",
+          "Resource Exhaustion Risk",
+          "Misleading Capability Claims"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The mismatch between claimed capabilities and actual implementation is objectively verifiable. The skill promises comprehensive payment features but delivers only a markdown file.",
+        "meta_exploitability": "Low - Requires user to trust and use the skill",
+        "meta_impact": "Medium - Users may deploy unsafe payment processing, but requires active use"
       }
     }
   ],
-  "scan_duration_seconds": 0.4118506908416748,
-  "duration_ms": 411,
+  "scan_duration_seconds": 41.95830535888672,
+  "duration_ms": 41958,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:20:27.142200"
+  "timestamp": "2026-02-06T06:08:31.417429"
 }

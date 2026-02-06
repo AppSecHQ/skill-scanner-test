@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** obsidian-markdown
-**Directory:** ./skills/kepano-obsidian-skills/skills/obsidian-markdown
+**Directory:** /workspace/skills/kepano-obsidian-skills/skills/obsidian-markdown
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.39s
-**Timestamp:** 2026-02-03T14:16:38.351071
+**Scan Duration:** 0.73s
+**Timestamp:** 2026-02-06T07:48:47.990680
 
 ## Summary
 

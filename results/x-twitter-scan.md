@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** twitter-openclaw
-**Directory:** ./skills/clawhub-x-twitter
+**Directory:** /workspace/skills/clawhub-x-twitter
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.32s
-**Timestamp:** 2026-02-03T16:14:31.674774
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:54:01.059091
 
 ## Summary
 

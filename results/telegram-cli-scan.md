@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** tg
-**Directory:** ./skills/clawhub-tg
+**Directory:** /workspace/skills/clawhub-tg
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.31s
-**Timestamp:** 2026-02-03T15:55:28.177735
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:51:09.237500
 
 ## Summary
 

@@ -1,30 +1,78 @@
 {
   "skill_name": "clawkey",
-  "skill_path": "./skills/clawhub-clawkey",
-  "skill_directory": "./skills/clawhub-clawkey",
+  "skill_path": "/workspace/skills/clawhub-clawkey",
+  "skill_directory": "/workspace/skills/clawhub-clawkey",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_clawkey_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Base URL Without TLS Verification Guidance",
+      "description": "The skill includes a hardcoded API base URL (https://api.clawkey.ai/v1) in the YAML manifest without any guidance on TLS certificate verification, API authentication security, or how to validate the server's identity. While HTTPS is used, there's no mention of certificate pinning or validation requirements for this identity/verification service.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "api_base: 'https://api.clawkey.ai/v1'",
+      "remediation": "Add explicit guidance on TLS certificate verification requirements. Document the expected certificate fingerprint or CA for api.clawkey.ai. Include error handling for certificate validation failures.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The ClawKey skill is a security-focused identity verification system with MODERATE security concerns. The skill's core purpose (verifiable human ownership via palm verification) is legitimate, but the implementation guidance has several gaps. Primary concerns: (1) Hardcoded API endpoint without TLS verification guidance, (2) Private key handling instructions lack technical safeguards, (3) Missing referenced implementation files make full security review impossible, (4) Incomplete error handling documentation. The skill does NOT contain active malicious code (no data exfiltration, no prompt injection, no command injection), but the incomplete implementation and missing safeguards create risk of accidental key exposure or insecure API interactions. The skill would benefit from: complete code examples with proper key handling, TLS certificate validation requirements, comprehensive error handling, and inclusion of all referenced files.",
+        "primary_threats": [
+          "Data Exposure Risk",
+          "Missing Implementation Files",
+          "Incomplete Security Guidance"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "While HTTPS is used (which provides baseline security), the lack of explicit guidance on certificate validation is a documentation gap rather than an active vulnerability. Most HTTP clients validate certificates by default, but explicit guidance would be better for a security-focused skill.",
+        "meta_exploitability": "Low - Requires MITM attack and client that doesn't validate certificates",
+        "meta_impact": "Medium - Could allow interception of registration flows"
+      }
+    },
+    {
+      "id": "llm_finding_clawkey_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Private Key Exposure Risk - Insufficient Access Control Guidance",
+      "description": "The skill instructs reading from ~/.openclaw/identity/device.json which contains privateKeyPem. While the instructions warn 'never send privateKeyPem to any server', there's no technical enforcement mechanism described, and the skill provides no code examples showing safe key handling. An agent following these instructions could accidentally expose the private key through logging, error messages, or improper variable handling.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Path: ~/.openclaw/identity/device.json contains privateKeyPem. Instructions state 'Use only locally to sign the message. Never include in API requests.' but provide no code safeguards.",
+      "remediation": "Provide concrete code examples showing: (1) Reading device.json safely with try-catch, (2) Extracting only publicKeyPem for API calls, (3) Using privateKeyPem only in memory for signing, (4) Clearing sensitive variables after use, (5) Avoiding logging private key material.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The ClawKey skill is a security-focused identity verification system with MODERATE security concerns. The skill's core purpose (verifiable human ownership via palm verification) is legitimate, but the implementation guidance has several gaps. Primary concerns: (1) Hardcoded API endpoint without TLS verification guidance, (2) Private key handling instructions lack technical safeguards, (3) Missing referenced implementation files make full security review impossible, (4) Incomplete error handling documentation. The skill does NOT contain active malicious code (no data exfiltration, no prompt injection, no command injection), but the incomplete implementation and missing safeguards create risk of accidental key exposure or insecure API interactions. The skill would benefit from: complete code examples with proper key handling, TLS certificate validation requirements, comprehensive error handling, and inclusion of all referenced files.",
+        "primary_threats": [
+          "Data Exposure Risk",
+          "Missing Implementation Files",
+          "Incomplete Security Guidance"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill provides a working code example that loads the entire identity object including privateKeyPem into memory. While there's a text warning, there's no demonstrated pattern for safe handling, memory clearing, or preventing accidental exposure through logging/errors. This is a legitimate security guidance gap for a cryptographic identity skill.",
+        "meta_exploitability": "Medium - Requires developer error (logging, poor error handling) rather than direct vulnerability",
+        "meta_impact": "High - Private key exposure would allow impersonation of the agent"
       }
     }
   ],
-  "scan_duration_seconds": 0.3719482421875,
-  "duration_ms": 371,
+  "scan_duration_seconds": 29.79953694343567,
+  "duration_ms": 29799,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:02:51.901344"
+  "timestamp": "2026-02-05T22:20:06.665291"
 }

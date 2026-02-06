@@ -1,50 +1,78 @@
 {
   "skill_name": "memory-hygiene",
-  "skill_path": "./skills/clawhub-memory-hygiene",
-  "skill_directory": "./skills/clawhub-memory-hygiene",
+  "skill_path": "/workspace/skills/clawhub-memory-hygiene",
+  "skill_directory": "/workspace/skills/clawhub-memory-hygiene",
   "is_safe": false,
   "max_severity": "HIGH",
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_memory-hygiene_0",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "HIGH",
+      "title": "Destructive Command Without Safety Guardrails",
+      "description": "The skill instructs users to execute 'rm -rf ~/.clawdbot/memory/lancedb/' which permanently deletes all vector memory data. This command is presented without warnings, confirmation prompts, or backup recommendations. If executed accidentally or maliciously triggered, it causes irreversible data loss. The instruction lacks safety mechanisms like backup creation, user confirmation, or rollback capability.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "**Wipe:** Clear all vector memory\n```bash\nrm -rf ~/.clawdbot/memory/lancedb/\n```",
+      "remediation": "Add explicit warnings about data loss, require user confirmation before execution, recommend creating backups before deletion (e.g., 'cp -r ~/.clawdbot/memory/lancedb/ ~/.clawdbot/memory/lancedb.backup.$(date +%s)'), and consider implementing a safer deletion method with recovery options.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security risks primarily related to destructive operations without adequate safeguards. The core functionality (memory maintenance) is legitimate, but the implementation lacks critical safety mechanisms. The most concerning issues are: (1) destructive rm -rf commands without warnings or backups, (2) automated cron jobs that delete data without user confirmation, and (3) configuration changes without validation. While there is no evidence of malicious intent (no data exfiltration, no credential theft, no prompt injection), the skill could cause significant data loss through accidental execution or automation failures. The missing junk.py file and lack of metadata are minor concerns. The skill would benefit from adding backup mechanisms, user confirmations, and failure handling before being considered production-ready.",
+        "primary_threats": [
+          "Availability Disruption",
+          "Tool Exploitation",
+          "Configuration Manipulation"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The rm -rf command is genuinely destructive and lacks safeguards. However, this is the documented purpose of the skill (memory cleanup), so it's not malicious - just needs better safety practices.",
+        "meta_exploitability": "Low - requires user to intentionally execute the command",
+        "meta_impact": "Medium - data loss of vector memory, but can be rebuilt from MEMORY.md"
       }
     },
     {
-      "id": "YARA_system_manipulation_b112a3c6ba",
-      "rule_id": "YARA_system_manipulation",
+      "id": "llm_finding_memory-hygiene_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
       "category": "unauthorized_tool_use",
-      "severity": "HIGH",
-      "title": "SYSTEM MANIPULATION detected by YARA",
-      "description": "Detects system manipulation, privilege escalation, and destructive file operations: rm -rf",
+      "severity": "MEDIUM",
+      "title": "Automated Destructive Cron Job Without Safeguards",
+      "description": "The skill provides instructions to set up a monthly cron job that automatically wipes all memory data without user interaction or confirmation. The cron job executes 'Wipe ~/.clawdbot/memory/lancedb/' on a schedule (monthly at 4 AM), which could cause unexpected data loss if users forget about the automation or if the reseed process fails. There are no failure handling mechanisms, backup procedures, or notification requirements before deletion.",
       "file_path": "SKILL.md",
-      "line_number": 14,
-      "snippet": "rm -rf ~/.clawdbot/memory/lancedb/",
-      "remediation": "Review and remove system manipulation pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "cron action=add job={\n  \"name\": \"memory-maintenance\",\n  \"schedule\": \"0 4 1 * *\",\n  \"text\": \"Monthly memory maintenance: 1) Wipe ~/.clawdbot/memory/lancedb/ 2) Parse MEMORY.md 3) Store key facts to fresh LanceDB 4) Report completion\"\n}",
+      "remediation": "Implement pre-deletion backup creation in the cron job, add failure detection and rollback mechanisms, require explicit user opt-in for automated deletion, send notifications before executing destructive operations, and implement a dry-run mode to preview what would be deleted.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "system_manipulation",
-        "yara_namespace": "system_manipulation",
-        "matched_string": "$file_destruction",
-        "threat_type": "SYSTEM MANIPULATION",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security risks primarily related to destructive operations without adequate safeguards. The core functionality (memory maintenance) is legitimate, but the implementation lacks critical safety mechanisms. The most concerning issues are: (1) destructive rm -rf commands without warnings or backups, (2) automated cron jobs that delete data without user confirmation, and (3) configuration changes without validation. While there is no evidence of malicious intent (no data exfiltration, no credential theft, no prompt injection), the skill could cause significant data loss through accidental execution or automation failures. The missing junk.py file and lack of metadata are minor concerns. The skill would benefit from adding backup mechanisms, user confirmations, and failure handling before being considered production-ready.",
+        "primary_threats": [
+          "Availability Disruption",
+          "Tool Exploitation",
+          "Configuration Manipulation"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The cron job genuinely lacks error handling and backup mechanisms. This is a legitimate concern for automated destructive operations.",
+        "meta_exploitability": "Low - user must explicitly set up the cron job",
+        "meta_impact": "Medium - automated data loss if reseed fails, but user-initiated"
       }
     }
   ],
-  "scan_duration_seconds": 0.4104020595550537,
-  "duration_ms": 410,
+  "scan_duration_seconds": 30.0251145362854,
+  "duration_ms": 30025,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:59:26.508370"
+  "timestamp": "2026-02-06T04:28:00.824057"
 }

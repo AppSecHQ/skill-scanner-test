@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** frontend-design
-**Directory:** ./skills/anthropics-skills/skills/frontend-design
+**Directory:** /workspace/skills/anthropics-skills/skills/frontend-design
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 1.02s
-**Timestamp:** 2026-02-01T22:47:36.326328
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:47:24.231513
 
 ## Summary
 

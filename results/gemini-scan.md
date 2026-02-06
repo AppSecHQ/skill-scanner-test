@@ -1,53 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** gemini
-**Directory:** ./skills/softaworks-agent-toolkit/skills/gemini
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** HIGH
-**Scan Duration:** 0.32s
-**Timestamp:** 2026-02-02T02:56:31.768748
+**Directory:** /workspace/skills/softaworks-agent-toolkit/skills/gemini
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 33.29s
+**Timestamp:** 2026-02-06T01:57:59.160010
 
 ## Summary
 
-- **Total Findings:** 3
+- **Total Findings:** 2
 - **Critical:** 0
-- **High:** 2
-- **Medium:** 0
-- **Low:** 1
+- **High:** 0
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### HIGH Severity
+### MEDIUM Severity
 
-#### [HIGH] SYSTEM MANIPULATION detected by YARA
+#### [MEDIUM] Unrestricted Tool Approval Mode Enables Arbitrary Command Execution
 
-**Severity:** HIGH
+**Severity:** MEDIUM
 **Category:** unauthorized_tool_use
-**Rule ID:** YARA_system_manipulation
-**Location:** SKILL.md:30
-
-**Description:** Detects system manipulation, privilege escalation, and destructive file operations: pkill -9
-
-#### [HIGH] SYSTEM MANIPULATION detected by YARA
-
-**Severity:** HIGH
-**Category:** unauthorized_tool_use
-**Rule ID:** YARA_system_manipulation
-**Location:** SKILL.md:189
-
-**Description:** Detects system manipulation, privilege escalation, and destructive file operations: pkill -9
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill instructions explicitly recommend using '--approval-mode yolo' for automated tasks, which auto-approves ALL tools without user confirmation. This allows the Gemini CLI to execute arbitrary bash commands, file operations, and other tools without oversight. While the skill correctly warns against using 'default' mode in non-interactive contexts, the 'yolo' mode creates a security risk by removing all approval gates. An attacker could craft prompts that cause Gemini to execute malicious commands, modify files, or exfiltrate data, all auto-approved by the yolo mode.
+
+#### [MEDIUM] Transitive Trust to External AI Model Without Input Validation
+
+**Severity:** MEDIUM
+**Category:** prompt_injection
+**Rule ID:** LLM_PROMPT_INJECTION
+**Location:** SKILL.md
+
+**Description:** The skill delegates complete trust to the Gemini CLI and its underlying AI models (Gemini 3 Pro, Flash, etc.) to process user codebases and execute commands. There is no validation, sanitization, or filtering of what the external Gemini model might instruct the agent to do. If the Gemini model is compromised, manipulated via prompt injection, or produces malicious output, the agent will follow those instructions when using 'yolo' or 'auto_edit' modes. This creates an indirect prompt injection vector where untrusted content from Gemini's responses could influence the agent's behavior.
 
 ## Analyzers
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** senior-architect
-**Directory:** ./skills/clawhub-senior-architect
+**Directory:** /workspace/skills/clawhub-senior-architect
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 1.13s
-**Timestamp:** 2026-02-03T16:14:42.487695
+**Scan Duration:** 0.97s
+**Timestamp:** 2026-02-06T07:36:45.495929
 
 ## Summary
 

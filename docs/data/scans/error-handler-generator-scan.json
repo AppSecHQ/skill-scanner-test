@@ -1,30 +1,113 @@
 {
   "skill_name": "error-handler-gen",
-  "skill_path": "./skills/clawhub-error-handler",
-  "skill_directory": "./skills/clawhub-error-handler",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-error-handler",
+  "skill_directory": "/workspace/skills/clawhub-error-handler",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_error-handler-gen_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Deceptive Skill Description - External Tool Masquerading as Agent Skill",
+      "description": "The skill claims to be an 'Error Handler Generator' for agent use, but the instructions exclusively describe an external npm package ('npx ai-error-handler') that requires Node.js and OPENAI_API_KEY. This is social engineering - the skill misleads users into believing it provides error handling generation capabilities when it actually just documents an external tool. The skill has no executable code, no actual functionality, and cannot perform the described operations. This is tool poisoning through deceptive metadata.",
       "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "line_number": 1,
+      "snippet": "Description claims 'Generate error handling middleware for any framework' but instructions only show 'npx ai-error-handler express' commands. No Python/Bash scripts exist to implement this functionality. The skill is a hollow wrapper around an external npm package.",
+      "remediation": "Either: (1) Remove this skill as it provides no actual agent functionality, or (2) Rewrite to clearly state it's documentation for an external tool, not an executable skill. If keeping, add scripts that actually generate error handlers using agent tools, or clearly mark as 'reference documentation only' in the description.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill exhibits HIGH-risk deceptive practices. It masquerades as an error handler generator but contains no executable code - only documentation for an external npm package. This is social engineering through tool poisoning: the skill occupies namespace and discovery surface without providing actual functionality. The undisclosed OPENAI_API_KEY requirement creates credential exposure risk. The skill should either be removed or completely rewritten with actual implementation. Currently, it misleads users about its capabilities and dependencies while providing zero agent functionality.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Metadata)",
+          "Tool Shadowing (No Implementation)",
+          "Credential Exposure Risk (Undisclosed API Key Requirement)",
+          "Misleading Content"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified this. Verified by checking file contents - dist/cli.js and src/cli.ts are npm package code (#!/usr/bin/env node, commander CLI), not agent-executable scripts. No Python or Bash scripts exist that an agent could run.",
+        "meta_exploitability": "N/A - Not a security exploit, but deceptive design",
+        "meta_impact": "HIGH - Users expecting error handler generation will get non-functional skill. Wastes time, creates confusion, damages trust in skill ecosystem."
+      }
+    },
+    {
+      "id": "llm_finding_error-handler-gen_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Undisclosed External Dependency with API Key Requirement",
+      "description": "The skill requires OPENAI_API_KEY environment variable but this is buried in the requirements section and not disclosed in the YAML manifest. This creates a credential exposure risk - users may not realize the skill (or the external tool it references) will access their OpenAI API key. The skill description makes no mention of OpenAI API usage or associated costs.",
+      "file_path": "SKILL.md",
+      "line_number": 50,
+      "snippet": "'Needs OPENAI_API_KEY environment variable' appears only in requirements section. No disclosure in manifest description field. Users activating this skill may unknowingly expose API credentials to the external npm package.",
+      "remediation": "Add explicit disclosure to YAML description: 'Requires OPENAI_API_KEY and calls external npm package'. Warn users about credential exposure and potential API costs. Better yet, implement the functionality directly in the skill without external API dependencies.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill exhibits HIGH-risk deceptive practices. It masquerades as an error handler generator but contains no executable code - only documentation for an external npm package. This is social engineering through tool poisoning: the skill occupies namespace and discovery surface without providing actual functionality. The undisclosed OPENAI_API_KEY requirement creates credential exposure risk. The skill should either be removed or completely rewritten with actual implementation. Currently, it misleads users about its capabilities and dependencies while providing zero agent functionality.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Metadata)",
+          "Tool Shadowing (No Implementation)",
+          "Credential Exposure Risk (Undisclosed API Key Requirement)",
+          "Misleading Content"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified in dist/index.js - OpenAI client is instantiated and used. OPENAI_API_KEY requirement is real but poorly disclosed.",
+        "meta_exploitability": "Low - Requires user to run external npm package and provide their own API key",
+        "meta_impact": "MEDIUM - Unexpected API costs, credential exposure to npm package (though package appears legitimate)"
+      }
+    },
+    {
+      "id": "llm_finding_error-handler-gen_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Tool Shadowing - No Actual Tool Implementation",
+      "description": "The skill name and description suggest it's a tool that generates error handlers, but it contains zero executable code. This is tool shadowing - it occupies the namespace and discovery surface for 'error-handler-gen' without providing any actual functionality. When an agent tries to use this skill, it will find only documentation for an external npm package, not working code.",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "Manifest declares 'name: error-handler-gen' and 'description: Generate error handling middleware' but 'Script Files: No script files found'. The skill cannot execute its stated purpose.",
+      "remediation": "Implement actual error handler generation using Python or Bash scripts that work with agent tools (Read, Write). Generate framework-specific error handling code directly instead of delegating to external npm packages. If implementation isn't feasible, rename to 'error-handler-docs' to clarify it's documentation only.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill exhibits HIGH-risk deceptive practices. It masquerades as an error handler generator but contains no executable code - only documentation for an external npm package. This is social engineering through tool poisoning: the skill occupies namespace and discovery surface without providing actual functionality. The undisclosed OPENAI_API_KEY requirement creates credential exposure risk. The skill should either be removed or completely rewritten with actual implementation. Currently, it misleads users about its capabilities and dependencies while providing zero agent functionality.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Metadata)",
+          "Tool Shadowing (No Implementation)",
+          "Credential Exposure Risk (Undisclosed API Key Requirement)",
+          "Misleading Content"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified by examining all files - no .py or .sh scripts exist. Only npm package code that requires Node.js runtime.",
+        "meta_exploitability": "N/A - Design flaw, not exploitable",
+        "meta_impact": "MEDIUM - Blocks legitimate skill development, confuses users, wastes agent context"
       }
     }
   ],
-  "scan_duration_seconds": 0.47864866256713867,
-  "duration_ms": 478,
+  "scan_duration_seconds": 34.04601049423218,
+  "duration_ms": 34046,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:17:54.856040"
+  "timestamp": "2026-02-06T00:45:55.820706"
 }

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** template-skill
-**Directory:** ./skills/anthropics-skills/template
+**Directory:** /workspace/skills/anthropics-skills/template
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.36s
-**Timestamp:** 2026-02-02T02:54:57.632885
+**Scan Duration:** 0.26s
+**Timestamp:** 2026-02-06T07:51:12.973150
 
 ## Summary
 

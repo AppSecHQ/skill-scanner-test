@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** tinyfish
-**Directory:** ./skills/clawhub-tinyfish-web-agent
+**Directory:** /workspace/skills/clawhub-tinyfish-web-agent
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 0.49s
-**Timestamp:** 2026-02-03T16:19:30.149886
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:51:25.982238
 
 ## Summary
 

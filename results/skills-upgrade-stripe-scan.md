@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** upgrade-stripe
-**Directory:** ./skills/stripe-ai/skills/upgrade-stripe
+**Directory:** /workspace/skills/stripe-ai/skills/upgrade-stripe
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T14:16:58.288873
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:49:02.916659
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** internal-comms
-**Directory:** ./skills/anthropics-skills/skills/internal-comms
+**Directory:** /workspace/skills/anthropics-skills/skills/internal-comms
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.30s
-**Timestamp:** 2026-02-01T22:12:03.029810
+**Scan Duration:** 0.27s
+**Timestamp:** 2026-02-06T07:48:36.595493
 
 ## Summary
 

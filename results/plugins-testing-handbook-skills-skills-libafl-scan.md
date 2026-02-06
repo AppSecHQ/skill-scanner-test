@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** libafl
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/libafl
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/libafl
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T14:14:39.050990
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:33:57.228436
 
 ## Summary
 

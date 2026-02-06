@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** hugging-face-tool-builder
-**Directory:** ./skills/huggingface-skills/skills/hugging-face-tool-builder
+**Directory:** /workspace/skills/huggingface-skills/skills/hugging-face-tool-builder
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.45s
-**Timestamp:** 2026-02-03T14:17:42.379465
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:48:29.451284
 
 ## Summary
 

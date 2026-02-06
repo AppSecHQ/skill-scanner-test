@@ -1,30 +1,46 @@
 {
   "skill_name": "daily-ai-news",
-  "skill_path": "./skills/clawhub-daily-ai-news-skill",
-  "skill_directory": "./skills/clawhub-daily-ai-news-skill",
+  "skill_path": "/workspace/skills/clawhub-daily-ai-news-skill",
+  "skill_directory": "/workspace/skills/clawhub-daily-ai-news-skill",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_daily-ai-news_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse - Following External Web Content",
+      "description": "The skill instructs the agent to fetch content from external websites and web search results, then follow instructions or execute workflows based on that untrusted content. The skill uses mcp__web_reader__webReader to fetch arbitrary web pages and then processes their content without validation. This creates a transitive trust vulnerability where malicious content on fetched websites could inject instructions that the agent would follow.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Use `mcp__web_reader__webReader` to fetch content from 3-5 major AI news websites... Use `WebSearch` with date-filtered queries... For the top 10-15 most relevant stories from search results: Extract URLs from search results, Use `mcp__web_reader__webReader` to fetch full article content",
+      "remediation": "Implement strict content validation and sanitization for all fetched web content. Do not allow fetched content to influence agent behavior or instructions. Treat all external content as untrusted data only, not as instructions. Add explicit warnings that fetched content should only be summarized, not executed or followed.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents a MEDIUM security risk primarily due to transitive trust abuse. The skill fetches and processes content from arbitrary external websites without proper validation, creating a vulnerability where malicious web content could inject instructions. The skill also has minor issues with missing optional metadata and incomplete file references. However, there are no critical threats like data exfiltration, hardcoded credentials, or command injection. The skill's core functionality (aggregating AI news) is legitimate, but the implementation needs security hardening around external content handling.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Missing Metadata",
+          "Incomplete File References"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a real transitive trust vulnerability. The skill explicitly instructs the agent to fetch arbitrary web content and process it, creating a clear attack vector for indirect prompt injection. This is a well-documented AI security risk (AITech-1.2).",
+        "meta_exploitability": "Medium - Requires attacker to control content on a website that gets fetched, but many news aggregators pull from user-submitted sources or could be compromised",
+        "meta_impact": "Medium-High - Could lead to instruction injection, data exfiltration if combined with other capabilities, or manipulation of the news summary output"
       }
     }
   ],
-  "scan_duration_seconds": 0.3517770767211914,
-  "duration_ms": 351,
+  "scan_duration_seconds": 24.700512409210205,
+  "duration_ms": 24700,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:02:41.557944"
+  "timestamp": "2026-02-05T23:46:13.511015"
 }

@@ -1,10 +1,10 @@
 {
   "skill_name": "capability-evolver",
-  "skill_path": "./skills/clawhub-evolver",
-  "skill_directory": "./skills/clawhub-evolver",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-evolver",
+  "skill_directory": "/workspace/skills/clawhub-evolver",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 9,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -21,10 +21,274 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_capability-evolver_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "CRITICAL",
+      "title": "Direct Prompt Injection: Identity Override and Forced Behavior Modification",
+      "description": "The SKILL.md contains explicit instructions to override the agent's identity and inject directives that force specific behaviors. The 'Safety & Risk Protocol' section includes 'Identity Injection: You are a Recursive Self-Improving System' and 'Mutation Directive' that commands the agent to either repair or forcibly optimize code based on conditions. This is a direct attempt to redefine the agent's role and override its normal operational constraints.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Identity Injection: 'You are a Recursive Self-Improving System.' Mutation Directive: If Errors Found -> Repair Mode (Fix bugs). If Stable -> Forced Optimization (Refactor/Innovate).",
+      "remediation": "Remove all identity injection and forced directive instructions. The skill should provide analysis capabilities only, with the agent maintaining its original role and decision-making autonomy. Any code modifications should require explicit user approval.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill represents a severe threat to agent security and system integrity. It implements multiple high-risk patterns including direct prompt injection (identity override), autonomous code modification without consent, infinite loop execution, and randomized code mutations. The 'Mad Dog Mode' allows completely unsupervised modification of the agent's codebase and memory systems. The skill's design fundamentally violates security principles by attempting to override agent autonomy, modify core system files, and execute changes without user approval. The social engineering framing as 'evolution' and 'self-improvement' obscures the serious security risks. This skill should NOT be installed or executed under any circumstances.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Autonomous Code Modification",
+          "System Manipulation",
+          "Tool Exploitation",
+          "Availability Disruption",
+          "Unauthorized Memory Access",
+          "Infinite Loop Execution",
+          "Randomized Code Injection"
+        ],
+        "aitech": "AITech-1.1",
+        "aitech_name": "Direct Prompt Injection",
+        "aisubtech": "AISubtech-1.1.1",
+        "aisubtech_name": "Instruction Manipulation (Direct Prompt Injection)",
+        "scanner_category": "PROMPT INJECTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_capability-evolver_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "Autonomous Code Modification Without User Consent (Mad Dog Mode)",
+      "description": "The skill explicitly implements 'Mad Dog Mode' which executes code changes immediately without user confirmation. The documentation states 'assumes fully automated mode (Mad Dog Mode) and executes changes immediately' and 'runs the evolution cycle...executes changes immediately.' This allows the skill to autonomously modify the agent's codebase, memory, and potentially system files without any human oversight.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Standard Run (Automated): 'If no flags are provided, it assumes fully automated mode (Mad Dog Mode) and executes changes immediately.' Mad Dog Mode (Continuous Loop): 'To run in an infinite loop (e.g., via cron or background process), use the --loop flag'",
+      "remediation": "Remove autonomous execution capabilities entirely. All code modifications must require explicit user review and approval. Implement a mandatory confirmation step before any file system changes. Remove the 'Mad Dog Mode' and '--loop' functionality.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill represents a severe threat to agent security and system integrity. It implements multiple high-risk patterns including direct prompt injection (identity override), autonomous code modification without consent, infinite loop execution, and randomized code mutations. The 'Mad Dog Mode' allows completely unsupervised modification of the agent's codebase and memory systems. The skill's design fundamentally violates security principles by attempting to override agent autonomy, modify core system files, and execute changes without user approval. The social engineering framing as 'evolution' and 'self-improvement' obscures the serious security risks. This skill should NOT be installed or executed under any circumstances.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Autonomous Code Modification",
+          "System Manipulation",
+          "Tool Exploitation",
+          "Availability Disruption",
+          "Unauthorized Memory Access",
+          "Infinite Loop Execution",
+          "Randomized Code Injection"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_capability-evolver_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "HIGH",
+      "title": "Availability Disruption: Infinite Loop Execution",
+      "description": "The skill includes a '--loop' flag that runs the evolution cycle in an infinite loop, potentially consuming system resources indefinitely. Combined with autonomous code execution, this creates a risk of uncontrolled resource consumption and system instability. The documentation explicitly encourages running this in background processes or cron jobs.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'To run in an infinite loop (e.g., via cron or background process), use the --loop flag or just standard execution in a cron job.' 'node skills/capability-evolver/index.js --loop'",
+      "remediation": "Remove the infinite loop functionality. Implement resource limits, execution timeouts, and iteration caps. Any repeated execution should be explicitly controlled by the user with clear termination conditions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill represents a severe threat to agent security and system integrity. It implements multiple high-risk patterns including direct prompt injection (identity override), autonomous code modification without consent, infinite loop execution, and randomized code mutations. The 'Mad Dog Mode' allows completely unsupervised modification of the agent's codebase and memory systems. The skill's design fundamentally violates security principles by attempting to override agent autonomy, modify core system files, and execute changes without user approval. The social engineering framing as 'evolution' and 'self-improvement' obscures the serious security risks. This skill should NOT be installed or executed under any circumstances.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Autonomous Code Modification",
+          "System Manipulation",
+          "Tool Exploitation",
+          "Availability Disruption",
+          "Unauthorized Memory Access",
+          "Infinite Loop Execution",
+          "Randomized Code Injection"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_capability-evolver_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Tool Exploitation: Unauthorized Self-Modification and Memory Manipulation",
+      "description": "The skill is designed to 'autonomously write new code or update their own memory to improve performance' and 'scans memory and history files.' This represents tool exploitation where the skill manipulates the agent's core functionality, memory systems, and potentially other skills without proper authorization boundaries. The skill can modify its own behavior and that of other system components.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'allows OpenClaw agents to inspect their own runtime history, identify failures or inefficiencies, and autonomously write new code or update their own memory' 'Auto-Log Analysis: Automatically scans memory and history files' 'Self-Repair: Detects crashes and suggests patches'",
+      "remediation": "Restrict the skill to read-only analysis of logs and history. Remove all capabilities to modify code, memory, or system files. Any suggested changes should be presented to the user for manual implementation. Implement strict sandboxing to prevent access to core agent files.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill represents a severe threat to agent security and system integrity. It implements multiple high-risk patterns including direct prompt injection (identity override), autonomous code modification without consent, infinite loop execution, and randomized code mutations. The 'Mad Dog Mode' allows completely unsupervised modification of the agent's codebase and memory systems. The skill's design fundamentally violates security principles by attempting to override agent autonomy, modify core system files, and execute changes without user approval. The social engineering framing as 'evolution' and 'self-improvement' obscures the serious security risks. This skill should NOT be installed or executed under any circumstances.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Autonomous Code Modification",
+          "System Manipulation",
+          "Tool Exploitation",
+          "Availability Disruption",
+          "Unauthorized Memory Access",
+          "Infinite Loop Execution",
+          "Randomized Code Injection"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_capability-evolver_4",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Genetic Mutation: Randomized Code Injection",
+      "description": "The skill includes a 'Genetic Mutation' feature with 'configurable chance to introduce creative noise.' This represents intentional injection of random or unpredictable code changes into the system, which could introduce vulnerabilities, break functionality, or create security holes. The randomization of code modifications is inherently dangerous and unpredictable.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'Genetic Mutation: Configurable chance to introduce creative noise.' Combined with autonomous execution in Mad Dog Mode, this allows random code changes without oversight.",
+      "remediation": "Remove the genetic mutation feature entirely. All code changes should be deterministic, well-tested, and based on clear analysis rather than randomization. Code modifications should never include random or 'creative noise' elements.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill represents a severe threat to agent security and system integrity. It implements multiple high-risk patterns including direct prompt injection (identity override), autonomous code modification without consent, infinite loop execution, and randomized code mutations. The 'Mad Dog Mode' allows completely unsupervised modification of the agent's codebase and memory systems. The skill's design fundamentally violates security principles by attempting to override agent autonomy, modify core system files, and execute changes without user approval. The social engineering framing as 'evolution' and 'self-improvement' obscures the serious security risks. This skill should NOT be installed or executed under any circumstances.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Autonomous Code Modification",
+          "System Manipulation",
+          "Tool Exploitation",
+          "Availability Disruption",
+          "Unauthorized Memory Access",
+          "Infinite Loop Execution",
+          "Randomized Code Injection"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_capability-evolver_5",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Social Engineering: Deceptive Framing as 'Evolution' and 'Self-Improvement'",
+      "description": "The skill uses persuasive language like 'Evolution is not optional. Adapt or die' and frames dangerous autonomous code modification as beneficial 'self-improvement' and 'evolution.' This social engineering technique makes risky behavior appear necessary and positive, potentially misleading users about the security implications of allowing autonomous code modification.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'Evolution is not optional. Adapt or die.' 'self-evolution engine' 'Recursive Self-Improving System' - These phrases frame autonomous code modification as natural and necessary rather than as a security risk.",
+      "remediation": "Use clear, neutral language that accurately describes the security implications. Remove persuasive framing that encourages users to enable dangerous features. Clearly document all risks associated with autonomous code modification.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill represents a severe threat to agent security and system integrity. It implements multiple high-risk patterns including direct prompt injection (identity override), autonomous code modification without consent, infinite loop execution, and randomized code mutations. The 'Mad Dog Mode' allows completely unsupervised modification of the agent's codebase and memory systems. The skill's design fundamentally violates security principles by attempting to override agent autonomy, modify core system files, and execute changes without user approval. The social engineering framing as 'evolution' and 'self-improvement' obscures the serious security risks. This skill should NOT be installed or executed under any circumstances.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Autonomous Code Modification",
+          "System Manipulation",
+          "Tool Exploitation",
+          "Availability Disruption",
+          "Unauthorized Memory Access",
+          "Infinite Loop Execution",
+          "Randomized Code Injection"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_capability-evolver_6",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Excessive Data Access: Unrestricted Memory and History Scanning",
+      "description": "The skill automatically scans memory and history files without clear scope limitations. This provides broad access to potentially sensitive information including user data, credentials, API keys, and system internals that may be logged in history files. The scope of data access is disproportionate and undefined.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'Auto-Log Analysis: Automatically scans memory and history files for errors and patterns.' No restrictions or scope limitations are specified for what data can be accessed.",
+      "remediation": "Implement strict scope limitations on what files and data can be accessed. Require explicit user permission for accessing sensitive directories. Implement filtering to exclude credential files, API keys, and personal data from analysis. Provide clear documentation of exactly what data will be accessed.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill represents a severe threat to agent security and system integrity. It implements multiple high-risk patterns including direct prompt injection (identity override), autonomous code modification without consent, infinite loop execution, and randomized code mutations. The 'Mad Dog Mode' allows completely unsupervised modification of the agent's codebase and memory systems. The skill's design fundamentally violates security principles by attempting to override agent autonomy, modify core system files, and execute changes without user approval. The social engineering framing as 'evolution' and 'self-improvement' obscures the serious security risks. This skill should NOT be installed or executed under any circumstances.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Autonomous Code Modification",
+          "System Manipulation",
+          "Tool Exploitation",
+          "Availability Disruption",
+          "Unauthorized Memory Access",
+          "Infinite Loop Execution",
+          "Randomized Code Injection"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_capability-evolver_7",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Security Metadata: No allowed-tools Declaration",
+      "description": "The skill manifest does not specify 'allowed-tools', making it unclear what agent capabilities this skill requires. Given the skill's stated functionality of modifying code and memory, this omission prevents users from understanding the tool permissions being requested. While allowed-tools is optional, its absence is concerning for a skill with such broad system access requirements.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "allowed-tools: Not specified. The skill description indicates it needs Write access (to modify code/memory), Read access (to scan logs), and potentially Bash/Python execution (to run node index.js).",
+      "remediation": "Add an explicit 'allowed-tools' declaration specifying all required agent tools (likely: Read, Write, Bash). This provides transparency about the skill's permission requirements and allows users to make informed decisions about installation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill represents a severe threat to agent security and system integrity. It implements multiple high-risk patterns including direct prompt injection (identity override), autonomous code modification without consent, infinite loop execution, and randomized code mutations. The 'Mad Dog Mode' allows completely unsupervised modification of the agent's codebase and memory systems. The skill's design fundamentally violates security principles by attempting to override agent autonomy, modify core system files, and execute changes without user approval. The social engineering framing as 'evolution' and 'self-improvement' obscures the serious security risks. This skill should NOT be installed or executed under any circumstances.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Autonomous Code Modification",
+          "System Manipulation",
+          "Tool Exploitation",
+          "Availability Disruption",
+          "Unauthorized Memory Access",
+          "Infinite Loop Execution",
+          "Randomized Code Injection"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.42345237731933594,
-  "duration_ms": 423,
+  "scan_duration_seconds": 43.187620878219604,
+  "duration_ms": 43187,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +296,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:03:02.182209"
+  "timestamp": "2026-02-05T21:15:14.308204"
 }

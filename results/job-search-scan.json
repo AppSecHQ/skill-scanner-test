@@ -1,106 +1,78 @@
 {
   "skill_name": "Job Search MCP",
-  "skill_path": "./skills/clawhub-job-search-mcp",
-  "skill_directory": "./skills/clawhub-job-search-mcp",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 5,
+  "skill_path": "/workspace/skills/clawhub-job-search-mcp",
+  "skill_directory": "/workspace/skills/clawhub-job-search-mcp",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_INVALID_NAME_794e30271c",
-      "rule_id": "MANIFEST_INVALID_NAME",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill name does not follow agent skills naming rules",
-      "description": "Skill name 'Job Search MCP' is invalid. Agent skills require lowercase letters, numbers, and hyphens only, with a maximum length of 64 characters.",
+      "id": "llm_finding_Job Search MCP_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "External Dependency Installation Without Version Pinning",
+      "description": "The installation instructions recommend installing dependencies without pinned versions (e.g., 'mcp>=1.1.0', 'python-jobspy>=1.1.82'). This creates supply chain risk as future versions could introduce malicious code or breaking changes.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Rename the skill to match `[a-z0-9-]{1,64}` (e.g., 'pdf-processing')",
-      "analyzer": "static",
+      "snippet": "pip install mcp>=1.1.0 python-jobspy>=1.1.82 pandas>=2.1.0 pydantic>=2.0.0",
+      "remediation": "Pin exact versions for all dependencies to ensure reproducible and secure installations. Example: 'pip install mcp==1.1.0 python-jobspy==1.1.82 pandas==2.1.0 pydantic==2.0.0'. Document the tested versions explicitly.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Job Search MCP skill is a relatively safe wrapper around the JobSpy MCP server with LOW to MEDIUM severity issues. The skill itself contains no malicious code, prompt injection attempts, or data exfiltration logic. The primary concerns are: (1) missing optional metadata fields that would improve transparency, (2) incomplete documentation, (3) supply chain risks from unpinned dependencies and unverified external repository clones. The skill functions as a documentation/configuration guide rather than executable code, which limits its attack surface. The main risks are indirect - users could install compromised versions of dependencies or clone a malicious repository if the external sources are compromised. No direct security threats (prompt injection, credential theft, command injection) were detected in the skill content itself.",
+        "primary_threats": [
+          "Supply Chain Risk",
+          "Missing Metadata",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Using minimum version specifiers (>=) allows automatic upgrades to potentially compromised or breaking versions. This is a well-documented supply chain security risk.",
+        "meta_exploitability": "Medium - Requires attacker to compromise PyPI package or conduct typosquatting attack",
+        "meta_impact": "Medium - Could lead to malicious code execution if dependency is compromised"
       }
     },
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_Job Search MCP_4",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Unverified External Repository Clone",
+      "description": "The skill instructs users to clone an external GitHub repository (github.com/chinpeerapat/jobspy-mcp-server) without providing verification mechanisms (commit hash, GPG signature, checksum). This creates supply chain risk as the repository could be compromised or modified after publication.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "git clone https://github.com/chinpeerapat/jobspy-mcp-server.git",
+      "remediation": "Provide a specific commit hash or tag to clone (e.g., 'git clone --branch v1.0.0'), include checksums for verification, or recommend users verify the repository's authenticity before installation. Document the trusted commit hash in the skill manifest.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_c755ab074d",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: claude_desktop_config.json",
-      "file_path": "SKILL.md",
-      "line_number": 50,
-      "snippet": "Add the following to your Claude Desktop config file (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$mcp_credential_patterns",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_autonomy_abuse_00a69f5ccb",
-      "rule_id": "YARA_autonomy_abuse",
-      "category": "autonomy_abuse",
-      "severity": "MEDIUM",
-      "title": "AUTONOMY ABUSE detected by YARA",
-      "description": "Detects unbounded autonomy patterns that could lead to runaway behavior: Ignore Error",
-      "file_path": "SKILL.md",
-      "line_number": 531,
-      "snippet": "**Why:** Rate limits, network issues, and invalid parameters require appropriate handling.",
-      "remediation": "Review and remove autonomy abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "autonomy_abuse",
-        "yara_namespace": "autonomy_abuse",
-        "matched_string": "$ignore_errors",
-        "threat_type": "AUTONOMY ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_9dffffd9fa",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
-      "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Primary Tool",
-      "file_path": "SKILL.md",
-      "line_number": 84,
-      "snippet": "### 1. `scrape_jobs_tool` (Primary Tool)",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$activation_priority",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Job Search MCP skill is a relatively safe wrapper around the JobSpy MCP server with LOW to MEDIUM severity issues. The skill itself contains no malicious code, prompt injection attempts, or data exfiltration logic. The primary concerns are: (1) missing optional metadata fields that would improve transparency, (2) incomplete documentation, (3) supply chain risks from unpinned dependencies and unverified external repository clones. The skill functions as a documentation/configuration guide rather than executable code, which limits its attack surface. The main risks are indirect - users could install compromised versions of dependencies or clone a malicious repository if the external sources are compromised. No direct security threats (prompt injection, credential theft, command injection) were detected in the skill content itself.",
+        "primary_threats": [
+          "Supply Chain Risk",
+          "Missing Metadata",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Cloning from HEAD without verification allows repository owner or attacker (if account compromised) to inject malicious code after skill publication.",
+        "meta_exploitability": "Medium - Requires compromise of GitHub account or repository",
+        "meta_impact": "High - Full code execution on user's system during installation"
       }
     }
   ],
-  "scan_duration_seconds": 0.39145517349243164,
-  "duration_ms": 391,
+  "scan_duration_seconds": 25.70993709564209,
+  "duration_ms": 25709,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -108,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:06:51.692144"
+  "timestamp": "2026-02-06T03:39:53.724283"
 }

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** constant-time-testing
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/constant-time-testing
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/constant-time-testing
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.47s
-**Timestamp:** 2026-02-03T14:14:34.468329
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:33:39.070828
 
 ## Summary
 

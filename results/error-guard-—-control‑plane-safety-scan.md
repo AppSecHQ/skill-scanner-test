@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** error-guard
-**Directory:** ./skills/clawhub-error-guard
+**Directory:** /workspace/skills/clawhub-error-guard
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.48s
-**Timestamp:** 2026-02-03T16:09:35.174358
+**Max Severity:** SAFE
+**Scan Duration:** 5.37s
+**Timestamp:** 2026-02-06T00:45:04.269083
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

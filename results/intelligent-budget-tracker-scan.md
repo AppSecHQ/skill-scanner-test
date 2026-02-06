@@ -1,33 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** agent-money-tracker
-**Directory:** ./skills/clawhub-intelligent-budget-tracker
+**Directory:** /workspace/skills/clawhub-intelligent-budget-tracker
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.32s
-**Timestamp:** 2026-02-03T16:10:29.021146
+**Max Severity:** MEDIUM
+**Scan Duration:** 25.28s
+**Timestamp:** 2026-02-06T03:29:39.741667
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 2
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### MEDIUM Severity
 
-#### [LOW] Skill does not specify a license
+#### [MEDIUM] Misleading Package Description - TypeScript Library Presented as Agent Skill
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill presents itself as a TypeScript/npm library ('npm install agent-money-tracker') with TypeScript code examples, but is packaged as an Agent Skill. Agent Skills use Python/Bash scripts, not TypeScript. This mismatch between description and actual skill format could mislead users about what they're installing and how it operates. The skill appears to be documentation for a separate npm package rather than a functional agent skill.
+
+#### [MEDIUM] Referenced File Not Found - Missing natural.py
+
+**Severity:** MEDIUM
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
+**Location:** SKILL.md
+
+**Description:** The skill instructions reference a file 'natural.py' that is not included in the skill package. This creates a broken dependency where the skill cannot function as described. If this file is meant to be external, it represents a supply chain risk; if it should be bundled, the skill is incomplete.
 
 ## Analyzers
 

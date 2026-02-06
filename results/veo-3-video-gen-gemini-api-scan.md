@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** veo3-video-gen
-**Directory:** ./skills/clawhub-veo3-video-gen
+**Directory:** /workspace/skills/clawhub-veo3-video-gen
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 2.16s
-**Timestamp:** 2026-02-03T15:55:23.359420
+**Scan Duration:** 1.92s
+**Timestamp:** 2026-02-06T07:52:42.404983
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** schema-markup
-**Directory:** ./skills/coreyhaines31-marketingskills/skills/schema-markup
+**Directory:** /workspace/skills/coreyhaines31-marketingskills/skills/schema-markup
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-02T02:54:03.355807
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:36:20.597912
 
 ## Summary
 

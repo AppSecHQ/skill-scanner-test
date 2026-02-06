@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** stealthy-auto-browse
-**Directory:** ./skills/clawhub-stealthy-auto-browse
+**Directory:** /workspace/skills/clawhub-stealthy-auto-browse
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.28s
-**Timestamp:** 2026-02-02T03:05:18.274657
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:50:12.073051
 
 ## Summary
 

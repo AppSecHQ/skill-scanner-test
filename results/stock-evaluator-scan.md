@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** stock-evaluator-v3
-**Directory:** ./skills/clawhub-stock-evaluator
+**Directory:** /workspace/skills/clawhub-stock-evaluator
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.72s
-**Timestamp:** 2026-02-03T15:55:10.384347
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:50:15.678376
 
 ## Summary
 

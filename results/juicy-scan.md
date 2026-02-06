@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** juicebox-v5
-**Directory:** ./skills/clawhub-juicy
+**Directory:** /workspace/skills/clawhub-juicy
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 1.22s
-**Timestamp:** 2026-02-03T16:10:46.932058
+**Max Severity:** SAFE
+**Scan Duration:** 12.43s
+**Timestamp:** 2026-02-06T03:42:31.616749
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

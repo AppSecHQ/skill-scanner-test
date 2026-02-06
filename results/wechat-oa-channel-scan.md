@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** channel
-**Directory:** ./skills/clawhub-channel
+**Directory:** /workspace/skills/clawhub-channel
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 2.32s
-**Timestamp:** 2026-02-03T16:02:26.614967
+**Scan Duration:** 2.20s
+**Timestamp:** 2026-02-06T07:53:22.942020
 
 ## Summary
 

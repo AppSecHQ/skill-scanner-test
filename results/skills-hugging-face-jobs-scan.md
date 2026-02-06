@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** hugging-face-jobs
-**Directory:** ./skills/huggingface-skills/skills/hugging-face-jobs
+**Directory:** /workspace/skills/huggingface-skills/skills/hugging-face-jobs
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 3.33s
-**Timestamp:** 2026-02-03T14:18:40.793764
+**Scan Duration:** 3.06s
+**Timestamp:** 2026-02-06T07:48:10.239612
 
 ## Summary
 

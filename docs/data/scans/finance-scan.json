@@ -1,84 +1,78 @@
 {
   "skill_name": "finance",
-  "skill_path": "./skills/clawhub-finance",
-  "skill_directory": "./skills/clawhub-finance",
-  "is_safe": false,
-  "max_severity": "HIGH",
-  "findings_count": 4,
+  "skill_path": "/workspace/skills/clawhub-finance",
+  "skill_directory": "/workspace/skills/clawhub-finance",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_d981c5562a",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "id": "llm_finding_finance_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import requests",
-      "file_path": "scripts/market_quote.py",
-      "line_number": 25,
-      "snippet": "import requests",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+requests",
-        "matched_text": "import requests",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "TOOL_MISMATCH_NETWORK_e71ce93e3d",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
-      "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "title": "Unpinned dependency versions in requirements",
+      "description": "The skill likely uses a requirements.txt file (referenced in instructions) but the file content was not provided for analysis. Unpinned dependencies (e.g., 'requests>=2.0' instead of 'requests==2.31.0') create supply chain risks through potential dependency confusion or malicious package updates.",
       "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
+      "snippet": "Instructions reference 'pip install -r requirements.txt' but file content not provided",
+      "remediation": "Ensure requirements.txt uses pinned versions (e.g., 'yfinance==0.2.28', 'pandas==2.0.3', 'requests==2.31.0') to prevent supply chain attacks.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This finance tracking skill is generally well-designed with appropriate security considerations. The skill makes external API calls to fetch financial data (ExchangeRate-API and Yahoo Finance via yfinance), which is expected and necessary for its core functionality. The main concerns are supply chain hygiene (missing requirements.txt content for version pinning verification, unpinned dependencies), missing optional metadata fields (allowed-tools, license, compatibility), and the need for clearer user disclosure about external network calls. The caching mechanism is a good practice to reduce rate-limiting risks. No critical security threats like data exfiltration, prompt injection, or command injection were detected. The skill operates within reasonable bounds for its stated purpose of tracking financial market data.",
+        "primary_threats": [
+          "Supply chain (unpinned dependencies)",
+          "External API disclosure",
+          "Missing metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "File exists but content not provided. This is a supply chain best practice recommendation.",
+        "meta_exploitability": "Medium - Unpinned dependencies could allow malicious package updates",
+        "meta_impact": "Medium - Dependency confusion or compromised package updates"
       }
     },
     {
-      "id": "SUSPICIOUS_URL_0a4da1e160",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "id": "llm_finding_finance_4",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://open.er-api.com/v6/latest/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-finance/scripts/market_quote.py",
+      "severity": "MEDIUM",
+      "title": "External API calls to third-party services without user notification",
+      "description": "The skill makes network requests to external APIs (ExchangeRate-API at open.er-api.com, Yahoo Finance via yfinance) to fetch financial data. While this is the core functionality, users may not be explicitly aware that their queries trigger external network calls that could expose query patterns or symbols of interest to third parties.",
+      "file_path": "scripts/market_quote.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
+      "snippet": "resp = requests.get(url, timeout=10) to https://open.er-api.com/v6/latest/{base}; yfinance library makes requests to Yahoo Finance",
+      "remediation": "Add explicit disclosure in SKILL.md that queries trigger external API calls to ExchangeRate-API and Yahoo Finance. Consider adding a user confirmation step for first-time use or provide offline mode options.",
+      "analyzer": "llm",
       "metadata": {
-        "url": "https://open.er-api.com/v6/latest/",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This finance tracking skill is generally well-designed with appropriate security considerations. The skill makes external API calls to fetch financial data (ExchangeRate-API and Yahoo Finance via yfinance), which is expected and necessary for its core functionality. The main concerns are supply chain hygiene (missing requirements.txt content for version pinning verification, unpinned dependencies), missing optional metadata fields (allowed-tools, license, compatibility), and the need for clearer user disclosure about external network calls. The caching mechanism is a good practice to reduce rate-limiting risks. No critical security threats like data exfiltration, prompt injection, or command injection were detected. The skill operates within reasonable bounds for its stated purpose of tracking financial market data.",
+        "primary_threats": [
+          "Supply chain (unpinned dependencies)",
+          "External API disclosure",
+          "Missing metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill legitimately needs external API calls for its core functionality. This is properly documented in the provider strategy section, but could be more prominent for user awareness.",
+        "meta_exploitability": "N/A - This is a transparency issue, not a security vulnerability",
+        "meta_impact": "Low - Query patterns could be observed by third parties, but this is inherent to the service"
       }
     }
   ],
-  "scan_duration_seconds": 1.051520586013794,
-  "duration_ms": 1051,
+  "scan_duration_seconds": 33.679811239242554,
+  "duration_ms": 33679,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -86,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T03:06:28.361669"
+  "timestamp": "2026-02-06T01:23:08.909922"
 }

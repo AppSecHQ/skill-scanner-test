@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** whisper
-**Directory:** ./skills/clawhub-whisper
+**Directory:** /workspace/skills/clawhub-whisper
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.47s
-**Timestamp:** 2026-02-03T16:10:37.582178
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:53:26.445216
 
 ## Summary
 

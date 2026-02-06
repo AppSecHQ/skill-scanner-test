@@ -1,62 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** domain-name-brainstormer
-**Directory:** ./skills/softaworks-agent-toolkit/skills/domain-name-brainstormer
+**Directory:** /workspace/skills/softaworks-agent-toolkit/skills/domain-name-brainstormer
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.29s
-**Timestamp:** 2026-02-02T02:56:14.394741
+**Scan Duration:** 22.78s
+**Timestamp:** 2026-02-06T00:29:45.348662
 
 ## Summary
 
-- **Total Findings:** 4
+- **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 3
-- **Low:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### MEDIUM Severity
 
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
+#### [MEDIUM] Misleading Capability Claims Without Implementation
 
 **Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:3
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: perfect
-
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:73
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: Perfect
-
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:89
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: Perfect
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill description and instructions claim to 'check availability across multiple TLDs' and 'verify which domains are actually available', but there are no script files or implementation code provided. The example output shows detailed availability checking (✓ Available, Taken, Premium domains with pricing), but this functionality cannot be performed without actual domain lookup code. This creates false expectations and could mislead users into thinking the skill has capabilities it doesn't possess.
 
 ## Analyzers
 

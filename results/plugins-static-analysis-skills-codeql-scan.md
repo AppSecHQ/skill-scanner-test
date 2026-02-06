@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** codeql
-**Directory:** ./skills/trailofbits-skills/plugins/static-analysis/skills/codeql
+**Directory:** /workspace/skills/trailofbits-skills/plugins/static-analysis/skills/codeql
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.47s
-**Timestamp:** 2026-02-03T14:14:10.391152
+**Max Severity:** SAFE
+**Scan Duration:** 16.33s
+**Timestamp:** 2026-02-06T07:25:07.793099
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

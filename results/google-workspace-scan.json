@@ -1,47 +1,11 @@
 {
   "skill_name": "google-workspace",
-  "skill_path": "./skills/clawhub-google-workspace",
-  "skill_directory": "./skills/clawhub-google-workspace",
-  "is_safe": true,
-  "max_severity": "MEDIUM",
-  "findings_count": 3,
+  "skill_path": "/workspace/skills/clawhub-google-workspace",
+  "skill_directory": "/workspace/skills/clawhub-google-workspace",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 4,
   "findings": [
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_c8e1cd6502",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Read email",
-      "file_path": "SKILL.md",
-      "line_number": 78,
-      "snippet": "### Read email by ID",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
-      }
-    },
     {
       "id": "YARA_code_execution_b99ebc002f",
       "rule_id": "YARA_code_execution",
@@ -59,12 +23,118 @@
         "yara_namespace": "code_execution",
         "matched_string": "$unsafe_deserialize",
         "threat_type": "CODE EXECUTION",
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Pickle deserialization is a known security risk, but in this context it's used for Google's OAuth library which expects pickle format. The risk is real but requires file write access to exploit.",
+        "meta_exploitability": "Medium - requires attacker to have file write access to token.pickle, but then enables code execution",
+        "meta_impact": "High - arbitrary code execution if pickle file is tampered with"
+      }
+    },
+    {
+      "id": "llm_finding_google-workspace_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Broad OAuth Scopes with Persistent Token Storage",
+      "description": "The skill requests extremely broad OAuth scopes including full Gmail access (modify), Calendar, Contacts, Spreadsheets, Documents, and Drive access. These credentials are stored in a local 'token.pickle' file with no encryption or access controls. This creates a high-value target for credential theft - any malicious process or skill could read token.pickle and gain full access to the user's Google Workspace data.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "SCOPES = ['https://www.googleapis.com/auth/gmail.modify', 'https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/contacts', 'https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/documents', 'https://www.googleapis.com/auth/drive']\n\nwith open('token.pickle', 'wb') as token:\n    pickle.dump(creds, token)",
+      "remediation": "1. Request minimal scopes needed for each operation (principle of least privilege). 2. Use secure credential storage (OS keychain/credential manager). 3. Implement token encryption at rest. 4. Add token expiration and rotation policies. 5. Warn users about the broad access being granted. 6. Consider per-operation OAuth flows instead of requesting all scopes upfront.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Google Workspace skill presents HIGH security risks primarily due to insecure credential management practices. The skill requests extremely broad OAuth scopes across all Google Workspace services and stores credentials in plaintext files (credentials.json, token.pickle) in the working directory with no encryption or access controls. This creates a high-value target for credential theft. Additional concerns include arbitrary code execution risks via python3 -c patterns with user-controlled placeholders, missing security metadata (allowed-tools, license, compatibility), and unpinned dependencies. While the skill's core functionality (Google Workspace integration) is legitimate, the implementation lacks fundamental security controls for handling sensitive credentials and user data. The skill requires significant security hardening before safe deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Theft",
+          "Insecure Credential Storage",
+          "Command Injection Risk",
+          "Missing Security Controls",
+          "Supply Chain Risk"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified insecure credential storage. The code clearly stores OAuth tokens in plaintext pickle files with no encryption. This is a well-known security anti-pattern for credential management.",
+        "meta_exploitability": "Easy - any process with file system read access can steal token.pickle and impersonate the user",
+        "meta_impact": "Critical - full access to user's Google Workspace data including emails, calendar, contacts, documents, and drive files"
+      }
+    },
+    {
+      "id": "llm_finding_google-workspace_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Unencrypted Credential File Storage in Working Directory",
+      "description": "OAuth credentials (credentials.json) and access tokens (token.pickle) are stored as plaintext files in the working directory with no access controls, encryption, or secure storage mechanisms. Any process or user with file system access can steal these credentials and impersonate the user across all Google Workspace services.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Download `credentials.json` to your working directory\n\nif os.path.exists('token.pickle'):\n    with open('token.pickle', 'rb') as token:\n        creds = pickle.load(token)",
+      "remediation": "1. Store credentials in OS-specific secure storage (macOS Keychain, Windows Credential Manager, Linux Secret Service). 2. Set restrictive file permissions (chmod 600). 3. Encrypt sensitive files at rest. 4. Use environment variables or secure vaults for credential paths. 5. Add warnings about credential security in documentation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Google Workspace skill presents HIGH security risks primarily due to insecure credential management practices. The skill requests extremely broad OAuth scopes across all Google Workspace services and stores credentials in plaintext files (credentials.json, token.pickle) in the working directory with no encryption or access controls. This creates a high-value target for credential theft. Additional concerns include arbitrary code execution risks via python3 -c patterns with user-controlled placeholders, missing security metadata (allowed-tools, license, compatibility), and unpinned dependencies. While the skill's core functionality (Google Workspace integration) is legitimate, the implementation lacks fundamental security controls for handling sensitive credentials and user data. The skill requires significant security hardening before safe deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Theft",
+          "Insecure Credential Storage",
+          "Command Injection Risk",
+          "Missing Security Controls",
+          "Supply Chain Risk"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The code explicitly requests all 6 broad scopes. While this is functional, it violates security best practices for OAuth scope management.",
+        "meta_exploitability": "Medium - requires initial user authorization, but once granted, stolen tokens have excessive permissions",
+        "meta_impact": "High - compromised credentials grant access to more data than necessary, increasing blast radius"
+      }
+    },
+    {
+      "id": "llm_finding_google-workspace_2",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Arbitrary Code Execution via Python -c with User-Controlled Input",
+      "description": "The skill instructs users to execute Python code via 'python3 -c' with placeholders like MESSAGE_ID that could be replaced with malicious input. If an agent or user substitutes these placeholders with untrusted data, it could lead to command injection. The pattern of embedding code in shell commands creates injection risk.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "python3 -c \"\nfrom google_auth import get_service\nimport base64\n\ngmail = get_service('gmail', 'v1')\nmsg = gmail.users().messages().get(userId='me', id='MESSAGE_ID', format='full').execute()",
+      "remediation": "1. Use proper Python scripts instead of inline -c execution. 2. Validate and sanitize all user inputs before substitution. 3. Use parameterized queries/API calls instead of string interpolation. 4. Implement input validation for MESSAGE_ID and other placeholders. 5. Provide safe wrapper scripts that handle user input securely.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Google Workspace skill presents HIGH security risks primarily due to insecure credential management practices. The skill requests extremely broad OAuth scopes across all Google Workspace services and stores credentials in plaintext files (credentials.json, token.pickle) in the working directory with no encryption or access controls. This creates a high-value target for credential theft. Additional concerns include arbitrary code execution risks via python3 -c patterns with user-controlled placeholders, missing security metadata (allowed-tools, license, compatibility), and unpinned dependencies. While the skill's core functionality (Google Workspace integration) is legitimate, the implementation lacks fundamental security controls for handling sensitive credentials and user data. The skill requires significant security hardening before safe deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Theft",
+          "Insecure Credential Storage",
+          "Command Injection Risk",
+          "Missing Security Controls",
+          "Supply Chain Risk"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The risk depends on how the skill is used. If an AI agent naively substitutes placeholders with untrusted input, injection is possible. However, the examples are documentation, not executable code.",
+        "meta_exploitability": "Medium - requires AI agent to substitute placeholders with malicious input without validation",
+        "meta_impact": "High - arbitrary command execution if exploited"
       }
     }
   ],
-  "scan_duration_seconds": 0.3316624164581299,
-  "duration_ms": 331,
+  "scan_duration_seconds": 40.75330090522766,
+  "duration_ms": 40753,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -72,5 +142,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T03:08:28.200727"
+  "timestamp": "2026-02-06T02:48:09.343265"
 }

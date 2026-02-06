@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** wycheproof
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/wycheproof
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/wycheproof
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-03T14:15:06.735472
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:34:19.212469
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** reposit
-**Directory:** ./skills/clawhub-reposit
+**Directory:** /workspace/skills/clawhub-reposit
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.36s
-**Timestamp:** 2026-02-02T03:04:57.308183
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:35:54.718045
 
 ## Summary
 

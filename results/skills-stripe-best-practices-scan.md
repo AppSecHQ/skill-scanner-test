@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** stripe-best-practices
-**Directory:** ./skills/stripe-ai/skills/stripe-best-practices
+**Directory:** /workspace/skills/stripe-ai/skills/stripe-best-practices
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-03T14:16:53.484067
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:48:59.340619
 
 ## Summary
 

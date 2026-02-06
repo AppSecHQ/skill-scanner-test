@@ -1,63 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** finance
-**Directory:** ./skills/clawhub-finance
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** HIGH
-**Scan Duration:** 1.00s
-**Timestamp:** 2026-02-02T03:06:31.096985
+**Directory:** /workspace/skills/clawhub-finance
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 36.98s
+**Timestamp:** 2026-02-06T01:24:45.040901
 
 ## Summary
 
-- **Total Findings:** 4
+- **Total Findings:** 2
 - **Critical:** 0
-- **High:** 1
-- **Medium:** 2
+- **High:** 0
+- **Medium:** 1
 - **Low:** 1
 - **Info:** 0
 
 ## Findings
 
-### HIGH Severity
-
-#### [HIGH] Suspicious URL detected: https://open.er-api.com/v6/latest/
-
-**Severity:** HIGH
-**Category:** data_exfiltration
-**Rule ID:** BEHAVIOR_SUSPICIOUS_URL
-**Location:** skills/clawhub-finance/scripts/market_quote.py
-
-**Description:** Script contains suspicious URL that may be used for data exfiltration
-
 ### MEDIUM Severity
 
-#### [MEDIUM] HTTP client library imports that enable external communication
+#### [MEDIUM] Network Data Transmission to External APIs
 
 **Severity:** MEDIUM
 **Category:** data_exfiltration
-**Rule ID:** DATA_EXFIL_NETWORK_REQUESTS
-**Location:** scripts/market_quote.py:25
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** scripts/market_quote.py
 
-**Description:** Pattern detected: import requests
-
-#### [MEDIUM] Undeclared network usage
-
-**Severity:** MEDIUM
-**Category:** unauthorized_tool_use
-**Rule ID:** TOOL_ABUSE_UNDECLARED_NETWORK
-
-**Description:** Skill code uses network libraries but doesn't declare network requirement
+**Description:** The skill makes network requests to external third-party APIs (ExchangeRate-API at open.er-api.com and Yahoo Finance via yfinance) to fetch financial data. While this is the intended functionality for a market tracking skill, it does transmit user queries (ticker symbols, currency pairs) to external services. The ExchangeRate-API endpoint is rate-limited and requires attribution per their terms of service, which is not mentioned in user-facing output.
 
 ### LOW Severity
 
-#### [LOW] Skill does not specify a license
+#### [LOW] Potentially Misleading Real-Time Claims
 
 **Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill's description and instructions could mislead users about data freshness. While SKILL.md correctly warns 'Never claim real-time unless the provider is truly real-time' and notes 'FX updates daily', the skill name 'Market Tracker' and phrases like 'latest quotes' and 'what's the price now?' could create expectations of real-time data. Yahoo Finance via yfinance provides delayed quotes (typically 15-20 minutes), and FX data updates only once daily.
 
 ## Analyzers
 

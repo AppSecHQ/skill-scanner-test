@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** insula-memory
-**Directory:** ./skills/clawhub-insula-memory
+**Directory:** /workspace/skills/clawhub-insula-memory
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T16:10:03.770208
+**Max Severity:** SAFE
+**Scan Duration:** 5.71s
+**Timestamp:** 2026-02-06T03:27:47.583449
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

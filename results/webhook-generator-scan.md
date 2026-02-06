@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** webhook-gen
-**Directory:** ./skills/clawhub-webhook-gen
+**Directory:** /workspace/skills/clawhub-webhook-gen
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.41s
-**Timestamp:** 2026-02-03T16:18:01.419576
+**Scan Duration:** 0.29s
+**Timestamp:** 2026-02-06T07:53:14.825271
 
 ## Summary
 

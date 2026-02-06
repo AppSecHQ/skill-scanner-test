@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** ui-ux-pro-max
-**Directory:** ./skills/clawhub-ui-ux-pro-max
+**Directory:** /workspace/skills/clawhub-ui-ux-pro-max
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 4.58s
-**Timestamp:** 2026-02-03T15:53:46.221501
+**Scan Duration:** 4.35s
+**Timestamp:** 2026-02-06T07:52:12.633024
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** supermemory
-**Directory:** ./skills/clawhub-supermemory
+**Directory:** /workspace/skills/clawhub-supermemory
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.30s
-**Timestamp:** 2026-02-03T15:55:15.055000
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:50:30.299113
 
 ## Summary
 

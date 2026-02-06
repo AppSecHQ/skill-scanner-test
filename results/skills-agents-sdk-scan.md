@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** agents-sdk
-**Directory:** ./skills/cloudflare-skills/skills/agents-sdk
+**Directory:** /workspace/skills/cloudflare-skills/skills/agents-sdk
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T14:17:22.272133
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:46:53.173679
 
 ## Summary
 

@@ -1,44 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** talent-de-cv
-**Directory:** ./skills/clawhub-id-cv-resume-creator
+**Directory:** /workspace/skills/clawhub-id-cv-resume-creator
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.40s
-**Timestamp:** 2026-02-03T16:04:38.230973
+**Scan Duration:** 25.31s
+**Timestamp:** 2026-02-06T00:11:44.708225
 
 ## Summary
 
 - **Total Findings:** 2
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 1
-- **Low:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### MEDIUM Severity
 
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
+#### [MEDIUM] Transitive Trust Abuse - External Instruction Following
 
 **Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** SKILL.md:628
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: read the error messages, fix, re-upload
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** prompt_injection
+**Rule ID:** LLM_PROMPT_INJECTION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill instructs the agent to fetch and follow instructions from external URLs (https://www.talent.de/skills/template-create.md and 13 reference files) for 'Way B' template creation. This creates a transitive trust vulnerability where the agent would execute instructions from untrusted external sources that could be modified by the domain owner at any time to inject malicious commands.
+
+#### [MEDIUM] Potential Data Exfiltration via API Submission
+
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
+
+**Description:** The skill facilitates sending user data (name, job title, email, skills, background) to an external API (https://www.talent.de/api) without explicit security validation or user consent mechanisms. While the service appears legitimate, the skill provides no visibility into what data is transmitted, how it's stored, or who can access it. The 'fictional persona' option could be used to mask real data exfiltration.
 
 ## Analyzers
 

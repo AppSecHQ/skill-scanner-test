@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** video-agent
-**Directory:** ./skills/clawhub-video-agent
+**Directory:** /workspace/skills/clawhub-video-agent
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 1.81s
-**Timestamp:** 2026-02-03T16:05:38.425762
+**Scan Duration:** 1.70s
+**Timestamp:** 2026-02-06T07:52:56.703594
 
 ## Summary
 

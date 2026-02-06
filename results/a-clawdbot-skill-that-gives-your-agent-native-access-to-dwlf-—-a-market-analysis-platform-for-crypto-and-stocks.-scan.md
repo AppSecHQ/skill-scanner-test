@@ -1,33 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** dwlf
-**Directory:** ./skills/clawhub-dwlf
-**Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-03T16:08:33.558177
+**Directory:** /workspace/skills/clawhub-dwlf
+**Status:** [FAIL] ISSUES FOUND
+**Max Severity:** HIGH
+**Scan Duration:** 33.77s
+**Timestamp:** 2026-02-05T17:39:55.560704
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 2
 - **Critical:** 0
-- **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **High:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### HIGH Severity
 
-#### [LOW] Skill does not specify a license
+#### [HIGH] API Key Extraction from TOOLS.md File
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** scripts/dwlf-api.sh
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The bash script attempts to extract an API key from a file named TOOLS.md by searching for 'Jenna's own key' and parsing the API Key value. This creates a security risk as it accesses credentials from an external file that may contain sensitive information. The script specifically looks for a pattern 'Jenna's own key' followed by 'API Key:', which suggests it's designed to extract a specific user's credentials.
+
+### MEDIUM Severity
+
+#### [MEDIUM] Command Injection Risk via Unsanitized PATH_AND_QUERY Parameter
+
+**Severity:** MEDIUM
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
+**Location:** scripts/dwlf-api.sh
+
+**Description:** The script accepts a PATH_AND_QUERY parameter that is directly interpolated into a curl URL without sanitization. While the script uses proper quoting in most places, the parameter could contain shell metacharacters or malicious payloads that might be interpreted by the shell or curl. An attacker could potentially inject additional curl arguments or manipulate the request.
 
 ## Analyzers
 

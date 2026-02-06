@@ -1,44 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** instagram
-**Directory:** ./skills/clawhub-instagram
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.45s
-**Timestamp:** 2026-02-03T15:55:50.836067
+**Directory:** /workspace/skills/clawhub-instagram
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 27.80s
+**Timestamp:** 2026-02-06T03:26:00.937919
 
 ## Summary
 
 - **Total Findings:** 2
-- **Critical:** 1
+- **Critical:** 0
 - **High:** 0
-- **Medium:** 0
+- **Medium:** 1
 - **Low:** 1
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
+### MEDIUM Severity
 
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
+#### [MEDIUM] Hardcoded Access Token in Environment Variable Without Validation
 
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:8
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
 
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export INSTAGRAM_ACCESS_TOKEN="your_access_token
+**Description:** The skill requires INSTAGRAM_ACCESS_TOKEN to be set as an environment variable but provides no validation, rotation guidance, or security warnings. The setup instructions encourage users to export a long-lived access token directly into their shell environment, which could be exposed through shell history, process listings, or accidental commits to version control. Instagram access tokens grant significant permissions including posting content, accessing analytics, and managing follower interactions.
 
 ### LOW Severity
 
-#### [LOW] Skill does not specify a license
+#### [LOW] Missing Tool Declarations and Implementation Details
 
 **Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill declares 'always: True' in metadata (suggesting automatic activation) and requires external binaries (curl, jq) but does not specify allowed-tools in the manifest. There are no script files provided to examine actual implementation, making it impossible to verify what operations are performed with the Instagram API. The combination of automatic activation, required external tools, and missing implementation creates opacity around actual behavior and potential tool exploitation risks.
 
 ## Analyzers
 

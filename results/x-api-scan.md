@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** x-api
-**Directory:** ./skills/clawhub-x-api
+**Directory:** /workspace/skills/clawhub-x-api
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.36s
-**Timestamp:** 2026-02-03T16:16:56.486731
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:53:54.001514
 
 ## Summary
 

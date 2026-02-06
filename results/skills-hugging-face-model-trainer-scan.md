@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** hugging-face-model-trainer
-**Directory:** ./skills/huggingface-skills/skills/hugging-face-model-trainer
+**Directory:** /workspace/skills/huggingface-skills/skills/hugging-face-model-trainer
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 3.89s
-**Timestamp:** 2026-02-03T14:18:58.612967
+**Scan Duration:** 3.58s
+**Timestamp:** 2026-02-06T07:48:20.672203
 
 ## Summary
 

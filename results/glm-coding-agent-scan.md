@@ -1,64 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** glm-coding-agent
-**Directory:** ./skills/clawhub-glm-coding-agent
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.46s
-**Timestamp:** 2026-02-03T16:04:01.156953
+**Directory:** /workspace/skills/clawhub-glm-coding-agent
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 31.72s
+**Timestamp:** 2026-02-06T02:28:04.574565
 
 ## Summary
 
-- **Total Findings:** 4
-- **Critical:** 2
+- **Total Findings:** 2
+- **Critical:** 0
 - **High:** 0
-- **Medium:** 1
-- **Low:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_command_injection
-**Location:** SKILL.md:426
-
-**Description:** Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.z.ai/api/anthropic/v1/models`
-
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
-
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:74
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ANTHROPIC_AUTH_TOKEN="$API_KEY
-
 ### MEDIUM Severity
 
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
+#### [MEDIUM] Credential Exposure via OpenClaw Config File Access
 
 **Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:463
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: Perfect
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill reads API keys from the OpenClaw configuration file (~/.openclaw/openclaw.json on Unix, %USERPROFILE%\.openclaw\openclaw.json on Windows) and exports them as environment variables (ANTHROPIC_AUTH_TOKEN). While this is the intended design for accessing Z.AI API credentials, it creates a potential attack surface if the skill is modified or if the config file contains sensitive credentials that could be exposed through command execution or logging.
+
+#### [MEDIUM] Command Injection Risk via Unvalidated User Input
+
+**Severity:** MEDIUM
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
+**Location:** SKILL.md
+
+**Description:** The skill accepts user-provided task descriptions as command-line arguments that are passed directly to the claude CLI tool without validation or sanitization. While the scripts use proper quoting in examples, malicious input could potentially be crafted to inject commands if the wrapper scripts don't properly handle special characters or if the claude CLI has vulnerabilities in argument parsing.
 
 ## Analyzers
 

@@ -1,101 +1,45 @@
 {
   "skill_name": "kalshi",
-  "skill_path": "./skills/clawhub-kalshi",
-  "skill_directory": "./skills/clawhub-kalshi",
-  "is_safe": false,
-  "max_severity": "HIGH",
-  "findings_count": 5,
+  "skill_path": "/workspace/skills/clawhub-kalshi",
+  "skill_directory": "/workspace/skills/clawhub-kalshi",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_kalshi_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Credential Storage in User Home Directory",
+      "description": "The skill stores API credentials (API key ID and private key) in ~/.kalshi/ directory with JSON configuration file. While this is a common pattern, it creates a centralized credential store that could be targeted by other malicious skills or processes. The private key file is set to 600 permissions (user-only read/write), which is good, but the credentials.json file permissions are not explicitly set.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "```bash\nmkdir -p ~/.kalshi\nmv ~/Downloads/your-key-file.txt ~/.kalshi/private_key.pem\nchmod 600 ~/.kalshi/private_key.pem\n```\n\n```json\n{\n  \"api_key_id\": \"your-key-id-here\",\n  \"private_key_path\": \"~/.kalshi/private_key.pem\"\n}\n```",
+      "remediation": "1. Document that credentials.json should also have restrictive permissions (chmod 600)\n2. Add validation in scripts to check file permissions before reading credentials\n3. Consider using system keychain/credential managers instead of plain JSON files\n4. Add warning in documentation about credential security",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_c93c256c29",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import requests",
-      "file_path": "scripts/kalshi_markets.py",
-      "line_number": 12,
-      "snippet": "import requests",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+requests",
-        "matched_text": "import requests",
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Kalshi prediction markets skill is a READ-ONLY integration that appears to be legitimately designed for viewing market data and portfolio positions. The skill correctly implements authentication using the official Kalshi Python SDK with RSA key signing. No critical security threats were identified - there is no data exfiltration, no prompt injection attempts, no command injection vulnerabilities, and no malicious code obfuscation. The skill's behavior matches its description as a read-only market analysis tool. The main concerns are around credential storage practices (MEDIUM severity) and missing optional metadata fields (LOW severity). The skill makes legitimate API calls to Kalshi's official endpoints and does not attempt to send data to unauthorized third parties. Internal file references (api.md) are normal for a self-contained skill package. Overall, this skill demonstrates good security practices for a financial data integration tool.",
+        "primary_threats": [
+          "Credential storage in home directory without explicit permission controls",
+          "Missing optional metadata (allowed-tools, license, compatibility)"
+        ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
         "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "TOOL_MISMATCH_NETWORK_8ffddba287",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
-      "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_59952520df",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://api.elections.kalshi.com/trade-api/v2",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-kalshi/scripts/kalshi_portfolio.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://api.elections.kalshi.com/trade-api/v2",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_59952520df",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://api.elections.kalshi.com/trade-api/v2",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-kalshi/scripts/kalshi_markets.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://api.elections.kalshi.com/trade-api/v2",
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The LLM analyzer missed that permissions ARE set in the code (line 177: os.chmod(CREDENTIALS_PATH, 0o600)). However, the concern about credential storage location is valid - storing in ~/.kalshi creates a known target location.",
+        "meta_exploitability": "Medium - Requires local file system access to ~/.kalshi directory",
+        "meta_impact": "Medium - Could expose API credentials if attacker has local access, but credentials are already protected with 0o600 permissions"
       }
     }
   ],
-  "scan_duration_seconds": 2.9296798706054688,
-  "duration_ms": 2929,
+  "scan_duration_seconds": 31.480368852615356,
+  "duration_ms": 31480,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -103,5 +47,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T03:06:35.751175"
+  "timestamp": "2026-02-06T03:43:28.770302"
 }

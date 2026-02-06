@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** verification-before-completion
-**Directory:** ./skills/obra-superpowers/skills/verification-before-completion
+**Directory:** /workspace/skills/obra-superpowers/skills/verification-before-completion
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-02T02:55:31.836842
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:52:46.109120
 
 ## Summary
 

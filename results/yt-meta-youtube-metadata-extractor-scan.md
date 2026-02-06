@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** YT Meta - YouTube Metadata Extractor
-**Directory:** ./skills/clawhub-yt-meta
+**Directory:** /workspace/skills/clawhub-yt-meta
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-03T16:08:23.255355
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:54:35.993757
 
 ## Summary
 

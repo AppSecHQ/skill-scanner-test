@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** save-money
-**Directory:** ./skills/clawhub-save-money
+**Directory:** /workspace/skills/clawhub-save-money
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.44s
-**Timestamp:** 2026-02-03T15:59:15.914064
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:36:17.020741
 
 ## Summary
 

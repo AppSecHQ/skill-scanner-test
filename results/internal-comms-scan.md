@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** internal-comms
-**Directory:** ./skills/anthropics-skills/skills/internal-comms
+**Directory:** /workspace/skills/anthropics-skills/skills/internal-comms
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-02T02:54:39.852058
+**Scan Duration:** 14.97s
+**Timestamp:** 2026-02-06T03:31:30.960440
 
 ## Summary
 
@@ -28,3 +28,4 @@ The following analyzers were used:
 - behavioral_analyzer
 - llm_analyzer
 - trigger_analyzer
+- meta_analyzer

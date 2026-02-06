@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** docx
-**Directory:** ./skills/anthropics-skills/skills/docx
+**Directory:** /workspace/skills/anthropics-skills/skills/docx
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.85s
-**Timestamp:** 2026-02-01T23:22:45.639824
+**Scan Duration:** 0.78s
+**Timestamp:** 2026-02-06T07:47:16.661061
 
 ## Summary
 

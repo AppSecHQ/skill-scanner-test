@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** json-canvas
-**Directory:** ./skills/kepano-obsidian-skills/skills/json-canvas
+**Directory:** /workspace/skills/kepano-obsidian-skills/skills/json-canvas
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.41s
-**Timestamp:** 2026-02-03T14:16:48.260318
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:48:40.015874
 
 ## Summary
 

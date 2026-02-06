@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** claude-in-chrome-troubleshooting
-**Directory:** ./skills/trailofbits-skills/plugins/claude-in-chrome-troubleshooting/skills/claude-in-chrome-troubleshooting
+**Directory:** /workspace/skills/trailofbits-skills/plugins/claude-in-chrome-troubleshooting/skills/claude-in-chrome-troubleshooting
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.45s
-**Timestamp:** 2026-02-03T14:12:49.048367
+**Max Severity:** SAFE
+**Scan Duration:** 16.16s
+**Timestamp:** 2026-02-06T06:58:36.269981
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

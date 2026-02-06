@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** baidu-map
-**Directory:** ./skills/clawhub-baidu-map-api
+**Directory:** /workspace/skills/clawhub-baidu-map-api
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.48s
-**Timestamp:** 2026-02-03T16:08:14.035453
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:56:11.851702
 
 ## Summary
 

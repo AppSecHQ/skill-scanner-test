@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** querit-search
-**Directory:** ./skills/clawhub-querit-search
+**Directory:** /workspace/skills/clawhub-querit-search
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.31s
-**Timestamp:** 2026-02-03T16:01:56.197230
+**Scan Duration:** 0.19s
+**Timestamp:** 2026-02-06T07:35:05.703193
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** stealth-browser
-**Directory:** ./skills/clawhub-kesslerio-stealth-browser
+**Directory:** /workspace/skills/clawhub-kesslerio-stealth-browser
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 2.38s
-**Timestamp:** 2026-02-03T16:06:45.231489
+**Scan Duration:** 1.51s
+**Timestamp:** 2026-02-06T07:50:08.016055
 
 ## Summary
 

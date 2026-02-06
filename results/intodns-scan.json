@@ -1,30 +1,80 @@
 {
   "skill_name": "intodns",
-  "skill_path": "./skills/clawhub-intodns",
-  "skill_directory": "./skills/clawhub-intodns",
+  "skill_path": "/workspace/skills/clawhub-intodns",
+  "skill_directory": "/workspace/skills/clawhub-intodns",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_intodns_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse - Unvalidated External API Responses",
+      "description": "The skill instructs the agent to execute curl commands against an external API (intodns.ai) and implicitly trust the responses without validation. The agent is directed to parse and present JSON responses from this third-party service directly to users. If the API is compromised or returns malicious content (e.g., embedded instructions, misleading data), the agent would follow that content without verification. This creates an indirect prompt injection vector where untrusted external content could influence agent behavior.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Instructions direct agent to: 'curl -s \"https://intodns.ai/api/scan/quick?domain=DOMAIN\"' and present results directly. No validation of response content, structure, or authenticity is specified. Agent trusts external API responses implicitly.",
+      "remediation": "1. Implement response validation - verify JSON structure matches expected schema before processing. 2. Sanitize API responses before presenting to users. 3. Add error handling for unexpected response formats. 4. Consider adding response integrity checks or API authentication. 5. Document that responses come from external source and may require user verification.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The IntoDNS skill presents MEDIUM security risks primarily related to transitive trust abuse and potential command injection. The skill directs the agent to execute curl commands against an external API (intodns.ai) and trust responses without validation, creating an indirect prompt injection vector. Additionally, domain input validation guidance is insufficient to prevent command injection attacks. The skill does not include executable scripts (only bash commands in instructions), which reduces attack surface. Missing optional metadata (allowed-tools, license, compatibility) and a referenced but missing file (the.py) are minor documentation issues. The skill would benefit from explicit input validation requirements, response sanitization guidance, and consideration of using safer HTTP libraries instead of shell-based curl commands.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust)",
+          "Command Injection (unvalidated input)",
+          "Missing input validation guidance",
+          "Unvalidated external API responses"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a theoretical risk dependent on API compromise. The intodns.ai API appears to be a legitimate service, but the skill provides no defense-in-depth against malicious responses. The risk is real but requires the external API to be compromised first.",
+        "meta_exploitability": "Low - Requires compromise of the intodns.ai API or a man-in-the-middle attack. However, the skill uses HTTP (not HTTPS verification), which could make MITM easier.",
+        "meta_impact": "Medium - Could lead to indirect prompt injection, misleading security reports, or social engineering attacks against users trusting the DNS analysis results."
+      }
+    },
+    {
+      "id": "llm_finding_intodns_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk - Unvalidated Domain Input",
+      "description": "The skill instructs the agent to insert user-provided domain names directly into curl commands without explicit validation or sanitization guidance. While the instructions mention stripping protocols and paths, there is no guidance on validating against command injection characters (semicolons, pipes, backticks, etc.). A malicious user could provide input like 'example.com; rm -rf /' or 'example.com`malicious-command`' which could be executed by the shell if the agent doesn't properly sanitize the input.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Instructions state: 'curl -s \"https://intodns.ai/api/scan/quick?domain=DOMAIN\"' where DOMAIN is extracted from user input. Validation guidance only mentions stripping protocols/paths, not shell metacharacters. Example: user input 'example.com; cat /etc/passwd' could lead to command injection.",
+      "remediation": "1. Add explicit input validation requirements - domain must match DNS name format (alphanumeric, hyphens, dots only). 2. Specify use of URL encoding for domain parameter. 3. Recommend using Python requests library instead of curl to avoid shell injection. 4. Add validation regex: ^[a-zA-Z0-9][a-zA-Z0-9-_.]*[a-zA-Z0-9]$ 5. Instruct agent to reject inputs containing shell metacharacters (; | & $ ` \\ < >).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The IntoDNS skill presents MEDIUM security risks primarily related to transitive trust abuse and potential command injection. The skill directs the agent to execute curl commands against an external API (intodns.ai) and trust responses without validation, creating an indirect prompt injection vector. Additionally, domain input validation guidance is insufficient to prevent command injection attacks. The skill does not include executable scripts (only bash commands in instructions), which reduces attack surface. Missing optional metadata (allowed-tools, license, compatibility) and a referenced but missing file (the.py) are minor documentation issues. The skill would benefit from explicit input validation requirements, response sanitization guidance, and consideration of using safer HTTP libraries instead of shell-based curl commands.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust)",
+          "Command Injection (unvalidated input)",
+          "Missing input validation guidance",
+          "Unvalidated external API responses"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill explicitly instructs the agent to execute shell commands with user input. The validation guidance only covers protocol/path stripping, not shell metacharacter sanitization. This is a clear command injection vector if the agent follows instructions literally.",
+        "meta_exploitability": "Medium - Requires the agent to execute bash commands without additional sanitization. Modern AI agents may have built-in protections, but the skill instructions don't enforce safe practices.",
+        "meta_impact": "High - Successful command injection could allow arbitrary command execution on the system running the agent, potentially leading to data theft, system compromise, or lateral movement."
       }
     }
   ],
-  "scan_duration_seconds": 0.36146998405456543,
-  "duration_ms": 361,
+  "scan_duration_seconds": 33.391963958740234,
+  "duration_ms": 33391,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:15:18.842194"
+  "timestamp": "2026-02-06T03:32:24.143553"
 }

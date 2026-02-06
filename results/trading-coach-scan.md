@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** trading-coach
-**Directory:** ./skills/clawhub-trading-coach
+**Directory:** /workspace/skills/clawhub-trading-coach
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.46s
-**Timestamp:** 2026-02-03T16:07:17.342174
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:51:41.375295
 
 ## Summary
 

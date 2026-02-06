@@ -1,44 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** interpreting-culture-index
-**Directory:** ./skills/trailofbits-skills/plugins/culture-index/skills/interpreting-culture-index
+**Directory:** /workspace/skills/trailofbits-skills/plugins/culture-index/skills/interpreting-culture-index
 **Status:** [OK] SAFE
-**Max Severity:** MEDIUM
-**Scan Duration:** 2.35s
-**Timestamp:** 2026-02-03T14:12:39.734340
+**Max Severity:** SAFE
+**Scan Duration:** 16.79s
+**Timestamp:** 2026-02-06T07:01:10.790349
 
 ## Summary
 
-- **Total Findings:** 2
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 1
-- **Low:** 1
+- **Medium:** 0
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### MEDIUM Severity
-
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** scripts/culture_index/extract.py:105
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: get("email
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

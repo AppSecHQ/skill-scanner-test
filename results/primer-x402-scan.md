@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** primer-x402
-**Directory:** ./skills/clawhub-primer-x402
+**Directory:** /workspace/skills/clawhub-primer-x402
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-02T03:08:11.094027
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:34:54.573453
 
 ## Summary
 

@@ -1,30 +1,82 @@
 {
   "skill_name": "email",
-  "skill_path": "./skills/clawhub-email",
-  "skill_directory": "./skills/clawhub-email",
+  "skill_path": "/workspace/skills/clawhub-email",
+  "skill_directory": "/workspace/skills/clawhub-email",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_email_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Missing Referenced File with Potential Security Implications",
+      "description": "The SKILL.md references 'last.py' but this file is not found in the skill package. This creates uncertainty about the skill's actual implementation and could indicate incomplete packaging, hidden functionality, or a supply chain issue. Without the referenced file, it's impossible to verify what operations are actually performed when the skill executes.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Referenced file 'last.py' is missing from the package. The skill claims to provide email management capabilities (send, read, search, organize) but provides no implementation code.",
+      "remediation": "Include all referenced files in the skill package. Provide the complete last.py implementation for security review. Ensure the skill package is complete and all dependencies are present.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This email management skill presents MEDIUM security risk due to missing implementation code and incomplete packaging. The skill claims to perform highly sensitive operations (send/read emails, access credentials for Gmail/Outlook/IMAP) but provides no visible code for security review. The referenced 'last.py' file is missing, creating a critical gap in verifying the skill's actual behavior. The 'always: True' flag combined with missing implementation raises concerns about potential unauthorized access or tool shadowing. While no active malicious code was detected (because no code is present), the combination of high-risk operations, missing implementation, external binary dependencies (curl/jq), and incomplete packaging creates significant security uncertainty. The skill cannot be verified as safe without the complete implementation.",
+        "primary_threats": [
+          "Missing implementation code for sensitive operations",
+          "Referenced file not found (last.py)",
+          "Unverifiable credential handling",
+          "Potential tool shadowing (always: True flag)",
+          "External binary dependencies without security context"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "File reference exists in metadata but file is definitively absent from the package. This is an objective packaging error, not a pattern match.",
+        "meta_exploitability": "N/A - Skill is non-functional without implementation",
+        "meta_impact": "High - Prevents security review of sensitive email operations, skill cannot work as described"
+      }
+    },
+    {
+      "id": "llm_finding_email_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Suspicious 'always: True' Flag with Missing Implementation",
+      "description": "The skill metadata includes 'clawdbot.always: True' which suggests the skill should always be active or prioritized. Combined with the missing implementation file (last.py) and high-risk email operations, this flag raises concerns about potential tool shadowing or unauthorized persistent access. The 'always' flag could enable the skill to intercept or monitor email-related requests even when not explicitly invoked.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Metadata shows: clawdbot: {emoji: '\ud83d\udce7', always: True, requires: {bins: ['curl', 'jq']}}. The 'always: True' flag combined with missing implementation creates uncertainty about actual behavior.",
+      "remediation": "Remove 'always: True' flag unless there is a legitimate reason for persistent activation. Provide clear documentation on what 'always: True' means in this context. Include complete implementation to verify the skill's behavior when active.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This email management skill presents MEDIUM security risk due to missing implementation code and incomplete packaging. The skill claims to perform highly sensitive operations (send/read emails, access credentials for Gmail/Outlook/IMAP) but provides no visible code for security review. The referenced 'last.py' file is missing, creating a critical gap in verifying the skill's actual behavior. The 'always: True' flag combined with missing implementation raises concerns about potential unauthorized access or tool shadowing. While no active malicious code was detected (because no code is present), the combination of high-risk operations, missing implementation, external binary dependencies (curl/jq), and incomplete packaging creates significant security uncertainty. The skill cannot be verified as safe without the complete implementation.",
+        "primary_threats": [
+          "Missing implementation code for sensitive operations",
+          "Referenced file not found (last.py)",
+          "Unverifiable credential handling",
+          "Potential tool shadowing (always: True flag)",
+          "External binary dependencies without security context"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The 'always: True' flag is present and unusual for email operations, but without implementation code, the actual risk is uncertain. This is a configuration concern rather than confirmed malicious behavior.",
+        "meta_exploitability": "Unknown - depends on missing implementation",
+        "meta_impact": "Medium - Could enable unauthorized persistent access to email operations if implementation is malicious"
       }
     }
   ],
-  "scan_duration_seconds": 0.3808152675628662,
-  "duration_ms": 380,
+  "scan_duration_seconds": 33.26148343086243,
+  "duration_ms": 33261,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +84,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:53:15.073364"
+  "timestamp": "2026-02-06T00:40:57.100903"
 }

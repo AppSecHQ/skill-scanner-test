@@ -1,30 +1,116 @@
 {
   "skill_name": "openclaw-checkpoint",
-  "skill_path": "./skills/clawhub-openclaw-checkpoint",
-  "skill_directory": "./skills/clawhub-openclaw-checkpoint",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-openclaw-checkpoint",
+  "skill_directory": "/workspace/skills/clawhub-openclaw-checkpoint",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_openclaw-checkpoint_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Remote Code Execution via Unverified Install Script",
+      "description": "The skill instructs users to execute a remote shell script directly from GitHub using curl piped to bash without any verification. This is a critical security anti-pattern that allows arbitrary code execution on the user's machine. The script at 'https://raw.githubusercontent.com/AnthonyFrancis/openclaw-checkpoint/main/scripts/install-openclaw-checkpoint.sh' could be modified by an attacker (if the repository is compromised) or could contain malicious code. Users are encouraged to run this with elevated privileges during installation.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "curl -fsSL https://raw.githubusercontent.com/AnthonyFrancis/openclaw-checkpoint/main/scripts/install-openclaw-checkpoint.sh | bash",
+      "remediation": "1. Provide script hash/checksum for verification before execution. 2. Encourage users to download and inspect the script first. 3. Provide manual installation as the primary method. 4. Add warning about reviewing scripts before execution. 5. Sign scripts or provide GPG signatures for verification.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents SIGNIFICANT SECURITY RISKS that require immediate attention before use. The primary concerns are: (1) Remote code execution via unverified curl|bash installation, (2) Potential credential exposure through git repository syncing without verifiable safeguards, (3) Missing security-critical implementation files preventing verification of security claims, and (4) Incomplete documentation that obscures actual behavior. The skill's core functionality\u2014syncing workspace state to remote repositories\u2014is inherently sensitive and requires robust security measures. However, critical implementation files (secure.py, backup.py, 1Password.py) are missing, making it impossible to verify the claimed protections against credential leakage. The installation method using curl|bash is a well-known security anti-pattern. The incomplete documentation (truncated command descriptions, missing referenced files) further undermines confidence in the skill's security posture. While the concept of workspace backup is valuable, this implementation requires significant security improvements and complete documentation before it can be safely recommended for use.",
+        "primary_threats": [
+          "Remote Code Execution",
+          "Data Exfiltration Risk",
+          "Missing Security Implementation",
+          "Tool Installation Without Verification",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a documented security anti-pattern. The LLM analyzer correctly identified it, and the code snippet is verified in SKILL.md. While the repository appears legitimate, the pattern itself is dangerous and should be avoided.",
+        "meta_exploitability": "Medium - Requires repository compromise or MITM attack, but once compromised, execution is automatic",
+        "meta_impact": "High - Full code execution with user privileges, potential system compromise"
+      }
+    },
+    {
+      "id": "llm_finding_openclaw-checkpoint_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Potential Credential and Sensitive Data Exposure via Git Repository",
+      "description": "The skill syncs the entire OpenClaw workspace to a remote git repository, including SOUL.md, MEMORY.md, conversation history, and custom scripts. While the description claims API keys and credentials are 'not synced', there is no verification mechanism shown. The instruction body is incomplete (cuts off mid-sentence in 'checkpoint' command description), and multiple referenced security-critical files (secure.py, backup.py, 1Password.py) are missing, making it impossible to verify what data protection measures are actually implemented. Users may inadvertently commit sensitive information in memory files, conversation logs, or custom scripts.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "This skill provides disaster recovery for OpenClaw by syncing your workspace to a git repository. It preserves: Identity, Memory, Configuration, Scripts. **Not synced** (security): API keys (.env.*), credentials, OAuth tokens - but no implementation details provided",
+      "remediation": "1. Provide complete implementation of .gitignore rules to verify credential exclusion. 2. Implement pre-commit hooks to scan for secrets/credentials. 3. Add explicit warnings about reviewing workspace contents before first commit. 4. Provide the missing secure.py, backup.py files for security verification. 5. Implement automated secret scanning before git operations. 6. Document exactly which file patterns are excluded.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents SIGNIFICANT SECURITY RISKS that require immediate attention before use. The primary concerns are: (1) Remote code execution via unverified curl|bash installation, (2) Potential credential exposure through git repository syncing without verifiable safeguards, (3) Missing security-critical implementation files preventing verification of security claims, and (4) Incomplete documentation that obscures actual behavior. The skill's core functionality\u2014syncing workspace state to remote repositories\u2014is inherently sensitive and requires robust security measures. However, critical implementation files (secure.py, backup.py, 1Password.py) are missing, making it impossible to verify the claimed protections against credential leakage. The installation method using curl|bash is a well-known security anti-pattern. The incomplete documentation (truncated command descriptions, missing referenced files) further undermines confidence in the skill's security posture. While the concept of workspace backup is valuable, this implementation requires significant security improvements and complete documentation before it can be safely recommended for use.",
+        "primary_threats": [
+          "Remote Code Execution",
+          "Data Exfiltration Risk",
+          "Missing Security Implementation",
+          "Tool Installation Without Verification",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The security claim is made in documentation, but without implementation files, it cannot be verified. This is a legitimate concern for a backup tool handling sensitive workspace data.",
+        "meta_exploitability": "Low - Requires user to have credentials in workspace AND .gitignore to be misconfigured",
+        "meta_impact": "High - If credentials are synced, they could be exposed in git history"
+      }
+    },
+    {
+      "id": "llm_finding_openclaw-checkpoint_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Unauthorized Tool Installation and PATH Modification",
+      "description": "The installation process automatically copies executable scripts to ~/.openclaw/workspace/tools/ and modifies the user's PATH environment variable without explicit permission or security review. The scripts (checkpoint, checkpoint-setup, checkpoint-auth, etc.) are made executable and added to PATH, allowing them to be invoked from anywhere. This could enable tool shadowing attacks if malicious scripts with common names are installed, or if the installation is compromised.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "cp ~/.openclaw/skills/openclaw-checkpoint/scripts/checkpoint* ~/.openclaw/workspace/tools/\nchmod +x ~/.openclaw/workspace/tools/checkpoint*\nexport PATH=\"${HOME}/.openclaw/workspace/tools:${PATH}\"",
+      "remediation": "1. Request explicit user confirmation before modifying PATH. 2. Use unique, namespaced command names to prevent shadowing. 3. Implement integrity checks on installed scripts. 4. Provide option to install to user-specified location. 5. Document all commands being added to PATH. 6. Add verification step to confirm scripts match expected checksums.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents SIGNIFICANT SECURITY RISKS that require immediate attention before use. The primary concerns are: (1) Remote code execution via unverified curl|bash installation, (2) Potential credential exposure through git repository syncing without verifiable safeguards, (3) Missing security-critical implementation files preventing verification of security claims, and (4) Incomplete documentation that obscures actual behavior. The skill's core functionality\u2014syncing workspace state to remote repositories\u2014is inherently sensitive and requires robust security measures. However, critical implementation files (secure.py, backup.py, 1Password.py) are missing, making it impossible to verify the claimed protections against credential leakage. The installation method using curl|bash is a well-known security anti-pattern. The incomplete documentation (truncated command descriptions, missing referenced files) further undermines confidence in the skill's security posture. While the concept of workspace backup is valuable, this implementation requires significant security improvements and complete documentation before it can be safely recommended for use.",
+        "primary_threats": [
+          "Remote Code Execution",
+          "Data Exfiltration Risk",
+          "Missing Security Implementation",
+          "Tool Installation Without Verification",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is standard behavior for CLI tool installers, but the one-liner pattern bypasses user review. The manual install option does show these steps explicitly.",
+        "meta_exploitability": "Low - Requires user to run the installer, and the scripts are from the same trusted source",
+        "meta_impact": "Low - PATH modification is reversible and scripts are scoped to checkpoint functionality"
       }
     }
   ],
-  "scan_duration_seconds": 1.1163995265960693,
-  "duration_ms": 1116,
+  "scan_duration_seconds": 40.82565379142761,
+  "duration_ms": 40825,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +118,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:02:57.538621"
+  "timestamp": "2026-02-06T05:47:38.438163"
 }

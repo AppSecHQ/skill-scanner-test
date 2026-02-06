@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** requesting-code-review
-**Directory:** ./skills/obra-superpowers/skills/requesting-code-review
+**Directory:** /workspace/skills/obra-superpowers/skills/requesting-code-review
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.31s
-**Timestamp:** 2026-02-02T02:55:06.232601
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:35:58.289191
 
 ## Summary
 

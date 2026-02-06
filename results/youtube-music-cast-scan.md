@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** youtube-music-cast
-**Directory:** ./skills/clawhub-ytm-cast
+**Directory:** /workspace/skills/clawhub-ytm-cast
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-02T03:07:20.430696
+**Scan Duration:** 0.26s
+**Timestamp:** 2026-02-06T07:54:16.813985
 
 ## Summary
 

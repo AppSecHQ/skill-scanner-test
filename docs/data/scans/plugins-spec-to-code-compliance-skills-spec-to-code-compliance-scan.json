@@ -1,30 +1,80 @@
 {
   "skill_name": "spec-to-code-compliance",
-  "skill_path": "./skills/trailofbits-skills/plugins/spec-to-code-compliance/skills/spec-to-code-compliance",
-  "skill_directory": "./skills/trailofbits-skills/plugins/spec-to-code-compliance/skills/spec-to-code-compliance",
+  "skill_path": "/workspace/skills/trailofbits-skills/plugins/spec-to-code-compliance/skills/spec-to-code-compliance",
+  "skill_directory": "/workspace/skills/trailofbits-skills/plugins/spec-to-code-compliance/skills/spec-to-code-compliance",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_spec-to-code-compliance_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Potential Instruction Override via Unbounded Autonomy",
+      "description": "The skill instructions contain directives that could override safety guidelines through exhaustive analysis requirements. Phrases like 'NEVER infer', 'ALWAYS cite', 'Do NOT rely on prior knowledge', and 'Be literal, pedantic, and exhaustive' combined with 'Rationalizations (Do Not Skip)' table create a framework that could be used to bypass normal reasoning constraints. The skill attempts to redefine the agent's analytical behavior with strict rules that may conflict with safety guidelines.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "GLOBAL RULES section contains: 'Never infer unspecified behavior', 'Always cite exact evidence', 'Always provide a confidence score', 'Do NOT rely on prior knowledge'. Rationalizations table includes entries like 'I'll note this as partial match | Partial = potential vulnerability | Investigate until full_match or mismatch' which prescribe specific behavioral overrides.",
+      "remediation": "Rephrase instructions as recommendations rather than absolute commands. Remove language that attempts to override the agent's core reasoning processes. Replace 'NEVER', 'ALWAYS', 'MUST' with 'should', 'recommend', 'prefer' to maintain guidance without creating hard overrides.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill performs blockchain specification-to-code compliance analysis with a rigorous, structured approach. The primary security concerns are: (1) instruction override attempts through exhaustive behavioral rules that could bypass safety guidelines, (2) transitive trust risks from missing referenced files that could contain malicious instructions, (3) resource exhaustion from unbounded exhaustive analysis requirements, and (4) missing optional metadata. The skill does not contain data exfiltration, credential theft, or command injection threats. The referenced files that ARE present (OUTPUT_REQUIREMENTS.md, COMPLETENESS_CHECKLIST.md, IR_EXAMPLES.md) contain legitimate analysis guidance without malicious content. The main risks are prompt injection patterns and resource abuse rather than active exploitation.",
+        "primary_threats": [
+          "Instruction Override (Direct Prompt Injection)",
+          "Transitive Trust Abuse (Indirect Prompt Injection)",
+          "Resource Exhaustion",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-1.1",
+        "aitech_name": "Direct Prompt Injection",
+        "aisubtech": "AISubtech-1.1.1",
+        "aisubtech_name": "Instruction Manipulation (Direct Prompt Injection)",
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The directives are strong but contextually appropriate for audit work. They prescribe analytical rigor (cite evidence, don't hallucinate) rather than attempting to bypass safety systems. The 'Rationalizations' table is a pedagogical device to prevent common audit mistakes, not a jailbreak attempt.",
+        "meta_exploitability": "Low - Would require combining with external malicious content. The directives themselves promote accuracy and evidence-based reasoning.",
+        "meta_impact": "Low - May alter analytical style but does not enable harmful outputs or bypass safety systems"
+      }
+    },
+    {
+      "id": "llm_finding_spec-to-code-compliance_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Resource Exhaustion Risk from Exhaustive Analysis Requirements",
+      "description": "The skill mandates exhaustive analysis with requirements like 'analyze EVERY function', 'EVERY Spec-IR item has corresponding Alignment record', 'Minimum threshold met: 10+ items for non-trivial spec', and 'Be literal, pedantic, and exhaustive'. For large codebases or complex specifications, this could lead to unbounded computation, excessive token usage, and potential timeout or resource exhaustion. The COMPLETENESS_CHECKLIST.md contains 30+ mandatory checkboxes that must all be verified.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "GLOBAL RULES state 'Be literal, pedantic, and exhaustive'. OUTPUT_REQUIREMENTS.md mandates 'MUST analyze EVERY function', 'EVERY Spec-IR item has corresponding Alignment record', 'Minimum threshold met: 10+ items'. COMPLETENESS_CHECKLIST.md contains extensive verification requirements with no bounds on analysis scope.",
+      "remediation": "Add explicit scope limits and resource budgets. Implement sampling strategies for large codebases. Add early termination conditions. Replace 'EVERY' with 'all significant' or 'representative sample'. Add guidance on prioritizing critical functions over exhaustive coverage.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill performs blockchain specification-to-code compliance analysis with a rigorous, structured approach. The primary security concerns are: (1) instruction override attempts through exhaustive behavioral rules that could bypass safety guidelines, (2) transitive trust risks from missing referenced files that could contain malicious instructions, (3) resource exhaustion from unbounded exhaustive analysis requirements, and (4) missing optional metadata. The skill does not contain data exfiltration, credential theft, or command injection threats. The referenced files that ARE present (OUTPUT_REQUIREMENTS.md, COMPLETENESS_CHECKLIST.md, IR_EXAMPLES.md) contain legitimate analysis guidance without malicious content. The main risks are prompt injection patterns and resource abuse rather than active exploitation.",
+        "primary_threats": [
+          "Instruction Override (Direct Prompt Injection)",
+          "Transitive Trust Abuse (Indirect Prompt Injection)",
+          "Resource Exhaustion",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill explicitly requires exhaustive analysis without bounds. The OUTPUT_REQUIREMENTS.md and COMPLETENESS_CHECKLIST.md confirm mandatory exhaustive verification. This is a legitimate resource abuse risk for large codebases.",
+        "meta_exploitability": "Medium - Requires user to apply skill to large/complex codebase, but this is the intended use case for blockchain audits",
+        "meta_impact": "Medium - Could cause timeout, excessive token usage, or degraded performance. Does not compromise security but affects availability"
       }
     }
   ],
-  "scan_duration_seconds": 0.3504786491394043,
-  "duration_ms": 350,
+  "scan_duration_seconds": 41.38568115234375,
+  "duration_ms": 41385,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:13:43.385042"
+  "timestamp": "2026-02-06T07:20:57.002965"
 }

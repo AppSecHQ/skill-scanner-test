@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** building-mcp-server-on-cloudflare
-**Directory:** ./skills/cloudflare-skills/skills/building-mcp-server-on-cloudflare
+**Directory:** /workspace/skills/cloudflare-skills/skills/building-mcp-server-on-cloudflare
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T14:17:08.165402
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:47:00.774678
 
 ## Summary
 

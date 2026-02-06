@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** coverage-analysis
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/coverage-analysis
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/coverage-analysis
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T14:14:43.704208
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:33:42.595004
 
 ## Summary
 

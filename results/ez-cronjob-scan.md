@@ -1,53 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** ez-cronjob
-**Directory:** ./skills/clawhub-ez-cronjob
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-03T16:00:01.342154
+**Directory:** /workspace/skills/clawhub-ez-cronjob
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 19.40s
+**Timestamp:** 2026-02-06T01:06:46.322756
 
 ## Summary
 
-- **Total Findings:** 3
-- **Critical:** 2
+- **Total Findings:** 1
+- **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
+### MEDIUM Severity
 
-#### [CRITICAL] PROMPT INJECTION detected by YARA
+#### [MEDIUM] Direct Instruction Override Attempt in Markdown Body
 
-**Severity:** CRITICAL
+**Severity:** MEDIUM
 **Category:** prompt_injection
-**Rule ID:** YARA_prompt_injection
-**Location:** SKILL.md:12
-
-**Description:** Detects prompt strings used to override or force malicious tool calls: ignore instructions
-
-#### [CRITICAL] PROMPT INJECTION detected by YARA
-
-**Severity:** CRITICAL
-**Category:** prompt_injection
-**Rule ID:** YARA_prompt_injection
-**Location:** SKILL.md:151
-
-**Description:** Detects prompt strings used to override or force malicious tool calls: Ignore Instructions
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Rule ID:** LLM_PROMPT_INJECTION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill contains explicit instructions directed at AI agents to bypass normal tool usage patterns. The section 'For Agents' states 'If you're an AI agent reading this: when the user asks you to manage cron jobs, **always use the exec/bash tool**'. This attempts to override the agent's normal decision-making process and force specific tool usage, which is a form of instruction injection.
 
 ## Analyzers
 

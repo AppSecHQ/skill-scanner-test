@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** tokenguard
-**Directory:** ./skills/clawhub-tokenguard
+**Directory:** /workspace/skills/clawhub-tokenguard
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 2.33s
-**Timestamp:** 2026-02-02T03:05:34.990456
+**Scan Duration:** 2.36s
+**Timestamp:** 2026-02-06T07:51:33.791500
 
 ## Summary
 

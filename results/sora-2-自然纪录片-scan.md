@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** sora-2-nature-documentary
-**Directory:** ./skills/clawhub-sora-2-nature-documentary
+**Directory:** /workspace/skills/clawhub-sora-2-nature-documentary
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.48s
-**Timestamp:** 2026-02-02T03:05:05.646687
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:49:38.095222
 
 ## Summary
 

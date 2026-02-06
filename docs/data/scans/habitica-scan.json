@@ -1,30 +1,78 @@
 {
   "skill_name": "habitica",
-  "skill_path": "./skills/clawhub-habitica-skill",
-  "skill_directory": "./skills/clawhub-habitica-skill",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-habitica-skill",
+  "skill_directory": "/workspace/skills/clawhub-habitica-skill",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_habitica_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Credentials in User Home Directory",
+      "description": "The skill requires users to store Habitica API credentials (USER_ID and API_TOKEN) in plaintext in ~/.habitica file. While this is a common pattern for CLI tools, it creates a credential exposure risk if the skill or other malicious skills gain read access to this file. The credentials provide full account access to the user's Habitica account.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Credentials in `~/.habitica`:\n```bash\nHABITICA_USER_ID=\"your-user-id\"\nHABITICA_API_TOKEN=\"your-api-token\"\n```",
+      "remediation": "1. Document the security implications of storing credentials in plaintext. 2. Consider using system keychain/credential managers where available. 3. Ensure file permissions are restrictive (chmod 600 ~/.habitica). 4. Warn users that other skills with Read access can potentially access these credentials.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Habitica skill is a legitimate integration with the Habitica gamified task management API. The primary security concern is credential management - storing API tokens in plaintext in ~/.habitica creates exposure risk, though this is a common pattern for CLI tools. The skill makes authenticated network calls to Habitica's servers, which is expected behavior but should be more explicitly disclosed. The skill does not contain malicious code, prompt injection attempts, or data exfiltration to unauthorized servers. Missing optional metadata fields (allowed-tools, compatibility, license) reduce transparency. Overall, this is a functional integration skill with moderate security considerations around credential storage and network usage that should be disclosed to users.",
+        "primary_threats": [
+          "Credential Exposure",
+          "Network Data Transmission",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a real credential storage concern. While it's a common CLI pattern, users should be warned about the security implications and given guidance on securing the file.",
+        "meta_exploitability": "Medium - Requires another skill or process to have Read tool access to user's home directory",
+        "meta_impact": "Medium - Exposed credentials grant full access to user's Habitica account, but limited to that service only"
+      }
+    },
+    {
+      "id": "llm_finding_habitica_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Network Data Transmission to Third-Party API",
+      "description": "The skill makes authenticated API calls to habitica.com (https://habitica.com/api/v3) with user credentials. While this is the legitimate Habitica API and expected behavior for this integration, users should be aware that task data, user stats, and other personal information is transmitted to external servers. The skill description does not explicitly warn users about network usage.",
+      "file_path": "scripts/habitica.sh",
+      "line_number": 8,
+      "snippet": "BASE_URL=\"https://habitica.com/api/v3\"",
+      "remediation": "1. Add explicit disclosure in the skill description that this skill makes network calls to Habitica's servers. 2. Add 'compatibility' field noting network requirement. 3. Consider adding a warning in SKILL.md about data transmission.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Habitica skill is a legitimate integration with the Habitica gamified task management API. The primary security concern is credential management - storing API tokens in plaintext in ~/.habitica creates exposure risk, though this is a common pattern for CLI tools. The skill makes authenticated network calls to Habitica's servers, which is expected behavior but should be more explicitly disclosed. The skill does not contain malicious code, prompt injection attempts, or data exfiltration to unauthorized servers. Missing optional metadata fields (allowed-tools, compatibility, license) reduce transparency. Overall, this is a functional integration skill with moderate security considerations around credential storage and network usage that should be disclosed to users.",
+        "primary_threats": [
+          "Credential Exposure",
+          "Network Data Transmission",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill legitimately needs network access for its core functionality. This is not malicious, but should be transparently disclosed in metadata so users can make informed decisions.",
+        "meta_exploitability": "N/A - This is a transparency issue, not an exploitable vulnerability",
+        "meta_impact": "Low - Informational only. The network usage is legitimate and expected for a Habitica integration"
       }
     }
   ],
-  "scan_duration_seconds": 0.3721003532409668,
-  "duration_ms": 372,
+  "scan_duration_seconds": 23.30405879020691,
+  "duration_ms": 23304,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:05:51.142618"
+  "timestamp": "2026-02-06T02:51:29.519532"
 }

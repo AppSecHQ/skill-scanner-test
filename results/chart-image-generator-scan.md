@@ -1,44 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** chart-image
-**Directory:** ./skills/clawhub-chart-image
+**Directory:** /workspace/skills/clawhub-chart-image
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.48s
-**Timestamp:** 2026-02-03T16:15:10.153073
+**Scan Duration:** 25.46s
+**Timestamp:** 2026-02-05T21:38:12.732295
 
 ## Summary
 
-- **Total Findings:** 2
+- **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 1
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### MEDIUM Severity
 
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
+#### [MEDIUM] Hardcoded Absolute Path Exposes System Structure
 
 **Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:3
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: Perfect
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill uses hardcoded absolute paths (/data/clawd/skills/chart-image/scripts) throughout the instructions. This reveals the internal directory structure of the deployment environment and could aid attackers in understanding the system layout. Additionally, this makes the skill non-portable and assumes a specific installation location that may not exist on all systems.
 
 ## Analyzers
 

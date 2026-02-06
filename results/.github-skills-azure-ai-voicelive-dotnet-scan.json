@@ -1,30 +1,46 @@
 {
   "skill_name": "azure-ai-voicelive-dotnet",
-  "skill_path": "./skills/microsoft-agent-skills/.github/skills/azure-ai-voicelive-dotnet",
-  "skill_directory": "./skills/microsoft-agent-skills/.github/skills/azure-ai-voicelive-dotnet",
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-ai-voicelive-dotnet",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-ai-voicelive-dotnet",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_azure-ai-voicelive-dotnet_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Key in Environment Variable Example",
+      "description": "The skill documentation instructs users to store Azure API keys in environment variables (AZURE_VOICELIVE_API_KEY). While environment variables are better than hardcoding in source, the documentation does not warn about the security risks of API key exposure or recommend the more secure Entra ID authentication method strongly enough.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "# Optional: API key if not using Entra ID\nAZURE_VOICELIVE_API_KEY=<your-api-key>",
+      "remediation": "Add security warnings about API key management: (1) Emphasize Entra ID as the primary authentication method, (2) Warn against committing .env files to version control, (3) Recommend Azure Key Vault for production environments, (4) Note that API keys should be rotated regularly.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Azure AI Voice Live SDK skill is primarily a documentation/reference skill with LOW to MEDIUM severity findings. The skill does not contain executable scripts or malicious code. The main concerns are: (1) missing metadata fields (license, compatibility, allowed-tools) that reduce transparency, (2) insufficient security guidance around API key management, and (3) an incomplete code example that could cause resource issues. The skill appears legitimate and aligns with its stated purpose of providing .NET SDK documentation for Azure voice AI services. No data exfiltration, prompt injection, or command injection threats were detected. The skill would benefit from completing the documentation, adding security best practices, and including proper metadata declarations.",
+        "primary_threats": [
+          "Missing Security Guidance",
+          "Incomplete Documentation",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a legitimate documentation gap. The skill provides API key authentication without sufficient security context, which could lead developers to make insecure choices. The LLM analyzer correctly identified this as a security guidance issue.",
+        "meta_exploitability": "Medium - Requires user to follow insecure pattern, but documentation makes it easy to do so",
+        "meta_impact": "Medium - Could lead to API key exposure if users don't understand security implications"
       }
     }
   ],
-  "scan_duration_seconds": 0.35895419120788574,
-  "duration_ms": 358,
+  "scan_duration_seconds": 22.81165862083435,
+  "duration_ms": 22811,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:21:34.784359"
+  "timestamp": "2026-02-05T13:48:17.340952"
 }

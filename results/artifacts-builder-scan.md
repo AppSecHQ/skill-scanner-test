@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** artifacts-builder
-**Directory:** ./skills/clawhub-artifacts-builder
+**Directory:** /workspace/skills/clawhub-artifacts-builder
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.97s
-**Timestamp:** 2026-02-03T16:09:05.265663
+**Scan Duration:** 6.67s
+**Timestamp:** 2026-02-05T20:00:17.039480
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** canvas-design
-**Directory:** ./skills/anthropics-skills/skills/canvas-design
+**Directory:** /workspace/skills/anthropics-skills/skills/canvas-design
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-01T22:12:11.683307
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:47:04.422743
 
 ## Summary
 

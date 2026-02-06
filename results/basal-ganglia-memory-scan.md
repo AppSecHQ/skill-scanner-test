@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** basal-ganglia-memory
-**Directory:** ./skills/clawhub-basal-ganglia-memory
+**Directory:** /workspace/skills/clawhub-basal-ganglia-memory
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T16:10:12.392780
+**Max Severity:** SAFE
+**Scan Duration:** 14.56s
+**Timestamp:** 2026-02-05T20:15:40.426403
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

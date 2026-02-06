@@ -1,71 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** gitclassic
-**Directory:** ./skills/clawhub-gitclassic
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T16:14:07.672011
+**Directory:** /workspace/skills/clawhub-gitclassic
+**Status:** [OK] SAFE
+**Max Severity:** SAFE
+**Scan Duration:** 16.21s
+**Timestamp:** 2026-02-06T02:07:27.589426
 
 ## Summary
 
-- **Total Findings:** 5
-- **Critical:** 4
+- **Total Findings:** 0
+- **Critical:** 0
 - **High:** 0
-- **Medium:** 1
+- **Medium:** 0
 - **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### CRITICAL Severity
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_command_injection
-**Location:** SKILL.md:41
-
-**Description:** Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://gitclassic.com/facebook/react
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_command_injection
-**Location:** SKILL.md:44
-
-**Description:** Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://gitclassic.com/facebook/react/blob/main/README.md
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_command_injection
-**Location:** SKILL.md:47
-
-**Description:** Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://gitclassic.com/facebook/react/tree/main/packages
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_command_injection
-**Location:** SKILL.md:53
-
-**Description:** Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://gitclassic.com/torvalds
-
-### MEDIUM Severity
-
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:5
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: Perfect
+This skill passed all security checks.
 
 ## Analyzers
 

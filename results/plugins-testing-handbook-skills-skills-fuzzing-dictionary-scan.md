@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** fuzzing-dictionary
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/fuzzing-dictionary
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/fuzzing-dictionary
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T14:15:31.937084
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:33:46.171254
 
 ## Summary
 

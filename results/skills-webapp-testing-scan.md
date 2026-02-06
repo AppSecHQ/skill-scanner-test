@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** webapp-testing
-**Directory:** ./skills/anthropics-skills/skills/webapp-testing
+**Directory:** /workspace/skills/anthropics-skills/skills/webapp-testing
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.58s
-**Timestamp:** 2026-02-01T22:47:31.489704
+**Scan Duration:** 0.42s
+**Timestamp:** 2026-02-06T07:49:14.354130
 
 ## Summary
 

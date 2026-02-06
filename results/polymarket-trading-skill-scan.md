@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** polymarket
-**Directory:** ./skills/clawhub-polymarket-4rrsh
+**Directory:** /workspace/skills/clawhub-polymarket-4rrsh
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.32s
-**Timestamp:** 2026-02-02T03:08:19.452150
+**Scan Duration:** 0.26s
+**Timestamp:** 2026-02-06T07:34:43.519965
 
 ## Summary
 

@@ -1,33 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** doc-coauthoring
-**Directory:** ./skills/clawhub-doc-coauthoring
+**Directory:** /workspace/skills/clawhub-doc-coauthoring
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.30s
-**Timestamp:** 2026-02-03T16:09:00.411428
+**Max Severity:** MEDIUM
+**Scan Duration:** 20.90s
+**Timestamp:** 2026-02-06T00:21:31.224319
 
 ## Summary
 
 - **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### MEDIUM Severity
 
-#### [LOW] Skill does not specify a license
+#### [MEDIUM] Transitive Trust Abuse via External Shared Documents
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** prompt_injection
+**Rule ID:** LLM_PROMPT_INJECTION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill instructs the agent to fetch and follow content from external shared documents provided by users (e.g., 'use the appropriate integration to fetch it', 'read the current state'). This creates a transitive trust vulnerability where the agent will trust and follow instructions embedded in user-provided external documents without validation. An attacker could provide a malicious shared document containing prompt injection instructions that the agent would then execute.
 
 ## Analyzers
 

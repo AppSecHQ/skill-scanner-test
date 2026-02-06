@@ -1,44 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** semgrep-rule-variant-creator
-**Directory:** ./skills/trailofbits-skills/plugins/semgrep-rule-variant-creator/skills/semgrep-rule-variant-creator
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.41s
-**Timestamp:** 2026-02-03T14:15:36.798933
+**Directory:** /workspace/skills/trailofbits-skills/plugins/semgrep-rule-variant-creator/skills/semgrep-rule-variant-creator
+**Status:** [OK] SAFE
+**Max Severity:** SAFE
+**Scan Duration:** 15.59s
+**Timestamp:** 2026-02-06T07:17:38.637450
 
 ## Summary
 
-- **Total Findings:** 2
-- **Critical:** 1
+- **Total Findings:** 0
+- **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### CRITICAL Severity
-
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
-
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:164
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: Dump AST | `semgrep --dump-ast -l <lang> <file
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

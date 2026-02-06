@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** transcribe
-**Directory:** ./skills/clawhub-transcribe
+**Directory:** /workspace/skills/clawhub-transcribe
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T15:59:44.222124
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:51:44.976274
 
 ## Summary
 

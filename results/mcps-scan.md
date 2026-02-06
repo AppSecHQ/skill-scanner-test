@@ -1,33 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** mcps
-**Directory:** ./skills/clawhub-mcps-skill
+**Directory:** /workspace/skills/clawhub-mcps-skill
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-03T16:05:44.400711
+**Max Severity:** MEDIUM
+**Scan Duration:** 33.88s
+**Timestamp:** 2026-02-06T04:24:25.369253
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 2
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### MEDIUM Severity
 
-#### [LOW] Skill does not specify a license
+#### [MEDIUM] Environment Variable Exposure Risk in Configuration Examples
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill's configuration examples demonstrate storing sensitive credentials in environment variables (POSTGRES_CONNECTION_STRING, GITLAB_PERSONAL_ACCESS_TOKEN) that are passed to external MCP servers. While using environment variables is better than hardcoding, the skill provides no guidance on secure credential management, validation of server trustworthiness, or warnings about credential exposure risks when adding untrusted MCP servers.
+
+#### [MEDIUM] Unrestricted External Command Execution via MCP Servers
+
+**Severity:** MEDIUM
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
+**Location:** SKILL.md
+
+**Description:** The skill allows users to add arbitrary MCP servers that execute external commands (uvx, npx, custom binaries) without any validation, sandboxing, or security warnings. Users can configure servers that run untrusted code with full system access. The examples show adding servers via package managers (npx, uvx) that could download and execute malicious code. No guidance is provided on vetting servers or understanding security implications.
 
 ## Analyzers
 

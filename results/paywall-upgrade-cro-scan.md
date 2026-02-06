@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** paywall-upgrade-cro
-**Directory:** ./skills/coreyhaines31-marketingskills/skills/paywall-upgrade-cro
+**Directory:** /workspace/skills/coreyhaines31-marketingskills/skills/paywall-upgrade-cro
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.32s
-**Timestamp:** 2026-02-02T02:55:10.393657
+**Max Severity:** SAFE
+**Scan Duration:** 14.74s
+**Timestamp:** 2026-02-06T06:15:19.523822
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

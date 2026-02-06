@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** streme-launcher
-**Directory:** ./skills/clawhub-streme-launcher
+**Directory:** /workspace/skills/clawhub-streme-launcher
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-02T03:08:02.344119
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:50:22.980407
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** atheris
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/atheris
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/atheris
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T14:15:16.596984
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:33:27.836057
 
 ## Summary
 

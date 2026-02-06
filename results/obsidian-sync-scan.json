@@ -1,30 +1,113 @@
 {
   "skill_name": "obsidian-sync",
-  "skill_path": "./skills/clawhub-obsidian-sync",
-  "skill_directory": "./skills/clawhub-obsidian-sync",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-obsidian-sync",
+  "skill_directory": "/workspace/skills/clawhub-obsidian-sync",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_obsidian-sync_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Authentication Token in Service Configuration",
+      "description": "The systemd service configuration example includes a hardcoded placeholder token 'your-token-here' in the Environment variable. Users may deploy this without changing it, or may store sensitive tokens in plaintext systemd files that could be exposed through misconfiguration or system compromise.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Environment=SYNC_TOKEN=your-token-here",
+      "remediation": "Use systemd credential management (LoadCredential) or reference external secure storage. Document that tokens must never be hardcoded and should be stored in secure credential stores. Provide example using systemd's EnvironmentFile with restricted permissions (0600).",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Obsidian sync skill presents MODERATE to HIGH security risks primarily around authentication token management, network exposure, and missing implementation files. The skill provides a file synchronization server with token-based authentication but lacks critical security hardening in its documentation and configuration examples. Key concerns include hardcoded token placeholders in service configs, network exposure via Tailscale without adequate security warnings, unrestricted file write operations, and missing script files that create tool shadowing risks. The skill would benefit from stronger security guidance, inclusion of actual implementation files, resource limits, and better credential management practices. While the core concept (localhost-bound sync server with token auth) is reasonable, the execution and documentation need security improvements before production use.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded tokens, environment variable exposure)",
+          "Tool Exploitation (missing implementation files, tool shadowing risk)",
+          "Availability Disruption (insufficient resource limits, restart loop risks)",
+          "Network Security (inadequate exposure guidance)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a documentation issue, not actual hardcoded credentials in code. The placeholder is obvious ('your-token-here'), but users may not follow best practices. Downgraded from HIGH to MEDIUM severity because it's a documentation example, not production code.",
+        "meta_exploitability": "Low - Requires user to deploy without changing placeholder",
+        "meta_impact": "Medium - If deployed unchanged, authentication would fail. If real token stored in plaintext, could be exposed via file system access"
+      }
+    },
+    {
+      "id": "llm_finding_obsidian-sync_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Network Exposure Risk with Insufficient Security Guidance",
+      "description": "The skill instructs users to expose the sync server via Tailscale without adequate security warnings. While localhost binding is mentioned, the Tailscale serve command exposes the service to the entire Tailnet. Combined with token-based auth only, this creates risk of unauthorized access if tokens are compromised or weak.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "tailscale serve --bg --https=18790 http://localhost:18790",
+      "remediation": "Add explicit security warnings about Tailscale exposure scope. Recommend Tailscale ACLs to restrict access to specific devices. Consider implementing additional authentication layers (mTLS, IP allowlisting). Document token rotation procedures.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Obsidian sync skill presents MODERATE to HIGH security risks primarily around authentication token management, network exposure, and missing implementation files. The skill provides a file synchronization server with token-based authentication but lacks critical security hardening in its documentation and configuration examples. Key concerns include hardcoded token placeholders in service configs, network exposure via Tailscale without adequate security warnings, unrestricted file write operations, and missing script files that create tool shadowing risks. The skill would benefit from stronger security guidance, inclusion of actual implementation files, resource limits, and better credential management practices. While the core concept (localhost-bound sync server with token auth) is reasonable, the execution and documentation need security improvements before production use.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded tokens, environment variable exposure)",
+          "Tool Exploitation (missing implementation files, tool shadowing risk)",
+          "Availability Disruption (insufficient resource limits, restart loop risks)",
+          "Network Security (inadequate exposure guidance)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The skill does mention localhost binding and token auth, which are good practices. This is more about improving documentation than fixing a vulnerability. The Tailscale exposure is intentional for the use case.",
+        "meta_exploitability": "Low - Requires token compromise and Tailnet access",
+        "meta_impact": "Low - Additional documentation would help users make informed decisions"
+      }
+    },
+    {
+      "id": "llm_finding_obsidian-sync_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing Script Implementation Creates Tool Shadowing Risk",
+      "description": "The skill references 'Obsidian.py' in instructions but this file is not found in the package. The actual implementation uses Node.js (sync-server.mjs) which is not included in the analyzed package. This mismatch between documented and actual tools creates confusion and potential for tool shadowing attacks where malicious actors could provide the 'missing' Obsidian.py file.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Files referenced in instructions: Obsidian.py (not found). Instructions reference node scripts/sync-server.mjs but no scripts provided.",
+      "remediation": "Include all referenced script files in the skill package. Remove references to non-existent files. Ensure documentation accurately reflects the actual implementation. If sync-server.mjs is the correct implementation, include it in the package and update references.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Obsidian sync skill presents MODERATE to HIGH security risks primarily around authentication token management, network exposure, and missing implementation files. The skill provides a file synchronization server with token-based authentication but lacks critical security hardening in its documentation and configuration examples. Key concerns include hardcoded token placeholders in service configs, network exposure via Tailscale without adequate security warnings, unrestricted file write operations, and missing script files that create tool shadowing risks. The skill would benefit from stronger security guidance, inclusion of actual implementation files, resource limits, and better credential management practices. While the core concept (localhost-bound sync server with token auth) is reasonable, the execution and documentation need security improvements before production use.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded tokens, environment variable exposure)",
+          "Tool Exploitation (missing implementation files, tool shadowing risk)",
+          "Availability Disruption (insufficient resource limits, restart loop risks)",
+          "Network Security (inadequate exposure guidance)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified that all documentation correctly references Node.js and sync-server.mjs. The 'Obsidian.py' reference appears to be a metadata artifact, not an actual security issue. No tool shadowing risk exists because the skill doesn't attempt to execute Python.",
+        "meta_exploitability": "None - This is a documentation/metadata inconsistency",
+        "meta_impact": "Minimal - May cause minor confusion but no security impact"
       }
     }
   ],
-  "scan_duration_seconds": 0.7437000274658203,
-  "duration_ms": 743,
+  "scan_duration_seconds": 38.29800033569336,
+  "duration_ms": 38298,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T03:07:52.066974"
+  "timestamp": "2026-02-06T05:28:05.336350"
 }

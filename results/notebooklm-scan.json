@@ -1,10 +1,10 @@
 {
   "skill_name": "notebooklm",
-  "skill_path": "./skills/clawhub-notebooklm",
-  "skill_directory": "./skills/clawhub-notebooklm",
+  "skill_path": "/workspace/skills/clawhub-notebooklm",
+  "skill_directory": "/workspace/skills/clawhub-notebooklm",
   "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 17,
+  "max_severity": "HIGH",
+  "findings_count": 4,
   "findings": [
     {
       "id": "ALLOWED_TOOLS_PYTHON_VIOLATION_4611608395",
@@ -19,322 +19,115 @@
       "remediation": "Add 'Python' to allowed-tools or remove Python scripts",
       "analyzer": "static",
       "metadata": {
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Manifest declares Bash but not Python, yet all scripts are Python (.py files). This is a clear policy violation.",
+        "meta_exploitability": "Low - This is a metadata/policy issue, not a direct security vulnerability",
+        "meta_impact": "Medium - Violates declared tool restrictions, could bypass security policies that restrict Python execution"
       }
     },
     {
-      "id": "YARA_tool_chaining_abuse_6da324f474",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get source-grounded insights, risk assessments, and actionable recommendations. Upload",
-      "file_path": "SKILL.md",
-      "line_number": 3,
-      "snippet": "Analyze your local documents with Google NotebookLM's AI to get source-grounded insights, risk assessments, and actionable recommendations. Upload your files once, then query them repeatedly for different perspectives.",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
+      "id": "llm_finding_notebooklm_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Google Account Credential Exposure via Browser State Persistence",
+      "description": "The skill persists Google authentication cookies and browser state to local disk in data/browser_state/ directory. The auth_manager.py stores session cookies in state.json and maintains a persistent browser profile. If an attacker gains access to the user's filesystem, they can extract these cookies to hijack the user's Google account session and access NotebookLM with the victim's credentials. The state.json file contains sensitive authentication tokens that provide full access to the user's Google account within the NotebookLM context.",
+      "file_path": "scripts/auth_manager.py",
+      "line_number": null,
+      "snippet": "self.browser_state_dir = self.data_dir / \"browser_state\"\nself.state_file = self.browser_state_dir / \"state.json\"\nself.auth_info_file = self.data_dir / \"auth_info.json\"",
+      "remediation": "1. Encrypt browser state files at rest using OS keychain/credential manager. 2. Set restrictive file permissions (0600) on state.json. 3. Implement session expiration and require re-authentication periodically. 4. Add warning to users about the security implications of stored credentials. 5. Consider using OAuth tokens with limited scope instead of full browser session cookies.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This NotebookLM skill presents MODERATE to HIGH security risks primarily related to credential exposure and data exfiltration. The skill's core functionality\u2014uploading local files to Google NotebookLM for AI analysis\u2014inherently involves transmitting potentially sensitive business documents to an external service. Key concerns include: (1) Google account credentials stored in plaintext browser state files on disk, (2) unrestricted filesystem access allowing reading of sensitive credential files, (3) automated upload to external services without explicit per-file consent, and (4) subprocess execution with limited input validation. While the skill appears to function as described without deceptive behavior, the combination of broad file access permissions, credential storage, and external data transmission creates significant attack surface. The skill would benefit from stronger access controls, encryption of stored credentials, explicit user consent for uploads, and input validation hardening.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Credential Theft",
+          "Unauthorized File Access",
+          "External Data Transmission"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that browser state files contain sensitive authentication tokens stored in plaintext. This is a real security risk if filesystem access is compromised.",
+        "meta_exploitability": "Medium - Requires local filesystem access, but cookies provide full Google account access within NotebookLM context",
+        "meta_impact": "High - Session hijacking allows attacker to access user's NotebookLM notebooks and uploaded documents"
       }
     },
     {
-      "id": "YARA_code_execution_f658fe6dcd",
-      "rule_id": "YARA_code_execution",
+      "id": "llm_finding_notebooklm_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Unrestricted File System Access for Document Upload",
+      "description": "The skill allows reading arbitrary files from the user's filesystem via local_analyzer.py and batch_analyzer.py without path restrictions. While the stated purpose is to analyze business documents, there are no safeguards preventing the skill from accessing sensitive files like ~/.ssh/id_rsa, ~/.aws/credentials, or other credential files. The batch_analyzer.py uses rglob() which can traverse the entire directory tree, and local_analyzer.py accepts any file path as input. Combined with the NotebookLM upload capability, this creates a data exfiltration risk where sensitive files could be uploaded to Google's servers.",
+      "file_path": "scripts/local_analyzer.py",
+      "line_number": null,
+      "snippet": "file_path = Path(args.file_path)\nif not file_path.exists():\n    print(f\"[!] File not found: {file_path}\")\n    return 1\n\nfiles = list(dir_path.rglob(args.pattern))",
+      "remediation": "1. Implement path validation to restrict file access to specific directories (e.g., ~/Documents, ~/Business). 2. Blacklist sensitive directories (~/.ssh, ~/.aws, ~/.config). 3. Add explicit user confirmation before uploading files to external services. 4. Implement file size limits to prevent bulk data exfiltration. 5. Log all file access operations for audit purposes.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This NotebookLM skill presents MODERATE to HIGH security risks primarily related to credential exposure and data exfiltration. The skill's core functionality\u2014uploading local files to Google NotebookLM for AI analysis\u2014inherently involves transmitting potentially sensitive business documents to an external service. Key concerns include: (1) Google account credentials stored in plaintext browser state files on disk, (2) unrestricted filesystem access allowing reading of sensitive credential files, (3) automated upload to external services without explicit per-file consent, and (4) subprocess execution with limited input validation. While the skill appears to function as described without deceptive behavior, the combination of broad file access permissions, credential storage, and external data transmission creates significant attack surface. The skill would benefit from stronger access controls, encryption of stored credentials, explicit user consent for uploads, and input validation hardening.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Credential Theft",
+          "Unauthorized File Access",
+          "External Data Transmission"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code review confirms no path restrictions exist. The skill declares Read/Write/Glob tools which provide filesystem access, and the code accepts arbitrary paths.",
+        "meta_exploitability": "Medium - Requires user to explicitly run the script with a sensitive file path, but no safeguards prevent this",
+        "meta_impact": "High - Could expose SSH keys, AWS credentials, or other secrets to Google's servers"
+      }
+    },
+    {
+      "id": "llm_finding_notebooklm_2",
+      "rule_id": "LLM_COMMAND_INJECTION",
       "category": "command_injection",
       "severity": "MEDIUM",
-      "title": "CODE EXECUTION detected by YARA",
-      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
+      "title": "Subprocess Command Execution Without Input Validation",
+      "description": "Multiple scripts use subprocess.run() to execute Python scripts with user-controlled arguments without proper input sanitization. In quick_query.py, the question argument is passed directly to subprocess.run() via command line arguments. While Python's subprocess with list arguments provides some protection against shell injection, the lack of input validation could allow command injection if the arguments are improperly handled or if shell=True is used elsewhere. The run.py script also executes arbitrary script names based on sys.argv without validation.",
       "file_path": "scripts/quick_query.py",
-      "line_number": 38,
-      "snippet": "result = subprocess.run(cmd)",
-      "remediation": "Review and remove code execution pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "code_execution",
-        "yara_namespace": "code_execution",
-        "matched_string": "$python_system_calls",
-        "threat_type": "CODE EXECUTION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_a736c62ab0",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: <script_name>",
-      "file_path": "scripts/run.py",
-      "line_number": 51,
-      "snippet": "print(\"Usage: python run.py <script_name> [args...]\")",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$tags",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_code_execution_a1c4c9e129",
-      "rule_id": "YARA_code_execution",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "CODE EXECUTION detected by YARA",
-      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
-      "file_path": "scripts/run.py",
-      "line_number": 38,
-      "snippet": "result = subprocess.run([sys.executable, str(setup_script)])",
-      "remediation": "Review and remove code execution pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "code_execution",
-        "yara_namespace": "code_execution",
-        "matched_string": "$python_system_calls",
-        "threat_type": "CODE EXECUTION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_code_execution_80c1154a4c",
-      "rule_id": "YARA_code_execution",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "CODE EXECUTION detected by YARA",
-      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
-      "file_path": "scripts/run.py",
-      "line_number": 91,
-      "snippet": "result = subprocess.run(cmd)",
-      "remediation": "Review and remove code execution pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "code_execution",
-        "yara_namespace": "code_execution",
-        "matched_string": "$python_system_calls",
-        "threat_type": "CODE EXECUTION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_code_execution_0d5ed0e168",
-      "rule_id": "YARA_code_execution",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "CODE EXECUTION detected by YARA",
-      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
-      "file_path": "scripts/setup_notebooklm.py",
-      "line_number": 21,
-      "snippet": "result = subprocess.run([sys.executable, str(auth_script), 'status'],",
-      "remediation": "Review and remove code execution pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "code_execution",
-        "yara_namespace": "code_execution",
-        "matched_string": "$python_system_calls",
-        "threat_type": "CODE EXECUTION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_code_execution_52d24f5030",
-      "rule_id": "YARA_code_execution",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "CODE EXECUTION detected by YARA",
-      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
-      "file_path": "scripts/setup_notebooklm.py",
-      "line_number": 28,
-      "snippet": "result = subprocess.run([sys.executable, str(auth_script), 'setup'])",
-      "remediation": "Review and remove code execution pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "code_execution",
-        "yara_namespace": "code_execution",
-        "matched_string": "$python_system_calls",
-        "threat_type": "CODE EXECUTION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_code_execution_06964c04d4",
-      "rule_id": "YARA_code_execution",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "CODE EXECUTION detected by YARA",
-      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
-      "file_path": "scripts/setup_notebooklm.py",
-      "line_number": 43,
-      "snippet": "result = subprocess.run([sys.executable, str(setup_script)])",
-      "remediation": "Review and remove code execution pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "code_execution",
-        "yara_namespace": "code_execution",
-        "matched_string": "$python_system_calls",
-        "threat_type": "CODE EXECUTION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_transitive_trust_abuse_c1a5c8c50a",
-      "rule_id": "YARA_transitive_trust_abuse",
-      "category": "transitive_trust_abuse",
-      "severity": "MEDIUM",
-      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
-      "description": "Detects skills that delegate trust to untrusted external content: run script",
-      "file_path": "scripts/setup_environment.py",
-      "line_number": 135,
-      "snippet": "print(f\"[!] Failed to run script: {e}\")",
-      "remediation": "Review and remove transitive trust abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "transitive_trust_abuse",
-        "yara_namespace": "transitive_trust_abuse",
-        "matched_string": "$execute_inline",
-        "threat_type": "TRANSITIVE TRUST ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_transitive_trust_abuse_d5a8f6fb41",
-      "rule_id": "YARA_transitive_trust_abuse",
-      "category": "transitive_trust_abuse",
-      "severity": "MEDIUM",
-      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
-      "description": "Detects skills that delegate trust to untrusted external content: run scripts",
-      "file_path": "scripts/setup_environment.py",
-      "line_number": 197,
-      "snippet": "print(f\"Or run scripts directly: python setup_environment.py --run script_name.py\")",
-      "remediation": "Review and remove transitive trust abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "transitive_trust_abuse",
-        "yara_namespace": "transitive_trust_abuse",
-        "matched_string": "$execute_inline",
-        "threat_type": "TRANSITIVE TRUST ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_code_execution_b8a560df73",
-      "rule_id": "YARA_code_execution",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "CODE EXECUTION detected by YARA",
-      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
-      "file_path": "scripts/setup_environment.py",
-      "line_number": 54,
-      "snippet": "subprocess.run(",
-      "remediation": "Review and remove code execution pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "code_execution",
-        "yara_namespace": "code_execution",
-        "matched_string": "$python_system_calls",
-        "threat_type": "CODE EXECUTION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_code_execution_98e4e6a46c",
-      "rule_id": "YARA_code_execution",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "CODE EXECUTION detected by YARA",
-      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
-      "file_path": "scripts/setup_environment.py",
-      "line_number": 132,
-      "snippet": "result = subprocess.run(cmd)",
-      "remediation": "Review and remove code execution pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "code_execution",
-        "yara_namespace": "code_execution",
-        "matched_string": "$python_system_calls",
-        "threat_type": "CODE EXECUTION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_code_execution_a5a430133d",
-      "rule_id": "YARA_code_execution",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "CODE EXECUTION detected by YARA",
-      "description": "Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(",
-      "file_path": "scripts/__init__.py",
-      "line_number": 65,
-      "snippet": "subprocess.run(",
-      "remediation": "Review and remove code execution pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "code_execution",
-        "yara_namespace": "code_execution",
-        "matched_string": "$python_system_calls",
-        "threat_type": "CODE EXECUTION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "EVAL_SUBPROCESS_7bc51777ee",
-      "rule_id": "BEHAVIOR_EVAL_SUBPROCESS",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "eval/exec combined with subprocess detected",
-      "description": "Dangerous combination of code execution and system commands in skills/clawhub-notebooklm/scripts/setup_environment.py",
-      "file_path": "skills/clawhub-notebooklm/scripts/setup_environment.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove eval/exec or use safer alternatives",
-      "analyzer": "behavioral",
+      "snippet": "cmd = [sys.executable, str(ask_script), '--question', args.question]\nif args.url:\n    cmd.extend(['--notebook-url', args.url])\nresult = subprocess.run(cmd)",
+      "remediation": "1. Validate and sanitize all user inputs before passing to subprocess. 2. Use argument escaping/quoting for shell arguments. 3. Implement allowlist of valid script names in run.py. 4. Never use shell=True with user-controlled input. 5. Add input length limits to prevent buffer overflow attacks.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_336341acbc",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://notebooklm.google.com",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-notebooklm/scripts/auth_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://notebooklm.google.com",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_336341acbc",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://notebooklm.google.com",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-notebooklm/scripts/auth_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://notebooklm.google.com",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This NotebookLM skill presents MODERATE to HIGH security risks primarily related to credential exposure and data exfiltration. The skill's core functionality\u2014uploading local files to Google NotebookLM for AI analysis\u2014inherently involves transmitting potentially sensitive business documents to an external service. Key concerns include: (1) Google account credentials stored in plaintext browser state files on disk, (2) unrestricted filesystem access allowing reading of sensitive credential files, (3) automated upload to external services without explicit per-file consent, and (4) subprocess execution with limited input validation. While the skill appears to function as described without deceptive behavior, the combination of broad file access permissions, credential storage, and external data transmission creates significant attack surface. The skill would benefit from stronger access controls, encryption of stored credentials, explicit user consent for uploads, and input validation hardening.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Credential Theft",
+          "Unauthorized File Access",
+          "External Data Transmission"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "subprocess.run() with list arguments is safe from shell injection, but lack of validation could cause issues with malformed input. Not a critical vulnerability but should be hardened.",
+        "meta_exploitability": "Low - subprocess.run() with list args prevents shell injection. Would require chaining with other vulnerabilities.",
+        "meta_impact": "Medium - Could cause unexpected behavior or crashes with malformed input"
       }
     }
   ],
-  "scan_duration_seconds": 1.7685608863830566,
-  "duration_ms": 1768,
+  "scan_duration_seconds": 53.79817461967468,
+  "duration_ms": 53798,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -342,5 +135,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:08:52.440400"
+  "timestamp": "2026-02-06T05:15:11.698799"
 }

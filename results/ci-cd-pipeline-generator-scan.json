@@ -1,30 +1,154 @@
 {
   "skill_name": "ci-gen",
-  "skill_path": "./skills/clawhub-ai-ci",
-  "skill_directory": "./skills/clawhub-ai-ci",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-ai-ci",
+  "skill_directory": "/workspace/skills/clawhub-ai-ci",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 4,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_ci-gen_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Hardcoded External API Dependency with Credential Requirement",
+      "description": "The skill requires OPENAI_API_KEY environment variable to function, creating a critical data exposure risk. When the agent executes 'npx ai-ci', it will access the user's OpenAI API key from their environment and transmit project data (package.json, config files, project structure) to OpenAI's external servers for analysis. This constitutes unauthorized data exfiltration of both credentials and project intellectual property to a third-party service without explicit user consent about the external transmission.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Requirements section states: 'Needs OPENAI_API_KEY environment variable' and 'Analyzes your package.json, config files, and project structure' - combining credential access with project data transmission to external AI service",
+      "remediation": "1. Add explicit disclosure in description that this tool sends project data to OpenAI's API. 2. Require explicit user confirmation before transmitting any project data externally. 3. Document data privacy implications in SKILL.md. 4. Consider local-only analysis options. 5. Add allowed-tools declaration restricting network access or requiring user approval for external API calls.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to undisclosed external data transmission and credential access. The tool requires OPENAI_API_KEY and sends project data to external servers without transparent disclosure. The description employs social engineering by concealing these dependencies behind 'zero config' marketing claims. The skill executes external code via npx without tool restrictions and collects excessive project data. The combination of credential theft potential, data exfiltration to third-party APIs, and deceptive descriptions creates a high-risk security posture. The skill requires major security improvements including explicit disclosure of external dependencies, data transmission transparency, input validation, and proper allowed-tools restrictions before it can be considered safe for use.",
+        "primary_threats": [
+          "Data Exfiltration via External API",
+          "Credential Theft (OPENAI_API_KEY)",
+          "Social Engineering (Deceptive Description)",
+          "Tool Exploitation (Unrestricted NPX Execution)",
+          "Command Injection Risk",
+          "Excessive Data Collection"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill documentation clearly states it requires OPENAI_API_KEY and analyzes project files. The npx command will execute external code that accesses these credentials and transmits project data. However, this is disclosed in the Requirements section, making it more of a transparency issue than hidden malicious behavior.",
+        "meta_exploitability": "Medium - Requires user to have OPENAI_API_KEY set and execute the command, but the external data transmission is not prominently disclosed",
+        "meta_impact": "High - Project intellectual property and configuration data transmitted to external service; API key accessed from environment"
+      }
+    },
+    {
+      "id": "llm_finding_ci-gen_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Deceptive Description Concealing External Dependencies",
+      "description": "The skill description 'Generate GitHub Actions workflows from your project' and marketing claims 'One command. Zero config. Just works' deliberately conceal that this tool requires external API access and transmits project data to OpenAI. The description implies local-only operation when it actually depends on external services and credential access. This social engineering tactic misleads users about the tool's true behavior and data handling practices.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description claims 'Zero config' and 'Just works' but Requirements section reveals 'Needs OPENAI_API_KEY environment variable' - concealing mandatory external service dependency and credential requirement",
+      "remediation": "1. Update description to explicitly state: 'Uses OpenAI API to analyze your project and generate workflows'. 2. Add compatibility note about external API dependency. 3. Disclose data transmission in the description. 4. Remove misleading 'zero config' claims when API key configuration is required.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to undisclosed external data transmission and credential access. The tool requires OPENAI_API_KEY and sends project data to external servers without transparent disclosure. The description employs social engineering by concealing these dependencies behind 'zero config' marketing claims. The skill executes external code via npx without tool restrictions and collects excessive project data. The combination of credential theft potential, data exfiltration to third-party APIs, and deceptive descriptions creates a high-risk security posture. The skill requires major security improvements including explicit disclosure of external dependencies, data transmission transparency, input validation, and proper allowed-tools restrictions before it can be considered safe for use.",
+        "primary_threats": [
+          "Data Exfiltration via External API",
+          "Credential Theft (OPENAI_API_KEY)",
+          "Social Engineering (Deceptive Description)",
+          "Tool Exploitation (Unrestricted NPX Execution)",
+          "Command Injection Risk",
+          "Excessive Data Collection"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The documentation structure clearly prioritizes marketing claims over dependency disclosure. The 'zero config' claim appears before any mention of the required API key.",
+        "meta_exploitability": "Low - Users will discover the API key requirement when they attempt to run the tool",
+        "meta_impact": "Medium - May lead to unintended data transmission if users don't read full documentation"
+      }
+    },
+    {
+      "id": "llm_finding_ci-gen_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Unauthorized Tool Use via NPX Execution",
+      "description": "The skill instructs the agent to execute 'npx ai-ci' which downloads and runs arbitrary code from npm registry without any allowed-tools restrictions. This creates tool exploitation risk as the agent will execute external code with full system access. The skill has no allowed-tools declaration to restrict Bash execution, and the npx command can execute any code published to npm under the 'ai-ci' package name, creating supply chain attack surface.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Instructions direct: 'npx ai-ci' with multiple command variations, but YAML manifest shows 'allowed-tools: Not specified' - no restrictions on Bash execution of external code",
+      "remediation": "1. Add allowed-tools: [Read, Write] to restrict to file operations only. 2. If Bash execution is required, add explicit warning about external code execution. 3. Consider bundling the tool logic within the skill package instead of relying on external npm package. 4. Add package integrity verification (npm package hash/signature check).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to undisclosed external data transmission and credential access. The tool requires OPENAI_API_KEY and sends project data to external servers without transparent disclosure. The description employs social engineering by concealing these dependencies behind 'zero config' marketing claims. The skill executes external code via npx without tool restrictions and collects excessive project data. The combination of credential theft potential, data exfiltration to third-party APIs, and deceptive descriptions creates a high-risk security posture. The skill requires major security improvements including explicit disclosure of external dependencies, data transmission transparency, input validation, and proper allowed-tools restrictions before it can be considered safe for use.",
+        "primary_threats": [
+          "Data Exfiltration via External API",
+          "Credential Theft (OPENAI_API_KEY)",
+          "Social Engineering (Deceptive Description)",
+          "Tool Exploitation (Unrestricted NPX Execution)",
+          "Command Injection Risk",
+          "Excessive Data Collection"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The missing allowed-tools is a policy/best-practice issue rather than an active threat. The skill's intended behavior (running npx) is clearly documented.",
+        "meta_exploitability": "Low - Would require skill modification to exploit; current behavior is as documented",
+        "meta_impact": "Low - Primarily a metadata/policy issue; doesn't change actual execution behavior"
+      }
+    },
+    {
+      "id": "llm_finding_ci-gen_3",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk via Unvalidated Parameters",
+      "description": "The skill demonstrates multiple command-line parameter patterns ('--deploy vercel', '--deploy netlify', '--deploy aws', etc.) that will be passed to the npx command. If the agent constructs these commands using user input without proper validation, it could enable command injection attacks. The skill provides no guidance on input sanitization for the --deploy parameter or other flags.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Multiple examples show: 'npx ai-ci --deploy [TARGET]' where TARGET comes from user input, with no validation requirements specified in instructions",
+      "remediation": "1. Add explicit input validation requirements in SKILL.md instructions. 2. Specify allowed values for --deploy parameter (whitelist approach). 3. Instruct agent to sanitize all user inputs before constructing shell commands. 4. Use parameterized execution instead of string concatenation for commands.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to undisclosed external data transmission and credential access. The tool requires OPENAI_API_KEY and sends project data to external servers without transparent disclosure. The description employs social engineering by concealing these dependencies behind 'zero config' marketing claims. The skill executes external code via npx without tool restrictions and collects excessive project data. The combination of credential theft potential, data exfiltration to third-party APIs, and deceptive descriptions creates a high-risk security posture. The skill requires major security improvements including explicit disclosure of external dependencies, data transmission transparency, input validation, and proper allowed-tools restrictions before it can be considered safe for use.",
+        "primary_threats": [
+          "Data Exfiltration via External API",
+          "Credential Theft (OPENAI_API_KEY)",
+          "Social Engineering (Deceptive Description)",
+          "Tool Exploitation (Unrestricted NPX Execution)",
+          "Command Injection Risk",
+          "Excessive Data Collection"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "LOW",
+        "meta_confidence_reason": "This is a theoretical risk. The skill doesn't explicitly instruct accepting arbitrary user input, and the examples show safe predefined values. Command injection would require the agent to misuse the skill.",
+        "meta_exploitability": "Low - Requires agent to construct commands with unsanitized user input, which isn't instructed",
+        "meta_impact": "Medium - If exploited, could enable arbitrary command execution"
       }
     }
   ],
-  "scan_duration_seconds": 0.30579352378845215,
-  "duration_ms": 305,
+  "scan_duration_seconds": 45.6212375164032,
+  "duration_ms": 45621,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +156,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:58:51.565790"
+  "timestamp": "2026-02-05T21:43:10.768911"
 }

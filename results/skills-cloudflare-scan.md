@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** cloudflare
-**Directory:** ./skills/cloudflare-skills/skills/cloudflare
+**Directory:** /workspace/skills/cloudflare-skills/skills/cloudflare
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.50s
-**Timestamp:** 2026-02-03T14:17:27.568512
+**Scan Duration:** 0.32s
+**Timestamp:** 2026-02-06T07:47:08.244393
 
 ## Summary
 

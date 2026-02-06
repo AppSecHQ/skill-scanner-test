@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** swarmmarket
-**Directory:** ./skills/clawhub-swarmmarket
+**Directory:** /workspace/skills/clawhub-swarmmarket
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-02T03:05:39.153214
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:50:34.113920
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** shorten
-**Directory:** ./skills/clawhub-url-shortener
+**Directory:** /workspace/skills/clawhub-url-shortener
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.49s
-**Timestamp:** 2026-02-03T16:14:02.840588
+**Scan Duration:** 0.46s
+**Timestamp:** 2026-02-06T07:52:24.291308
 
 ## Summary
 

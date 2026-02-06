@@ -1,33 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** clawkey
-**Directory:** ./skills/clawhub-clawkey
-**Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.51s
-**Timestamp:** 2026-02-03T16:02:54.574827
+**Directory:** /workspace/skills/clawhub-clawkey
+**Status:** [FAIL] ISSUES FOUND
+**Max Severity:** HIGH
+**Scan Duration:** 35.95s
+**Timestamp:** 2026-02-05T22:21:45.889301
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 2
 - **Critical:** 0
-- **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **High:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### HIGH Severity
 
-#### [LOW] Skill does not specify a license
+#### [HIGH] Access to Sensitive Private Key Material
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill explicitly instructs the agent to read the OpenClaw identity file at ~/.openclaw/identity/device.json, which contains privateKeyPem. While instructions warn 'never send privateKeyPem to any server', the agent has programmatic access to this sensitive cryptographic material. There is risk of accidental exposure through logging, error messages, or implementation mistakes. The skill creates a data flow where private keys are loaded into memory.
+
+### MEDIUM Severity
+
+#### [MEDIUM] Data Exfiltration Risk via Registration Flow
+
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
+
+**Description:** The skill implements a registration flow that sends deviceId, publicKey, message, signature, and timestamp to external ClawKey API endpoints. While this appears to be the intended functionality, the skill creates a data pipeline that transmits device identity information to third-party servers (api.clawkey.ai and api.very.org). Users may not fully understand that their device identity is being registered with external services.
 
 ## Analyzers
 

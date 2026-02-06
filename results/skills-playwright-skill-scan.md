@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** playwright-skill
-**Directory:** ./skills/lackeyjb-playwright-skill/skills/playwright-skill
+**Directory:** /workspace/skills/lackeyjb-playwright-skill/skills/playwright-skill
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T14:19:08.618742
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:48:51.689820
 
 ## Summary
 

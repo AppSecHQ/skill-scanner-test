@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** zoho-email
-**Directory:** ./skills/clawhub-zoho-email-integration
+**Directory:** /workspace/skills/clawhub-zoho-email-integration
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 8.79s
-**Timestamp:** 2026-02-03T16:15:56.561359
+**Scan Duration:** 8.65s
+**Timestamp:** 2026-02-06T07:54:56.684230
 
 ## Summary
 

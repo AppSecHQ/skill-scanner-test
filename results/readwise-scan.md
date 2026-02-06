@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** readwise-mcp
-**Directory:** ./skills/clawhub-readwise-mcp
+**Directory:** /workspace/skills/clawhub-readwise-mcp
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.29s
-**Timestamp:** 2026-02-02T03:05:22.318238
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:35:23.894414
 
 ## Summary
 

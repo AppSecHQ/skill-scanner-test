@@ -1,50 +1,110 @@
 {
   "skill_name": "activecampaign",
-  "skill_path": "./skills/clawhub-babyconnect",
-  "skill_directory": "./skills/clawhub-babyconnect",
+  "skill_path": "/workspace/skills/clawhub-babyconnect",
+  "skill_directory": "/workspace/skills/clawhub-babyconnect",
   "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 2,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_activecampaign_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded API Credentials in Configuration Files",
+      "description": "The skill instructs users to store ActiveCampaign API credentials (URL and API key) in plaintext files (~/.config/activecampaign/url and ~/.config/activecampaign/api_key) without encryption or secure storage mechanisms. API keys provide full access to the ActiveCampaign account including contact data, deals, and automation triggers. Storing credentials in plaintext files poses a significant data exposure risk if the filesystem is compromised.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "```bash\n# Add credentials\necho \"https://youraccount.api-us1.com\" > ~/.config/activecampaign/url\necho \"your-api-key\" > ~/.config/activecampaign/api_key\n```",
+      "remediation": "1. Use system keychain/credential managers (e.g., keyring library for Python, OS keychain APIs)\n2. Implement encrypted credential storage\n3. Use OAuth flows instead of long-lived API keys where possible\n4. Set restrictive file permissions (chmod 600) on credential files\n5. Add warnings about credential security in documentation",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This ActiveCampaign CRM integration skill presents MEDIUM-HIGH security risks primarily related to credential management and missing implementation files. The most critical issue is the recommendation to store API credentials in plaintext files without encryption, which could expose full CRM access if the filesystem is compromised. The skill references an 'activecampaign' binary throughout but provides no implementation, creating a tool shadowing vulnerability where malicious executables could intercept credentials. Additional concerns include environment variable credential exposure, missing reference files (sample.py, config.py), and lack of metadata (license, compatibility, allowed-tools). While the skill's stated purpose (CRM integration) is legitimate, the implementation approach requires significant security hardening before production use with sensitive customer data.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded credentials, plaintext storage)",
+          "Tool Exploitation (missing binary implementation, tool shadowing risk)",
+          "Supply Chain Issues (missing referenced files, unverified external dependencies)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a legitimate security concern. While the skill itself doesn't contain hardcoded credentials, it recommends an insecure storage pattern that users will follow. The LLM analyzer correctly identified this as a credential management issue.",
+        "meta_exploitability": "Medium - Requires local filesystem access, but credentials would be exposed in plaintext if attacker gains access",
+        "meta_impact": "High - Full CRM access including customer data, contact information, and automation control"
       }
     },
     {
-      "id": "YARA_credential_harvesting_5ca596b969",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ACTIVECAMPAIGN_API_KEY=\"your-api-key",
+      "id": "llm_finding_activecampaign_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing Executable Implementation Creates Tool Shadowing Risk",
+      "description": "The skill references an 'activecampaign' binary/executable throughout the instructions (e.g., 'activecampaign contacts list', 'activecampaign deals create') but no script files are provided in the package. This creates a tool shadowing vulnerability where a malicious actor could place a fake 'activecampaign' executable in the user's PATH that intercepts all commands and credentials. The skill's reliance on an external, unverified binary without bundling the implementation or verifying its integrity poses a supply chain risk.",
       "file_path": "SKILL.md",
-      "line_number": 28,
-      "snippet": "export ACTIVECAMPAIGN_API_KEY=\"your-api-key\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "Multiple command examples reference 'activecampaign' binary:\n```bash\nactivecampaign contacts list\nactivecampaign contacts create \"email@test.com\" \"First\" \"Last\"\nactivecampaign deals list\n```\nBut no Python/Bash scripts are included in the package.",
+      "remediation": "1. Bundle the actual implementation scripts (Python/Bash) within the skill package\n2. Use absolute paths or verify binary integrity before execution\n3. Include checksum verification for external dependencies\n4. Document the expected binary location and installation method\n5. Implement binary signature verification if using external executables",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This ActiveCampaign CRM integration skill presents MEDIUM-HIGH security risks primarily related to credential management and missing implementation files. The most critical issue is the recommendation to store API credentials in plaintext files without encryption, which could expose full CRM access if the filesystem is compromised. The skill references an 'activecampaign' binary throughout but provides no implementation, creating a tool shadowing vulnerability where malicious executables could intercept credentials. Additional concerns include environment variable credential exposure, missing reference files (sample.py, config.py), and lack of metadata (license, compatibility, allowed-tools). While the skill's stated purpose (CRM integration) is legitimate, the implementation approach requires significant security hardening before production use with sensitive customer data.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded credentials, plaintext storage)",
+          "Tool Exploitation (missing binary implementation, tool shadowing risk)",
+          "Supply Chain Issues (missing referenced files, unverified external dependencies)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The package genuinely lacks implementation files. The 'Referenced Files' section shows sample.py and config.py are referenced but not found. This is a real supply chain/dependency issue.",
+        "meta_exploitability": "Medium - Requires attacker to place malicious binary in PATH before legitimate one, but this is feasible in many environments",
+        "meta_impact": "High - Could intercept all API credentials and CRM operations"
+      }
+    },
+    {
+      "id": "llm_finding_activecampaign_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment Variable Credential Exposure Risk",
+      "description": "The skill recommends storing API credentials in environment variables (ACTIVECAMPAIGN_URL, ACTIVECAMPAIGN_API_KEY) which can be exposed through process listings, logs, error messages, and child processes. Environment variables are visible to all processes running under the same user and may be logged by shells, applications, or monitoring tools. This creates multiple vectors for credential leakage.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```bash\n# Or use environment variables\nexport ACTIVECAMPAIGN_URL=\"https://youraccount.api-us1.com\"\nexport ACTIVECAMPAIGN_API_KEY=\"your-api-key\"\n```",
+      "remediation": "1. Prefer secure credential storage over environment variables\n2. If using environment variables, document the risks clearly\n3. Implement credential rotation policies\n4. Use short-lived tokens instead of long-lived API keys\n5. Avoid logging or displaying environment variables in error messages",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This ActiveCampaign CRM integration skill presents MEDIUM-HIGH security risks primarily related to credential management and missing implementation files. The most critical issue is the recommendation to store API credentials in plaintext files without encryption, which could expose full CRM access if the filesystem is compromised. The skill references an 'activecampaign' binary throughout but provides no implementation, creating a tool shadowing vulnerability where malicious executables could intercept credentials. Additional concerns include environment variable credential exposure, missing reference files (sample.py, config.py), and lack of metadata (license, compatibility, allowed-tools). While the skill's stated purpose (CRM integration) is legitimate, the implementation approach requires significant security hardening before production use with sensitive customer data.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded credentials, plaintext storage)",
+          "Tool Exploitation (missing binary implementation, tool shadowing risk)",
+          "Supply Chain Issues (missing referenced files, unverified external dependencies)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Environment variables are a widely-used pattern for credentials, but they do have known security limitations. This is a valid concern but not as critical as plaintext file storage.",
+        "meta_exploitability": "Low-Medium - Requires process access or log access",
+        "meta_impact": "High - Full API credential exposure"
       }
     }
   ],
-  "scan_duration_seconds": 0.3681809902191162,
-  "duration_ms": 368,
+  "scan_duration_seconds": 38.57205605506897,
+  "duration_ms": 38572,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +112,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:13:23.827111"
+  "timestamp": "2026-02-05T20:12:32.449908"
 }

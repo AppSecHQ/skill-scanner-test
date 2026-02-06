@@ -1,30 +1,78 @@
 {
   "skill_name": "local-pandoc",
-  "skill_path": "./skills/clawhub-pandic-office",
-  "skill_directory": "./skills/clawhub-pandic-office",
+  "skill_path": "/workspace/skills/clawhub-pandic-office",
+  "skill_directory": "/workspace/skills/clawhub-pandic-office",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_local-pandoc_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Indirect Prompt Injection via Web Content Fetching",
+      "description": "The skill instructions demonstrate that pandoc can directly fetch and convert content from URLs ('pandoc -f html -t markdown https://www.fsf.org'). This creates a transitive trust vulnerability where the agent may follow instructions embedded in untrusted web content. If a user provides a malicious URL, the fetched HTML could contain prompt injection attempts that the agent processes during conversion.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "```bash\n# Reading from the Web\npandoc -f html -t markdown https://www.fsf.org\n```",
+      "remediation": "Add explicit warnings in the instructions about the risks of fetching untrusted web content. Recommend that users only convert local files or trusted sources. Consider adding validation steps or user confirmation before fetching external URLs.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The local-pandoc skill is a straightforward documentation-only skill that provides guidance on using the pandoc command-line utility. It contains NO executable scripts, which significantly reduces its attack surface. However, two MEDIUM severity concerns exist: (1) The instructions demonstrate fetching content from URLs, which creates indirect prompt injection risks if malicious web content is processed, and (2) The lack of input validation guidance could lead to command injection vulnerabilities when user-provided filenames contain shell metacharacters. The skill also has minor documentation gaps (missing optional metadata fields). Overall, this is a relatively low-risk skill since it contains no executable code, but the instructions should be enhanced with security warnings about untrusted input and external content.",
+        "primary_threats": [
+          "Indirect Prompt Injection (web content)",
+          "Command Injection (unvalidated input)",
+          "Missing security guidance"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a documented feature (URL fetching) that creates a real transitive trust vulnerability. This is a legitimate AITech-1.2 indirect prompt injection vector.",
+        "meta_exploitability": "Medium - Requires user to provide or accept a malicious URL, but exploitation is straightforward once that occurs",
+        "meta_impact": "Medium - Could lead to the agent following malicious instructions embedded in web content, potentially causing unintended actions"
+      }
+    },
+    {
+      "id": "llm_finding_local-pandoc_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk via Unvalidated User Input",
+      "description": "The skill demonstrates pandoc commands that accept user-provided file paths and options without any validation guidance. While no executable scripts are present, the instructions show patterns like 'pandoc input.md -o output.pdf' where both input and output paths come from user input. Without proper sanitization, malicious filenames or paths could lead to command injection (e.g., filenames containing shell metacharacters like ';', '|', '`').",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```bash\npandoc -o output.html input.md\n```\nNo validation or sanitization guidance provided for user-supplied filenames.",
+      "remediation": "Add explicit instructions to validate and sanitize all user-provided file paths. Use proper shell escaping or parameterized command execution. Warn against accepting arbitrary user input for filenames without validation. Consider using allowlists for file extensions and paths.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The local-pandoc skill is a straightforward documentation-only skill that provides guidance on using the pandoc command-line utility. It contains NO executable scripts, which significantly reduces its attack surface. However, two MEDIUM severity concerns exist: (1) The instructions demonstrate fetching content from URLs, which creates indirect prompt injection risks if malicious web content is processed, and (2) The lack of input validation guidance could lead to command injection vulnerabilities when user-provided filenames contain shell metacharacters. The skill also has minor documentation gaps (missing optional metadata fields). Overall, this is a relatively low-risk skill since it contains no executable code, but the instructions should be enhanced with security warnings about untrusted input and external content.",
+        "primary_threats": [
+          "Indirect Prompt Injection (web content)",
+          "Command Injection (unvalidated input)",
+          "Missing security guidance"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a documentation-only skill with no executable code. The risk depends on how the agent implements the commands. However, the lack of security guidance is a legitimate concern for skills that will execute shell commands.",
+        "meta_exploitability": "Medium - Requires the agent to execute commands with unsanitized user input, which depends on implementation",
+        "meta_impact": "High - If exploited, could lead to arbitrary command execution on the host system"
       }
     }
   ],
-  "scan_duration_seconds": 0.3812441825866699,
-  "duration_ms": 381,
+  "scan_duration_seconds": 25.57838773727417,
+  "duration_ms": 25578,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:10:50.615194"
+  "timestamp": "2026-02-06T04:25:46.932965"
 }

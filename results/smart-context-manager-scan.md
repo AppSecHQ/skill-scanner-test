@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** context-manager
-**Directory:** ./skills/clawhub-context-manager
+**Directory:** /workspace/skills/clawhub-context-manager
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.59s
-**Timestamp:** 2026-02-03T15:55:40.304919
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:49:29.838931
 
 ## Summary
 

@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** dispatching-parallel-agents
-**Directory:** ./skills/obra-superpowers/skills/dispatching-parallel-agents
+**Directory:** /workspace/skills/obra-superpowers/skills/dispatching-parallel-agents
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-02T02:56:05.935569
+**Max Severity:** SAFE
+**Scan Duration:** 17.19s
+**Timestamp:** 2026-02-06T00:19:42.500510
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

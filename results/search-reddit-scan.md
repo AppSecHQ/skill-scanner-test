@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** search-reddit
-**Directory:** ./skills/clawhub-search-reddit
+**Directory:** /workspace/skills/clawhub-search-reddit
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.63s
-**Timestamp:** 2026-02-03T16:19:15.312617
+**Scan Duration:** 0.50s
+**Timestamp:** 2026-02-06T07:36:24.511708
 
 ## Summary
 

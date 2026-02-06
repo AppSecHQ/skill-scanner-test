@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** writing-skills
-**Directory:** ./skills/obra-superpowers/skills/writing-skills
+**Directory:** /workspace/skills/obra-superpowers/skills/writing-skills
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.31s
-**Timestamp:** 2026-02-02T02:55:44.424244
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:53:50.395864
 
 ## Summary
 

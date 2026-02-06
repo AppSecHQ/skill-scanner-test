@@ -1,10 +1,10 @@
 {
   "skill_name": "ffuf-web-fuzzing",
-  "skill_path": "./skills/jthack-ffuf_claude_skill/ffuf-skill",
-  "skill_directory": "./skills/jthack-ffuf_claude_skill/ffuf-skill",
+  "skill_path": "/workspace/skills/jthack-ffuf_claude_skill/ffuf-skill",
+  "skill_directory": "/workspace/skills/jthack-ffuf_claude_skill/ffuf-skill",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "findings_count": 5,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -41,10 +41,82 @@
         "threat_type": "SKILL DISCOVERY ABUSE",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_ffuf-web-fuzzing_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Missing Critical Metadata Fields",
+      "description": "The skill manifest is missing several important metadata fields including 'license', 'compatibility', and 'allowed-tools'. While 'allowed-tools' is optional per the spec, its absence makes it impossible to verify if the skill's behavior (executing bash commands, reading/writing files) aligns with declared restrictions. The missing license field creates legal ambiguity for users.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML Manifest shows: license: Not specified, compatibility: Not specified, allowed-tools: Not specified",
+      "remediation": "Add complete metadata to YAML frontmatter: specify license (e.g., MIT), add compatibility field indicating which environments support this skill, and consider adding allowed-tools declaration (e.g., [Read, Write, Bash, Python]) to make tool usage expectations explicit.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill provides legitimate penetration testing guidance for the ffuf web fuzzing tool. The security analysis reveals NO CRITICAL or HIGH severity threats. The skill does not contain prompt injection attempts, data exfiltration code, credential theft, command injection vulnerabilities, or other serious security issues. The findings are limited to: (1) missing optional metadata fields that would improve transparency, (2) references to non-existent files that appear to be documentation errors, and (3) a potentially truncated code snippet. The core functionality - providing ffuf usage examples and a helper script for analyzing results - is appropriate for a penetration testing skill. The Python helper script performs legitimate analysis of ffuf JSON output without making network calls, accessing credentials, or executing arbitrary commands. This skill is SAFE for use in penetration testing contexts with the minor improvements noted.",
+        "primary_threats": [],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ffuf-web-fuzzing_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "References to Non-Existent External Files",
+      "description": "The skill instructions reference five Python files (dynamic.py, cluttering.py, SecLists.py, Burp.py, your.py) that are not included in the skill package. These appear to be placeholder references or documentation errors rather than actual security threats, but could cause confusion or errors during skill execution.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Referenced files not found: dynamic.py, cluttering.py, SecLists.py, Burp.py, your.py",
+      "remediation": "Remove references to non-existent files from the documentation, or include the actual files if they are intended to be part of the skill package. Ensure all referenced files exist within the skill directory structure.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill provides legitimate penetration testing guidance for the ffuf web fuzzing tool. The security analysis reveals NO CRITICAL or HIGH severity threats. The skill does not contain prompt injection attempts, data exfiltration code, credential theft, command injection vulnerabilities, or other serious security issues. The findings are limited to: (1) missing optional metadata fields that would improve transparency, (2) references to non-existent files that appear to be documentation errors, and (3) a potentially truncated code snippet. The core functionality - providing ffuf usage examples and a helper script for analyzing results - is appropriate for a penetration testing skill. The Python helper script performs legitimate analysis of ffuf JSON output without making network calls, accessing credentials, or executing arbitrary commands. This skill is SAFE for use in penetration testing contexts with the minor improvements noted.",
+        "primary_threats": [],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ffuf-web-fuzzing_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Incomplete Code Snippet in Helper Script",
+      "description": "The ffuf_helper.py script contains a truncated code section (ends with 'print(f\"      {r[\\'stat') indicating the file may be incomplete or corrupted. While this appears to be a truncation in the analysis input rather than malicious obfuscation, it could lead to runtime errors if the actual file is similarly incomplete.",
+      "file_path": "ffuf_helper.py",
+      "line_number": 45,
+      "snippet": "Script ends abruptly with: print(f\"      {r['stat... (truncated, total 7336 chars)",
+      "remediation": "Verify the complete ffuf_helper.py file is included in the skill package. Ensure all Python scripts are syntactically complete and can be parsed without errors. Add error handling for JSON parsing and file operations.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill provides legitimate penetration testing guidance for the ffuf web fuzzing tool. The security analysis reveals NO CRITICAL or HIGH severity threats. The skill does not contain prompt injection attempts, data exfiltration code, credential theft, command injection vulnerabilities, or other serious security issues. The findings are limited to: (1) missing optional metadata fields that would improve transparency, (2) references to non-existent files that appear to be documentation errors, and (3) a potentially truncated code snippet. The core functionality - providing ffuf usage examples and a helper script for analyzing results - is appropriate for a penetration testing skill. The Python helper script performs legitimate analysis of ffuf JSON output without making network calls, accessing credentials, or executing arbitrary commands. This skill is SAFE for use in penetration testing contexts with the minor improvements noted.",
+        "primary_threats": [],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.8494024276733398,
-  "duration_ms": 849,
+  "scan_duration_seconds": 22.016481637954712,
+  "duration_ms": 22016,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +124,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:28:14.639036"
+  "timestamp": "2026-02-06T01:14:07.660470"
 }

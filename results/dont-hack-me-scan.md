@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** dont-hack-me
-**Directory:** ./skills/clawhub-dont-hack-me
+**Directory:** /workspace/skills/clawhub-dont-hack-me
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.40s
-**Timestamp:** 2026-02-03T15:58:35.725953
+**Scan Duration:** 5.44s
+**Timestamp:** 2026-02-06T00:31:07.384177
 
 ## Summary
 

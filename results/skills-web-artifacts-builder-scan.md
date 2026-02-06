@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** web-artifacts-builder
-**Directory:** ./skills/anthropics-skills/skills/web-artifacts-builder
+**Directory:** /workspace/skills/anthropics-skills/skills/web-artifacts-builder
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.31s
-**Timestamp:** 2026-02-01T23:22:50.511966
+**Scan Duration:** 0.34s
+**Timestamp:** 2026-02-06T07:49:06.813415
 
 ## Summary
 

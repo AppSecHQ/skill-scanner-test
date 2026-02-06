@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** voice-agent
-**Directory:** ./skills/clawhub-voice-agent
+**Directory:** /workspace/skills/clawhub-voice-agent
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 0.44s
-**Timestamp:** 2026-02-03T16:17:19.718701
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:53:00.578079
 
 ## Summary
 

@@ -1,51 +1,46 @@
 {
   "skill_name": "memory-system-v2",
-  "skill_path": "./skills/clawhub-memory-system-v2",
-  "skill_directory": "./skills/clawhub-memory-system-v2",
+  "skill_path": "/workspace/skills/clawhub-memory-system-v2",
+  "skill_directory": "/workspace/skills/clawhub-memory-system-v2",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "COMMAND_INJECTION_USER_INPUT_688fccd742",
-      "rule_id": "COMMAND_INJECTION_USER_INPUT",
-      "category": "command_injection",
+      "id": "llm_finding_memory-system-v2_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "User input used in command substitution - potential injection risk",
-      "description": "Pattern detected: $(echo \"$line\" | awk -F'imp:' '{print $2}' | awk '{print $1}')",
+      "title": "Unrestricted File System Access Without Tool Restrictions",
+      "description": "The skill creates and manages files in $HOME/clawd/memory directory without declaring allowed-tools in the manifest. While the operations appear benign (memory storage), the absence of tool restrictions means there's no enforcement mechanism to prevent the skill from performing unauthorized file operations. The skill reads/writes to user's home directory without explicit permission declaration.",
       "file_path": "memory-cli.sh",
-      "line_number": 168,
-      "snippet": "importance=$(echo \"$line\" | awk -F'imp:' '{print $2}' | awk '{print $1}')",
-      "remediation": "Validate and sanitize all user inputs before using in commands",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "MEMORY_DIR=\"$HOME/clawd/memory\"\nmkdir -p \"$INDEX_DIR\" \"$DAILY_DIR\" \"$CONSOLIDATED_DIR\"\necho '...' > \"$INDEX_DIR/memory-index.json\"",
+      "remediation": "Add 'allowed-tools: [Read, Write, Bash]' to YAML manifest to explicitly declare file system access requirements. Consider adding user confirmation for initial directory creation in $HOME.",
+      "analyzer": "llm",
       "metadata": {
-        "matched_pattern": "\\$\\([^)]*\\$[0-9]+[^)]*\\)",
-        "matched_text": "$(echo \"$line\" | awk -F'imp:' '{print $2}' | awk '{print $1}')",
-        "aitech": "AITech-9.1",
-        "aitech_name": "Model or Agentic System Manipulation",
-        "scanner_category": "INJECTION ATTACK",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The memory-system-v2 skill is a legitimate local memory management system with LOW to MEDIUM security concerns. The skill's primary function is to store and retrieve memory entries in the user's home directory using bash and jq. No critical threats were identified - there is no data exfiltration, no network calls, no credential theft, no command injection, and no prompt injection attempts. The main concern is the lack of declared tool restrictions (allowed-tools field), which is a transparency issue rather than an active threat. The skill operates entirely locally, creates files in a dedicated directory structure, and performs standard file operations. The code is straightforward bash scripting without obfuscation or malicious patterns. Missing referenced files are documentation issues only. Overall, this skill appears safe for use with minor improvements recommended for transparency and resource management.",
+        "primary_threats": [
+          "Undeclared file system access",
+          "Missing metadata transparency",
+          "Potential resource consumption"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified missing metadata. This is a transparency/policy issue, not a security threat. The skill operates entirely locally with no network access, credential theft, or data exfiltration.",
+        "meta_exploitability": "None - This is a documentation issue, not an exploitable vulnerability",
+        "meta_impact": "Low - Users lack transparency about tool requirements, but no security risk"
       }
     }
   ],
-  "scan_duration_seconds": 0.5574102401733398,
-  "duration_ms": 557,
+  "scan_duration_seconds": 25.195435523986816,
+  "duration_ms": 25195,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -53,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:08:40.105650"
+  "timestamp": "2026-02-06T04:31:51.841542"
 }

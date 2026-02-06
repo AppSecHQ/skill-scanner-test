@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** use-dom
-**Directory:** ./skills/expo-skills/plugins/expo-app-design/skills/use-dom
+**Directory:** /workspace/skills/expo-skills/plugins/expo-app-design/skills/use-dom
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-02T02:55:14.368039
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:52:27.791278
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** send-email
-**Directory:** ./skills/clawhub-send-email
+**Directory:** /workspace/skills/clawhub-send-email
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T16:03:26.915358
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:36:36.691654
 
 ## Summary
 

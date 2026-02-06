@@ -1,150 +1,44 @@
 {
   "skill_name": "pipedrive",
-  "skill_path": "./skills/clawhub-pipedrive",
-  "skill_directory": "./skills/clawhub-pipedrive",
+  "skill_path": "/workspace/skills/clawhub-pipedrive",
+  "skill_directory": "/workspace/skills/clawhub-pipedrive",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 7,
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_pipedrive_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded credential path in configuration instructions",
+      "description": "The SKILL.md instructions direct users to store their Pipedrive API token in a plaintext JSON file at ~/.clawdbot/clawdbot.json without any mention of file permissions, encryption, or security considerations. This creates a risk of credential exposure if the file permissions are not properly restricted or if the system is compromised.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Store in `~/.clawdbot/clawdbot.json`:\n```json\n{\n  \"skills\": {\n    \"entries\": {\n      \"pipedrive\": {\n        \"apiToken\": \"YOUR_API_TOKEN\"\n      }\n    }\n  }\n}",
+      "remediation": "Add explicit instructions to set restrictive file permissions (chmod 600) on the configuration file. Consider recommending environment variables as the primary method instead of file storage, or suggest using a secure credential manager. Include a security warning about protecting API tokens.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_13f90bbf81",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('email",
-      "file_path": "scripts/pipedrive.sh",
-      "line_number": 129,
-      "snippet": "email = ''",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_6fcb4cebb0",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('id')}\\t{name}\\t{email",
-      "file_path": "scripts/pipedrive.sh",
-      "line_number": 139,
-      "snippet": "print(f\\\"\ud83d\udc64 {p.get('id')}\\t{name}\\t{email[:30]}\\t{org[:25]}\\\")",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_210ad44499",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('email",
-      "file_path": "scripts/pipedrive.sh",
-      "line_number": 365,
-      "snippet": "print(f\\\"Email ({e.get('label', 'work')}): {e.get('value', '')}\\\")",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_98b54448a1",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('cc_email'): print(f\\\"CC Email",
-      "file_path": "scripts/pipedrive.sh",
-      "line_number": 405,
-      "snippet": "if o.get('add_time'): print(f\\\"Created: {o.get('add_time')}\\\")",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_90bf6a3177",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('id')}\\t{p.get('name', 'Unknown')[:35]}\\t{email",
-      "file_path": "scripts/pipedrive.sh",
-      "line_number": 750,
-      "snippet": "echo \"Usage: pipedrive.sh persons show <id>\"",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_90bf6a3177",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('name', 'Unknown')[:35]}\\t{email",
-      "file_path": "scripts/pipedrive.sh",
-      "line_number": 750,
-      "snippet": "echo \"Usage: pipedrive.sh persons show <id>\"",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Pipedrive CRM skill is a legitimate integration tool for managing Pipedrive API operations through bash scripts. The skill's primary security concern is the instruction to store API credentials in a plaintext configuration file without security guidance. The code itself does not contain malicious patterns - it performs standard API operations (CRUD operations on deals, contacts, organizations, etc.) using curl commands with proper authentication. The bash script reads credentials from either environment variables or the config file, which is normal behavior. The skill does not attempt prompt injection, data exfiltration to unauthorized endpoints, command injection, or other malicious activities. The referenced API documentation file (references/api.md) contains legitimate Pipedrive API reference material. The main improvements needed are: (1) adding security guidance for credential storage, (2) declaring the allowed-tools field for transparency, and (3) including missing referenced files or removing their references. Overall, this is a functional CRM integration skill with minor security hygiene issues rather than active threats.",
+        "primary_threats": [
+          "Credential storage without security guidance"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The LLM analyzer correctly identified that the documentation lacks security guidance for credential storage. While the code itself properly reads from env vars or config (standard practice), the documentation should warn users about file permissions.",
+        "meta_exploitability": "Medium - Requires local file access or system compromise, but plaintext credentials with default permissions (644) would be readable by other users on multi-user systems",
+        "meta_impact": "Medium - Exposed API token could allow unauthorized access to Pipedrive CRM data, but requires local access to exploit"
       }
     }
   ],
-  "scan_duration_seconds": 0.7045929431915283,
-  "duration_ms": 704,
+  "scan_duration_seconds": 25.466228246688843,
+  "duration_ms": 25466,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -152,5 +46,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:18:29.346282"
+  "timestamp": "2026-02-06T06:25:43.413590"
 }

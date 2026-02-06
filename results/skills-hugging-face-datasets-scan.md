@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** hugging-face-datasets
-**Directory:** ./skills/huggingface-skills/skills/hugging-face-datasets
+**Directory:** /workspace/skills/huggingface-skills/skills/hugging-face-datasets
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 4.12s
-**Timestamp:** 2026-02-03T14:18:20.098069
+**Scan Duration:** 3.66s
+**Timestamp:** 2026-02-06T07:47:38.438526
 
 ## Summary
 
@@ -299,7 +299,7 @@
 **Severity:** MEDIUM
 **Category:** data_exfiltration
 **Rule ID:** DATA_EXFIL_ENV_VARS
-**Location:** sql_manager.py:51
+**Location:** scripts/dataset_manager.py:35
 
 **Description:** Pattern detected: os.environ.get("HF_TOKEN
 
@@ -308,7 +308,7 @@
 **Severity:** MEDIUM
 **Category:** data_exfiltration
 **Rule ID:** DATA_EXFIL_ENV_VARS
-**Location:** scripts/dataset_manager.py:35
+**Location:** sql_manager.py:51
 
 **Description:** Pattern detected: os.environ.get("HF_TOKEN
 

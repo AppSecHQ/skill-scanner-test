@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** watch-my-money
-**Directory:** ./skills/clawhub-watch-my-money
+**Directory:** /workspace/skills/clawhub-watch-my-money
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.43s
-**Timestamp:** 2026-02-03T16:00:46.970082
+**Scan Duration:** 0.19s
+**Timestamp:** 2026-02-06T07:53:07.822785
 
 ## Summary
 

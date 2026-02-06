@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** subagent-driven-development
-**Directory:** ./skills/obra-superpowers/skills/subagent-driven-development
+**Directory:** /workspace/skills/obra-superpowers/skills/subagent-driven-development
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.44s
-**Timestamp:** 2026-02-02T02:54:48.108857
+**Scan Duration:** 0.19s
+**Timestamp:** 2026-02-06T07:50:26.584987
 
 ## Summary
 

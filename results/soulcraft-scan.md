@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** soulcraft
-**Directory:** ./skills/clawhub-soulcraft
+**Directory:** /workspace/skills/clawhub-soulcraft
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.43s
-**Timestamp:** 2026-02-03T15:58:21.141863
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:49:41.688411
 
 ## Summary
 

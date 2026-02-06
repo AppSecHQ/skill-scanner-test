@@ -1,30 +1,146 @@
 {
   "skill_name": "discord-voice",
-  "skill_path": "./skills/clawhub-discord-voice",
-  "skill_directory": "./skills/clawhub-discord-voice",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-discord-voice",
+  "skill_directory": "/workspace/skills/clawhub-discord-voice",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 4,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_discord-voice_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded API Keys in Configuration Example",
+      "description": "The configuration example in SKILL.md demonstrates hardcoding API keys directly in the clawdbot.json file ('openai.apiKey': 'sk-...'). This practice exposes sensitive credentials in configuration files that may be committed to version control, shared, or accessed by unauthorized parties. While the documentation mentions environment variables as an alternative, the primary example shows direct key embedding, which users may follow.",
+      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "\"openai\": {\n  \"apiKey\": \"sk-...\"  // Or use OPENAI_API_KEY env var\n}",
+      "remediation": "Remove the hardcoded API key example from the configuration. Update documentation to exclusively recommend environment variables (OPENAI_API_KEY, ELEVENLABS_API_KEY, DEEPGRAM_API_KEY) for credential management. Add a security warning against hardcoding credentials in configuration files.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Discord voice integration skill presents MULTIPLE HIGH-SEVERITY security concerns primarily related to credential management and data privacy. The skill requires multiple sensitive API keys (Discord bot token, OpenAI, Deepgram, ElevenLabs) and demonstrates poor security practices by showing hardcoded credentials in configuration examples. The skill processes highly sensitive biometric voice data from Discord users and transmits it to third-party AI services without documented privacy controls, consent mechanisms, or data retention policies. A critical referenced file (voice.py) is missing from the package, preventing complete security analysis. Additional concerns include unbounded resource consumption risks, missing security guidance for credential management, and lack of privacy compliance documentation. The skill requires immediate security improvements before deployment, particularly around credential handling, privacy controls, and resource limits.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded credentials, missing privacy controls)",
+          "Availability Disruption (unbounded recording, auto-reconnect without backoff)",
+          "Tool Exploitation (missing referenced file, incomplete package)",
+          "Supply Chain Risk (unpinned dependencies, missing file)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Documentation clearly shows hardcoded credentials as the primary example. While the code itself uses environment variables as fallback (config.openai?.apiKey || process.env.OPENAI_API_KEY), the documentation pattern could mislead users into insecure practices.",
+        "meta_exploitability": "Medium - Requires user to follow the documented pattern and commit config files to version control or share them",
+        "meta_impact": "High - Exposed API keys can lead to unauthorized access, service abuse, and financial costs"
+      }
+    },
+    {
+      "id": "llm_finding_discord-voice_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Multiple Sensitive API Keys Required Without Security Guidance",
+      "description": "The skill requires multiple sensitive API keys (DISCORD_TOKEN, OPENAI_API_KEY, and optionally ELEVENLABS_API_KEY, DEEPGRAM_API_KEY) but provides minimal security guidance on credential management. Discord bot tokens provide full bot access, and AI API keys can incur significant costs if compromised. The configuration example shows credentials in plaintext JSON, increasing exposure risk.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "requiredEnv: ['DISCORD_TOKEN', 'OPENAI_API_KEY']\noptionalEnv: ['ELEVENLABS_API_KEY', 'DEEPGRAM_API_KEY']",
+      "remediation": "Add a dedicated security section covering: (1) Use environment variables exclusively for all credentials, (2) Never commit credentials to version control, (3) Use .env files with proper .gitignore configuration, (4) Implement credential rotation procedures, (5) Use least-privilege API keys where possible, (6) Monitor API usage for anomalies.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Discord voice integration skill presents MULTIPLE HIGH-SEVERITY security concerns primarily related to credential management and data privacy. The skill requires multiple sensitive API keys (Discord bot token, OpenAI, Deepgram, ElevenLabs) and demonstrates poor security practices by showing hardcoded credentials in configuration examples. The skill processes highly sensitive biometric voice data from Discord users and transmits it to third-party AI services without documented privacy controls, consent mechanisms, or data retention policies. A critical referenced file (voice.py) is missing from the package, preventing complete security analysis. Additional concerns include unbounded resource consumption risks, missing security guidance for credential management, and lack of privacy compliance documentation. The skill requires immediate security improvements before deployment, particularly around credential handling, privacy controls, and resource limits.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded credentials, missing privacy controls)",
+          "Availability Disruption (unbounded recording, auto-reconnect without backoff)",
+          "Tool Exploitation (missing referenced file, incomplete package)",
+          "Supply Chain Risk (unpinned dependencies, missing file)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a documentation quality issue rather than a code vulnerability. The code itself handles credentials reasonably (environment variables with fallback), but users need better guidance.",
+        "meta_exploitability": "Low - Requires separate credential compromise, but lack of guidance increases risk",
+        "meta_impact": "High - Compromised credentials can lead to service abuse, data access, and financial costs"
+      }
+    },
+    {
+      "id": "llm_finding_discord-voice_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Audio Recording Without Resource Limits",
+      "description": "The skill implements voice recording with a configurable maxRecordingMs (default 30000ms/30 seconds), but there are no documented limits on concurrent recordings, total storage, or aggregate resource consumption. Multiple users could simultaneously trigger 30-second recordings, potentially exhausting memory, disk space, or API quotas. The auto-reconnect feature could also lead to resource exhaustion if reconnection logic fails to implement backoff.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "\"maxRecordingMs\": 30000,\n\"Auto-reconnect\": Automatic heartbeat monitoring and reconnection on disconnect",
+      "remediation": "Implement and document: (1) Maximum concurrent voice sessions per guild/bot, (2) Rate limiting for voice channel joins, (3) Exponential backoff for auto-reconnect attempts, (4) Maximum total recording storage limits, (5) Cleanup procedures for temporary audio files, (6) API quota monitoring and circuit breakers.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Discord voice integration skill presents MULTIPLE HIGH-SEVERITY security concerns primarily related to credential management and data privacy. The skill requires multiple sensitive API keys (Discord bot token, OpenAI, Deepgram, ElevenLabs) and demonstrates poor security practices by showing hardcoded credentials in configuration examples. The skill processes highly sensitive biometric voice data from Discord users and transmits it to third-party AI services without documented privacy controls, consent mechanisms, or data retention policies. A critical referenced file (voice.py) is missing from the package, preventing complete security analysis. Additional concerns include unbounded resource consumption risks, missing security guidance for credential management, and lack of privacy compliance documentation. The skill requires immediate security improvements before deployment, particularly around credential handling, privacy controls, and resource limits.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded credentials, missing privacy controls)",
+          "Availability Disruption (unbounded recording, auto-reconnect without backoff)",
+          "Tool Exploitation (missing referenced file, incomplete package)",
+          "Supply Chain Risk (unpinned dependencies, missing file)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The code has per-guild protections (processing lock, speaking lock) which prevent some abuse, but lacks global limits. The actual risk depends on deployment scale and number of guilds.",
+        "meta_exploitability": "Medium - Requires multiple users across multiple guilds to trigger simultaneously",
+        "meta_impact": "Medium - Could cause memory exhaustion, API quota depletion, or service degradation"
+      }
+    },
+    {
+      "id": "llm_finding_discord-voice_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Audio Data Processing Without Privacy Controls",
+      "description": "The skill captures, transcribes, and processes voice audio from Discord users, then sends this data to third-party AI services (OpenAI, Deepgram, ElevenLabs). There is no documentation of: (1) Audio data retention policies, (2) User consent mechanisms, (3) Data deletion procedures, (4) Privacy implications of sending voice data to external APIs, (5) Compliance with privacy regulations (GDPR, CCPA). Voice data is highly sensitive biometric information.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Speech-to-Text: Whisper API (OpenAI) or Deepgram\nText-to-Speech: OpenAI TTS or ElevenLabs\nTranscribed speech is routed through the Clawdbot agent",
+      "remediation": "Add comprehensive privacy documentation: (1) Explicit user consent requirements before voice recording, (2) Data retention and deletion policies, (3) Third-party data sharing disclosure, (4) Privacy policy requirements for bot operators, (5) Options to disable voice recording per user/guild, (6) Audit logging of voice data access, (7) Compliance guidance for GDPR/CCPA.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Discord voice integration skill presents MULTIPLE HIGH-SEVERITY security concerns primarily related to credential management and data privacy. The skill requires multiple sensitive API keys (Discord bot token, OpenAI, Deepgram, ElevenLabs) and demonstrates poor security practices by showing hardcoded credentials in configuration examples. The skill processes highly sensitive biometric voice data from Discord users and transmits it to third-party AI services without documented privacy controls, consent mechanisms, or data retention policies. A critical referenced file (voice.py) is missing from the package, preventing complete security analysis. Additional concerns include unbounded resource consumption risks, missing security guidance for credential management, and lack of privacy compliance documentation. The skill requires immediate security improvements before deployment, particularly around credential handling, privacy controls, and resource limits.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded credentials, missing privacy controls)",
+          "Availability Disruption (unbounded recording, auto-reconnect without backoff)",
+          "Tool Exploitation (missing referenced file, incomplete package)",
+          "Supply Chain Risk (unpinned dependencies, missing file)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Voice data is definitively being sent to third-party services (verified in code: WhisperSTT, DeepgramSTT, OpenAITTS, ElevenLabsTTS classes all make external API calls). The documentation lacks privacy disclosures.",
+        "meta_exploitability": "N/A - This is a compliance/policy issue, not a technical vulnerability",
+        "meta_impact": "Medium - Regulatory non-compliance could result in fines, legal issues, or user trust damage"
       }
     }
   ],
-  "scan_duration_seconds": 1.4304041862487793,
-  "duration_ms": 1430,
+  "scan_duration_seconds": 43.92302489280701,
+  "duration_ms": 43923,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +148,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:56:01.682430"
+  "timestamp": "2026-02-06T00:14:48.877408"
 }

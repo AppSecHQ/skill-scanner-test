@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** slack
-**Directory:** ./skills/clawhub-slack-api
+**Directory:** /workspace/skills/clawhub-slack-api
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T16:06:49.564753
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:49:26.009077
 
 ## Summary
 

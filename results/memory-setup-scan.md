@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** memory-setup
-**Directory:** ./skills/clawhub-memory-setup
+**Directory:** /workspace/skills/clawhub-memory-setup
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.48s
-**Timestamp:** 2026-02-03T15:53:50.875137
+**Max Severity:** SAFE
+**Scan Duration:** 14.39s
+**Timestamp:** 2026-02-06T04:31:05.230876
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

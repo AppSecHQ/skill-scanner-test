@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** resume-builder
-**Directory:** ./skills/clawhub-resume-builder
+**Directory:** /workspace/skills/clawhub-resume-builder
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.43s
-**Timestamp:** 2026-02-03T16:18:49.310489
+**Scan Duration:** 0.64s
+**Timestamp:** 2026-02-06T07:36:06.085314
 
 ## Summary
 

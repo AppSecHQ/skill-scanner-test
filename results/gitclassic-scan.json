@@ -1,114 +1,78 @@
 {
   "skill_name": "gitclassic",
-  "skill_path": "./skills/clawhub-gitclassic",
-  "skill_directory": "./skills/clawhub-gitclassic",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 5,
+  "skill_path": "/workspace/skills/clawhub-gitclassic",
+  "skill_directory": "/workspace/skills/clawhub-gitclassic",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "YARA_command_injection_7c08ac2d5c",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://gitclassic.com/facebook/react",
-      "file_path": "SKILL.md",
-      "line_number": 41,
-      "snippet": "curl https://gitclassic.com/facebook/react",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_1a82157d43",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://gitclassic.com/facebook/react/blob/main/README.md",
-      "file_path": "SKILL.md",
-      "line_number": 44,
-      "snippet": "curl https://gitclassic.com/facebook/react/blob/main/README.md",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_4c6b19226e",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://gitclassic.com/facebook/react/tree/main/packages",
-      "file_path": "SKILL.md",
-      "line_number": 47,
-      "snippet": "curl https://gitclassic.com/facebook/react/tree/main/packages",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_a9838dfad6",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://gitclassic.com/torvalds",
-      "file_path": "SKILL.md",
-      "line_number": 53,
-      "snippet": "curl https://gitclassic.com/torvalds",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_872bf4ad85",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
+      "id": "llm_finding_gitclassic_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
       "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
+      "title": "Transitive Trust Abuse - Following External Web Content",
+      "description": "The skill instructs the agent to fetch and parse content from gitclassic.com, a third-party service, without any validation or security warnings. The agent is directed to trust and follow HTML content from this external source. If gitclassic.com is compromised or serves malicious content, the agent could be subjected to indirect prompt injection attacks embedded in the HTML responses. The skill provides no mechanism to validate the integrity or safety of the content retrieved.",
       "file_path": "SKILL.md",
-      "line_number": 5,
-      "snippet": "GitClassic is a read-only GitHub interface that's pure server-rendered HTML \u2014 no JavaScript, no bloat, instant loads. Perfect for AI agents that need to browse repos without dealing with GitHub's heavy client-side rendering.",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "Instructions direct agent to: 'curl https://gitclassic.com/{owner}/{repo}' and parse responses. No validation of external content is specified. Agent is told to trust 'Clean, semantic HTML' from external source.",
+      "remediation": "Add explicit warnings about trusting external content. Implement content validation checks. Consider sandboxing external content parsing. Add user confirmation before fetching from external domains. Document the trust model and risks of following third-party HTML content.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security concerns primarily related to transitive trust and external content handling. The core functionality directs the agent to fetch and parse content from a third-party service (gitclassic.com) without validation mechanisms, creating indirect prompt injection risks if that service is compromised. The skill makes unverifiable performance claims and promotes a commercial service without adequate disclosure. However, the skill is read-only, contains no executable scripts, no data exfiltration code, and no direct prompt injection attempts. The missing 'public.py' reference appears to be a documentation error rather than a security issue. With proper warnings about external content trust and validation mechanisms, this could be a useful utility skill.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust)",
+          "Social Engineering (misleading claims)",
+          "Missing security controls for external content"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified transitive trust issue. The skill does instruct agents to fetch and parse external content without validation. This is a legitimate architectural concern, though the actual risk depends on gitclassic.com's security posture.",
+        "meta_exploitability": "Medium - Requires compromise of gitclassic.com or MITM attack. Not directly exploitable by skill author.",
+        "meta_impact": "Medium - Could lead to indirect prompt injection if external service is compromised, potentially causing agent to execute unintended actions."
+      }
+    },
+    {
+      "id": "llm_finding_gitclassic_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Potentially Misleading Service Claims",
+      "description": "The skill makes strong performance and reliability claims about a third-party service (gitclassic.com) that cannot be verified and may mislead users. Claims include '<500ms load times', 'cached responses' for rate limit avoidance, and 'clean, semantic HTML' that is 'easy to parse'. These claims could be inaccurate or change without notice, potentially causing the agent to make incorrect decisions or set false user expectations. The skill also promotes a paid PRO tier without disclosing the commercial relationship.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Unverifiable claims: 'Page load <500ms', 'Rate limits: Cached responses', 'AI agent friendly: Clean, semantic HTML'. Commercial promotion: 'PRO subscription ($19/year or $49/lifetime)' without disclosure of author relationship to service.",
+      "remediation": "Add disclaimers that performance claims are based on third-party service and may vary. Disclose any commercial relationship between skill author and gitclassic.com. Remove absolute performance guarantees. Add warnings that service availability and behavior are outside skill control.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security concerns primarily related to transitive trust and external content handling. The core functionality directs the agent to fetch and parse content from a third-party service (gitclassic.com) without validation mechanisms, creating indirect prompt injection risks if that service is compromised. The skill makes unverifiable performance claims and promotes a commercial service without adequate disclosure. However, the skill is read-only, contains no executable scripts, no data exfiltration code, and no direct prompt injection attempts. The missing 'public.py' reference appears to be a documentation error rather than a security issue. With proper warnings about external content trust and validation mechanisms, this could be a useful utility skill.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust)",
+          "Social Engineering (misleading claims)",
+          "Missing security controls for external content"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The claims are indeed unverifiable and could be considered marketing language. However, this is more of a documentation quality issue than a security threat. The commercial promotion aspect is minor.",
+        "meta_exploitability": "Low - Not directly exploitable. Could mislead users about service capabilities.",
+        "meta_impact": "Low - May cause user disappointment if performance doesn't meet expectations. No direct security impact."
       }
     }
   ],
-  "scan_duration_seconds": 0.38596248626708984,
-  "duration_ms": 385,
+  "scan_duration_seconds": 30.684964895248413,
+  "duration_ms": 30684,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -116,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:14:05.378041"
+  "timestamp": "2026-02-06T02:06:15.915865"
 }

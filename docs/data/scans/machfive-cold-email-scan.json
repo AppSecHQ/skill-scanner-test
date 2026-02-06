@@ -1,50 +1,80 @@
 {
   "skill_name": "cold-email",
-  "skill_path": "./skills/clawhub-cold-email",
-  "skill_directory": "./skills/clawhub-cold-email",
+  "skill_path": "/workspace/skills/clawhub-cold-email",
+  "skill_directory": "/workspace/skills/clawhub-cold-email",
   "is_safe": true,
   "max_severity": "MEDIUM",
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_cold-email_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Key Requirement Without Secure Storage Guidance",
+      "description": "The skill requires MACHFIVE_API_KEY environment variable but provides no guidance on secure storage, rotation, or scope limitations. Users may hardcode keys in shell profiles or insecure locations. The skill also accepts API keys via X-API-Key header, increasing exposure surface.",
+      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Setup instructions: 'Set `MACHFIVE_API_KEY` in your environment' and 'Or use `X-API-Key: {MACHFIVE_API_KEY}` header' without security warnings or best practices.",
+      "remediation": "Add security guidance: (1) Use secure credential managers (e.g., 1Password, AWS Secrets Manager), (2) Never commit keys to version control, (3) Rotate keys regularly, (4) Use minimum-scope API keys, (5) Warn about X-API-Key header exposure in logs/network traffic.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The cold-email skill presents MEDIUM security risks primarily related to data handling and API key management. The skill transmits potentially sensitive lead data (PII, business intelligence) to a third-party service without explicit privacy disclosures or consent warnings. API key security guidance is insufficient, risking credential exposure. The skill lacks critical metadata (license, compatibility, allowed-tools) reducing transparency. Long-running sync requests (3-5 min) may cause agent timeouts and resource issues without proper async handling. Referenced files (lead.py, the.py) are missing from the package. No evidence of prompt injection, command injection, or malicious code execution was found. The skill appears functionally legitimate but requires improved security documentation and data handling transparency.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Credential Management",
+          "Availability Disruption",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The documentation objectively lacks security guidance for credential management, which is a standard security requirement for API key handling.",
+        "meta_exploitability": "Medium - requires user error (insecure storage) but very common",
+        "meta_impact": "Medium - compromised API key could lead to unauthorized usage, data access, or billing fraud"
       }
     },
     {
-      "id": "YARA_skill_discovery_abuse_d848b56c93",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
+      "id": "llm_finding_cold-email_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: call this first",
-      "file_path": "SKILL.md",
-      "line_number": 40,
-      "snippet": "If no campaign name or ID was given, call this first, then ask the user: \"Which campaign should I use? [list names/IDs].\"",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
+      "title": "Potential Data Exfiltration via Third-Party API",
+      "description": "The skill sends potentially sensitive lead data (names, titles, emails, LinkedIn URLs, company websites) to an external third-party service (app.machfive.io) without explicit user consent warnings or data handling disclosures. Users may unknowingly transmit PII and business intelligence to an external vendor.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "POST requests to https://app.machfive.io/api/v1/campaigns/{campaign_id}/generate and /generate-batch send lead objects containing: name, title, company, email, company_website, linkedin_url. No privacy notice or data handling disclosure provided.",
+      "remediation": "Add explicit warnings: (1) Disclose that lead data is transmitted to MachFive's servers, (2) Link to MachFive's privacy policy and data handling practices, (3) Warn users about GDPR/CCPA compliance requirements, (4) Recommend obtaining consent before processing personal data, (5) Document data retention and deletion policies.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$activation_priority",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The cold-email skill presents MEDIUM security risks primarily related to data handling and API key management. The skill transmits potentially sensitive lead data (PII, business intelligence) to a third-party service without explicit privacy disclosures or consent warnings. API key security guidance is insufficient, risking credential exposure. The skill lacks critical metadata (license, compatibility, allowed-tools) reducing transparency. Long-running sync requests (3-5 min) may cause agent timeouts and resource issues without proper async handling. Referenced files (lead.py, the.py) are missing from the package. No evidence of prompt injection, command injection, or malicious code execution was found. The skill appears functionally legitimate but requires improved security documentation and data handling transparency.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Credential Management",
+          "Availability Disruption",
+          "Missing Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill explicitly documents sending PII to an external API without any privacy warnings. This is a legitimate transparency issue, not a false positive.",
+        "meta_exploitability": "Easy - automatic on every skill invocation",
+        "meta_impact": "Medium - potential privacy violation and unauthorized data sharing, but service appears legitimate"
       }
     }
   ],
-  "scan_duration_seconds": 0.38973140716552734,
-  "duration_ms": 389,
+  "scan_duration_seconds": 33.198752641677856,
+  "duration_ms": 33198,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:03:30.828343"
+  "timestamp": "2026-02-06T04:15:14.865214"
 }

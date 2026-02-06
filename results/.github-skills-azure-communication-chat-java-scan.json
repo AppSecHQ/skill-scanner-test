@@ -1,50 +1,46 @@
 {
   "skill_name": "azure-communication-chat-java",
-  "skill_path": "./skills/microsoft-agent-skills/.github/skills/azure-communication-chat-java",
-  "skill_directory": "./skills/microsoft-agent-skills/.github/skills/azure-communication-chat-java",
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-communication-chat-java",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-communication-chat-java",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_azure-communication-chat-java_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded Credentials in Code Examples",
+      "description": "The instruction body contains placeholder patterns for sensitive credentials including user access tokens and user IDs that could lead to accidental credential exposure if users copy-paste examples without proper sanitization. The examples show '<user-access-token>' and '<user-id-1>' patterns which may encourage developers to hardcode credentials directly in source code rather than using secure credential management practices.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "String userAccessToken = \"<user-access-token>\"; ... new CommunicationUserIdentifier(\"<user-id-1>\")",
+      "remediation": "Update code examples to demonstrate secure credential management practices: (1) Use environment variables for tokens (System.getenv(\"AZURE_COMMUNICATION_TOKEN\")), (2) Reference Azure Key Vault or secure credential stores, (3) Add explicit warnings against hardcoding credentials, (4) Show proper token lifecycle management and rotation patterns.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_b03c5923ae",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Read Receipts** - Send",
-      "file_path": "SKILL.md",
-      "line_number": 297,
-      "snippet": "5. **Read Receipts** - Send receipts only when messages are actually viewed by user",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Azure Communication Chat Java SDK skill is primarily a DOCUMENTATION AND REFERENCE skill with MEDIUM security concerns. The skill provides code examples and API usage patterns for Azure Communication Services but does not contain executable scripts or autonomous behaviors. Primary concerns are: (1) Code examples that could encourage credential hardcoding practices (MEDIUM severity), (2) Missing metadata fields that reduce transparency (LOW severity), (3) A missing referenced file that creates package incompleteness (LOW severity), and (4) An incomplete code example that could mislead users (LOW severity). The skill does not exhibit malicious behavior, data exfiltration, prompt injection, or tool exploitation. It functions as intended - providing Java SDK documentation and examples. However, the credential handling patterns in examples could lead to security issues in downstream implementations if users copy-paste without understanding secure practices.",
+        "primary_threats": [
+          "Credential exposure risk in code examples",
+          "Missing security metadata",
+          "Incomplete documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that while placeholders are used, the lack of prominent security warnings could lead to insecure implementations. This is a documentation quality issue, not active malicious code.",
+        "meta_exploitability": "Low - Requires developer to misuse examples",
+        "meta_impact": "Medium - Could lead to credential exposure in downstream applications"
       }
     }
   ],
-  "scan_duration_seconds": 0.41654205322265625,
-  "duration_ms": 416,
+  "scan_duration_seconds": 28.05465531349182,
+  "duration_ms": 28054,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:28:01.032093"
+  "timestamp": "2026-02-05T13:57:57.920850"
 }

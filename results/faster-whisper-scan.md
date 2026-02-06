@@ -1,53 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** faster-whisper
-**Directory:** ./skills/clawhub-faster-whisper
+**Directory:** /workspace/skills/clawhub-faster-whisper
 **Status:** [OK] SAFE
-**Max Severity:** MEDIUM
-**Scan Duration:** 0.69s
-**Timestamp:** 2026-02-03T15:59:39.166198
+**Max Severity:** SAFE
+**Scan Duration:** 16.14s
+**Timestamp:** 2026-02-06T01:08:41.770193
 
 ## Summary
 
-- **Total Findings:** 3
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 2
-- **Low:** 1
+- **Medium:** 0
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### MEDIUM Severity
-
-#### [MEDIUM] Attempting to install system packages with elevated privileges
-
-**Severity:** MEDIUM
-**Category:** unauthorized_tool_use
-**Rule ID:** TOOL_ABUSE_SYSTEM_PACKAGE_INSTALL
-**Location:** setup.sh:50
-
-**Description:** Pattern detected: sudo dnf install
-
-#### [MEDIUM] Attempting to install system packages with elevated privileges
-
-**Severity:** MEDIUM
-**Category:** unauthorized_tool_use
-**Rule ID:** TOOL_ABUSE_SYSTEM_PACKAGE_INSTALL
-**Location:** setup.sh:51
-
-**Description:** Pattern detected: sudo pacman -S
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

@@ -1,30 +1,46 @@
 {
   "skill_name": "dwlf",
-  "skill_path": "./skills/clawhub-dwlf",
-  "skill_directory": "./skills/clawhub-dwlf",
+  "skill_path": "/workspace/skills/clawhub-dwlf",
+  "skill_directory": "/workspace/skills/clawhub-dwlf",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_dwlf_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "API Key Extraction from TOOLS.md File",
+      "description": "The bash script attempts to read an API key from a TOOLS.md file located at $HOME/clawd/TOOLS.md. The script uses grep to extract 'Jenna's own key' from this file. This pattern could expose user credentials if the TOOLS.md file contains sensitive information, and the skill accesses credentials that may belong to a specific user ('Jenna') rather than being properly scoped to the current user.",
+      "file_path": "scripts/dwlf-api.sh",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "if [ -f \"$TOOLS_FILE\" ]; then\n    # Extract Jenna's API key from TOOLS.md\n    API_KEY=$(grep -A1 \"Jenna's own key\" \"$TOOLS_FILE\" | grep \"API Key:\" | head -1 | sed 's/.*: //')",
+      "remediation": "1. Do not hardcode references to specific users' credentials ('Jenna's own key'). 2. Use environment variables exclusively for API key management (DWLF_API_KEY). 3. Provide clear documentation for users to set their own API keys. 4. Remove automatic credential extraction from files. 5. If file-based configuration is needed, use a standard format with proper user consent and validation.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The DWLF skill is a market analysis platform integration that makes legitimate API calls to dwlf.co.uk for trading data and signals. The primary security concerns are: (1) credential extraction from a TOOLS.md file with hardcoded user references ('Jenna's own key'), which could lead to credential exposure or confusion, and (2) network data transmission to an external API without explicit user awareness in the description. The skill appears to function as intended for market analysis but needs better credential management practices and clearer documentation about data transmission. Missing optional metadata fields and incomplete file references are minor issues that affect usability and transparency. No evidence of malicious intent, prompt injection, or data exfiltration beyond the stated API integration purpose was found.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential extraction pattern)",
+          "Network Data Transmission (external API calls)",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The hardcoded user reference 'Jenna's own key' is clearly visible in the code and represents a credential management anti-pattern, though it's not actively malicious",
+        "meta_exploitability": "Low - Requires user to have a TOOLS.md file with this specific format",
+        "meta_impact": "Medium - Could cause credential confusion or exposure if skill is shared"
       }
     }
   ],
-  "scan_duration_seconds": 0.5036361217498779,
-  "duration_ms": 503,
+  "scan_duration_seconds": 31.394471406936646,
+  "duration_ms": 31394,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:08:31.498345"
+  "timestamp": "2026-02-05T17:38:39.950864"
 }

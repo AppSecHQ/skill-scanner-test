@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** 10-of-my-most-popular-text-to-image-series-prompts-78b0897e
-**Directory:** ./skills/clawhub-test-skill-temp
+**Directory:** /workspace/skills/clawhub-test-skill-temp
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.31s
-**Timestamp:** 2026-02-02T03:05:44.638643
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:51:16.703561
 
 ## Summary
 

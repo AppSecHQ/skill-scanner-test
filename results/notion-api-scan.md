@@ -1,33 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** notion
-**Directory:** ./skills/clawhub-notion-api-automation
+**Directory:** /workspace/skills/clawhub-notion-api-automation
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.39s
-**Timestamp:** 2026-02-02T03:06:54.962434
+**Max Severity:** MEDIUM
+**Scan Duration:** 22.89s
+**Timestamp:** 2026-02-06T05:21:41.330896
 
 ## Summary
 
 - **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### MEDIUM Severity
 
-#### [LOW] Skill does not specify a license
+#### [MEDIUM] Hardcoded API Key Requirement Without Secure Storage Guidance
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill requires NOTION_API_KEY environment variable but provides fallback mechanisms that may encourage insecure storage practices. While checking ~/.config/notion/api_key is mentioned as a 'fallback for local dev', this could lead users to store API keys in plaintext files. The skill does not provide guidance on secure credential management or warn about the risks of plaintext storage.
 
 ## Analyzers
 

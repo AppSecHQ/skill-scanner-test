@@ -1,30 +1,47 @@
 {
   "skill_name": "notion",
-  "skill_path": "./skills/clawhub-notion-api-automation",
-  "skill_directory": "./skills/clawhub-notion-api-automation",
+  "skill_path": "/workspace/skills/clawhub-notion-api-automation",
+  "skill_directory": "/workspace/skills/clawhub-notion-api-automation",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_notion_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Key Environment Variable Without Validation",
+      "description": "The skill requires NOTION_API_KEY environment variable but provides no validation, sanitization, or secure handling guidance. The CLI also checks multiple fallback locations (NOTION_TOKEN, NOTION_API_TOKEN, ~/.config/notion/api_key) which increases the attack surface for credential exposure. If the agent executes this skill with a compromised or logged environment, the API key could be exposed.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "This skill expects `NOTION_API_KEY` to be present in the environment.\n\nIf you need a fallback for local dev, the CLI also checks:\n- `NOTION_TOKEN`, `NOTION_API_TOKEN`\n- `~/.config/notion/api_key`",
+      "remediation": "1. Document secure credential storage practices\n2. Implement credential validation before use\n3. Warn users about the security implications of multiple credential locations\n4. Consider using a more secure credential management approach (e.g., system keychain)\n5. Add logging/auditing for credential access attempts",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "MODERATE RISK - This Notion integration skill has several security concerns that should be addressed before deployment. The primary issues are: (1) the core notionctl.mjs script is not included for security review, making it impossible to verify input sanitization and command injection protections, (2) API key handling lacks validation and uses multiple fallback locations increasing exposure risk, (3) rate limiting implementation cannot be verified, and (4) several referenced files are missing from the package. The skill does not contain obvious malicious code in the visible components, but the absence of the main executable script prevents complete security validation. The skill appears to be a legitimate Notion integration tool, but requires the missing script to be included for full security assessment.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (unverified credential handling)",
+          "Model/Agentic System Manipulation (unverified external script execution)",
+          "Availability Disruption (unverified rate limiting)",
+          "Social Engineering (missing metadata, incomplete package)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Multiple credential storage locations are documented and increase exposure risk. This is a legitimate security concern for credential management, though not an active exfiltration attempt.",
+        "meta_exploitability": "Medium - Requires access to environment variables or filesystem, but multiple fallback locations increase likelihood of exposure through logs, process listings, or file system access",
+        "meta_impact": "High - Compromised Notion API key grants full access to all Notion workspaces the integration can access, potentially exposing sensitive organizational data"
       }
     }
   ],
-  "scan_duration_seconds": 0.34128594398498535,
-  "duration_ms": 341,
+  "scan_duration_seconds": 35.58098864555359,
+  "duration_ms": 35580,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +49,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T03:06:52.773930"
+  "timestamp": "2026-02-06T05:20:32.512679"
 }

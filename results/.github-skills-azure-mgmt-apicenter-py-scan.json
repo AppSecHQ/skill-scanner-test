@@ -1,30 +1,46 @@
 {
   "skill_name": "azure-mgmt-apicenter-py",
-  "skill_path": "./skills/microsoft-agent-skills/.github/skills/azure-mgmt-apicenter-py",
-  "skill_directory": "./skills/microsoft-agent-skills/.github/skills/azure-mgmt-apicenter-py",
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-mgmt-apicenter-py",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-mgmt-apicenter-py",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_azure-mgmt-apicenter-py_0",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unpinned Package Dependencies Without Version Control",
+      "description": "The skill instructs installation of 'azure-mgmt-apicenter' and 'azure-identity' packages without specifying version pins. This creates a supply chain risk where future malicious or breaking versions could be automatically installed, potentially introducing vulnerabilities or breaking functionality. The installation commands use 'pip install' without version constraints (e.g., ==1.2.3 or ~=1.2).",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "```bash\npip install azure-mgmt-apicenter\npip install azure-identity\n```",
+      "remediation": "Pin package versions to specific releases: 'pip install azure-mgmt-apicenter==1.0.0 azure-identity==1.12.0'. Document the tested versions in the manifest and provide update guidance. Consider using a requirements.txt file with hash verification for additional security.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Azure API Center Management SDK skill is a legitimate documentation/tutorial package for Azure API management operations. The skill contains NO malicious code, data exfiltration attempts, prompt injection, or credential theft. It is primarily instructional content showing how to use the official Azure SDK. The security findings are limited to supply chain hygiene (unpinned dependencies), documentation completeness (missing manifest fields, incomplete code example), and operational guidance (environment variable validation). These are LOW to MEDIUM severity issues related to best practices rather than active threats. The skill is SAFE for use but would benefit from improved dependency management and documentation completeness.",
+        "primary_threats": [
+          "Unpinned Dependencies",
+          "Missing Metadata",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a best practice recommendation rather than an active security threat. Unpinned dependencies are common in documentation examples, though they do represent supply chain risk. The LLM analyzer correctly identified this as a hygiene issue, not an active attack.",
+        "meta_exploitability": "Low - Requires malicious package version to be published to PyPI",
+        "meta_impact": "Medium - Could introduce vulnerabilities or breaking changes if malicious version installed"
       }
     }
   ],
-  "scan_duration_seconds": 0.3621864318847656,
-  "duration_ms": 362,
+  "scan_duration_seconds": 24.971195936203003,
+  "duration_ms": 24971,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:27:32.100293"
+  "timestamp": "2026-02-05T14:50:27.776231"
 }

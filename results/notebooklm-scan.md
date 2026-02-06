@@ -1,42 +1,22 @@
 # Agent Skill Security Scan Report
 
 **Skill:** notebooklm
-**Directory:** ./skills/clawhub-notebooklm
+**Directory:** /workspace/skills/clawhub-notebooklm
 **Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 1.81s
-**Timestamp:** 2026-02-03T16:08:56.071433
+**Max Severity:** HIGH
+**Scan Duration:** 51.01s
+**Timestamp:** 2026-02-06T05:18:07.151155
 
 ## Summary
 
-- **Total Findings:** 17
-- **Critical:** 2
+- **Total Findings:** 4
+- **Critical:** 0
 - **High:** 3
-- **Medium:** 12
+- **Medium:** 1
 - **Low:** 0
 - **Info:** 0
 
 ## Findings
-
-### CRITICAL Severity
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/run.py:51
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: <script_name>
-
-#### [CRITICAL] eval/exec combined with subprocess detected
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** BEHAVIOR_EVAL_SUBPROCESS
-**Location:** skills/clawhub-notebooklm/scripts/setup_environment.py
-
-**Description:** Dangerous combination of code execution and system commands in skills/clawhub-notebooklm/scripts/setup_environment.py
 
 ### HIGH Severity
 
@@ -48,133 +28,34 @@
 
 **Description:** Skill restricts tools to ['Bash', 'Read', 'Write', 'Edit', 'Glob', 'Grep'] but includes Python scripts
 
-#### [HIGH] Suspicious URL detected: https://notebooklm.google.com
+#### [HIGH] Browser Session Cookie Theft and Credential Exposure
 
 **Severity:** HIGH
 **Category:** data_exfiltration
-**Rule ID:** BEHAVIOR_SUSPICIOUS_URL
-**Location:** skills/clawhub-notebooklm/scripts/auth_manager.py
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** scripts/auth_manager.py
 
-**Description:** Script contains suspicious URL that may be used for data exfiltration
+**Description:** The skill stores and manages Google authentication cookies in plaintext JSON files (state.json, auth_info.json) within the skill's data directory. These files contain sensitive session tokens that could be exfiltrated or accessed by other processes. The auth_manager.py and browser_session.py scripts handle Google login credentials and persist browser state with cookies that grant access to the user's NotebookLM account.
 
-#### [HIGH] Suspicious URL detected: https://notebooklm.google.com
+#### [HIGH] Subprocess Command Execution Without Input Validation
 
 **Severity:** HIGH
-**Category:** data_exfiltration
-**Rule ID:** BEHAVIOR_SUSPICIOUS_URL
-**Location:** skills/clawhub-notebooklm/scripts/auth_manager.py
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
+**Location:** scripts/run.py
 
-**Description:** Script contains suspicious URL that may be used for data exfiltration
+**Description:** Multiple scripts use subprocess.run() to execute Python scripts with user-controlled arguments without proper validation or sanitization. The run.py, quick_query.py, and setup_notebooklm.py scripts pass arguments directly to subprocess calls, creating potential command injection vectors if file paths or arguments contain shell metacharacters.
 
 ### MEDIUM Severity
 
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
+#### [MEDIUM] Misleading Description About Local File Analysis
 
 **Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** SKILL.md:3
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
+**Location:** SKILL.md
 
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: get source-grounded insights, risk assessments, and actionable recommendations. Upload
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** scripts/quick_query.py:38
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** scripts/run.py:38
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** scripts/run.py:91
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** scripts/setup_notebooklm.py:21
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** scripts/setup_notebooklm.py:28
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** scripts/setup_notebooklm.py:43
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(
-
-#### [MEDIUM] TRANSITIVE TRUST ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** transitive_trust_abuse
-**Rule ID:** YARA_transitive_trust_abuse
-**Location:** scripts/setup_environment.py:135
-
-**Description:** Detects skills that delegate trust to untrusted external content: run script
-
-#### [MEDIUM] TRANSITIVE TRUST ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** transitive_trust_abuse
-**Rule ID:** YARA_transitive_trust_abuse
-**Location:** scripts/setup_environment.py:197
-
-**Description:** Detects skills that delegate trust to untrusted external content: run scripts
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** scripts/setup_environment.py:54
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** scripts/setup_environment.py:132
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** scripts/__init__.py:65
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): subprocess.run(
+**Description:** The skill description emphasizes 'analyze your local files' and 'local file analyzer' but the actual implementation uploads files to Google's NotebookLM cloud service. This is not truly local analysis - it's cloud-based analysis of local files, which has different privacy and security implications that are not clearly disclosed in the manifest.
 
 ## Analyzers
 

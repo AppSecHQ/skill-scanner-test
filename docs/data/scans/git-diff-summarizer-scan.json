@@ -1,50 +1,113 @@
 {
   "skill_name": "diff-summary",
-  "skill_path": "./skills/clawhub-ai-diff-summary",
-  "skill_directory": "./skills/clawhub-ai-diff-summary",
+  "skill_path": "/workspace/skills/clawhub-ai-diff-summary",
+  "skill_directory": "/workspace/skills/clawhub-ai-diff-summary",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_diff-summary_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Skill Package - Not an Agent Skill",
+      "description": "This package is advertised as an agent skill but is actually an NPM package (npx ai-diff-summary) that requires external installation and execution. The SKILL.md contains no agent instructions, only documentation for a standalone CLI tool. This is deceptive packaging that misleads users about the skill's nature and functionality.",
       "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "line_number": 1,
+      "snippet": "Quick Start section shows 'npx ai-diff-summary' - this is an NPM package installation command, not agent skill usage. No agent instructions like 'When the user asks to...' are present.",
+      "remediation": "Either: (1) Convert to proper agent skill format with agent instructions and bundled scripts, or (2) Clearly label as external tool documentation, not an agent skill package.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This package has MEDIUM severity security concerns. The primary issue is that it's not actually an agent skill - it's documentation for an external NPM CLI tool (npx ai-diff-summary) masquerading as an agent skill package. The SKILL.md contains no agent instructions, only CLI usage documentation. Additionally, it requires an OPENAI_API_KEY without security guidance, references a missing main.py file, and lacks proper metadata. The package appears to be either incorrectly packaged or intentionally deceptive. It should either be converted to a proper agent skill with bundled scripts and agent instructions, or clearly labeled as external tool documentation.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Packaging)",
+          "Credential Exposure Risk",
+          "Tool Shadowing (Missing Implementation)",
+          "Incomplete Metadata"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The evidence is unambiguous: every usage example is an NPM command (npx ai-diff-summary), there are zero agent instructions, and the package references a missing main.py file while showing Node.js commands. This is definitively not an agent skill.",
+        "meta_exploitability": "Medium - Users may unknowingly install and execute external NPM packages they didn't intend to run, potentially exposing their system to supply chain attacks",
+        "meta_impact": "High - Users expect a sandboxed agent skill but instead get instructions to install external software with full system access. The external package requires OPENAI_API_KEY which could be exfiltrated."
       }
     },
     {
-      "id": "YARA_skill_discovery_abuse_e00d8fae03",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
+      "id": "llm_finding_diff-summary_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
+      "title": "External API Key Requirement - Credential Exposure Risk",
+      "description": "The skill requires OPENAI_API_KEY environment variable but provides no guidance on secure handling. Users may expose their API keys through environment variables that could be accessed by other processes or logged. The skill does not specify how the key is used or transmitted.",
       "file_path": "SKILL.md",
-      "line_number": 3,
-      "snippet": "Turn messy git diffs into human-readable summaries. Perfect for PR descriptions and code reviews.",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
+      "line_number": 45,
+      "snippet": "'OPENAI_API_KEY required' - No security guidance provided for API key handling, storage, or transmission.",
+      "remediation": "Add explicit security guidance: (1) How the API key is used, (2) Whether it's transmitted externally, (3) Secure storage recommendations, (4) Scope of API access required.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This package has MEDIUM severity security concerns. The primary issue is that it's not actually an agent skill - it's documentation for an external NPM CLI tool (npx ai-diff-summary) masquerading as an agent skill package. The SKILL.md contains no agent instructions, only CLI usage documentation. Additionally, it requires an OPENAI_API_KEY without security guidance, references a missing main.py file, and lacks proper metadata. The package appears to be either incorrectly packaged or intentionally deceptive. It should either be converted to a proper agent skill with bundled scripts and agent instructions, or clearly labeled as external tool documentation.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Packaging)",
+          "Credential Exposure Risk",
+          "Tool Shadowing (Missing Implementation)",
+          "Incomplete Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The requirement for OPENAI_API_KEY is explicit, and the external nature of the NPM package means users cannot verify its behavior without manually inspecting the GitHub repository.",
+        "meta_exploitability": "Medium - Requires user to have an OpenAI API key and follow the installation instructions",
+        "meta_impact": "Medium - API key exposure could lead to unauthorized API usage charges or data exfiltration through API calls"
+      }
+    },
+    {
+      "id": "llm_finding_diff-summary_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing Script Implementation - Broken Functionality",
+      "description": "The instructions reference 'main.py' as a script file, but this file is not found in the package. This indicates either incomplete packaging or a tool shadowing attempt where the actual implementation is hidden or replaced by the external NPM package.",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "Referenced file 'main.py' not found in package. Instructions show NPX commands instead of Python execution.",
+      "remediation": "Include all referenced script files in the package, or remove references to missing files. Ensure package is complete and self-contained.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This package has MEDIUM severity security concerns. The primary issue is that it's not actually an agent skill - it's documentation for an external NPM CLI tool (npx ai-diff-summary) masquerading as an agent skill package. The SKILL.md contains no agent instructions, only CLI usage documentation. Additionally, it requires an OPENAI_API_KEY without security guidance, references a missing main.py file, and lacks proper metadata. The package appears to be either incorrectly packaged or intentionally deceptive. It should either be converted to a proper agent skill with bundled scripts and agent instructions, or clearly labeled as external tool documentation.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Packaging)",
+          "Credential Exposure Risk",
+          "Tool Shadowing (Missing Implementation)",
+          "Incomplete Metadata"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The file listing explicitly shows main.py is referenced but not present. This is a factual packaging error.",
+        "meta_exploitability": "Low - This is a packaging error, not an active exploit",
+        "meta_impact": "Low - Causes confusion but no direct security harm. May indicate rushed or careless packaging."
       }
     }
   ],
-  "scan_duration_seconds": 0.4689674377441406,
-  "duration_ms": 468,
+  "scan_duration_seconds": 24.551005601882935,
+  "duration_ms": 24551,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:16:43.157209"
+  "timestamp": "2026-02-06T02:03:04.013969"
 }

@@ -1,33 +1,53 @@
 # Agent Skill Security Scan Report
 
 **Skill:** clawbridge
-**Directory:** ./skills/clawhub-clawbridge-skill-latest
-**Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.62s
-**Timestamp:** 2026-02-03T16:05:29.323252
+**Directory:** /workspace/skills/clawhub-clawbridge-skill-latest
+**Status:** [FAIL] ISSUES FOUND
+**Max Severity:** HIGH
+**Scan Duration:** 45.00s
+**Timestamp:** 2026-02-05T21:52:53.377215
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 3
 - **Critical:** 0
-- **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **High:** 2
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### HIGH Severity
 
-#### [LOW] Skill does not specify a license
+#### [HIGH] Arbitrary Command Execution via Unvalidated User Input
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** HIGH
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill executes 'clawbridge run' with user-provided arguments (e.g., '--profile myprofile') without any input validation or sanitization. This allows command injection attacks where malicious users could inject arbitrary shell commands through the profile parameter or other arguments. For example, '/clawbridge --profile "myprofile; rm -rf /"' could execute destructive commands.
+
+#### [HIGH] Execution of Untrusted Remote Code via Install Script
+
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
+
+**Description:** The skill's installation instructions direct users to execute a remote shell script directly from the internet using 'curl | bash' pattern ('curl -fsSL https://clawbridge.cloud/install | bash'). This is a critical security anti-pattern that executes arbitrary code without inspection. If the domain is compromised or performs a man-in-the-middle attack, malicious code would execute with the user's privileges. The metadata also includes this dangerous installation method as the 'recommended' approach.
+
+### MEDIUM Severity
+
+#### [MEDIUM] Unbounded External Process Execution
+
+**Severity:** MEDIUM
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
+**Location:** SKILL.md
+
+**Description:** The skill executes an external binary ('clawbridge run') with no documented timeouts, resource limits, or error handling. The runner performs 'discovery workflow' which could involve network calls, file operations, and API interactions. There are no safeguards against the process hanging indefinitely, consuming excessive resources, or entering infinite loops. This could lead to denial of service or resource exhaustion on the user's machine.
 
 ## Analyzers
 

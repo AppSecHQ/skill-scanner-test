@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** vue
-**Directory:** ./skills/antfu-skills/skills/vue
+**Directory:** /workspace/skills/antfu-skills/skills/vue
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.48s
-**Timestamp:** 2026-02-02T02:55:53.130540
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:53:04.248742
 
 ## Summary
 

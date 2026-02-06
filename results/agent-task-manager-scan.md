@@ -1,19 +1,19 @@
 # Agent Skill Security Scan Report
 
 **Skill:** agent-task-manager
-**Directory:** ./skills/clawhub-agent-task-manager
+**Directory:** /workspace/skills/clawhub-agent-task-manager
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.54s
-**Timestamp:** 2026-02-02T03:07:37.529662
+**Scan Duration:** 35.19s
+**Timestamp:** 2026-02-05T18:43:21.917968
 
 ## Summary
 
-- **Total Findings:** 2
+- **Total Findings:** 3
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 1
-- **Low:** 1
+- **Medium:** 3
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
@@ -29,16 +29,23 @@
 
 **Description:** Pattern detected: eval "$
 
-### LOW Severity
+#### [MEDIUM] Command Injection via eval() in cooldown.sh
 
-#### [LOW] Skill does not specify a license
+**Severity:** MEDIUM
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
+**Location:** scripts/cooldown.sh:40
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
+**Description:** The cooldown.sh script uses 'eval "$COMMAND"' to execute arbitrary commands passed as arguments. This creates a command injection vulnerability where malicious input in the COMMAND parameter could execute unintended shell commands. While this is within a local skill package, it allows arbitrary code execution if the orchestrator or task parser constructs malicious commands.
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+#### [MEDIUM] Unbounded Workflow Execution Without User Confirmation
+
+**Severity:** MEDIUM
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
+**Location:** scripts/orchestrator.py
+
+**Description:** The orchestrator.py implements automated multi-step workflows that execute sequentially without requiring user confirmation between steps. The run_task_from_human.py interface accepts natural language requests and automatically executes complex workflows including financial analysis and external notifications. This creates risk of unintended automated actions, especially when combined with rate-limiting that enables continuous background execution.
 
 ## Analyzers
 

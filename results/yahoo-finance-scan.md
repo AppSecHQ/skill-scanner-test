@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** yahoo-finance
-**Directory:** ./skills/clawhub-yahoo-finance-5tv
+**Directory:** /workspace/skills/clawhub-yahoo-finance-5tv
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-03T16:04:06.040557
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:54:12.181347
 
 ## Summary
 

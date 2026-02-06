@@ -1,30 +1,46 @@
 {
   "skill_name": "para-second-brain",
-  "skill_path": "./skills/clawhub-para-second-brain",
-  "skill_directory": "./skills/clawhub-para-second-brain",
+  "skill_path": "/workspace/skills/clawhub-para-second-brain",
+  "skill_directory": "/workspace/skills/clawhub-para-second-brain",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_para-second-brain_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse via Symlink-Based Search Expansion",
+      "description": "The skill instructs users to create a symlink from 'memory/notes' to '../notes' to make the entire notes/ directory searchable via memory_search. This creates transitive trust where the agent will follow and trust content from any file in notes/ (projects, areas, resources, archive) as if it were curated memory. If an attacker places malicious instructions in notes/projects/malicious.md, the agent will find and potentially follow them during memory_search operations. The skill explicitly states 'Your entire notes/ folder is invisible to search' before the symlink, then makes it visible, expanding the attack surface for indirect prompt injection.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "'By default, memory_search only indexes MEMORY.md and memory/*.md. Your entire notes/ folder is inv[isible]' followed by instructions to create symlink 'ln -s ../notes memory/notes' to make all notes searchable",
+      "remediation": "1. Document the security implications of making notes/ searchable. 2. Recommend users validate content in notes/ before symlinking. 3. Consider implementing content filtering or sandboxing for notes/ content. 4. Add warnings about placing untrusted content in searchable directories. 5. Suggest separate directories for trusted vs untrusted reference material.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The para-second-brain skill implements a PARA (Projects, Areas, Resources, Archive) organizational system for agent memory with a notable security concern around transitive trust. The core functionality (directory structure creation via setup.sh) is benign, but the symlink trick that makes the entire notes/ directory searchable via memory_search creates an indirect prompt injection risk (AITech-1.2). If users place untrusted content in their notes/ folders, the agent could discover and follow malicious instructions during search operations. The skill also has minor issues with missing optional metadata fields and incomplete documentation. No critical threats (data exfiltration, command injection, hardcoded secrets) were detected. The bash script uses safe practices (set -e, quoted variables, no eval/exec). Overall, this is a moderately safe skill with one medium-severity transitive trust concern that should be documented for users.",
+        "primary_threats": [
+          "Indirect Prompt Injection (Transitive Trust)",
+          "Missing Metadata",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The LLM analyzer correctly identifies a real transitive trust issue. The symlink does expand the search scope to user-controlled content. However, this is a DOCUMENTED FEATURE, not a hidden vulnerability. Users explicitly opt-in to this behavior. The risk is real but manageable with proper documentation.",
+        "meta_exploitability": "Medium - Requires user to place malicious content in their own notes/ folder, then trigger a memory_search that finds it. Not exploitable remotely.",
+        "meta_impact": "Medium - Could lead to indirect prompt injection if user unknowingly adds malicious instructions to notes/. Agent would follow them during search operations."
       }
     }
   ],
-  "scan_duration_seconds": 0.31151270866394043,
-  "duration_ms": 311,
+  "scan_duration_seconds": 28.601831674575806,
+  "duration_ms": 28601,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T15:59:07.524773"
+  "timestamp": "2026-02-06T06:06:01.708812"
 }

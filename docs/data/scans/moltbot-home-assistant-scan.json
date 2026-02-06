@@ -1,50 +1,78 @@
 {
   "skill_name": "moltbot-ha",
-  "skill_path": "./skills/clawhub-moltbot-ha",
-  "skill_directory": "./skills/clawhub-moltbot-ha",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
+  "skill_path": "/workspace/skills/clawhub-moltbot-ha",
+  "skill_directory": "/workspace/skills/clawhub-moltbot-ha",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_moltbot-ha_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded Credential Exposure Risk in Documentation",
+      "description": "The skill instructions demonstrate setting the HA_TOKEN environment variable with a placeholder 'your_token_here' and provide detailed steps for creating long-lived access tokens. While educational, this pattern could lead users to hardcode sensitive tokens in shell history or configuration files. The skill requires HA_TOKEN as a primary environment variable but lacks guidance on secure token storage practices.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "export HA_TOKEN=\"your_token_here\" - Instructions show direct environment variable setting without warnings about shell history, secure storage, or token rotation best practices.",
+      "remediation": "Add security warnings about: (1) Not committing tokens to version control, (2) Using secure credential managers instead of shell exports, (3) Token rotation policies, (4) Clearing shell history after setting sensitive variables. Consider recommending tools like pass, 1Password CLI, or keyring for secure token storage.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The moltbot-ha skill is a legitimate Home Assistant control interface with moderate security concerns. The skill correctly implements safety confirmations for critical operations (locks, alarms, garage doors), but has weaknesses in credential handling guidance and the --force bypass mechanism. The primary risks are: (1) potential credential exposure through insecure token storage practices, (2) safety bypass via --force flag that relies on agent-level confirmation rather than tool-level enforcement. The skill does not contain malicious code, data exfiltration, or prompt injection attempts. It's a functional smart home control tool that would benefit from enhanced security documentation and stronger confirmation mechanisms for critical operations. The missing metadata fields and referenced file are minor documentation issues.",
+        "primary_threats": [
+          "Credential exposure risk",
+          "Tool exploitation via safety bypass",
+          "Missing security guidance"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The LLM analyzer correctly identified this as a credential exposure risk (AITech-8.2). The current documentation does recommend environment variables over hardcoding in config files, which is good, but lacks critical security guidance that could prevent common mistakes. The YARA rule also flagged this same section (finding #1), providing corroboration. This is a legitimate documentation gap that could lead to insecure deployments.",
+        "meta_exploitability": "Low-Medium - Requires user to follow insecure practices (typing token directly in terminal, not using secure storage). Not directly exploitable by the skill itself, but creates conditions for credential exposure through shell history, process listings, or insecure scripts.",
+        "meta_impact": "High - Exposed HA_TOKEN grants full control over the user's Home Assistant instance, including all connected smart home devices, sensors, and automations. Could lead to unauthorized access, privacy violations, or physical security risks."
       }
     },
     {
-      "id": "YARA_credential_harvesting_87d4192ccd",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export HA_TOKEN",
+      "id": "llm_finding_moltbot-ha_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Critical Action Bypass via --force Flag",
+      "description": "The skill implements a 3-level safety system for critical operations (locks, alarms, garage doors), but the confirmation mechanism can be bypassed using a --force flag. While the workflow requires agent-to-user confirmation before using --force, this creates a potential tool exploitation vector if the agent's decision-making is compromised or if prompt injection causes the agent to skip user confirmation.",
       "file_path": "SKILL.md",
-      "line_number": 24,
-      "snippet": "export HA_TOKEN=\"your_token_here\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "Example: moltbot-ha on cover.garage --force - The --force flag allows bypassing safety confirmations for critical operations like garage doors and door locks.",
+      "remediation": "Implement additional safeguards: (1) Require explicit user confirmation in the tool itself (not just agent-level), (2) Add rate limiting for --force operations, (3) Log all --force usage with timestamps, (4) Consider requiring a separate confirmation token or PIN for critical operations, (5) Document that --force should only be used after explicit user approval.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The moltbot-ha skill is a legitimate Home Assistant control interface with moderate security concerns. The skill correctly implements safety confirmations for critical operations (locks, alarms, garage doors), but has weaknesses in credential handling guidance and the --force bypass mechanism. The primary risks are: (1) potential credential exposure through insecure token storage practices, (2) safety bypass via --force flag that relies on agent-level confirmation rather than tool-level enforcement. The skill does not contain malicious code, data exfiltration, or prompt injection attempts. It's a functional smart home control tool that would benefit from enhanced security documentation and stronger confirmation mechanisms for critical operations. The missing metadata fields and referenced file are minor documentation issues.",
+        "primary_threats": [
+          "Credential exposure risk",
+          "Tool exploitation via safety bypass",
+          "Missing security guidance"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a legitimate design concern for agent-controlled smart home systems. While the documentation clearly instructs agents on proper behavior, relying solely on agent discipline for critical safety operations (garage doors, door locks, alarms) creates a single point of failure. The LLM analyzer correctly identified this as a tool exploitation risk (AITech-12.1). However, severity is MEDIUM not HIGH because: (1) the tool does implement safety checks, (2) blocked_entities provides a hard block mechanism, (3) all actions are logged, and (4) this is a documented CLI tool where some level of trust in the calling agent is expected.",
+        "meta_exploitability": "Medium - Requires either prompt injection to manipulate agent behavior or agent misconfiguration. The attack path would be: User request \u2192 Prompt injection \u2192 Agent bypasses confirmation \u2192 Uses --force inappropriately. Not trivial but possible.",
+        "meta_impact": "High - Successful exploitation could result in unauthorized control of physical security devices (door locks, garage doors, alarm systems). Real-world consequences include property access, security system disabling, or physical safety risks."
       }
     }
   ],
-  "scan_duration_seconds": 0.43181872367858887,
-  "duration_ms": 431,
+  "scan_duration_seconds": 25.94996666908264,
+  "duration_ms": 25949,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:05:22.226322"
+  "timestamp": "2026-02-06T04:47:41.665915"
 }

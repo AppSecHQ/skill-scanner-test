@@ -1,82 +1,53 @@
 # Agent Skill Security Scan Report
 
 **Skill:** giphy-gif
-**Directory:** ./skills/clawhub-giphy
+**Directory:** /workspace/skills/clawhub-giphy
 **Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.58s
-**Timestamp:** 2026-02-03T16:07:58.700899
+**Max Severity:** HIGH
+**Scan Duration:** 33.46s
+**Timestamp:** 2026-02-06T02:01:31.779039
 
 ## Summary
 
-- **Total Findings:** 6
-- **Critical:** 1
-- **High:** 0
-- **Medium:** 4
-- **Low:** 1
+- **Total Findings:** 3
+- **Critical:** 0
+- **High:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
+### HIGH Severity
 
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
+#### [HIGH] Hardcoded API Key Exposure Risk in Documentation
 
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:13
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
 
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export GIPHY_API_KEY="your-api-key
+**Description:** The skill's documentation instructs users to store their Giphy API key in plaintext configuration files (~/.openclaw/openclaw.json) and environment variables. While the skill itself doesn't contain hardcoded secrets, the instructions create a pattern that could lead to credential exposure if the config file has improper permissions or is accidentally committed to version control. The bash commands also echo the API key in process arguments, which may be visible in process listings.
 
 ### MEDIUM Severity
 
-#### [MEDIUM] CODE EXECUTION detected by YARA
+#### [MEDIUM] Command Injection Risk via Unvalidated Query Parameter
 
 **Severity:** MEDIUM
 **Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** SKILL.md:38
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): exec("QUERY='excited'; API_KEY=$(jq -r '.skills.entries.\"giphy-gif\".apiKey // env.GIPHY_API_KEY' ~
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** SKILL.md:48
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): exec("QUERY='$query'; API_KEY=$(jq -r '.skills.entries.\"giphy-gif\".apiKey // env.GIPHY_API_KEY' ~/
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** SKILL.md:38
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): exec("QUERY='excited'; API_KEY=$(jq -r '.skills.entries.\"giphy-gif\".apiKey // env.GIPHY_API_KEY' ~
-
-#### [MEDIUM] CODE EXECUTION detected by YARA
-
-**Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** YARA_code_execution
-**Location:** SKILL.md:48
-
-**Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): exec("QUERY='$query'; API_KEY=$(jq -r '.skills.entries.\"giphy-gif\".apiKey // env.GIPHY_API_KEY' ~/
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Rule ID:** LLM_COMMAND_INJECTION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill uses bash exec() with user-controlled query strings that are passed through jq for URL encoding. While jq provides some protection via '@uri', the pattern 'QUERY="$query"' in the examples could be vulnerable to command injection if the query variable contains malicious shell metacharacters before being passed to jq. The use of exec() with string interpolation of user input is inherently risky.
+
+#### [MEDIUM] External API Data Exfiltration via User Queries
+
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md:36
+
+**Description:** The skill sends user search queries to an external third-party API (api.giphy.com) without explicit user consent or privacy warnings. User search terms may contain sensitive information, personal preferences, or contextual data from conversations that gets transmitted to Giphy's servers. This represents potential data leakage of conversation context to external parties.
 
 ## Analyzers
 

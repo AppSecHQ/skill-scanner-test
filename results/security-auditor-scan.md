@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** security-auditor
-**Directory:** ./skills/clawhub-security-auditor
+**Directory:** /workspace/skills/clawhub-security-auditor
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-03T16:06:58.261776
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:36:32.995639
 
 ## Summary
 

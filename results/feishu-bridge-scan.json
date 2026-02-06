@@ -1,30 +1,80 @@
 {
   "skill_name": "feishu-bridge",
-  "skill_path": "./skills/clawhub-feishu-bridge",
-  "skill_directory": "./skills/clawhub-feishu-bridge",
+  "skill_path": "/workspace/skills/clawhub-feishu-bridge",
+  "skill_directory": "/workspace/skills/clawhub-feishu-bridge",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_feishu-bridge_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded Secret Path Without Validation",
+      "description": "The skill instructs users to store the Feishu app secret in a plaintext file at ~/.clawdbot/secrets/feishu_app_secret. While file permissions are set to 600, there is no validation that the secret file exists, is properly protected, or that the secret itself is valid before use. This could lead to exposure if the file is accidentally created with wrong permissions or if the path is predictable for local privilege escalation attacks.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "echo \"YOUR_APP_SECRET\" > ~/.clawdbot/secrets/feishu_app_secret\nchmod 600 ~/.clawdbot/secrets/feishu_app_secret",
+      "remediation": "Implement validation checks: 1) Verify file permissions are exactly 600 before reading, 2) Validate secret format/length, 3) Consider using OS keychain/credential manager instead of plaintext files, 4) Add error handling for missing/invalid secret files, 5) Warn users if secret file has overly permissive permissions.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The feishu-bridge skill presents MODERATE security risk. The skill provides legitimate functionality for bridging Feishu bot messages to Clawdbot via WebSocket, with a reasonable architecture that avoids requiring public servers. However, it has several security concerns: plaintext secret storage without proper validation (MEDIUM), potential resource exhaustion from unbounded WebSocket reconnections (MEDIUM), missing manifest metadata (LOW), and unpinned npm dependencies (LOW). The skill does not exhibit malicious behavior such as data exfiltration, prompt injection, or command injection. The primary risks are operational security issues around credential management and service reliability. The skill would benefit from: stronger secret management (OS keychain integration), connection resilience patterns (backoff, circuit breakers), complete manifest metadata, and dependency version pinning.",
+        "primary_threats": [
+          "Credential exposure via plaintext secret storage",
+          "Resource exhaustion from unbounded reconnection attempts",
+          "Supply chain risk from unpinned dependencies",
+          "Missing security metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a real operational security issue. While the skill sets chmod 600, there's no runtime validation that permissions remain correct or that the file wasn't created with wrong permissions initially. This is a legitimate credential management concern.",
+        "meta_exploitability": "Medium - Requires local access to the system. An attacker with user-level access could potentially read the file if permissions are misconfigured or race the chmod command.",
+        "meta_impact": "Medium - Exposure of Feishu app secret could allow unauthorized bot access, message interception, or impersonation of the bot."
+      }
+    },
+    {
+      "id": "llm_finding_feishu-bridge_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "WebSocket Long-Connection Without Reconnection Limits",
+      "description": "The bridge establishes a WebSocket long-connection to both Feishu cloud and Clawdbot Gateway without documented reconnection limits, backoff strategies, or circuit breakers. If the connection fails repeatedly, this could lead to resource exhaustion through unbounded retry attempts, excessive logging, or connection storms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Feishu SDK connects outbound (no inbound port / public IP needed)\nBridge authenticates to Gateway using the existing gateway token",
+      "remediation": "Implement connection resilience: 1) Add exponential backoff for reconnection attempts, 2) Set maximum retry limits, 3) Implement circuit breaker pattern, 4) Add connection health checks with timeouts, 5) Document reconnection behavior and limits in the skill description.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The feishu-bridge skill presents MODERATE security risk. The skill provides legitimate functionality for bridging Feishu bot messages to Clawdbot via WebSocket, with a reasonable architecture that avoids requiring public servers. However, it has several security concerns: plaintext secret storage without proper validation (MEDIUM), potential resource exhaustion from unbounded WebSocket reconnections (MEDIUM), missing manifest metadata (LOW), and unpinned npm dependencies (LOW). The skill does not exhibit malicious behavior such as data exfiltration, prompt injection, or command injection. The primary risks are operational security issues around credential management and service reliability. The skill would benefit from: stronger secret management (OS keychain integration), connection resilience patterns (backoff, circuit breakers), complete manifest metadata, and dependency version pinning.",
+        "primary_threats": [
+          "Credential exposure via plaintext secret storage",
+          "Resource exhaustion from unbounded reconnection attempts",
+          "Supply chain risk from unpinned dependencies",
+          "Missing security metadata"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a documentation gap and potential operational issue rather than a confirmed vulnerability. The actual bridge.mjs code may already implement proper reconnection logic - we cannot verify without seeing the full code. Downgraded to LOW severity as it's more of a reliability concern than a security threat.",
+        "meta_exploitability": "Low - Would require causing repeated connection failures, which is more of a DoS scenario than an exploit.",
+        "meta_impact": "Low - Could cause service degradation or resource exhaustion on the local machine, but doesn't expose data or allow unauthorized access."
       }
     }
   ],
-  "scan_duration_seconds": 0.41402482986450195,
-  "duration_ms": 414,
+  "scan_duration_seconds": 25.917621850967407,
+  "duration_ms": 25917,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:00:40.180334"
+  "timestamp": "2026-02-06T01:12:40.220392"
 }

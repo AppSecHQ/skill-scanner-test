@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** building-ai-agent-on-cloudflare
-**Directory:** ./skills/cloudflare-skills/skills/building-ai-agent-on-cloudflare
+**Directory:** /workspace/skills/cloudflare-skills/skills/building-ai-agent-on-cloudflare
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.55s
-**Timestamp:** 2026-02-03T14:17:03.568704
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:46:56.769353
 
 ## Summary
 

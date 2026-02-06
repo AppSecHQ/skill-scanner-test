@@ -1,44 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** coding-agent
-**Directory:** ./skills/clawhub-multi-coding-agent
+**Directory:** /workspace/skills/clawhub-multi-coding-agent
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.29s
-**Timestamp:** 2026-02-03T16:13:17.046322
+**Scan Duration:** 23.33s
+**Timestamp:** 2026-02-06T04:55:41.656528
 
 ## Summary
 
-- **Total Findings:** 2
+- **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 1
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### MEDIUM Severity
 
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
+#### [MEDIUM] Missing allowed-tools Declaration
 
 **Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:376
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: perfect
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill does not declare 'allowed-tools' in its YAML manifest. While this field is optional per the agent skills spec, it is recommended for skills that execute bash commands and manage background processes. This skill uses bash extensively with PTY mode, background processes, and process management tools, which should be explicitly declared for transparency.
 
 ## Analyzers
 

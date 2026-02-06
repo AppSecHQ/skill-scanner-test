@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** algorithmic-art
-**Directory:** ./skills/anthropics-skills/skills/algorithmic-art
+**Directory:** /workspace/skills/anthropics-skills/skills/algorithmic-art
 **Status:** [OK] SAFE
-**Max Severity:** MEDIUM
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-02T02:54:27.349246
+**Max Severity:** SAFE
+**Scan Duration:** 927.92s
+**Timestamp:** 2026-02-05T19:17:24.099688
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 1
+- **Medium:** 0
 - **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### MEDIUM Severity
-
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:60
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: perfect
+This skill passed all security checks.
 
 ## Analyzers
 

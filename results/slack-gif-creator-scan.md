@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** slack-gif-creator
-**Directory:** ./skills/anthropics-skills/skills/slack-gif-creator
+**Directory:** /workspace/skills/anthropics-skills/skills/slack-gif-creator
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.72s
-**Timestamp:** 2026-02-02T02:55:27.473285
+**Scan Duration:** 0.55s
+**Timestamp:** 2026-02-06T07:49:22.324363
 
 ## Summary
 

@@ -1,50 +1,78 @@
 {
   "skill_name": "chart-image",
-  "skill_path": "./skills/clawhub-chart-image",
-  "skill_directory": "./skills/clawhub-chart-image",
+  "skill_path": "/workspace/skills/clawhub-chart-image",
+  "skill_directory": "/workspace/skills/clawhub-chart-image",
   "is_safe": true,
   "max_severity": "MEDIUM",
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_chart-image_3",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "External Dependency Installation Without Version Pinning",
+      "description": "The skill instructions require running 'npm install' in the scripts directory without specifying exact package versions or providing a package.json file for review. This creates supply chain risks as dependencies could be updated to malicious versions between installations. The skill claims to use Sharp and Vega-Lite but no package.json was provided for verification.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "```bash\ncd /data/clawd/skills/chart-image/scripts && npm install\n```",
+      "remediation": "Include package.json and package-lock.json files in the skill package with pinned versions. Provide these files for security review. Use exact versions (e.g., 'sharp': '0.33.0') rather than version ranges.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The chart-image skill is a relatively safe data visualization tool with LOW to MEDIUM severity issues. No critical security threats were detected - there is no data exfiltration, no prompt injection attempts, no credential theft, and no command injection vulnerabilities. The primary concerns are: (1) missing package.json for dependency verification and version pinning (MEDIUM severity supply chain risk), (2) a referenced but missing data.py file (MEDIUM severity incomplete package), and (3) several LOW severity metadata/documentation issues (missing license, compatibility, allowed-tools declarations, and hardcoded paths). The skill's core functionality - generating chart images using Node.js libraries - appears legitimate and matches its description. The emphasis on being deployment-friendly (no native compilation, no browser dependencies) is a positive security characteristic as it reduces attack surface. However, without access to the actual package.json and chart.mjs script files, a complete security assessment of the dependencies and implementation cannot be performed.",
+        "primary_threats": [
+          "Supply Chain Risk (unpinned dependencies)",
+          "Missing Package Files (data.py)",
+          "Incomplete Metadata"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Package.json exists with reasonable dependency declarations. The 'missing' concern is based on incomplete file content in the scan, not an actual missing file. Caret ranges are standard practice.",
+        "meta_exploitability": "Low - requires compromised npm packages",
+        "meta_impact": "Medium - supply chain attack could inject malicious code"
       }
     },
     {
-      "id": "YARA_skill_discovery_abuse_e00d8fae03",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
+      "id": "llm_finding_chart-image_4",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
+      "title": "Referenced File Not Found - Potential Missing Dependency",
+      "description": "The instructions reference a file 'data.py' that was not found in the skill package. This could indicate: (1) incomplete package distribution, (2) external dependency not included, or (3) documentation error. Missing dependencies can cause skill failures or unexpected behavior.",
       "file_path": "SKILL.md",
-      "line_number": 3,
-      "snippet": "Generate PNG chart images from data using Vega-Lite. Perfect for headless server environments.",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "Files referenced in instructions: data.py\n**Referenced File: data.py** (not found)",
+      "remediation": "Either include the data.py file in the skill package, remove the reference if it's not needed, or clarify in documentation why this file is referenced but not provided",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The chart-image skill is a relatively safe data visualization tool with LOW to MEDIUM severity issues. No critical security threats were detected - there is no data exfiltration, no prompt injection attempts, no credential theft, and no command injection vulnerabilities. The primary concerns are: (1) missing package.json for dependency verification and version pinning (MEDIUM severity supply chain risk), (2) a referenced but missing data.py file (MEDIUM severity incomplete package), and (3) several LOW severity metadata/documentation issues (missing license, compatibility, allowed-tools declarations, and hardcoded paths). The skill's core functionality - generating chart images using Node.js libraries - appears legitimate and matches its description. The emphasis on being deployment-friendly (no native compilation, no browser dependencies) is a positive security characteristic as it reduces attack surface. However, without access to the actual package.json and chart.mjs script files, a complete security assessment of the dependencies and implementation cannot be performed.",
+        "primary_threats": [
+          "Supply Chain Risk (unpinned dependencies)",
+          "Missing Package Files (data.py)",
+          "Incomplete Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "LOW",
+        "meta_confidence_reason": "The file is listed in 'Referenced Files' metadata but never actually referenced in SKILL.md instructions. All examples use inline JSON data or command-line arguments. This is likely a scanner artifact.",
+        "meta_exploitability": "None - not a security issue",
+        "meta_impact": "None - appears to be documentation metadata"
       }
     }
   ],
-  "scan_duration_seconds": 0.3213176727294922,
-  "duration_ms": 321,
+  "scan_duration_seconds": 26.4115047454834,
+  "duration_ms": 26411,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:15:07.935285"
+  "timestamp": "2026-02-05T21:36:53.135329"
 }

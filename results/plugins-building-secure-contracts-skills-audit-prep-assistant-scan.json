@@ -1,30 +1,45 @@
 {
   "skill_name": "audit-prep-assistant",
-  "skill_path": "./skills/trailofbits-skills/plugins/building-secure-contracts/skills/audit-prep-assistant",
-  "skill_directory": "./skills/trailofbits-skills/plugins/building-secure-contracts/skills/audit-prep-assistant",
+  "skill_path": "/workspace/skills/trailofbits-skills/plugins/building-secure-contracts/skills/audit-prep-assistant",
+  "skill_directory": "/workspace/skills/trailofbits-skills/plugins/building-secure-contracts/skills/audit-prep-assistant",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_audit-prep-assistant_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk in Static Analysis Tool Execution",
+      "description": "The skill instructs the agent to execute multiple static analysis tools (slither, dylint, golangci-lint, CodeQL, Semgrep) via bash commands without proper input validation or sandboxing. If user input influences the command construction (e.g., project paths, file names), this could lead to command injection vulnerabilities where malicious input executes arbitrary commands.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "```bash\nslither . --exclude-dependencies\ndylint --all\ngolangci-lint run\n```",
+      "remediation": "Implement strict input validation and sanitization before executing shell commands. Use parameterized command execution instead of string concatenation. Consider using Python subprocess with shell=False and explicit argument lists. Validate all paths and filenames against allowlists.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The audit-prep-assistant skill is a legitimate security preparation tool with LOW to MEDIUM risk. It provides valuable guidance for preparing codebases for security audits following Trail of Bits' methodology. The primary concern is command injection risk from executing static analysis tools without proper input validation (MEDIUM severity). The skill lacks the optional 'allowed-tools' declaration (LOW severity informational issue) and could benefit from resource limit guidance to prevent exhaustion (LOW severity). Missing referenced files appear to be false positives but should be clarified. No data exfiltration, credential theft, prompt injection, or malicious behavior detected. The skill operates locally and does not make network calls or access sensitive files. Overall, this is a useful development tool that would benefit from enhanced input validation and clearer documentation of its tool requirements.",
+        "primary_threats": [
+          "Command Injection",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a legitimate security tool that MUST execute these commands to function. The risk depends entirely on how the agent implements command construction. Without seeing actual execution code, we can't confirm if input validation is present. The skill provides examples but doesn't enforce safe practices.",
+        "meta_exploitability": "Medium - Requires agent to construct commands with unsanitized user input. Depends on agent implementation.",
+        "meta_impact": "High - Arbitrary command execution on the user's system if exploited"
       }
     }
   ],
-  "scan_duration_seconds": 0.3152439594268799,
-  "duration_ms": 315,
+  "scan_duration_seconds": 24.325613737106323,
+  "duration_ms": 24325,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +47,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:15:57.709599"
+  "timestamp": "2026-02-06T06:41:24.624536"
 }

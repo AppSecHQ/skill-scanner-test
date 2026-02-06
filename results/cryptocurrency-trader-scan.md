@@ -1,22 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** cryptocurrency-trader
-**Directory:** ./skills/clawhub-cryptocurrency-trader-skill
+**Directory:** /workspace/skills/clawhub-cryptocurrency-trader-skill
 **Status:** [FAIL] ISSUES FOUND
-**Max Severity:** HIGH
-**Scan Duration:** 3.31s
-**Timestamp:** 2026-02-03T15:54:46.039173
+**Max Severity:** CRITICAL
+**Scan Duration:** 68.00s
+**Timestamp:** 2026-02-05T23:43:40.385751
 
 ## Summary
 
 - **Total Findings:** 7
-- **Critical:** 0
-- **High:** 1
-- **Medium:** 5
-- **Low:** 1
+- **Critical:** 2
+- **High:** 5
+- **Medium:** 0
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
+
+### CRITICAL Severity
+
+#### [CRITICAL] Hardcoded API Keys and Credential Exposure Risk
+
+**Severity:** CRITICAL
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** scripts/trading_agent.py
+
+**Description:** The skill connects to cryptocurrency exchanges (Binance, Coinbase, Kraken) via ccxt library without any API key management or credential protection. While the current implementation uses public endpoints, the architecture is designed to support authenticated trading operations. The code lacks any credential validation, secure storage mechanisms, or warnings about API key exposure. Users may add API keys directly to the code, creating severe credential theft risks.
+
+#### [CRITICAL] Unrestricted Network Access to External Cryptocurrency Exchanges
+
+**Severity:** CRITICAL
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** scripts/market/data_provider.py
+
+**Description:** The skill makes unrestricted network calls to external cryptocurrency exchanges (binance.com, coinbase.com, kraken.com) without any user consent, rate limiting validation, or data exfiltration controls. The MarketDataProvider and MultiSourceDataAggregator components fetch real-time market data from multiple external sources. While ostensibly for market analysis, this architecture could be exploited to exfiltrate sensitive data (account balances, trading history, portfolio positions) to external servers.
 
 ### HIGH Severity
 
@@ -29,63 +49,41 @@
 
 **Description:** Pattern detected: while True:
 
-### MEDIUM Severity
+#### [HIGH] Command Injection via Unvalidated Symbol Input
 
-#### [MEDIUM] User input used in command substitution - potential injection risk
-
-**Severity:** MEDIUM
+**Severity:** HIGH
 **Category:** command_injection
-**Rule ID:** COMMAND_INJECTION_USER_INPUT
-**Location:** test_claude_code_compat.sh:56
+**Rule ID:** LLM_COMMAND_INJECTION
+**Location:** skill.py
 
-**Description:** Pattern detected: $(python --version 2>&1 | awk '{print $2}')
+**Description:** The skill accepts cryptocurrency trading pair symbols (e.g., 'BTC/USDT') as user input and passes them directly to exchange API calls and file operations without proper validation or sanitization. An attacker could inject malicious payloads via symbol parameters that could lead to command injection, path traversal, or code execution when symbols are used in file paths, logging, or system calls.
 
-#### [MEDIUM] Reading environment variables that may contain secrets
+#### [HIGH] Unbounded Resource Consumption via Monte Carlo Simulations
 
-**Severity:** MEDIUM
-**Category:** data_exfiltration
-**Rule ID:** DATA_EXFIL_ENV_VARS
-**Location:** llm_trading_assistant.py:119
+**Severity:** HIGH
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
+**Location:** scripts/advanced_analytics.py
 
-**Description:** Pattern detected: os.getenv('OPENAI_API_KEY
+**Description:** The skill performs Monte Carlo simulations with 10,000 iterations per analysis (advanced_analytics.py:45) without resource limits, timeouts, or user consent. Multiple concurrent analyses or market scans could trigger thousands of simulations simultaneously, causing CPU/memory exhaustion and denial of service. The MarketScanner can analyze 30+ symbols sequentially, each running 10,000 simulations.
 
-#### [MEDIUM] Reading environment variables that may contain secrets
+#### [HIGH] Tool Restriction Violation - Undeclared Network and Python Execution
 
-**Severity:** MEDIUM
-**Category:** data_exfiltration
-**Rule ID:** DATA_EXFIL_ENV_VARS
-**Location:** llm_trading_assistant.py:137
-
-**Description:** Pattern detected: os.getenv('ANTHROPIC_API_KEY
-
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:164
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: perfect
-
-#### [MEDIUM] Environment variable harvesting detected
-
-**Severity:** MEDIUM
-**Category:** data_exfiltration
-**Rule ID:** BEHAVIOR_ENV_VAR_HARVESTING
-**Location:** skills/clawhub-cryptocurrency-trader-skill/llm_trading_assistant.py
-
-**Description:** Script iterates through environment variables in skills/clawhub-cryptocurrency-trader-skill/llm_trading_assistant.py
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** HIGH
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The SKILL.md manifest does not declare 'allowed-tools' but the skill extensively uses Python execution and network access (Bash for shell scripts, Python for exchange APIs). Per the agent skills specification, missing 'allowed-tools' is acceptable, but the skill's actual behavior (network calls, file I/O, subprocess execution) significantly exceeds what a user might expect from a 'trading analysis' tool. This represents tool capability deception.
+
+#### [HIGH] Deceptive Skill Description - Production Trading vs Analysis Tool
+
+**Severity:** HIGH
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
+**Location:** SKILL.md
+
+**Description:** The skill description claims 'production-grade AI trading agent for cryptocurrency markets' and 'designed for real-world trading application' but lacks critical production safeguards: no paper trading mode, no trade execution confirmation, no risk disclosure, no regulatory warnings, and no backtesting validation before live trading. The description misleads users into believing this is production-ready trading software when it's actually an experimental analysis tool.
 
 ## Analyzers
 

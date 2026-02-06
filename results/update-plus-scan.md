@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** update-plus
-**Directory:** ./skills/clawhub-update-plus
+**Directory:** /workspace/skills/clawhub-update-plus
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.32s
-**Timestamp:** 2026-02-03T16:15:29.967564
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:52:20.365492
 
 ## Summary
 

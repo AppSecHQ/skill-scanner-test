@@ -1,50 +1,80 @@
 {
   "skill_name": "aegis-security",
-  "skill_path": "./skills/clawhub-aegis-security",
-  "skill_directory": "./skills/clawhub-aegis-security",
+  "skill_path": "/workspace/skills/clawhub-aegis-security",
+  "skill_directory": "/workspace/skills/clawhub-aegis-security",
   "is_safe": false,
-  "max_severity": "CRITICAL",
+  "max_severity": "HIGH",
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_aegis-security_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Undisclosed Automatic Cryptocurrency Payment Mechanism",
+      "description": "The skill description states 'Blockchain security API for AI agents' but fails to prominently disclose that EVERY API call automatically sends cryptocurrency payments (USDC) to an external service. The payment mechanism is buried in code examples with the comment '// Payments happen automatically on Base (USDC)'. Users may not realize that using this skill will result in automatic financial transactions from their wallet. The pricing table shows costs ($0.005 to $0.05 per request), but the automatic nature and requirement for a funded wallet is not clearly stated in the description.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Description: 'Blockchain security API for AI agents. Scan tokens, simulate transactions, check addresses for threats.' vs Reality: 'Pay-per-request with USDC on Base or Solana' with automatic payments. Code shows: 'const fetch402 = wrapFetchWithPayment(fetch, client);'",
+      "remediation": "Update the skill description to clearly state: 'This skill automatically sends USDC payments for each API request. Requires funded wallet on Base or Solana.' Add explicit user confirmation before any payment-triggering API calls.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks primarily related to undisclosed financial transactions and external dependencies. The skill automatically sends cryptocurrency payments (USDC) to an external API service (aegis402.xyz) without prominent disclosure in the description. Critical payment library files (x402Client.py, x402HttpxClient.py, x402.py) are referenced but missing from the package, creating supply chain risks. The skill sends sensitive blockchain data (wallet addresses, transaction details) to an unverified third-party service. While the skill itself contains no malicious code (no scripts included), the lack of transparency about automatic payments, missing dependencies, and external data transmission creates significant user risk. The skill requires cryptocurrency wallet integration and funded accounts but does not clearly communicate these requirements upfront. Recommended actions: Add explicit payment disclosures, include all required dependencies, specify allowed-tools, and add user confirmation prompts before financial transactions.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Social Engineering",
+          "Undisclosed Financial Transactions",
+          "Missing Supply Chain Dependencies"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a significant transparency issue. The description omits critical information about automatic cryptocurrency payments. This is a clear social engineering concern where users may unknowingly authorize financial transactions.",
+        "meta_exploitability": "Easy - Users may unknowingly enable automatic payments by following skill instructions without realizing financial implications",
+        "meta_impact": "Medium - Unexpected financial charges, potential wallet drainage if used repeatedly without awareness"
       }
     },
     {
-      "id": "YARA_command_injection_178a39b19d",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://aegis402.xyz/health",
-      "file_path": "SKILL.md",
-      "line_number": 281,
-      "snippet": "\"status\": \"healthy\",",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
+      "id": "llm_finding_aegis-security_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "External API Calls to Third-Party Service with Financial Data",
+      "description": "All API endpoints point to an external domain (https://aegis402.xyz/v1) that is not verified or audited. The skill sends transaction data, wallet addresses, and token information to this third-party service. Users have no visibility into what happens to this data after transmission. The service could log sensitive transaction details, wallet addresses, or use the data for purposes beyond the stated security checks.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "api_base: 'https://aegis402.xyz/v1' - All endpoints use this external domain. Examples show sending wallet addresses: 'from': '0xYourWallet...', transaction data, and token addresses to external server.",
+      "remediation": "Add clear data privacy disclosures explaining what data is sent to aegis402.xyz and how it is used. Implement local validation where possible. Consider adding user consent prompts before sending sensitive wallet or transaction data to external services.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks primarily related to undisclosed financial transactions and external dependencies. The skill automatically sends cryptocurrency payments (USDC) to an external API service (aegis402.xyz) without prominent disclosure in the description. Critical payment library files (x402Client.py, x402HttpxClient.py, x402.py) are referenced but missing from the package, creating supply chain risks. The skill sends sensitive blockchain data (wallet addresses, transaction details) to an unverified third-party service. While the skill itself contains no malicious code (no scripts included), the lack of transparency about automatic payments, missing dependencies, and external data transmission creates significant user risk. The skill requires cryptocurrency wallet integration and funded accounts but does not clearly communicate these requirements upfront. Recommended actions: Add explicit payment disclosures, include all required dependencies, specify allowed-tools, and add user confirmation prompts before financial transactions.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Social Engineering",
+          "Undisclosed Financial Transactions",
+          "Missing Supply Chain Dependencies"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified that all endpoints use external domain aegis402.xyz. Code examples clearly show sensitive blockchain data being sent to this service. This is a legitimate data exfiltration concern, though the skill is transparent about using an external API (just not about privacy implications).",
+        "meta_exploitability": "Medium - Requires user to actively use the skill, but data transmission is automatic once skill is invoked",
+        "meta_impact": "Medium - Privacy exposure of wallet addresses and transaction patterns to unverified third party"
       }
     }
   ],
-  "scan_duration_seconds": 0.4660966396331787,
-  "duration_ms": 466,
+  "scan_duration_seconds": 42.62186288833618,
+  "duration_ms": 42621,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:06:00.958249"
+  "timestamp": "2026-02-05T18:01:33.975990"
 }

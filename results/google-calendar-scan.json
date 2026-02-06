@@ -1,30 +1,80 @@
 {
   "skill_name": "google-calendar",
-  "skill_path": "./skills/clawhub-google-calendar-api",
-  "skill_directory": "./skills/clawhub-google-calendar-api",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-google-calendar-api",
+  "skill_directory": "/workspace/skills/clawhub-google-calendar-api",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_google-calendar_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Third-Party API Gateway Credential Delegation",
+      "description": "The skill routes all Google Calendar API requests through a third-party gateway (gateway.maton.ai) that 'automatically injects your OAuth token'. This creates a significant trust boundary issue where the Maton gateway has full access to users' Google Calendar OAuth tokens and can intercept, log, or exfiltrate all calendar data passing through it. Users must trust Maton with their Google credentials and calendar data.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Base URL: https://gateway.maton.ai/google-calendar/{native-api-path}\n\n'The gateway proxies requests to www.googleapis.com and automatically injects your OAuth token.'",
+      "remediation": "Implement direct OAuth authentication without third-party intermediaries. If a gateway is necessary, provide clear security documentation about data handling, encryption in transit, logging policies, and third-party access. Consider implementing client-side OAuth token management instead of server-side injection. Disclose the security implications of routing sensitive calendar data through Maton's infrastructure.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Google Calendar skill presents SIGNIFICANT SECURITY CONCERNS primarily related to credential management and third-party trust boundaries. The skill's architecture routes all Google Calendar API requests and OAuth tokens through a third-party gateway (Maton), creating substantial data exposure risks. Users must trust Maton with full access to their Google Calendar data and OAuth credentials. The documentation lacks critical security disclosures about this architecture and encourages insecure credential handling practices (API keys in command-line arguments and environment variables). While the skill does not contain malicious code (no scripts provided), its design inherently creates high-risk trust dependencies that are not adequately disclosed to users. The missing referenced file (Google.py) and absent metadata fields further reduce transparency. This skill should only be used if users explicitly trust Maton with their Google Calendar access and understand the security implications.",
+        "primary_threats": [
+          "Data Exfiltration Risk via Third-Party Gateway",
+          "Credential Exposure through API Key Handling",
+          "Deceptive Security Disclosures",
+          "Third-Party Trust Boundary Issues"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The documentation explicitly states the gateway architecture. This is a legitimate security concern about third-party trust boundaries, not a false positive.",
+        "meta_exploitability": "N/A - This is a trust boundary issue, not an exploitable vulnerability",
+        "meta_impact": "HIGH - Maton has access to all calendar data, OAuth tokens, and API requests"
+      }
+    },
+    {
+      "id": "llm_finding_google-calendar_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Missing Critical Security Disclosures",
+      "description": "The skill description claims 'managed OAuth' as a feature but does not disclose that this involves routing all API requests and OAuth tokens through a third-party service (Maton). Users are not informed about the security implications of this architecture, including data exposure to Maton's infrastructure, potential logging, or the trust requirements. This constitutes deceptive omission of material security information.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description: 'Google Calendar API integration with managed OAuth. Create events, list calendars, check availability, and manage schedules.'\n\nNo disclosure that 'managed OAuth' means Maton gateway has access to OAuth tokens and all calendar data.",
+      "remediation": "Add prominent security disclosure section explaining: (1) All requests route through Maton's gateway, (2) Maton has access to OAuth tokens and calendar data, (3) Data privacy and logging policies, (4) Trust requirements and third-party dependencies. Update description to clearly state 'third-party managed OAuth via Maton gateway'.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Google Calendar skill presents SIGNIFICANT SECURITY CONCERNS primarily related to credential management and third-party trust boundaries. The skill's architecture routes all Google Calendar API requests and OAuth tokens through a third-party gateway (Maton), creating substantial data exposure risks. Users must trust Maton with full access to their Google Calendar data and OAuth credentials. The documentation lacks critical security disclosures about this architecture and encourages insecure credential handling practices (API keys in command-line arguments and environment variables). While the skill does not contain malicious code (no scripts provided), its design inherently creates high-risk trust dependencies that are not adequately disclosed to users. The missing referenced file (Google.py) and absent metadata fields further reduce transparency. This skill should only be used if users explicitly trust Maton with their Google Calendar access and understand the security implications.",
+        "primary_threats": [
+          "Data Exfiltration Risk via Third-Party Gateway",
+          "Credential Exposure through API Key Handling",
+          "Deceptive Security Disclosures",
+          "Third-Party Trust Boundary Issues"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The documentation does explain the architecture in the technical sections, but lacks a prominent security disclosure that users would see before using the skill.",
+        "meta_exploitability": "N/A - This is a transparency issue",
+        "meta_impact": "MEDIUM - Users may unknowingly trust a third party with sensitive data"
       }
     }
   ],
-  "scan_duration_seconds": 0.37366366386413574,
-  "duration_ms": 373,
+  "scan_duration_seconds": 36.60822558403015,
+  "duration_ms": 36608,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:06:26.026823"
+  "timestamp": "2026-02-06T02:32:42.313632"
 }

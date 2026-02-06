@@ -1,30 +1,80 @@
 {
   "skill_name": "clawbridge",
-  "skill_path": "./skills/clawhub-clawbridge-skill-latest",
-  "skill_directory": "./skills/clawhub-clawbridge-skill-latest",
+  "skill_path": "/workspace/skills/clawhub-clawbridge-skill-latest",
+  "skill_directory": "/workspace/skills/clawhub-clawbridge-skill-latest",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_clawbridge_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Unverified External Binary Execution with Network Installation",
+      "description": "The skill executes an external binary 'clawbridge' that must be installed via a network script from https://clawbridge.cloud/install. The skill provides no verification of the binary's integrity, provenance, or behavior. Users are instructed to pipe a remote script directly to bash, which is a high-risk installation pattern. The skill then executes this unverified binary with user credentials and workspace access, potentially exposing sensitive data or system access.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "install: [{'id': 'install-script', 'kind': 'shell', 'label': 'Install via script (recommended)', 'command': 'curl -fsSL https://clawbridge.cloud/install | bash'}]\n\nInstructions state: 'Exec: Run `clawbridge run` locally' and 'clawbridge link CB-XXXXXX' (workspace linking with credentials)",
+      "remediation": "1. Provide cryptographic verification (checksums, signatures) for the clawbridge binary. 2. Document what data the binary accesses and transmits. 3. Warn users about the security implications of piping remote scripts to bash. 4. Consider sandboxing or permission boundaries for the external binary. 5. Add transparency about what 'clawbridge run' does with local data.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM security risks primarily related to executing an unverified external binary with opaque data collection and transmission behavior. The skill acts as a thin wrapper around the 'clawbridge' CLI tool, which users must install via a network script (curl | bash pattern). The binary performs undisclosed 'discovery' operations on local data and uploads results to external servers (clawbridge.cloud), but the skill provides no transparency about what data is accessed or transmitted. While the skill itself contains no malicious code (no scripts included), it delegates all functionality to an external binary whose behavior cannot be verified from the skill package alone. The installation method (piping remote script to bash) and lack of binary verification create supply chain risks. The skill would benefit from greater transparency about data handling, cryptographic verification of the binary, and clearer documentation of what local data is accessed.",
+        "primary_threats": [
+          "Unverified external binary execution",
+          "Opaque data collection and transmission",
+          "Insecure installation pattern (curl | bash)",
+          "Missing transparency about data handling"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The curl | bash installation pattern is a well-documented security anti-pattern. While the skill itself is benign (just markdown instructions), it promotes an insecure installation method and delegates to an opaque external binary. The LLM analyzer correctly identified this as a supply chain risk.",
+        "meta_exploitability": "Medium - Requires user to follow installation instructions, but the curl | bash pattern makes it easy to execute malicious code if the remote server is compromised",
+        "meta_impact": "Medium - Potential for arbitrary code execution during installation, plus opaque data collection by the binary"
+      }
+    },
+    {
+      "id": "llm_finding_clawbridge_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Opaque External Tool with Undisclosed Data Collection",
+      "description": "The skill acts as a wrapper for an external 'clawbridge' binary whose behavior is not disclosed in the skill package. The instructions indicate the binary performs 'discovery workflow', 'calls OpenClaw as worker', and 'uploads to Vault', but the skill provides no visibility into what data is collected, how it's processed, or what is transmitted. The binary appears to access local system data for 'discovery' purposes and transmit it to external services (clawbridge.cloud), but the scope and nature of this data access is not documented.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Architecture diagram shows: 'Runner: Discovery workflow - Build prompts (private) - Call OpenClaw as worker - Upload to Vault - Print VAULT_URL=...'\n\nThe skill executes an opaque binary that performs undisclosed 'discovery' and 'uploads to Vault' without detailing what data is accessed or transmitted.",
+      "remediation": "1. Document exactly what local data the clawbridge binary accesses (files, environment variables, credentials, etc.). 2. Disclose what data is transmitted to clawbridge.cloud servers. 3. Provide transparency about the 'discovery workflow' and what it discovers. 4. Add clear privacy and data handling documentation. 5. Consider requiring explicit user consent before data transmission.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM security risks primarily related to executing an unverified external binary with opaque data collection and transmission behavior. The skill acts as a thin wrapper around the 'clawbridge' CLI tool, which users must install via a network script (curl | bash pattern). The binary performs undisclosed 'discovery' operations on local data and uploads results to external servers (clawbridge.cloud), but the skill provides no transparency about what data is accessed or transmitted. While the skill itself contains no malicious code (no scripts included), it delegates all functionality to an external binary whose behavior cannot be verified from the skill package alone. The installation method (piping remote script to bash) and lack of binary verification create supply chain risks. The skill would benefit from greater transparency about data handling, cryptographic verification of the binary, and clearer documentation of what local data is accessed.",
+        "primary_threats": [
+          "Unverified external binary execution",
+          "Opaque data collection and transmission",
+          "Insecure installation pattern (curl | bash)",
+          "Missing transparency about data handling"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The lack of transparency is a legitimate concern, but without evidence of actual malicious behavior, this is more of a best-practice issue than a direct security threat. The binary appears to be a legitimate product tool.",
+        "meta_exploitability": "Low - Requires user consent to install and run, no evidence of unauthorized access",
+        "meta_impact": "Low - Primarily a transparency/privacy concern rather than active exploitation"
       }
     }
   ],
-  "scan_duration_seconds": 0.5694074630737305,
-  "duration_ms": 569,
+  "scan_duration_seconds": 31.78185486793518,
+  "duration_ms": 31781,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:05:26.810657"
+  "timestamp": "2026-02-05T21:51:10.487395"
 }

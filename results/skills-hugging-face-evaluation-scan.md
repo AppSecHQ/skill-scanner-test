@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** hugging-face-evaluation
-**Directory:** ./skills/huggingface-skills/skills/hugging-face-evaluation
+**Directory:** /workspace/skills/huggingface-skills/skills/hugging-face-evaluation
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 10.70s
-**Timestamp:** 2026-02-03T14:18:07.882822
+**Scan Duration:** 9.32s
+**Timestamp:** 2026-02-06T07:48:00.580719
 
 ## Summary
 
@@ -318,6 +318,24 @@
 
 **Description:** Skill performs actions not reflected in its description
 
+#### [MEDIUM] Reading environment variables that may contain secrets
+
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** DATA_EXFIL_ENV_VARS
+**Location:** scripts/lighteval_vllm_uv.py:39
+
+**Description:** Pattern detected: os.getenv("HF_TOKEN
+
+#### [MEDIUM] Reading environment variables that may contain secrets
+
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** DATA_EXFIL_ENV_VARS
+**Location:** scripts/inspect_vllm_uv.py:43
+
+**Description:** Pattern detected: os.getenv("HF_TOKEN
+
 #### [MEDIUM] HTTP client library imports that enable external communication
 
 **Severity:** MEDIUM
@@ -387,24 +405,6 @@
 **Category:** data_exfiltration
 **Rule ID:** DATA_EXFIL_ENV_VARS
 **Location:** scripts/inspect_eval_uv.py:61
-
-**Description:** Pattern detected: os.getenv("HF_TOKEN
-
-#### [MEDIUM] Reading environment variables that may contain secrets
-
-**Severity:** MEDIUM
-**Category:** data_exfiltration
-**Rule ID:** DATA_EXFIL_ENV_VARS
-**Location:** scripts/inspect_vllm_uv.py:43
-
-**Description:** Pattern detected: os.getenv("HF_TOKEN
-
-#### [MEDIUM] Reading environment variables that may contain secrets
-
-**Severity:** MEDIUM
-**Category:** data_exfiltration
-**Rule ID:** DATA_EXFIL_ENV_VARS
-**Location:** scripts/lighteval_vllm_uv.py:39
 
 **Description:** Pattern detected: os.getenv("HF_TOKEN
 

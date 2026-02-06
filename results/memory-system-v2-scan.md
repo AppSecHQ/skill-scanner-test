@@ -1,44 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** memory-system-v2
-**Directory:** ./skills/clawhub-memory-system-v2
+**Directory:** /workspace/skills/clawhub-memory-system-v2
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.46s
-**Timestamp:** 2026-02-03T16:08:42.446053
+**Scan Duration:** 24.94s
+**Timestamp:** 2026-02-06T04:33:04.349439
 
 ## Summary
 
 - **Total Findings:** 2
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 1
-- **Low:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### MEDIUM Severity
 
-#### [MEDIUM] User input used in command substitution - potential injection risk
+#### [MEDIUM] Hardcoded Home Directory Path Without User Consent
 
 **Severity:** MEDIUM
-**Category:** command_injection
-**Rule ID:** COMMAND_INJECTION_USER_INPUT
-**Location:** memory-cli.sh:168
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** memory-cli.sh
 
-**Description:** Pattern detected: $(echo "$line" | awk -F'imp:' '{print $2}' | awk '{print $1}')
+**Description:** The skill hardcodes MEMORY_DIR to $HOME/clawd/memory and automatically creates directories in the user's home directory without explicit consent or configuration options. This creates persistent storage in a fixed location that users may not be aware of, potentially exposing sensitive memory data.
 
-### LOW Severity
+#### [MEDIUM] Unbounded Memory Growth Without Cleanup Mechanism
 
-#### [LOW] Skill does not specify a license
+**Severity:** MEDIUM
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
+**Location:** memory-cli.sh
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill continuously appends memories to daily logs and maintains a growing JSON index without any documented cleanup, archival, or size limit mechanisms. Over time, this could lead to excessive disk usage and performance degradation as the index grows unbounded.
 
 ## Analyzers
 

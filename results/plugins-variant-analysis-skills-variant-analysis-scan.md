@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** variant-analysis
-**Directory:** ./skills/trailofbits-skills/plugins/variant-analysis/skills/variant-analysis
+**Directory:** /workspace/skills/trailofbits-skills/plugins/variant-analysis/skills/variant-analysis
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T14:13:31.238797
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:34:22.817115
 
 ## Summary
 

@@ -1,33 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** gitlab-manager
-**Directory:** ./skills/clawhub-gitlab-manager
+**Directory:** /workspace/skills/clawhub-gitlab-manager
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.31s
-**Timestamp:** 2026-02-02T03:07:49.377498
+**Max Severity:** MEDIUM
+**Scan Duration:** 24.92s
+**Timestamp:** 2026-02-06T02:25:34.678904
 
 ## Summary
 
 - **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### MEDIUM Severity
 
-#### [LOW] Skill does not specify a license
+#### [MEDIUM] Credential Exposure Risk via Environment Variable
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill requires a GitLab Personal Access Token with 'api' scope to be set in the environment (GITLAB_TOKEN). While using environment variables for credentials is a common pattern, the skill documentation shows the token being passed directly in command examples, which could lead to credential exposure in shell history, logs, or process listings. The 'api' scope grants broad access to GitLab resources.
 
 ## Analyzers
 

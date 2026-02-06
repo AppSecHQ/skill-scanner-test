@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** using-superpowers
-**Directory:** ./skills/obra-superpowers/skills/using-superpowers
+**Directory:** /workspace/skills/obra-superpowers/skills/using-superpowers
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.28s
-**Timestamp:** 2026-02-02T02:55:36.052595
+**Scan Duration:** 0.33s
+**Timestamp:** 2026-02-06T07:52:35.219814
 
 ## Summary
 

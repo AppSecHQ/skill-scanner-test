@@ -1,50 +1,48 @@
 {
   "skill_name": "paypal",
-  "skill_path": "./skills/clawhub-paypal",
-  "skill_directory": "./skills/clawhub-paypal",
+  "skill_path": "/workspace/skills/clawhub-paypal",
+  "skill_directory": "/workspace/skills/clawhub-paypal",
   "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 2,
+  "max_severity": "HIGH",
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_paypal_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Deceptive Skill Description - Non-Functional Implementation",
+      "description": "The skill claims to provide 'PayPal payment integration' with features including 'Send payments', 'Create invoices', 'Request money', 'Transaction history', and 'Refunds'. However, there are NO script files (Python or Bash) implementing any of these features. This is a deceptive skill that misleads users about its capabilities. Users may believe they can perform financial transactions, but the skill has no actual implementation. This could lead to users exposing credentials for a non-functional tool or attempting financial operations that will fail.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Description claims: 'PayPal payment integration. Send money, create invoices, and manage PayPal transactions.' But script files analysis shows: 'No script files found.'",
+      "remediation": "1. Either implement the claimed PayPal integration features with proper Python/Bash scripts, or 2. Remove the skill entirely if it's incomplete/abandoned, or 3. Clearly mark the skill as 'TEMPLATE' or 'INCOMPLETE' in the description and name. 4. Do not publish non-functional skills that claim to handle financial transactions.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_595e6831ec",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export PAYPAL_SECRET=\"your_secret",
-      "file_path": "SKILL.md",
-      "line_number": 9,
-      "snippet": "export PAYPAL_SECRET=\"your_secret\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill is fundamentally broken and deceptive. It claims to provide PayPal payment integration with sensitive financial operations (sending money, creating invoices, managing transactions) but contains ZERO implementation code. The skill instructs users to expose PayPal API credentials (PAYPAL_CLIENT_ID and PAYPAL_SECRET) as environment variables, creating a credential exposure risk with no actual secure implementation to use them. This is a deceptive skill that misleads users about its capabilities and could lead to credential exposure, failed financial operations, and unpredictable agent behavior. The skill should be removed entirely or completely rewritten with proper implementation before deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Deceptive/Misleading Skill Description",
+          "Non-Functional Implementation",
+          "Tool Exploitation Risk",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that the skill package contains only SKILL.md with no implementation files. The description explicitly promises financial transaction capabilities that cannot be delivered.",
+        "meta_exploitability": "Medium - Users may expose credentials or attempt financial operations that fail, but no active malicious code exists",
+        "meta_impact": "High - Users may make incorrect financial decisions based on false capabilities, expose credentials unnecessarily"
       }
     }
   ],
-  "scan_duration_seconds": 0.34070897102355957,
-  "duration_ms": 340,
+  "scan_duration_seconds": 35.92518758773804,
+  "duration_ms": 35925,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +50,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:20:18.293199"
+  "timestamp": "2026-02-06T06:11:53.723785"
 }

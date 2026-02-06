@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** finishing-a-development-branch
-**Directory:** ./skills/obra-superpowers/skills/finishing-a-development-branch
+**Directory:** /workspace/skills/obra-superpowers/skills/finishing-a-development-branch
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.39s
-**Timestamp:** 2026-02-02T02:56:23.157156
+**Max Severity:** SAFE
+**Scan Duration:** 6.89s
+**Timestamp:** 2026-02-06T01:27:19.431224
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

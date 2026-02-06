@@ -1,30 +1,80 @@
 {
   "skill_name": "clawops",
-  "skill_path": "./skills/clawhub-clawops",
-  "skill_directory": "./skills/clawhub-clawops",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-clawops",
+  "skill_directory": "/workspace/skills/clawhub-clawops",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_clawops_0",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Unauthorized Skill Orchestration and Control Without Implementation",
+      "description": "The skill claims to act as a 'central brain' that manages, coordinates, discovers, schedules, monitors, restarts, and controls all other installed skills. This represents tool exploitation through skill orchestration capabilities that could enable unauthorized control over other skills' execution, configuration, and behavior. However, no implementation code is provided, making it impossible to verify safety controls or validate the claimed functionality.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Description claims: 'acts as the central brain for OpenClaw, intelligently managing all installed skills', 'discovers available skills, resolves dependencies, and schedules actions', 'detect failures, restart stuck skills', 'unifying configuration, secrets management, and event handling'. No Python or Bash scripts provided to implement these capabilities.",
+      "remediation": "1. Provide complete implementation code for all orchestration capabilities. 2. Implement strict access controls and permission checks before managing other skills. 3. Require explicit user confirmation before restarting or modifying other skills. 4. Document all skill interaction mechanisms and security boundaries. 5. Implement audit logging for all orchestration actions. 6. Add sandboxing to prevent unauthorized access to other skills' data or configuration.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks due to its claimed broad orchestration capabilities without any implementation code to verify safety controls. The skill claims to act as a central orchestration system managing all other skills, including secrets management, automatic restarts, and cross-skill coordination, but provides zero implementation. This creates multiple threat vectors: (1) Tool exploitation through unauthorized skill control, (2) Data exposure through centralized secrets access, (3) Availability risks from autonomous restart capabilities, and (4) Social engineering through unverified capability claims. The complete absence of code makes it impossible to verify any security controls, access restrictions, or safety mechanisms. This appears to be either an incomplete skill package or a deceptive placeholder. The skill should not be trusted or installed until complete, auditable implementation code is provided with proper security controls, access restrictions, and user consent mechanisms for all orchestration operations.",
+        "primary_threats": [
+          "Tool Exploitation (Unauthorized Skill Control)",
+          "Data Exfiltration Risk (Centralized Secrets Management)",
+          "Availability Disruption (Autonomous Restarts)",
+          "Social Engineering (Unverified Claims)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified by examining actual skill package contents - only SKILL.md exists, no code files present. LLM analyzer correctly identified the mismatch between claims and implementation. This is not a pattern-matching false positive but a factual observation about missing implementation.",
+        "meta_exploitability": "N/A - No code to exploit, but creates trust/transparency risk",
+        "meta_impact": "HIGH - Users may grant broad permissions based on unverified claims. If implementation is added later without user review, could gain unauthorized access to secrets, skill control, and system resources."
+      }
+    },
+    {
+      "id": "llm_finding_clawops_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Centralized Secrets Management Without Security Controls",
+      "description": "The skill claims to provide 'centralized secrets management' across all skills, which would require access to sensitive credentials, API keys, and authentication tokens. Without implementation code or security controls visible, this represents a significant data exposure risk. A compromised or malicious orchestration skill with access to all secrets could exfiltrate credentials for all installed skills.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Claims 'unifying configuration, secrets management' across all skills. No code provided showing how secrets are stored, encrypted, accessed, or protected. No evidence of encryption, access controls, or secure storage mechanisms.",
+      "remediation": "1. Implement encrypted secrets storage using industry-standard encryption (e.g., AES-256). 2. Use secure key derivation and never store secrets in plaintext. 3. Implement principle of least privilege - skills should only access their own secrets. 4. Provide audit logging for all secrets access. 5. Use OS-level secure storage (keychain/credential manager) where available. 6. Document the secrets management architecture and threat model.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents HIGH security risks due to its claimed broad orchestration capabilities without any implementation code to verify safety controls. The skill claims to act as a central orchestration system managing all other skills, including secrets management, automatic restarts, and cross-skill coordination, but provides zero implementation. This creates multiple threat vectors: (1) Tool exploitation through unauthorized skill control, (2) Data exposure through centralized secrets access, (3) Availability risks from autonomous restart capabilities, and (4) Social engineering through unverified capability claims. The complete absence of code makes it impossible to verify any security controls, access restrictions, or safety mechanisms. This appears to be either an incomplete skill package or a deceptive placeholder. The skill should not be trusted or installed until complete, auditable implementation code is provided with proper security controls, access restrictions, and user consent mechanisms for all orchestration operations.",
+        "primary_threats": [
+          "Tool Exploitation (Unauthorized Skill Control)",
+          "Data Exfiltration Risk (Centralized Secrets Management)",
+          "Availability Disruption (Autonomous Restarts)",
+          "Social Engineering (Unverified Claims)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Factually accurate - no secrets management code exists in the package. However, this is a consequence of the broader 'no implementation' issue rather than a separate threat.",
+        "meta_exploitability": "N/A - No implementation exists",
+        "meta_impact": "MEDIUM - Potential future risk if implemented without security controls"
       }
     }
   ],
-  "scan_duration_seconds": 1.2766568660736084,
-  "duration_ms": 1276,
+  "scan_duration_seconds": 38.37848448753357,
+  "duration_ms": 38378,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:05:56.363105"
+  "timestamp": "2026-02-05T22:32:47.069963"
 }

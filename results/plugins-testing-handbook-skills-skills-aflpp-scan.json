@@ -1,110 +1,46 @@
 {
   "skill_name": "aflpp",
-  "skill_path": "./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/aflpp",
-  "skill_directory": "./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/aflpp",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 5,
+  "skill_path": "/workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/aflpp",
+  "skill_directory": "/workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/aflpp",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_aflpp_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Incomplete Wrapper Script with Potential Command Injection Risk",
+      "description": "The wrapper script in SKILL.md is incomplete and cuts off mid-implementation. The 'host' case uses 'bash -c \"$*\"' which could enable command injection if the script were completed and used with untrusted input. While the script is currently non-functional (incomplete), if completed as-is, it would execute arbitrary commands passed as arguments without validation.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "case \"$1\" in\n   host)\n        shift\n        bash -c \"$*\"\n[script cuts off here]",
+      "remediation": "Complete the wrapper script implementation with proper input validation and sanitization. Use array-based command execution instead of 'bash -c \"$*\"' to prevent command injection. Example: exec \"$@\" instead of bash -c \"$*\". Ensure all user-provided arguments are properly quoted and validated.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_a6eb241b21",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl -O ",
-      "file_path": "SKILL.md",
-      "line_number": 495,
-      "snippet": "curl -O https://raw.githubusercontent.com/AFLplusplus/AFLplusplus/stable/utils/argv_fuzzing/argv-fuzz-inl.h",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_13c72b0675",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl -O ",
-      "file_path": "SKILL.md",
-      "line_number": 538,
-      "snippet": "curl -O https://raw.githubusercontent.com/glennrp/libpng/f8e5fa92b0e37ab597616f554bee254157998227/contrib/oss-fuzz/libpng_read_fuzzer.cc",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_cbf9e62b03",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl -o ",
-      "file_path": "SKILL.md",
-      "line_number": 546,
-      "snippet": "curl -o seeds/input.png https://raw.githubusercontent.com/glennrp/libpng/acfd50ae0ba3198ad734e5d4dec2b05341e50924/contrib/pngsuite/iftp1n3p08.png",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_20e9dbbd16",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl -O ",
-      "file_path": "SKILL.md",
-      "line_number": 547,
-      "snippet": "curl -O https://raw.githubusercontent.com/glennrp/libpng/2fff013a6935967960a5ae626fc21432807933dd/contrib/oss-fuzz/png.dict",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The AFL++ fuzzing skill is primarily a documentation and guidance package for using the AFL++ fuzzer tool. The main security concern is an incomplete wrapper script that, if completed as currently written, could enable command injection through unsafe use of 'bash -c \"$*\"'. The skill is missing optional metadata fields (license, compatibility, allowed-tools) which would improve transparency about resource usage and tool requirements. Several file references appear to be false positives from markdown parsing. The skill's core purpose (fuzzing C/C++ code) is legitimate and the instructions themselves do not contain prompt injection attempts or malicious directives. The incomplete script should be fixed before deployment, but overall the skill poses moderate risk primarily due to implementation incompleteness rather than malicious intent.",
+        "primary_threats": [
+          "Command Injection (incomplete script)",
+          "Missing Metadata",
+          "Incomplete Implementation"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The script is actually complete (not truncated as claimed), and the use of bash -c is intentional for a wrapper script that needs to pass through arbitrary AFL++ commands. This is a legitimate use case for fuzzing workflows, though input validation would improve safety.",
+        "meta_exploitability": "Medium - Requires user to execute the wrapper script with malicious arguments. The script is meant to be used by developers in controlled environments.",
+        "meta_impact": "Medium - Could execute arbitrary commands if user provides malicious input to the wrapper script"
       }
     }
   ],
-  "scan_duration_seconds": 0.39835309982299805,
-  "duration_ms": 398,
+  "scan_duration_seconds": 26.005089044570923,
+  "duration_ms": 26005,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -112,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:14:22.271824"
+  "timestamp": "2026-02-06T07:31:41.518484"
 }

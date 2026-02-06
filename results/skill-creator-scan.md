@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** skill-creator
-**Directory:** ./skills/clawhub-skill-creator-2
+**Directory:** /workspace/skills/clawhub-skill-creator-2
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.50s
-**Timestamp:** 2026-02-03T16:14:21.330713
+**Scan Duration:** 0.36s
+**Timestamp:** 2026-02-06T07:37:14.700385
 
 ## Summary
 

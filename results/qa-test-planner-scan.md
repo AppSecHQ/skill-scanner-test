@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** qa-test-planner
-**Directory:** ./skills/softaworks-agent-toolkit/skills/qa-test-planner
+**Directory:** /workspace/skills/softaworks-agent-toolkit/skills/qa-test-planner
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-02T02:56:57.953603
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:34:58.249098
 
 ## Summary
 

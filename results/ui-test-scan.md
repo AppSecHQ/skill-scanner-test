@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** ui-test
-**Directory:** ./skills/clawhub-ui-test
+**Directory:** /workspace/skills/clawhub-ui-test
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.73s
-**Timestamp:** 2026-02-03T16:15:16.014881
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:52:00.641929
 
 ## Summary
 

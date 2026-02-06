@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** google-workspace
-**Directory:** ./skills/clawhub-google-workspace
+**Directory:** /workspace/skills/clawhub-google-workspace
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-02T03:08:30.455532
+**Scan Duration:** 27.94s
+**Timestamp:** 2026-02-06T02:50:01.020039
 
 ## Summary
 
 - **Total Findings:** 3
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 2
-- **Low:** 1
+- **Medium:** 3
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### MEDIUM Severity
-
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** SKILL.md:78
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: Read email
 
 #### [MEDIUM] CODE EXECUTION detected by YARA
 
@@ -38,16 +29,23 @@
 
 **Description:** Detects dangerous code execution patterns in agent skills (Python/Bash): pickle.load(
 
-### LOW Severity
+#### [MEDIUM] Hardcoded OAuth Token Storage in Plaintext
 
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill stores OAuth credentials in 'token.pickle' file without encryption or secure storage mechanisms. This pickle file contains sensitive access tokens and refresh tokens that could be accessed by other processes or malicious actors on the system. The credentials provide broad access to Gmail, Calendar, Contacts, Sheets, Docs, and Drive APIs.
+
+#### [MEDIUM] Overly Broad OAuth Scope Permissions
+
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
+
+**Description:** The skill requests extremely broad OAuth scopes including full modify access to Gmail, Calendar, Contacts, Spreadsheets, Documents, and Drive. This violates the principle of least privilege. The skill description mentions specific operations but requests permissions far beyond what's necessary for typical use cases. An attacker gaining access to these credentials would have extensive control over the user's Google Workspace data.
 
 ## Analyzers
 

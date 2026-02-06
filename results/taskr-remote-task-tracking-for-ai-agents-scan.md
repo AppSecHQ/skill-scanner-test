@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** taskr
-**Directory:** ./skills/clawhub-taskr
+**Directory:** /workspace/skills/clawhub-taskr
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.43s
-**Timestamp:** 2026-02-03T16:09:19.560159
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:50:53.541045
 
 ## Summary
 

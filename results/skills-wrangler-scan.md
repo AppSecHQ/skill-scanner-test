@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** wrangler
-**Directory:** ./skills/cloudflare-skills/skills/wrangler
+**Directory:** /workspace/skills/cloudflare-skills/skills/wrangler
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T14:17:17.524662
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:49:18.033281
 
 ## Summary
 

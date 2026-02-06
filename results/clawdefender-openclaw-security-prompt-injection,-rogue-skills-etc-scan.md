@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** clawdefender
-**Directory:** ./skills/clawhub-clawdefender
+**Directory:** /workspace/skills/clawhub-clawdefender
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.42s
-**Timestamp:** 2026-02-02T03:06:49.217701
+**Scan Duration:** 7.31s
+**Timestamp:** 2026-02-05T22:01:26.951068
 
 ## Summary
 

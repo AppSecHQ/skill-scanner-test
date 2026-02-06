@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** durable-objects
-**Directory:** ./skills/cloudflare-skills/skills/durable-objects
+**Directory:** /workspace/skills/cloudflare-skills/skills/durable-objects
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T14:17:12.916003
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:47:20.706919
 
 ## Summary
 

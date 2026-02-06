@@ -1,107 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** kimi-integration
-**Directory:** ./skills/clawhub-kimi-integration
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-03T16:19:21.256040
+**Directory:** /workspace/skills/clawhub-kimi-integration
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 26.27s
+**Timestamp:** 2026-02-06T03:47:06.013007
 
 ## Summary
 
-- **Total Findings:** 9
-- **Critical:** 8
+- **Total Findings:** 2
+- **Critical:** 0
 - **High:** 0
-- **Medium:** 0
+- **Medium:** 1
 - **Low:** 1
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
+### MEDIUM Severity
 
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
+#### [MEDIUM] Network Data Transmission to External Services
 
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:46
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
 
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export MOONSHOT_API_KEY="sk-your-moonshot-key
-
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
-
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:139
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export KIMICODE_API_KEY="sk-your-kimicode-key
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/test_kimi_connection.sh:7
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0;31m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/test_kimi_connection.sh:8
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0;32m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/test_kimi_connection.sh:9
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[1;33m
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** scripts/test_kimi_connection.sh:10
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \033[0m
-
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
-
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** scripts/test_kimi_connection.sh:18
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export MOONSHOT_API_KEY
-
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
-
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** scripts/test_kimi_connection.sh:46
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export KIMICODE_API_KEY
+**Description:** The skill instructs users to configure Clawdbot to send data to external third-party API endpoints (api.moonshot.cn and api.kimi.com) without adequate security warnings or data handling guidance. The configuration examples show direct integration with external services that will receive all user prompts and conversations. There is no mention of data privacy, retention policies, or what data these services collect.
 
 ### LOW Severity
 
-#### [LOW] Skill does not specify a license
+#### [LOW] Missing Security Metadata in Manifest
 
 **Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** social_engineering
+**Rule ID:** LLM_SOCIAL_ENGINEERING
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The YAML manifest is missing critical security-related fields including 'allowed-tools', 'license', and 'compatibility'. While 'allowed-tools' is optional per the spec, its absence means there are no declared restrictions on what agent tools this skill can use. The skill includes a bash script that makes network calls, but this capability is not declared anywhere in the manifest.
 
 ## Analyzers
 

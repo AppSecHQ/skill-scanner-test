@@ -1,30 +1,46 @@
 {
   "skill_name": "npkill",
-  "skill_path": "./skills/clawhub-npkill",
-  "skill_directory": "./skills/clawhub-npkill",
+  "skill_path": "/workspace/skills/clawhub-npkill",
+  "skill_directory": "/workspace/skills/clawhub-npkill",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_npkill_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Potentially Dangerous Automated Deletion Command",
+      "description": "The skill documents an automated deletion command 'npkill --delete-all --yes' that bypasses all confirmations and deletes all found node_modules folders without user review. While the instructions include a warning 'Use with Caution', the agent could execute this command if instructed, potentially causing unintended data loss. The skill encourages using dry-run first, but there's no enforcement mechanism to prevent immediate execution of the destructive command.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "### Automated Cleanup (Use with Caution)\n```bash\nnpkill --delete-all --yes\n```\nAutomatically deletes all node_modules folders found. Use only after verifying with dry-run.",
+      "remediation": "Consider removing the automated deletion example entirely, or add explicit instructions that the agent must ALWAYS run dry-run first and require explicit user confirmation before executing any deletion commands. Implement a multi-step workflow that enforces safety checks.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The npkill skill is a legitimate utility for cleaning up Node.js build artifacts, but has moderate security and documentation concerns. The primary issues are: (1) lack of explicit tool declarations despite heavy bash command usage, (2) documentation of a potentially dangerous automated deletion command without enforcement of safety checks, (3) confusing references to non-existent Python files, and (4) missing optional metadata. The skill does not contain malicious code, data exfiltration, or prompt injection attempts. However, the automated deletion capability and lack of tool restrictions present moderate risks if the agent executes commands without proper user oversight. The skill would benefit from explicit tool declarations, removal of the automated deletion example or stronger safety enforcement, and cleanup of erroneous file references.",
+        "primary_threats": [
+          "Tool exploitation (undeclared bash usage)",
+          "Availability disruption (automated deletion risk)",
+          "Misleading documentation (non-existent file references)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The LLM analyzer correctly identifies a legitimate risk. The command is real, destructive, and documented without enforcement mechanisms. While the skill includes warnings, an agent following instructions could execute this without proper safeguards.",
+        "meta_exploitability": "Medium - Requires agent to follow instructions and user to request cleanup without reviewing output",
+        "meta_impact": "Medium - Could delete important node_modules folders, causing project breakage and requiring reinstallation"
       }
     }
   ],
-  "scan_duration_seconds": 0.7582156658172607,
-  "duration_ms": 758,
+  "scan_duration_seconds": 26.02065110206604,
+  "duration_ms": 26020,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:20:03.187548"
+  "timestamp": "2026-02-06T05:25:05.421313"
 }

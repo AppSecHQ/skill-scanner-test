@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** hugging-face-trackio
-**Directory:** ./skills/huggingface-skills/skills/hugging-face-trackio
+**Directory:** /workspace/skills/huggingface-skills/skills/hugging-face-trackio
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T14:18:29.545291
+**Scan Duration:** 0.35s
+**Timestamp:** 2026-02-06T07:48:33.159716
 
 ## Summary
 

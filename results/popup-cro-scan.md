@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** popup-cro
-**Directory:** ./skills/coreyhaines31-marketingskills/skills/popup-cro
+**Directory:** /workspace/skills/coreyhaines31-marketingskills/skills/popup-cro
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-02T02:55:40.199212
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:34:47.260328
 
 ## Summary
 

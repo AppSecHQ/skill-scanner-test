@@ -1,30 +1,78 @@
 {
   "skill_name": "azure-monitor-opentelemetry-exporter-py",
-  "skill_path": "./skills/microsoft-agent-skills/.github/skills/azure-monitor-opentelemetry-exporter-py",
-  "skill_directory": "./skills/microsoft-agent-skills/.github/skills/azure-monitor-opentelemetry-exporter-py",
+  "skill_path": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-monitor-opentelemetry-exporter-py",
+  "skill_directory": "/workspace/skills/microsoft-agent-skills/.github/skills/azure-monitor-opentelemetry-exporter-py",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_azure-monitor-opentelemetry-exporter-py_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded Connection String with Instrumentation Key in Examples",
+      "description": "The skill documentation contains multiple code examples with placeholder connection strings that include 'InstrumentationKey=xxx'. While these are examples, they demonstrate a pattern of hardcoding sensitive credentials directly in code rather than exclusively using environment variables. This could encourage users to hardcode actual connection strings containing sensitive instrumentation keys, leading to credential exposure if code is committed to version control or shared.",
+      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "connection_string=\"InstrumentationKey=xxx;...\" appears in multiple code examples throughout the documentation",
+      "remediation": "Update all code examples to exclusively demonstrate environment variable usage (APPLICATIONINSIGHTS_CONNECTION_STRING) and add explicit warnings against hardcoding connection strings. Include a security best practices section emphasizing credential management.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is a documentation wrapper for the official Azure Monitor OpenTelemetry Exporter Python package. The primary security concerns are MEDIUM severity and relate to data exfiltration risks inherent to telemetry export functionality: (1) code examples that could encourage hardcoding sensitive connection strings, and (2) transmission of potentially sensitive application data to external Azure endpoints. The skill itself contains no executable scripts and serves as an instructional guide. The missing optional metadata fields and unpinned package version are LOW severity informational issues. The referenced Python files are external package modules, which is expected. Overall, this skill presents moderate security considerations primarily around credential management and data sensitivity awareness, but does not contain malicious code or direct security vulnerabilities. Users should be aware they are installing and trusting an external PyPI package and transmitting telemetry data to Microsoft Azure infrastructure.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Credential Management",
+          "Supply Chain Dependency"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is documentation showing example patterns. The skill explicitly documents environment variable usage and Azure AD authentication as alternatives. The 'xxx' placeholders make it clear these are examples, not actual credentials. The risk is educational - users might copy the pattern without understanding best practices.",
+        "meta_exploitability": "Low - Requires user to misuse examples and commit actual credentials to version control",
+        "meta_impact": "Medium - If misused, could lead to credential exposure in repositories"
+      }
+    },
+    {
+      "id": "llm_finding_azure-monitor-opentelemetry-exporter-py_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Network Data Transmission to External Azure Endpoints",
+      "description": "The skill facilitates transmission of telemetry data (traces, metrics, logs) to external Azure Application Insights endpoints (IngestionEndpoint=https://xxx.in.applicationinsights.azure.com/). While this is the intended functionality, the skill collects and transmits potentially sensitive application data including logs, traces, and metrics to external Microsoft-controlled infrastructure. Users may inadvertently export sensitive information, credentials, or proprietary data through logging statements or trace attributes without proper data sanitization.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "APPLICATIONINSIGHTS_CONNECTION_STRING=InstrumentationKey=xxx;IngestionEndpoint=https://xxx.in.applicationinsights.azure.com/ - All exporters send data to external Azure endpoints",
+      "remediation": "Add prominent security warnings about data sensitivity. Document data sanitization best practices. Recommend implementing custom processors to filter sensitive data before export. Advise users to review what data is being collected and ensure compliance with data governance policies.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill is a documentation wrapper for the official Azure Monitor OpenTelemetry Exporter Python package. The primary security concerns are MEDIUM severity and relate to data exfiltration risks inherent to telemetry export functionality: (1) code examples that could encourage hardcoding sensitive connection strings, and (2) transmission of potentially sensitive application data to external Azure endpoints. The skill itself contains no executable scripts and serves as an instructional guide. The missing optional metadata fields and unpinned package version are LOW severity informational issues. The referenced Python files are external package modules, which is expected. Overall, this skill presents moderate security considerations primarily around credential management and data sensitivity awareness, but does not contain malicious code or direct security vulnerabilities. Users should be aware they are installing and trusting an external PyPI package and transmitting telemetry data to Microsoft Azure infrastructure.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Credential Management",
+          "Supply Chain Dependency"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is the core, documented purpose of the skill. It's not a vulnerability - it's the feature. Users explicitly install this to send data to Azure. However, users should be aware of what data they're transmitting.",
+        "meta_exploitability": "N/A - This is intended functionality, not an exploit",
+        "meta_impact": "Low - Users are making an informed choice to use Azure monitoring"
       }
     }
   ],
-  "scan_duration_seconds": 0.4297792911529541,
-  "duration_ms": 429,
+  "scan_duration_seconds": 34.70267724990845,
+  "duration_ms": 34702,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T14:19:20.125490"
+  "timestamp": "2026-02-05T15:31:05.519004"
 }

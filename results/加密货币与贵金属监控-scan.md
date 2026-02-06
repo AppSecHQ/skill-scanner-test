@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** crypto-gold-monitor
-**Directory:** ./skills/clawhub-crypto-gold-monitor
+**Directory:** /workspace/skills/clawhub-crypto-gold-monitor
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.51s
-**Timestamp:** 2026-02-03T15:58:30.174398
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:56:04.133970
 
 ## Summary
 

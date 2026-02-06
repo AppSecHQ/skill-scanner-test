@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** smtp-send
-**Directory:** ./skills/clawhub-smtp-send
+**Directory:** /workspace/skills/clawhub-smtp-send
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 0.80s
-**Timestamp:** 2026-02-03T16:09:10.956875
+**Scan Duration:** 0.82s
+**Timestamp:** 2026-02-06T07:49:34.538665
 
 ## Summary
 

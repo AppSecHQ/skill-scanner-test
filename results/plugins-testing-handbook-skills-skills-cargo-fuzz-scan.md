@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** cargo-fuzz
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/cargo-fuzz
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/cargo-fuzz
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 1.49s
-**Timestamp:** 2026-02-03T14:15:27.058763
+**Scan Duration:** 0.29s
+**Timestamp:** 2026-02-06T07:33:31.544621
 
 ## Summary
 

@@ -1,30 +1,150 @@
 {
   "skill_name": "binance-pay",
-  "skill_path": "./skills/clawhub-binance-pay",
-  "skill_directory": "./skills/clawhub-binance-pay",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-binance-pay",
+  "skill_directory": "/workspace/skills/clawhub-binance-pay",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 4,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_binance-pay_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded API Credentials Exposure Risk",
+      "description": "The skill requires sensitive Binance Pay API credentials (BINANCE_PAY_API_KEY, BINANCE_PAY_SECRET, BINANCE_PAY_MERCHANT_ID) to be stored as environment variables. While environment variables are better than hardcoding, the instructions demonstrate direct usage of these credentials in bash commands without any validation, sanitization, or secure handling guidance. If an agent executes these commands with user-controlled input, credentials could be exposed through command injection, logging, or error messages. The skill provides no guidance on secure credential management, rotation, or access control.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Environment Variables section requires: BINANCE_PAY_API_KEY, BINANCE_PAY_SECRET, BINANCE_PAY_MERCHANT_ID with direct usage in bash commands like API_KEY=\"${BINANCE_PAY_API_KEY}\" and SECRET=\"${BINANCE_PAY_SECRET}\"",
+      "remediation": "1. Add explicit warnings about credential security and never logging/exposing credentials. 2. Implement credential validation before use. 3. Recommend using secure secret management systems. 4. Add error handling that prevents credential leakage in error messages. 5. Document principle of least privilege for API key permissions.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Binance Pay integration skill presents MULTIPLE HIGH-SEVERITY security risks primarily related to credential exposure, command injection vulnerabilities, and unsafe financial transaction handling. The skill requires sensitive API credentials and constructs bash commands with potential injection points. While it provides legitimate cryptocurrency payment functionality, the implementation lacks critical security controls: no input validation, no transaction confirmation requirements, unsafe JSON construction, and inadequate credential protection guidance. The skill should NOT be used in production without significant security hardening. The bash-based approach is inherently risky for handling financial operations and sensitive credentials - a Python implementation with proper input validation, parameterized queries, and secure credential management would be significantly safer.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unsafe Financial Transaction Handling",
+          "Missing Input Validation",
+          "Tool Restriction Violations"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Using environment variables is standard practice and not inherently insecure. The issue is lack of security guidance, not a direct vulnerability. Downgraded from HIGH to LOW severity.",
+        "meta_exploitability": "Low - Requires additional vulnerabilities (logging, error exposure) to leak credentials",
+        "meta_impact": "High if exploited - Full merchant account access"
+      }
+    },
+    {
+      "id": "llm_finding_binance-pay_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Command Injection Vulnerability in Signature Generation",
+      "description": "The generate_signature() bash function uses echo with user-controlled variables (TIMESTAMP, NONCE, payload) without proper sanitization. The function constructs a sign_string using variables that could contain malicious shell metacharacters. While TIMESTAMP and NONCE are generated locally, the payload variable is constructed from user input (merchantTradeNo, orderAmount, currency, goodsName, etc.). An attacker could inject shell commands through these fields, leading to arbitrary command execution when the signature is generated.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "generate_signature() { local payload=\"$1\"; local sign_string=\"${TIMESTAMP}\\n${NONCE}\\n${payload}\\n\"; echo -n \"$sign_string\" | openssl dgst -sha512 -hmac \"$SECRET\" | cut -d' ' -f2 | tr '[:lower:]' '[:upper:]'; }",
+      "remediation": "1. Properly quote and escape all variables in bash functions. 2. Use printf instead of echo for better control over special characters. 3. Validate and sanitize all user input before constructing payloads. 4. Consider implementing this in Python with proper input validation instead of bash. 5. Use parameterized approaches that prevent injection.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Binance Pay integration skill presents MULTIPLE HIGH-SEVERITY security risks primarily related to credential exposure, command injection vulnerabilities, and unsafe financial transaction handling. The skill requires sensitive API credentials and constructs bash commands with potential injection points. While it provides legitimate cryptocurrency payment functionality, the implementation lacks critical security controls: no input validation, no transaction confirmation requirements, unsafe JSON construction, and inadequate credential protection guidance. The skill should NOT be used in production without significant security hardening. The bash-based approach is inherently risky for handling financial operations and sensitive credentials - a Python implementation with proper input validation, parameterized queries, and secure credential management would be significantly safer.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unsafe Financial Transaction Handling",
+          "Missing Input Validation",
+          "Tool Restriction Violations"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The bash function directly interpolates variables into echo without sanitization. While the examples use safe values, the pattern is exploitable if user input reaches the payload parameter.",
+        "meta_exploitability": "Medium - Requires agent to accept unsanitized user input and construct payloads, but the vulnerable pattern is clearly present",
+        "meta_impact": "High - Arbitrary command execution with merchant API credentials in scope"
+      }
+    },
+    {
+      "id": "llm_finding_binance-pay_2",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Unsafe JSON Construction with User Input",
+      "description": "The skill constructs JSON payloads by directly embedding user-controlled values using bash string interpolation (e.g., \"merchantTradeNo\": \"'\"$(date +%s)\"'\"). This approach is vulnerable to JSON injection attacks. If user input contains special characters like quotes, backslashes, or control characters, it could break the JSON structure, leading to malformed requests or potential injection attacks. The examples use $(date +%s) which is safe, but the pattern suggests user input would be inserted the same way.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "PAYLOAD='{ \"merchantTradeNo\": \"'\"$(date +%s)\"'\", \"orderAmount\": \"10.00\", \"currency\": \"USDT\", \"goods\": { \"goodsName\": \"Product Name\" } }'",
+      "remediation": "1. Use jq to construct JSON payloads safely: jq -n --arg tradeNo \"$TRADE_NO\" '{merchantTradeNo: $tradeNo, ...}'. 2. Validate and sanitize all user input before JSON construction. 3. Implement proper JSON escaping for special characters. 4. Consider using Python with json.dumps() for safer JSON handling.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Binance Pay integration skill presents MULTIPLE HIGH-SEVERITY security risks primarily related to credential exposure, command injection vulnerabilities, and unsafe financial transaction handling. The skill requires sensitive API credentials and constructs bash commands with potential injection points. While it provides legitimate cryptocurrency payment functionality, the implementation lacks critical security controls: no input validation, no transaction confirmation requirements, unsafe JSON construction, and inadequate credential protection guidance. The skill should NOT be used in production without significant security hardening. The bash-based approach is inherently risky for handling financial operations and sensitive credentials - a Python implementation with proper input validation, parameterized queries, and secure credential management would be significantly safer.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unsafe Financial Transaction Handling",
+          "Missing Input Validation",
+          "Tool Restriction Violations"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The pattern of manual JSON string construction is inherently unsafe and prone to injection if user input is involved. The examples show the vulnerable pattern even though they use safe static values.",
+        "meta_exploitability": "Medium - Requires user input to reach JSON construction, but the pattern makes it easy to introduce vulnerabilities",
+        "meta_impact": "Medium - Could lead to malformed API requests, potential injection into API parameters"
+      }
+    },
+    {
+      "id": "llm_finding_binance-pay_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Sensitive Financial Data Transmission Without Validation",
+      "description": "The skill enables transmission of financial transaction data (payment amounts, merchant IDs, order details) to external Binance API endpoints without any input validation, amount limits, or transaction confirmation requirements. There are no safeguards against accidental large payments, no validation of currency codes, and no confirmation prompts before executing financial transactions. An agent could be manipulated into creating unauthorized payment orders or refunds.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Multiple curl commands sending financial data without validation: orderAmount, refundAmount, currency fields accepted without bounds checking or confirmation",
+      "remediation": "1. Implement strict input validation for all financial fields (amount limits, currency whitelist). 2. Require explicit user confirmation before any financial transaction. 3. Add transaction amount limits and rate limiting. 4. Log all financial operations for audit trails. 5. Implement dry-run mode for testing without real transactions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Binance Pay integration skill presents MULTIPLE HIGH-SEVERITY security risks primarily related to credential exposure, command injection vulnerabilities, and unsafe financial transaction handling. The skill requires sensitive API credentials and constructs bash commands with potential injection points. While it provides legitimate cryptocurrency payment functionality, the implementation lacks critical security controls: no input validation, no transaction confirmation requirements, unsafe JSON construction, and inadequate credential protection guidance. The skill should NOT be used in production without significant security hardening. The bash-based approach is inherently risky for handling financial operations and sensitive credentials - a Python implementation with proper input validation, parameterized queries, and secure credential management would be significantly safer.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unsafe Financial Transaction Handling",
+          "Missing Input Validation",
+          "Tool Restriction Violations"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill provides direct financial transaction capabilities with no documented safety controls. This is a clear design flaw for an agent-executed skill.",
+        "meta_exploitability": "Medium - Requires social engineering or prompt injection to manipulate agent, but no technical barriers exist",
+        "meta_impact": "High - Unauthorized financial transactions, potential monetary loss"
       }
     }
   ],
-  "scan_duration_seconds": 0.3517954349517822,
-  "duration_ms": 351,
+  "scan_duration_seconds": 44.66232490539551,
+  "duration_ms": 44662,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +152,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:19:42.371027"
+  "timestamp": "2026-02-05T20:29:45.036761"
 }

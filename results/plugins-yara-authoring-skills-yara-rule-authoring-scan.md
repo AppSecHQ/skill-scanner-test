@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** yara-rule-authoring
-**Directory:** ./skills/trailofbits-skills/plugins/yara-authoring/skills/yara-rule-authoring
+**Directory:** /workspace/skills/trailofbits-skills/plugins/yara-authoring/skills/yara-rule-authoring
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 3.58s
-**Timestamp:** 2026-02-03T14:13:26.737973
+**Scan Duration:** 3.29s
+**Timestamp:** 2026-02-06T07:34:32.613309
 
 ## Summary
 

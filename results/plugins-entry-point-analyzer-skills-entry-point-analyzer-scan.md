@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** entry-point-analyzer
-**Directory:** ./skills/trailofbits-skills/plugins/entry-point-analyzer/skills/entry-point-analyzer
+**Directory:** /workspace/skills/trailofbits-skills/plugins/entry-point-analyzer/skills/entry-point-analyzer
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.43s
-**Timestamp:** 2026-02-03T14:12:53.435620
+**Max Severity:** SAFE
+**Scan Duration:** 9.02s
+**Timestamp:** 2026-02-06T07:04:28.836392
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

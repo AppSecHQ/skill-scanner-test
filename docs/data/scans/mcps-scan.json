@@ -1,30 +1,110 @@
 {
   "skill_name": "mcps",
-  "skill_path": "./skills/clawhub-mcps-skill",
-  "skill_directory": "./skills/clawhub-mcps-skill",
+  "skill_path": "/workspace/skills/clawhub-mcps-skill",
+  "skill_directory": "/workspace/skills/clawhub-mcps-skill",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_mcps_0",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Unbounded External Tool Execution via MCP Server Management",
+      "description": "The skill allows adding and executing arbitrary MCP servers with user-controlled commands and arguments. Users can configure servers to run any command (uvx, npx, or arbitrary binaries) with any arguments, creating a vector for tool exploitation. While this is the intended functionality of an MCP manager, it enables execution of untrusted code without validation or sandboxing. The skill provides no warnings about security implications of adding untrusted MCP servers.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "mcps add fetch --command uvx --args mcp-server-fetch\nmcps add postgres --command npx --args @modelcontextprotocol/server-postgres\nmcps add remote --type sse --url http://localhost:8000/sse",
+      "remediation": "Add security warnings in documentation about risks of adding untrusted MCP servers. Recommend users validate server sources before adding. Consider implementing allowlist/blocklist for commands or requiring explicit user confirmation for new server additions.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill provides a legitimate MCP (Model Context Protocol) server management interface but introduces MEDIUM security risks through its core functionality. The primary concerns are: (1) enabling execution of arbitrary external commands via MCP server configuration without validation, (2) potential credential exposure through environment variable handling in configuration files, and (3) support for remote MCP servers without security guidance. These risks are inherent to the tool's purpose but lack adequate security warnings. The skill does not contain malicious code itself, but acts as a conduit for potentially unsafe operations. Users should be warned about validating MCP server sources, securing credentials, and risks of remote servers. Missing optional metadata (allowed-tools) and a referenced file are minor issues.",
+        "primary_threats": [
+          "Tool Exploitation",
+          "Credential Exposure Risk",
+          "Remote Server Trust Issues"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is the core functionality of the tool - it's designed to execute arbitrary MCP servers. The LLM analyzer correctly identifies this as a legitimate security concern inherent to the tool's purpose. The risk is real but expected for this type of utility.",
+        "meta_exploitability": "Easy - users can add malicious MCP servers with a single command",
+        "meta_impact": "High - arbitrary code execution on the host system via malicious MCP servers"
+      }
+    },
+    {
+      "id": "llm_finding_mcps_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Environment Variable Exposure Risk in Server Configuration",
+      "description": "The skill demonstrates passing sensitive credentials via environment variables (POSTGRES_CONNECTION_STRING, GITLAB_PERSONAL_ACCESS_TOKEN) to MCP servers. While using environment variables is better than hardcoding, the configuration examples show these being stored in ~/.mcps/mcp.json with ${VAR_NAME} references. If users misconfigure this or the mcps tool doesn't properly handle variable expansion, credentials could be exposed in plaintext configuration files or logs.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "\"env\": {\n  \"POSTGRES_CONNECTION_STRING\": \"${DATABASE_URL}\",\n  \"GITLAB_PERSONAL_ACCESS_TOKEN\": \"${GITLAB_TOKEN}\"\n}",
+      "remediation": "Add explicit warnings about credential handling. Document secure practices for environment variable management. Recommend using secret management tools. Warn against committing mcp.json files with credentials to version control.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill provides a legitimate MCP (Model Context Protocol) server management interface but introduces MEDIUM security risks through its core functionality. The primary concerns are: (1) enabling execution of arbitrary external commands via MCP server configuration without validation, (2) potential credential exposure through environment variable handling in configuration files, and (3) support for remote MCP servers without security guidance. These risks are inherent to the tool's purpose but lack adequate security warnings. The skill does not contain malicious code itself, but acts as a conduit for potentially unsafe operations. Users should be warned about validating MCP server sources, securing credentials, and risks of remote servers. Missing optional metadata (allowed-tools) and a referenced file are minor issues.",
+        "primary_threats": [
+          "Tool Exploitation",
+          "Credential Exposure Risk",
+          "Remote Server Trust Issues"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The documentation shows proper environment variable syntax (${VAR_NAME}), which suggests template-based expansion rather than plaintext storage. However, without seeing the actual mcps tool implementation, we can't verify how it handles these. The risk is more about user misunderstanding than actual vulnerability in the skill itself.",
+        "meta_exploitability": "Low - depends on mcps tool implementation and user configuration practices",
+        "meta_impact": "Medium - potential credential exposure if misconfigured or if mcps tool doesn't properly handle variable expansion"
+      }
+    },
+    {
+      "id": "llm_finding_mcps_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Network-Based MCP Server Support Without Security Guidance",
+      "description": "The skill supports adding remote MCP servers via SSE and HTTP protocols (--type sse/http with --url). This allows connecting to arbitrary network endpoints without authentication validation or security warnings. Malicious or compromised remote servers could exploit the agent through tool responses, inject malicious content, or exfiltrate data through tool invocations.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "mcps add remote --type sse --url http://localhost:8000/sse\nmcps add http-server --type http --url http://localhost:8000/mcp",
+      "remediation": "Add security warnings about remote MCP servers. Recommend HTTPS for remote connections. Document authentication requirements. Warn about trusting remote server responses. Consider implementing certificate validation and authentication mechanisms.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill provides a legitimate MCP (Model Context Protocol) server management interface but introduces MEDIUM security risks through its core functionality. The primary concerns are: (1) enabling execution of arbitrary external commands via MCP server configuration without validation, (2) potential credential exposure through environment variable handling in configuration files, and (3) support for remote MCP servers without security guidance. These risks are inherent to the tool's purpose but lack adequate security warnings. The skill does not contain malicious code itself, but acts as a conduit for potentially unsafe operations. Users should be warned about validating MCP server sources, securing credentials, and risks of remote servers. Missing optional metadata (allowed-tools) and a referenced file are minor issues.",
+        "primary_threats": [
+          "Tool Exploitation",
+          "Credential Exposure Risk",
+          "Remote Server Trust Issues"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The examples show HTTP (unencrypted) connections to remote servers without any security warnings. This is a legitimate concern for a tool that connects to network services.",
+        "meta_exploitability": "Medium - requires user to add a malicious remote server, but examples show insecure HTTP usage",
+        "meta_impact": "High - compromised remote servers could inject malicious responses or exfiltrate data"
       }
     }
   ],
-  "scan_duration_seconds": 0.5372674465179443,
-  "duration_ms": 537,
+  "scan_duration_seconds": 29.632243394851685,
+  "duration_ms": 29632,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +112,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:05:42.253615"
+  "timestamp": "2026-02-06T04:22:50.403968"
 }

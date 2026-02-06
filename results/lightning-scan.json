@@ -1,30 +1,150 @@
 {
   "skill_name": "lightning",
-  "skill_path": "./skills/clawhub-lightning",
-  "skill_directory": "./skills/clawhub-lightning",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-lightning",
+  "skill_directory": "/workspace/skills/clawhub-lightning",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 4,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_lightning_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Hardcoded Credential Storage in User Home Directory",
+      "description": "The skill requires storing sensitive Lightning Network credentials (runes, macaroons, API keys, mnemonics, passwords) in plaintext JSON at ~/.lightning-config.json. This creates multiple critical risks: (1) Credentials stored in plaintext without encryption, (2) Macaroons and runes provide full node access, (3) Mnemonic seeds in Spark config allow complete wallet recovery and fund theft, (4) No access controls specified for the config file, (5) Credentials persist across sessions and could be accessed by other processes or malware.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Create ~/.lightning-config.json with sensitive credentials including: 'rune': 'your-rune-token', 'macaroon': 'hex-encoded-admin-macaroon', 'password': 'your-phoenixd-password', 'nwcUri': 'nostr+walletconnect://...', 'apiKey': 'your-breez-api-key', 'mnemonic': 'your 12 word seed'",
+      "remediation": "(1) Use OS keychain/credential manager instead of plaintext files, (2) Encrypt config file at rest, (3) Set restrictive file permissions (chmod 600), (4) Implement credential rotation, (5) Use environment variables for sensitive values, (6) Add warnings about mnemonic storage risks, (7) Consider using hardware wallet integration where possible",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL RISK - This skill presents severe security risks for autonomous LLM operation. While it includes a warning about 'RECKLESS MODE', the technical implementation lacks essential safeguards for financial operations. Primary concerns: (1) Plaintext credential storage including wallet mnemonics, (2) Autonomous payment execution without mandatory confirmation, (3) Unverified external binary execution with full credential access, (4) No spending limits or rate limiting enforced in code, (5) Inadequate protection against prompt injection attacks that could trigger unauthorized payments. The skill is designed for personal use but provides insufficient technical controls to prevent misuse. The combination of autonomous LLM operation + financial transactions + weak safeguards creates unacceptable risk. Recommendation: DO NOT USE in production without implementing mandatory transaction limits, two-factor confirmation, credential encryption, and binary integrity verification. This skill requires significant security hardening before safe deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Autonomous Financial Operations Without Safeguards",
+          "Supply Chain Attack via Unverified Binary",
+          "Tool Exploitation for Unauthorized Payments",
+          "Inadequate Risk Controls for LLM Autonomy"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified plaintext credential storage. SKILL.md explicitly shows sensitive credentials stored unencrypted. This is a real security issue for a financial application.",
+        "meta_exploitability": "Easy - any process with user privileges can read ~/.lightning-config.json",
+        "meta_impact": "Critical - complete wallet access, fund theft via mnemonic recovery, unauthorized payments via API keys/macaroons"
+      }
+    },
+    {
+      "id": "llm_finding_lightning_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Autonomous Payment Execution Without User Confirmation",
+      "description": "The skill provides a /lightning pay command that can send Bitcoin payments immediately without requiring explicit user confirmation. While there is a /lightning confirm command, the instructions do not mandate its use, and the pay command appears to execute directly. Combined with LLM autonomy, this creates risk of: (1) Unintended payments due to misunderstood instructions, (2) Social engineering attacks where attacker tricks LLM into sending funds, (3) Prompt injection causing unauthorized transfers, (4) No transaction preview or confirmation flow enforced.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Command table shows: '/lightning pay <dest> [amount] - Pay (BOLT11/BOLT12/LNURL/Address)' with separate '/lightning confirm <dest> [amount] - Confirm & send payment'. Instructions do not require confirm step before pay execution.",
+      "remediation": "(1) Make /lightning confirm mandatory for all payments, (2) Implement two-step flow: pay generates preview, confirm executes, (3) Add transaction limits and velocity checks, (4) Require explicit user approval for each payment, (5) Display clear payment details before execution, (6) Add spending limits per transaction/day, (7) Log all payment attempts for audit",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL RISK - This skill presents severe security risks for autonomous LLM operation. While it includes a warning about 'RECKLESS MODE', the technical implementation lacks essential safeguards for financial operations. Primary concerns: (1) Plaintext credential storage including wallet mnemonics, (2) Autonomous payment execution without mandatory confirmation, (3) Unverified external binary execution with full credential access, (4) No spending limits or rate limiting enforced in code, (5) Inadequate protection against prompt injection attacks that could trigger unauthorized payments. The skill is designed for personal use but provides insufficient technical controls to prevent misuse. The combination of autonomous LLM operation + financial transactions + weak safeguards creates unacceptable risk. Recommendation: DO NOT USE in production without implementing mandatory transaction limits, two-factor confirmation, credential encryption, and binary integrity verification. This skill requires significant security hardening before safe deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Autonomous Financial Operations Without Safeguards",
+          "Supply Chain Attack via Unverified Binary",
+          "Tool Exploitation for Unauthorized Payments",
+          "Inadequate Risk Controls for LLM Autonomy"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code review confirms pay command calls payAnyDestination with confirmed=false but still processes payment logic. The confirmation flow is optional, not mandatory.",
+        "meta_exploitability": "Medium - requires LLM to execute pay command, but no technical barrier prevents it",
+        "meta_impact": "High - unauthorized Bitcoin payments, fund loss through social engineering or prompt injection"
+      }
+    },
+    {
+      "id": "llm_finding_lightning_2",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "External Binary Execution Without Integrity Verification",
+      "description": "The skill downloads and executes a prebuilt native binary (LNI) from GitHub Releases via 'npm run download' without any integrity verification. This creates supply chain attack risks: (1) No checksum/signature verification of downloaded binary, (2) Binary has full access to Lightning credentials, (3) Compromised GitHub account or release could serve malicious binary, (4) No source code review possible for prebuilt binaries, (5) Binary runs with full user privileges and credential access.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Installation instructions: 'cd ~/workspace/skills/lightning\\nnpm run download' - Downloads prebuilt native binary from GitHub Releases without mentioning signature verification, checksums, or integrity checks.",
+      "remediation": "(1) Implement checksum verification (SHA256) for downloaded binaries, (2) Verify GPG signatures on releases, (3) Pin specific release versions rather than latest, (4) Provide source code and build instructions as alternative, (5) Document binary provenance and build process, (6) Add integrity checks before execution, (7) Consider sandboxing binary execution",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL RISK - This skill presents severe security risks for autonomous LLM operation. While it includes a warning about 'RECKLESS MODE', the technical implementation lacks essential safeguards for financial operations. Primary concerns: (1) Plaintext credential storage including wallet mnemonics, (2) Autonomous payment execution without mandatory confirmation, (3) Unverified external binary execution with full credential access, (4) No spending limits or rate limiting enforced in code, (5) Inadequate protection against prompt injection attacks that could trigger unauthorized payments. The skill is designed for personal use but provides insufficient technical controls to prevent misuse. The combination of autonomous LLM operation + financial transactions + weak safeguards creates unacceptable risk. Recommendation: DO NOT USE in production without implementing mandatory transaction limits, two-factor confirmation, credential encryption, and binary integrity verification. This skill requires significant security hardening before safe deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Autonomous Financial Operations Without Safeguards",
+          "Supply Chain Attack via Unverified Binary",
+          "Tool Exploitation for Unauthorized Payments",
+          "Inadequate Risk Controls for LLM Autonomy"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code inspection confirms no integrity verification. The script only checks file size, not cryptographic hash or signature.",
+        "meta_exploitability": "Medium - requires compromised GitHub account or MITM attack, but no technical barrier in code",
+        "meta_impact": "High - malicious binary could steal credentials, exfiltrate data, or execute arbitrary code with full user privileges"
+      }
+    },
+    {
+      "id": "llm_finding_lightning_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Unrestricted Financial Tool Access Without Safeguards",
+      "description": "The skill provides unrestricted access to Lightning Network payment operations without implementing safety controls appropriate for autonomous LLM use. Risks include: (1) No spending limits enforced, (2) No rate limiting on payment operations, (3) No whitelist of approved payment destinations, (4) Contacts feature allows pre-saving destinations that LLM can pay without validation, (5) Multiple payment types supported (BOLT11/12, LNURL, addresses) increase attack surface, (6) History command could leak transaction patterns.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Commands allow: creating invoices, paying arbitrary destinations, saving contacts, viewing history - all without documented safety controls. Warning states 'The bot can send payments on your behalf' but no technical controls enforce limits.",
+      "remediation": "(1) Implement mandatory spending limits (per-transaction, daily, weekly), (2) Add whitelist of approved payment destinations, (3) Require explicit user approval for new contacts, (4) Rate limit payment operations, (5) Add transaction preview with timeout before execution, (6) Implement anomaly detection for unusual payment patterns, (7) Add emergency kill switch to disable payments",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL RISK - This skill presents severe security risks for autonomous LLM operation. While it includes a warning about 'RECKLESS MODE', the technical implementation lacks essential safeguards for financial operations. Primary concerns: (1) Plaintext credential storage including wallet mnemonics, (2) Autonomous payment execution without mandatory confirmation, (3) Unverified external binary execution with full credential access, (4) No spending limits or rate limiting enforced in code, (5) Inadequate protection against prompt injection attacks that could trigger unauthorized payments. The skill is designed for personal use but provides insufficient technical controls to prevent misuse. The combination of autonomous LLM operation + financial transactions + weak safeguards creates unacceptable risk. Recommendation: DO NOT USE in production without implementing mandatory transaction limits, two-factor confirmation, credential encryption, and binary integrity verification. This skill requires significant security hardening before safe deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Autonomous Financial Operations Without Safeguards",
+          "Supply Chain Attack via Unverified Binary",
+          "Tool Exploitation for Unauthorized Payments",
+          "Inadequate Risk Controls for LLM Autonomy"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "While the code lacks these controls, the SKILL.md warning advises 'small amounts' - but this is not technically enforced. The risk depends on user following guidance.",
+        "meta_exploitability": "Medium - requires sustained LLM manipulation or prompt injection campaign",
+        "meta_impact": "Medium-High - wallet drainage through repeated payments, but limited by wallet balance"
       }
     }
   ],
-  "scan_duration_seconds": 0.32877469062805176,
-  "duration_ms": 328,
+  "scan_duration_seconds": 61.2693247795105,
+  "duration_ms": 61269,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +152,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:18:53.655610"
+  "timestamp": "2026-02-06T03:56:08.172509"
 }

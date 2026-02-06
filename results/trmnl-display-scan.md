@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** trmnl
-**Directory:** ./skills/clawhub-trmnl
+**Directory:** /workspace/skills/clawhub-trmnl
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.52s
-**Timestamp:** 2026-02-03T16:12:42.668116
+**Scan Duration:** 0.28s
+**Timestamp:** 2026-02-06T07:51:48.765051
 
 ## Summary
 

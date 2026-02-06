@@ -1,50 +1,116 @@
 {
   "skill_name": "botcoin-miner",
-  "skill_path": "./skills/clawhub-botcoin-miner",
-  "skill_directory": "./skills/clawhub-botcoin-miner",
+  "skill_path": "/workspace/skills/clawhub-botcoin-miner",
+  "skill_directory": "/workspace/skills/clawhub-botcoin-miner",
   "is_safe": false,
-  "max_severity": "HIGH",
-  "findings_count": 2,
+  "max_severity": "CRITICAL",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_botcoin-miner_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Unverified Remote Code Execution via curl|bash Installation",
+      "description": "The skill instructs the agent to download and execute a shell script directly from GitHub using 'curl | bash' without any cryptographic verification (no checksums, signatures, or hashes). This creates a critical supply chain attack vector where a compromised GitHub account, man-in-the-middle attack, or repository takeover could result in arbitrary code execution on the user's machine. The 'Quick install' method provides no security guarantees about the script's integrity.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "curl -fsSL https://raw.githubusercontent.com/happybigmtn/botcoin/master/install.sh | bash",
+      "remediation": "1) Provide cryptographic checksums (SHA256) for the install script and verify before execution. 2) Use signed releases with GPG verification. 3) Pin to specific commit hashes instead of 'master' branch. 4) Include the install script content directly in the skill package for review. 5) Warn users about the security implications of remote script execution.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks primarily related to supply chain security, resource exhaustion, and network exposure. The most severe issue is the unverified remote code execution via 'curl|bash' installation, which could allow arbitrary code execution if the source is compromised. The unbounded cryptocurrency mining operation poses availability risks through sustained CPU consumption without resource controls. Network exposure via hardcoded, unverified peer connections creates additional attack surface. The skill lacks essential security metadata (allowed-tools, license, compatibility) and provenance information, making trust assessment difficult. While the skill includes a reference to Clawdex security scanning, this does not mitigate the fundamental architectural security issues. The skill requires significant security hardening before it can be considered safe for automated agent use.",
+        "primary_threats": [
+          "Unverified Remote Code Execution",
+          "Resource Exhaustion / Availability Disruption",
+          "Network Exposure to Unverified Peers",
+          "Supply Chain Security Risks",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Clear unverified remote code execution pattern. LLM analyzer correctly identified this as the primary threat. This is a well-known supply chain attack vector.",
+        "meta_exploitability": "Easy - requires only compromising the GitHub repository or performing MITM attack",
+        "meta_impact": "Critical - arbitrary code execution with user privileges, potential system compromise"
       }
     },
     {
-      "id": "YARA_system_manipulation_6f321af3ec",
-      "rule_id": "YARA_system_manipulation",
-      "category": "unauthorized_tool_use",
+      "id": "llm_finding_botcoin-miner_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
       "severity": "HIGH",
-      "title": "SYSTEM MANIPULATION detected by YARA",
-      "description": "Detects system manipulation, privilege escalation, and destructive file operations: rm -rf",
+      "title": "Unbounded CPU Mining Without Resource Controls",
+      "description": "The skill instructs the agent to start cryptocurrency mining operations with no resource limits, monitoring, or automatic termination conditions. Mining is configured to run indefinitely in daemon mode with 'nice -n 19' priority adjustment but no CPU caps, time limits, or user confirmation for extended operation. The instruction 'scale up once you confirm everything is stable' encourages increasing resource consumption. This can lead to sustained CPU exhaustion, thermal issues, increased power consumption, and degraded system performance for other tasks.",
       "file_path": "SKILL.md",
-      "line_number": 143,
-      "snippet": "rm -rf ~/.botcoin/regtest",
-      "remediation": "Review and remove system manipulation pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "nice -n 19 botcoind -daemon -mine -mineaddress=\"$ADDR\" -minethreads=2\n# Tip: start with -minethreads=2, then scale up once you confirm everything is stable.",
+      "remediation": "1) Implement strict CPU usage caps (e.g., cpulimit, cgroups). 2) Add automatic termination after a defined time period or block count. 3) Require explicit user confirmation before starting mining. 4) Monitor system temperature and throttle/stop if thresholds are exceeded. 5) Provide clear warnings about resource consumption and electricity costs. 6) Add a maximum runtime parameter with default limits.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "system_manipulation",
-        "yara_namespace": "system_manipulation",
-        "matched_string": "$file_destruction",
-        "threat_type": "SYSTEM MANIPULATION",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks primarily related to supply chain security, resource exhaustion, and network exposure. The most severe issue is the unverified remote code execution via 'curl|bash' installation, which could allow arbitrary code execution if the source is compromised. The unbounded cryptocurrency mining operation poses availability risks through sustained CPU consumption without resource controls. Network exposure via hardcoded, unverified peer connections creates additional attack surface. The skill lacks essential security metadata (allowed-tools, license, compatibility) and provenance information, making trust assessment difficult. While the skill includes a reference to Clawdex security scanning, this does not mitigate the fundamental architectural security issues. The skill requires significant security hardening before it can be considered safe for automated agent use.",
+        "primary_threats": [
+          "Unverified Remote Code Execution",
+          "Resource Exhaustion / Availability Disruption",
+          "Network Exposure to Unverified Peers",
+          "Supply Chain Security Risks",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Legitimate concern for agent-driven cryptocurrency mining. No resource controls are present in the instructions. This could lead to sustained CPU exhaustion.",
+        "meta_exploitability": "Easy - agent follows instructions to start mining without limits",
+        "meta_impact": "High - sustained CPU exhaustion, thermal issues, increased power costs, degraded system performance"
+      }
+    },
+    {
+      "id": "llm_finding_botcoin-miner_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Network Exposure via Hardcoded Seed Peers Without Verification",
+      "description": "The skill configures the agent to connect to hardcoded external IP addresses (95.111.227.14, 95.111.229.108, 161.97.83.147) on port 8433 without any verification of peer identity, certificate validation, or reputation checking. These connections are established automatically when the daemon starts. This creates risks of: 1) Connecting to malicious nodes that could serve invalid blockchain data, 2) Network traffic analysis and fingerprinting, 3) Potential exploitation if the P2P protocol has vulnerabilities, 4) No mechanism to verify these IPs are legitimate Botcoin network nodes.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "addnode=95.111.227.14:8433\naddnode=95.111.229.108:8433\naddnode=161.97.83.147:8433",
+      "remediation": "1) Implement peer verification mechanisms (certificates, signatures). 2) Use DNS-based peer discovery instead of hardcoded IPs. 3) Provide peer reputation/trust scoring. 4) Allow users to review and approve peer connections. 5) Implement connection encryption and authentication. 6) Document the ownership and trustworthiness of seed nodes.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL and HIGH severity security risks primarily related to supply chain security, resource exhaustion, and network exposure. The most severe issue is the unverified remote code execution via 'curl|bash' installation, which could allow arbitrary code execution if the source is compromised. The unbounded cryptocurrency mining operation poses availability risks through sustained CPU consumption without resource controls. Network exposure via hardcoded, unverified peer connections creates additional attack surface. The skill lacks essential security metadata (allowed-tools, license, compatibility) and provenance information, making trust assessment difficult. While the skill includes a reference to Clawdex security scanning, this does not mitigate the fundamental architectural security issues. The skill requires significant security hardening before it can be considered safe for automated agent use.",
+        "primary_threats": [
+          "Unverified Remote Code Execution",
+          "Resource Exhaustion / Availability Disruption",
+          "Network Exposure to Unverified Peers",
+          "Supply Chain Security Risks",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is standard behavior for P2P cryptocurrency networks. However, without protocol-level verification, there is some risk of connecting to malicious nodes. Severity reduced from HIGH to MEDIUM because this is expected P2P behavior.",
+        "meta_exploitability": "Medium - requires attacker to control seed node IPs or perform BGP hijacking",
+        "meta_impact": "Medium - potential for serving invalid blockchain data, network fingerprinting, protocol exploitation"
       }
     }
   ],
-  "scan_duration_seconds": 0.35019874572753906,
-  "duration_ms": 350,
+  "scan_duration_seconds": 43.51752948760986,
+  "duration_ms": 43517,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +118,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:12:35.885852"
+  "timestamp": "2026-02-05T20:33:46.755447"
 }

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** harness-writing
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/harness-writing
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/harness-writing
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.43s
-**Timestamp:** 2026-02-03T14:14:19.929681
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:33:53.425622
 
 ## Summary
 

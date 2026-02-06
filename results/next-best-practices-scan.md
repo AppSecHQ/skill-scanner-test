@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** next-best-practices
-**Directory:** ./skills/vercel-labs-next-skills/skills/next-best-practices
+**Directory:** /workspace/skills/vercel-labs-next-skills/skills/next-best-practices
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 914.59s
-**Timestamp:** 2026-02-01T11:51:19.312913
+**Scan Duration:** 6.70s
+**Timestamp:** 2026-02-06T05:12:34.487463
 
 ## Summary
 

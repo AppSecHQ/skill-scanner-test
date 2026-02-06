@@ -1,44 +1,43 @@
 # Agent Skill Security Scan Report
 
 **Skill:** cold-email
-**Directory:** ./skills/clawhub-cold-email
-**Status:** [OK] SAFE
-**Max Severity:** MEDIUM
-**Scan Duration:** 0.32s
-**Timestamp:** 2026-02-03T16:03:32.968979
+**Directory:** /workspace/skills/clawhub-cold-email
+**Status:** [FAIL] ISSUES FOUND
+**Max Severity:** HIGH
+**Scan Duration:** 31.93s
+**Timestamp:** 2026-02-06T04:16:51.735117
 
 ## Summary
 
 - **Total Findings:** 2
 - **Critical:** 0
-- **High:** 0
+- **High:** 1
 - **Medium:** 1
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
+### HIGH Severity
+
+#### [HIGH] Hardcoded API Key Requirement with External Data Transmission
+
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+
+**Description:** The skill requires MACHFIVE_API_KEY environment variable and transmits potentially sensitive lead data (names, emails, LinkedIn URLs, company information) to external third-party API (app.machfive.io). This creates risk of credential theft if the environment variable is compromised, and data exfiltration of user's lead/contact databases to an external service without explicit security controls or data handling guarantees.
+
 ### MEDIUM Severity
 
-#### [MEDIUM] SKILL DISCOVERY ABUSE detected by YARA
+#### [MEDIUM] Long-Running Synchronous Operations Without Timeout Warnings
 
 **Severity:** MEDIUM
-**Category:** skill_discovery_abuse
-**Rule ID:** YARA_skill_discovery_abuse
-**Location:** SKILL.md:40
-
-**Description:** Detects manipulation of skill discovery to increase unwanted activation: call this first
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The single lead generation endpoint is documented to take 3-5 minutes with recommended timeout of 5-10 minutes. This creates availability risk if multiple requests are made concurrently or if the external API becomes unresponsive, potentially causing agent hangs or resource exhaustion.
 
 ## Analyzers
 

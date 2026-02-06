@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** research-paper-writer
-**Directory:** ./skills/clawhub-research-paper-writer
+**Directory:** /workspace/skills/clawhub-research-paper-writer
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-03T16:11:16.135453
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:36:01.899560
 
 ## Summary
 

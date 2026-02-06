@@ -1,10 +1,10 @@
 {
   "skill_name": "browse",
-  "skill_path": "./skills/clawhub-browse",
-  "skill_directory": "./skills/clawhub-browse",
+  "skill_path": "/workspace/skills/clawhub-browse",
+  "skill_directory": "/workspace/skills/clawhub-browse",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "findings_count": 7,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -41,10 +41,155 @@
         "threat_type": "CODE EXECUTION",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_browse_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Credentials in Environment Configuration",
+      "description": "The skill requires BROWSERBASE_API_KEY and BROWSERBASE_PROJECT_ID environment variables and instructs users to run 'stagehand fn auth login' which stores credentials in ~/.stagehand/config.json. The workflow then copies these credentials to .env files in project directories. This creates multiple copies of sensitive credentials across the filesystem, increasing exposure risk. Additionally, the skill does not provide guidance on securing these credentials or cleaning them up after use.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```yaml\nrequires:\n  env: ['BROWSERBASE_API_KEY', 'BROWSERBASE_PROJECT_ID']\n```\n\n```bash\nstagehand fn auth login   # Stores in ~/.stagehand/config.json\n# Later copied to .env files in each project\n```",
+      "remediation": "1. Add explicit warnings about credential security\n2. Recommend using credential managers or secure vaults\n3. Provide cleanup instructions for removing .env files\n4. Suggest using environment-specific credential injection rather than file-based storage\n5. Add .env to .gitignore examples",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The skill provides legitimate browser automation functionality using the Stagehand CLI and Browserbase platform, but contains several MEDIUM severity security concerns. Primary issues include: (1) credential management practices that create multiple copies of API keys across the filesystem without security guidance, (2) demonstration of arbitrary JavaScript execution via page.evaluate() without injection warnings, and (3) dependency management recommendations using version ranges that allow automatic updates, creating supply chain risk. The skill also has documentation issues including missing referenced files and truncated content. While the core functionality appears legitimate, the security guidance is insufficient for a skill that handles credentials and executes code in browser contexts. Users following this skill could inadvertently create insecure automation functions.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage)",
+          "Code Injection (page.evaluate)",
+          "Supply Chain (dependency versions)",
+          "Documentation Issues"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browse_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Arbitrary JavaScript Execution via page.evaluate()",
+      "description": "The skill demonstrates using page.evaluate() to execute arbitrary JavaScript in the browser context without input validation or sandboxing guidance. The example shows 'Complex extraction logic' as a placeholder, which could lead users to implement unsafe code execution patterns. Combined with user-controlled parameters (params object), this creates a code injection risk if users pass unsanitized input directly into evaluate() calls.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```typescript\nconst data = await page.evaluate(() => {\n  // Complex extraction logic\n  r\n```\n\nThe code snippet is incomplete but demonstrates evaluate() usage without security guidance. Users may implement: `page.evaluate(params.userCode)` leading to arbitrary code execution.",
+      "remediation": "1. Add explicit warnings about code injection risks in page.evaluate()\n2. Provide examples of input validation and sanitization\n3. Recommend using page.locator() and other safe APIs instead of evaluate() where possible\n4. Show how to safely pass parameters to evaluate() using serializable data only\n5. Warn against executing user-provided code strings",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The skill provides legitimate browser automation functionality using the Stagehand CLI and Browserbase platform, but contains several MEDIUM severity security concerns. Primary issues include: (1) credential management practices that create multiple copies of API keys across the filesystem without security guidance, (2) demonstration of arbitrary JavaScript execution via page.evaluate() without injection warnings, and (3) dependency management recommendations using version ranges that allow automatic updates, creating supply chain risk. The skill also has documentation issues including missing referenced files and truncated content. While the core functionality appears legitimate, the security guidance is insufficient for a skill that handles credentials and executes code in browser contexts. Users following this skill could inadvertently create insecure automation functions.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage)",
+          "Code Injection (page.evaluate)",
+          "Supply Chain (dependency versions)",
+          "Documentation Issues"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browse_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Dependency Version Unpinning Recommendation Creates Supply Chain Risk",
+      "description": "The skill explicitly instructs users to change dependency versions from 'latest' to caret ranges (^0.0.5, ^1.58.0) in the package.json fix. While this is better than 'latest', caret ranges still allow automatic minor/patch updates that could introduce malicious code or breaking changes. For security-critical browser automation with credential access, this creates supply chain attack surface. The skill also references '@browserbasehq/sdk-functions' version ^0.0.5 which is a pre-1.0 package with unstable API guarantees.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```json\n\"dependencies\": {\n  \"@browserbasehq/sdk-functions\": \"^0.0.5\",\n  \"playwright-core\": \"^1.58.0\"\n}\n```\n\nCaret (^) allows: 0.0.5 \u2192 0.0.x updates, 1.58.0 \u2192 1.x.x updates. Pre-1.0 versions are particularly unstable.",
+      "remediation": "1. Recommend exact version pinning for security-critical dependencies: '0.0.5' not '^0.0.5'\n2. Add guidance on using lock files (pnpm-lock.yaml) and committing them\n3. Suggest regular security audits: 'pnpm audit'\n4. Warn about pre-1.0 package instability\n5. Recommend reviewing changelogs before updating dependencies",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The skill provides legitimate browser automation functionality using the Stagehand CLI and Browserbase platform, but contains several MEDIUM severity security concerns. Primary issues include: (1) credential management practices that create multiple copies of API keys across the filesystem without security guidance, (2) demonstration of arbitrary JavaScript execution via page.evaluate() without injection warnings, and (3) dependency management recommendations using version ranges that allow automatic updates, creating supply chain risk. The skill also has documentation issues including missing referenced files and truncated content. While the core functionality appears legitimate, the security guidance is insufficient for a skill that handles credentials and executes code in browser contexts. Users following this skill could inadvertently create insecure automation functions.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage)",
+          "Code Injection (page.evaluate)",
+          "Supply Chain (dependency versions)",
+          "Documentation Issues"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browse_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill does not declare an 'allowed-tools' field in the YAML manifest, making it unclear which agent capabilities are required or safe to use. While this field is optional per the agent skills specification, its absence reduces transparency about the skill's intended tool usage, particularly given that the skill involves external binary execution (stagehand CLI) and credential management.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML manifest shows:\n- allowed-tools: Not specified\n\nBut skill uses: Bash commands (stagehand CLI), file operations (.env, package.json), external binary execution",
+      "remediation": "Add allowed-tools declaration to manifest:\n```yaml\nallowed-tools: [Bash, Read, Write]\n```\nThis documents that the skill requires shell command execution and file system access.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The skill provides legitimate browser automation functionality using the Stagehand CLI and Browserbase platform, but contains several MEDIUM severity security concerns. Primary issues include: (1) credential management practices that create multiple copies of API keys across the filesystem without security guidance, (2) demonstration of arbitrary JavaScript execution via page.evaluate() without injection warnings, and (3) dependency management recommendations using version ranges that allow automatic updates, creating supply chain risk. The skill also has documentation issues including missing referenced files and truncated content. While the core functionality appears legitimate, the security guidance is insufficient for a skill that handles credentials and executes code in browser contexts. Users following this skill could inadvertently create insecure automation functions.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage)",
+          "Code Injection (page.evaluate)",
+          "Supply Chain (dependency versions)",
+          "Documentation Issues"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_browse_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Referenced Files Without Explanation",
+      "description": "The skill references four Python files (a.py, generated.py, invocation.py, page.py) that are not found in the package. The instruction body appears to be truncated (ends with 'r' mid-word), suggesting incomplete documentation. While not directly malicious, this creates confusion about the skill's completeness and may indicate packaging errors or missing components.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Referenced files not found:\n- a.py\n- generated.py\n- invocation.py\n- page.py\n\nInstruction body truncated at: '// Complex extraction logic\\n  r'",
+      "remediation": "1. Complete the truncated instruction body\n2. Either include the referenced Python files or remove references to them\n3. Clarify whether these files are examples, templates, or required components\n4. Ensure skill package is complete before distribution",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The skill provides legitimate browser automation functionality using the Stagehand CLI and Browserbase platform, but contains several MEDIUM severity security concerns. Primary issues include: (1) credential management practices that create multiple copies of API keys across the filesystem without security guidance, (2) demonstration of arbitrary JavaScript execution via page.evaluate() without injection warnings, and (3) dependency management recommendations using version ranges that allow automatic updates, creating supply chain risk. The skill also has documentation issues including missing referenced files and truncated content. While the core functionality appears legitimate, the security guidance is insufficient for a skill that handles credentials and executes code in browser contexts. Users following this skill could inadvertently create insecure automation functions.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (credential storage)",
+          "Code Injection (page.evaluate)",
+          "Supply Chain (dependency versions)",
+          "Documentation Issues"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.42731523513793945,
-  "duration_ms": 427,
+  "scan_duration_seconds": 38.23717212677002,
+  "duration_ms": 38237,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -52,5 +197,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:17:03.013358"
+  "timestamp": "2026-02-05T21:04:27.289007"
 }

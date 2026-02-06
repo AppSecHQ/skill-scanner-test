@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** test-specialist
-**Directory:** ./skills/clawhub-test-specialist
+**Directory:** /workspace/skills/clawhub-test-specialist
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 1.90s
-**Timestamp:** 2026-02-03T16:11:10.319883
+**Scan Duration:** 1.20s
+**Timestamp:** 2026-02-06T07:51:22.233647
 
 ## Summary
 

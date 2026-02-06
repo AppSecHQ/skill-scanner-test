@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** vestaboard
-**Directory:** ./skills/clawhub-vestaboard
+**Directory:** /workspace/skills/clawhub-vestaboard
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-02T03:04:53.225627
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:52:49.822156
 
 ## Summary
 

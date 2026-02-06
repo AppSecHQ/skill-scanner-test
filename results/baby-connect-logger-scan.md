@@ -1,44 +1,42 @@
 # Agent Skill Security Scan Report
 
 **Skill:** activecampaign
-**Directory:** ./skills/clawhub-babyconnect
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.30s
-**Timestamp:** 2026-02-03T16:13:25.946378
+**Directory:** /workspace/skills/clawhub-babyconnect
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 26.09s
+**Timestamp:** 2026-02-05T20:14:11.528898
 
 ## Summary
 
 - **Total Findings:** 2
-- **Critical:** 1
+- **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 2
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### CRITICAL Severity
+### MEDIUM Severity
 
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
+#### [MEDIUM] Hardcoded Credential Storage in Plaintext Files
 
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:28
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export ACTIVECAMPAIGN_API_KEY="your-api-key
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill instructs users to store API credentials in plaintext files (~/.config/activecampaign/url and ~/.config/activecampaign/api_key) without encryption or secure storage mechanisms. While these are user-created files, the practice of storing sensitive API keys in plaintext poses a data exposure risk if the filesystem is compromised or inadvertently shared.
+
+#### [MEDIUM] Missing Binary Dependency Without Verification
+
+**Severity:** MEDIUM
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
+**Location:** SKILL.md
+
+**Description:** The skill requires an 'activecampaign' binary (specified in clawdbot.requires.bins) but provides no information about where to obtain it, how to verify its authenticity, or its provenance. Users are expected to have this binary installed, but there's no guidance on secure installation, version pinning, or integrity verification. This creates a supply chain risk where users might install malicious or compromised binaries.
 
 ## Analyzers
 

@@ -1,30 +1,113 @@
 {
   "skill_name": "github-action-gen",
-  "skill_path": "./skills/clawhub-github-action-gen",
-  "skill_directory": "./skills/clawhub-github-action-gen",
+  "skill_path": "/workspace/skills/clawhub-github-action-gen",
+  "skill_directory": "/workspace/skills/clawhub-github-action-gen",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_github-action-gen_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Deceptive Skill Description - External Tool Masquerading as Agent Skill",
+      "description": "The skill presents itself as an agent skill for generating GitHub Actions workflows, but the instructions exclusively describe using an external NPX package ('npx ai-github-action'). This is misleading because agent skills should contain executable logic (Python/Bash scripts) that the agent runs directly. Instead, this skill appears to be promotional content for an external tool, not a functional agent skill. Users expecting the agent to generate workflows will instead be instructed to run external commands that require OPENAI_API_KEY and make network calls to OpenAI's API.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Quick Start section shows: 'npx ai-github-action \"test and deploy on push to main\"' - This is an external NPX package call, not agent-executable code. The skill contains no Python/Bash scripts that would allow the agent to actually generate workflows.",
+      "remediation": "Either: (1) Include actual Python/Bash scripts that generate GitHub Actions YAML locally using the agent's capabilities, or (2) Clearly disclose in the description that this skill instructs users to run an external NPX tool rather than having the agent generate workflows directly. The current description 'Generate GitHub Actions workflows from plain English' implies the agent will do this, which is misleading.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill has MEDIUM severity security concerns primarily related to deceptive presentation and undisclosed external dependencies. The skill masquerades as an agent capability for generating GitHub Actions workflows, but actually instructs users to run an external NPX package that requires OpenAI API credentials and makes network calls. There are no actual Python/Bash scripts that would allow the agent to generate workflows locally. The skill also contains promotional content and has incomplete manifest metadata. While not containing direct malicious code (since there are no scripts), the deceptive nature and undisclosed credential requirements create security risks. Users expecting local workflow generation will instead be directed to run external tools that access their API keys and transmit data to third-party services without clear disclosure.",
+        "primary_threats": [
+          "Social Engineering (deceptive skill description)",
+          "Data Exposure Risk (undisclosed API key requirement)",
+          "Misleading Content (promotional material disguised as functionality)",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified by examining all files in the skill package. There are NO Python or Bash scripts in the scripts/ directory. The only executable code is TypeScript/JavaScript for an NPX tool, which agents cannot execute directly. The LLM analyzer correctly identified this fundamental mismatch.",
+        "meta_exploitability": "N/A - Not a security exploit, but a fundamental misrepresentation",
+        "meta_impact": "HIGH - Users expecting agent-executable functionality will be confused and potentially expose credentials to external tools"
+      }
+    },
+    {
+      "id": "llm_finding_github-action-gen_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Undisclosed External API Dependency and Credential Requirement",
+      "description": "The skill requires users to set OPENAI_API_KEY environment variable to use the external NPX tool, but this critical requirement is buried in the documentation and not disclosed in the manifest description. This creates a data exposure risk because: (1) Users may unknowingly expose their OpenAI API keys when running the external tool, (2) The external tool will send user input (workflow descriptions) to OpenAI's API, and (3) There's no transparency about what data is transmitted or how API keys are used by the external package.",
+      "file_path": "SKILL.md",
+      "line_number": 52,
+      "snippet": "'Needs OPENAI_API_KEY environment variable' - This requirement is mentioned only in the Requirements section, not in the manifest description. Users running 'npx ai-github-action' will be executing code that accesses their OpenAI credentials and makes network calls.",
+      "remediation": "(1) Disclose the OpenAI API requirement prominently in the skill description/manifest, (2) Warn users that their API keys and input will be sent to external services, (3) Consider implementing local workflow generation instead of relying on external API calls, (4) If keeping external dependency, add explicit user consent before credential access.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill has MEDIUM severity security concerns primarily related to deceptive presentation and undisclosed external dependencies. The skill masquerades as an agent capability for generating GitHub Actions workflows, but actually instructs users to run an external NPX package that requires OpenAI API credentials and makes network calls. There are no actual Python/Bash scripts that would allow the agent to generate workflows locally. The skill also contains promotional content and has incomplete manifest metadata. While not containing direct malicious code (since there are no scripts), the deceptive nature and undisclosed credential requirements create security risks. Users expecting local workflow generation will instead be directed to run external tools that access their API keys and transmit data to third-party services without clear disclosure.",
+        "primary_threats": [
+          "Social Engineering (deceptive skill description)",
+          "Data Exposure Risk (undisclosed API key requirement)",
+          "Misleading Content (promotional material disguised as functionality)",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified by examining src/index.ts which clearly shows OpenAI API initialization and usage. The requirement is real and the disclosure is insufficient.",
+        "meta_exploitability": "Medium - Requires user to have OPENAI_API_KEY set and run the external tool",
+        "meta_impact": "MEDIUM - Credential exposure risk, unexpected API costs, data transmission to third party"
+      }
+    },
+    {
+      "id": "llm_finding_github-action-gen_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Promotional Content Disguised as Functional Skill",
+      "description": "The skill contains significant promotional content for 'LXGIC Studios' and their '110+ free developer tools', including links to GitHub, Twitter, Substack, and website. While not directly harmful, this transforms the skill from a focused utility into marketing material. The 'Part of the LXGIC Dev Toolkit' section and repeated branding ('LXGIC Studios') suggests the primary purpose may be promotional rather than providing genuine agent functionality. This is misleading when users expect skills to extend agent capabilities, not serve as advertisements.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'This is one of 110+ free developer tools built by LXGIC Studios. No paywalls, no sign-ups, no API keys on free tiers. Just tools that work. Find more: GitHub: https://github.com/LXGIC-Studios, Twitter: https://x.com/lxgicstudios, Substack: https://lxgicstudios.substack.com, Website: https://lxgicstudios.com'",
+      "remediation": "(1) Remove or significantly reduce promotional content, (2) Focus skill documentation on functionality and usage, (3) If attribution is needed, limit it to a single line (e.g., 'Created by LXGIC Studios'), (4) Move marketing content to a separate README or website rather than embedding it in the skill instructions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill has MEDIUM severity security concerns primarily related to deceptive presentation and undisclosed external dependencies. The skill masquerades as an agent capability for generating GitHub Actions workflows, but actually instructs users to run an external NPX package that requires OpenAI API credentials and makes network calls. There are no actual Python/Bash scripts that would allow the agent to generate workflows locally. The skill also contains promotional content and has incomplete manifest metadata. While not containing direct malicious code (since there are no scripts), the deceptive nature and undisclosed credential requirements create security risks. Users expecting local workflow generation will instead be directed to run external tools that access their API keys and transmit data to third-party services without clear disclosure.",
+        "primary_threats": [
+          "Social Engineering (deceptive skill description)",
+          "Data Exposure Risk (undisclosed API key requirement)",
+          "Misleading Content (promotional material disguised as functionality)",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Subjective assessment of what constitutes 'excessive' promotional content. However, the combination of promotional material + lack of actual functionality (Finding #1) suggests marketing intent.",
+        "meta_exploitability": "N/A - Not a security exploit",
+        "meta_impact": "LOW - Clutters documentation, suggests marketing over functionality"
       }
     }
   ],
-  "scan_duration_seconds": 0.3171217441558838,
-  "duration_ms": 317,
+  "scan_duration_seconds": 35.76608633995056,
+  "duration_ms": 35766,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:17:30.784596"
+  "timestamp": "2026-02-06T02:13:13.047628"
 }

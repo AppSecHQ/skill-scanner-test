@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** searxng
-**Directory:** ./skills/clawhub-searxng
+**Directory:** /workspace/skills/clawhub-searxng
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.84s
-**Timestamp:** 2026-02-03T15:54:07.808440
+**Scan Duration:** 0.72s
+**Timestamp:** 2026-02-06T07:36:29.406987
 
 ## Summary
 

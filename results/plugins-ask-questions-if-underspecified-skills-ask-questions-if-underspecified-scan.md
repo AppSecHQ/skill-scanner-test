@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** ask-questions-if-underspecified
-**Directory:** ./skills/trailofbits-skills/plugins/ask-questions-if-underspecified/skills/ask-questions-if-underspecified
+**Directory:** /workspace/skills/trailofbits-skills/plugins/ask-questions-if-underspecified/skills/ask-questions-if-underspecified
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.43s
-**Timestamp:** 2026-02-03T14:12:31.331702
+**Max Severity:** SAFE
+**Scan Duration:** 7.37s
+**Timestamp:** 2026-02-06T06:29:14.054296
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

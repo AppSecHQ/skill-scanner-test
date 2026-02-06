@@ -1,30 +1,46 @@
 {
   "skill_name": "doc-coauthoring",
-  "skill_path": "./skills/clawhub-doc-coauthoring",
-  "skill_directory": "./skills/clawhub-doc-coauthoring",
+  "skill_path": "/workspace/skills/clawhub-doc-coauthoring",
+  "skill_directory": "/workspace/skills/clawhub-doc-coauthoring",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_doc-coauthoring_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse via External Shared Documents",
+      "description": "The skill instructs the agent to fetch and trust content from external shared documents provided by users (e.g., 'use the appropriate integration to fetch it' when user provides a link). This creates an indirect prompt injection vector where malicious instructions could be embedded in externally-hosted documents that the agent will then follow. The skill delegates trust to untrusted external content without validation or sandboxing.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "'If they provide a link to a shared document, use the appropriate integration to fetch it' and 'Use the appropriate integration to read the current state' - The skill instructs fetching and processing external document content without security controls.",
+      "remediation": "Implement content validation and sandboxing for external documents. Warn users that external documents will be treated as untrusted input. Consider limiting integration to read-only operations and adding explicit user confirmation before processing external content. Add instructions to sanitize or validate external content before following any directives within it.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The doc-coauthoring skill presents a MEDIUM security risk primarily due to transitive trust abuse when fetching external shared documents. The skill instructs the agent to fetch and process content from user-provided external links without validation, creating an indirect prompt injection vector. Additionally, the skill references Python files (this.py, messaging.py) that are not included in the package, suggesting incomplete packaging or potential confusion about dependencies. The skill lacks optional metadata fields (license, compatibility, allowed-tools) which reduces transparency. The core workflow itself (context gathering, refinement, reader testing) appears benign and focused on legitimate documentation co-authoring tasks. No data exfiltration, credential theft, or command injection patterns were detected. The primary concern is the uncritical trust placed in external document sources.",
+        "primary_threats": [
+          "Indirect Prompt Injection via External Documents",
+          "Missing Referenced Files",
+          "Incomplete Metadata"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The LLM analyzer correctly identified a real transitive trust issue. The skill explicitly instructs fetching and processing external document content without any validation or sandboxing guidance. This is a legitimate AITech-1.2 (Indirect Prompt Injection) concern where malicious actors could embed instructions in shared documents that the agent would follow.",
+        "meta_exploitability": "Medium - Requires attacker to control a shared document that the user links to, but exploitation is straightforward once that condition is met",
+        "meta_impact": "Medium - Could lead to the agent following malicious instructions embedded in external documents, potentially exposing sensitive context from the conversation or manipulating the document creation process"
       }
     }
   ],
-  "scan_duration_seconds": 0.36318349838256836,
-  "duration_ms": 363,
+  "scan_duration_seconds": 25.328529834747314,
+  "duration_ms": 25328,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +48,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:08:58.312197"
+  "timestamp": "2026-02-06T00:20:33.445435"
 }

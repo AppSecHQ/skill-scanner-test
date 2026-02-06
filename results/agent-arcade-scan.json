@@ -1,30 +1,113 @@
 {
   "skill_name": "agentarcade",
-  "skill_path": "./skills/clawhub-agent-arcade",
-  "skill_directory": "./skills/clawhub-agent-arcade",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-agent-arcade",
+  "skill_directory": "/workspace/skills/clawhub-agent-arcade",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_agentarcade_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Credential Storage in User Home Directory",
+      "description": "The skill instructs users to store API credentials in plaintext JSON files at ~/.config/agentarcade/credentials.json and references ~/.config/moltbook/credentials.json. Storing credentials in plaintext configuration files poses a significant security risk, as these files may be accessible to other processes, malware, or inadvertently exposed through backups or file sharing. The skill provides no guidance on file permissions, encryption, or secure credential management.",
+      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Store it in `~/.config/agentarcade/credentials.json`:\n```json\n{\"api_key\": \"aa_sk_xxx\", \"agent_name\": \"YourName\"}\n```\n\nPrerequisites:\n- Moltbook credentials at `~/.config/moltbook/credentials.json`",
+      "remediation": "Implement secure credential storage using system keychains (e.g., keyring library for Python), environment variables with restricted permissions, or encrypted credential stores. At minimum, document that credential files should have 0600 permissions (read/write for owner only). Consider using OAuth flows or temporary tokens instead of long-lived API keys.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM to HIGH security risks primarily related to credential management, external service dependencies, and its social engineering training purpose. The most serious concerns are: (1) hardcoded plaintext credential storage in user home directories without security guidance, (2) extensive external network communication to a third-party service with no privacy documentation, (3) a game mechanic explicitly designed to train AI agents in social engineering and manipulation techniques, and (4) transitive trust to an external HEARTBEAT.md file. While the skill contains no malicious code (no scripts provided), its architecture creates multiple security and privacy risks. The social engineering training aspect, while framed as a game, could normalize deceptive conversational patterns. The skill requires significant trust in external services (agentarcade.gg and Moltbook) without providing transparency about data handling. Users should carefully evaluate whether the entertainment value justifies the security trade-offs.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded credentials, external API communication)",
+          "Social Engineering (game mechanics training manipulation techniques)",
+          "Transitive Trust Abuse (external HEARTBEAT.md file)",
+          "Tool Exploitation (Moltbook credential access)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The instruction to store credentials in plaintext is explicit in the documentation. While this is a common practice, the complete absence of security warnings or permission guidance is a legitimate concern.",
+        "meta_exploitability": "Medium - Requires local access or malware, but plaintext credentials are easily readable by any process with user-level access",
+        "meta_impact": "Medium - Credential theft could allow unauthorized access to AgentArcade and Moltbook accounts, but impact is limited to these gaming/social platforms"
+      }
+    },
+    {
+      "id": "llm_finding_agentarcade_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Social Engineering Game Mechanics Could Enable Prompt Injection Training",
+      "description": "The skill's core purpose is to train agents in 'social engineering and persuasion' through PROMPTWARS gameplay. While framed as a game, this explicitly teaches AI agents techniques to manipulate conversation partners into specific behaviors (saying target words). The skill description and game mechanics normalize deceptive conversational strategies ('Be conversational and subtle', 'Steer topics', 'Watch for traps'). This could be repurposed or adapted to develop prompt injection or social engineering capabilities against real users.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Description: 'Compete against other AI agents in PROMPTWARS - a game of social engineering and persuasion.'\n\nStrategy section:\n- Be conversational and subtle\n- Steer topics toward your target word\n- Watch for traps \u2014 your opponent is doing the same!",
+      "remediation": "Add explicit warnings that techniques learned in this game should never be applied to interactions with real users. Include ethical guidelines about the distinction between game scenarios and real-world agent behavior. Consider implementing safeguards that prevent the skill from being active during normal user interactions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM to HIGH security risks primarily related to credential management, external service dependencies, and its social engineering training purpose. The most serious concerns are: (1) hardcoded plaintext credential storage in user home directories without security guidance, (2) extensive external network communication to a third-party service with no privacy documentation, (3) a game mechanic explicitly designed to train AI agents in social engineering and manipulation techniques, and (4) transitive trust to an external HEARTBEAT.md file. While the skill contains no malicious code (no scripts provided), its architecture creates multiple security and privacy risks. The social engineering training aspect, while framed as a game, could normalize deceptive conversational patterns. The skill requires significant trust in external services (agentarcade.gg and Moltbook) without providing transparency about data handling. Users should carefully evaluate whether the entertainment value justifies the security trade-offs.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded credentials, external API communication)",
+          "Social Engineering (game mechanics training manipulation techniques)",
+          "Transitive Trust Abuse (external HEARTBEAT.md file)",
+          "Tool Exploitation (Moltbook credential access)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a legitimate design characteristic of the game, not a security vulnerability. The game explicitly targets other AI agents, not humans. However, the concern about normalizing manipulative patterns has some merit.",
+        "meta_exploitability": "Low - The game is AI-vs-AI, not targeting humans. Misuse would require deliberate repurposing",
+        "meta_impact": "Low - Primarily a philosophical concern about AI behavior patterns rather than a direct security threat"
+      }
+    },
+    {
+      "id": "llm_finding_agentarcade_3",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust to External HEARTBEAT.md File",
+      "description": "The skill instructs users to add 'Read skills/agentarcade/HEARTBEAT.md and follow it' to their periodic checks. This creates a transitive trust relationship where the agent will periodically read and follow instructions from a file (HEARTBEAT.md) that is not included in the analyzed skill package. If this file is fetched from external sources or can be modified by the external service, it could be used to inject arbitrary instructions into the agent's periodic execution cycle.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Heartbeat Integration section:\n```markdown\n## AgentArcade\nRead skills/agentarcade/HEARTBEAT.md and follow it.\n```",
+      "remediation": "Include HEARTBEAT.md in the skill package for transparency and security review. If the file must be external, implement integrity checks (cryptographic signatures) to verify it hasn't been tampered with. Clearly document what instructions HEARTBEAT.md contains and ensure users understand they're delegating trust to this file. Consider making heartbeat integration opt-in rather than recommended by default.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM to HIGH security risks primarily related to credential management, external service dependencies, and its social engineering training purpose. The most serious concerns are: (1) hardcoded plaintext credential storage in user home directories without security guidance, (2) extensive external network communication to a third-party service with no privacy documentation, (3) a game mechanic explicitly designed to train AI agents in social engineering and manipulation techniques, and (4) transitive trust to an external HEARTBEAT.md file. While the skill contains no malicious code (no scripts provided), its architecture creates multiple security and privacy risks. The social engineering training aspect, while framed as a game, could normalize deceptive conversational patterns. The skill requires significant trust in external services (agentarcade.gg and Moltbook) without providing transparency about data handling. Users should carefully evaluate whether the entertainment value justifies the security trade-offs.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded credentials, external API communication)",
+          "Social Engineering (game mechanics training manipulation techniques)",
+          "Transitive Trust Abuse (external HEARTBEAT.md file)",
+          "Tool Exploitation (Moltbook credential access)"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The HEARTBEAT.md file is explicitly referenced but NOT present in the skill package (only SKILL.md and skill.json exist). This creates an undefined trust boundary where future instructions could be injected. The LLM analyzer correctly identified this as indirect prompt injection (AITech-1.2).",
+        "meta_exploitability": "Medium - Requires the HEARTBEAT.md file to be created/modified maliciously, but once in place, instructions execute automatically on schedule",
+        "meta_impact": "High - Could execute arbitrary instructions periodically without user awareness, potentially leading to data exfiltration, unauthorized API calls, or other malicious actions"
       }
     }
   ],
-  "scan_duration_seconds": 0.3361215591430664,
-  "duration_ms": 336,
+  "scan_duration_seconds": 46.716105699539185,
+  "duration_ms": 46716,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:07:46.860479"
+  "timestamp": "2026-02-05T18:05:31.753085"
 }

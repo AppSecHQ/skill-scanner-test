@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** aws-cost-operations
-**Directory:** ./skills/zxkane-aws-skills/plugins/aws-cost-ops/skills/aws-cost-operations
+**Directory:** /workspace/skills/zxkane-aws-skills/plugins/aws-cost-ops/skills/aws-cost-operations
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.30s
-**Timestamp:** 2026-02-03T14:28:31.200301
+**Max Severity:** SAFE
+**Scan Duration:** 20.16s
+**Timestamp:** 2026-02-06T06:39:26.716505
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

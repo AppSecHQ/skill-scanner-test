@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** semgrep
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/semgrep
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/semgrep
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.49s
-**Timestamp:** 2026-02-03T14:14:48.238841
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:34:11.527446
 
 ## Summary
 

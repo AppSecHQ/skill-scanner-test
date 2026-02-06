@@ -1,18 +1,119 @@
 {
   "skill_name": "alby-bitcoin-payments-cli-skill",
-  "skill_path": "./skills/clawhub-alby-bitcoin-payments-cli-skill",
-  "skill_directory": "./skills/clawhub-alby-bitcoin-payments-cli-skill",
-  "is_safe": true,
-  "max_severity": "SAFE",
-  "findings_count": 0,
-  "findings": [],
-  "scan_duration_seconds": 0.7452006340026855,
-  "duration_ms": 745,
+  "skill_path": "/workspace/skills/clawhub-alby-bitcoin-payments-cli-skill",
+  "skill_directory": "/workspace/skills/clawhub-alby-bitcoin-payments-cli-skill",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
+  "findings": [
+    {
+      "id": "llm_finding_alby-bitcoin-payments-cli-skill_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Credential Storage Location Exposes Sensitive Wallet Secrets",
+      "description": "The skill instructs users to store their Nostr Wallet Connect (NWC) connection secrets in predictable, unencrypted plaintext files at ~/.alby-cli/connection-secret.key and ~/.alby-cli/connection-secret-<name>.key. These connection secrets provide full access to bitcoin lightning wallet operations including sending payments. Storing financial credentials in plaintext files without encryption, access controls, or secure key management creates a critical data exposure risk. Any process or malware with read access to the user's home directory can steal these credentials and drain the wallet.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Connection Secret File Location: ~/.alby-cli/connection-secret.key and ~/.alby-cli/connection-secret-alice.key (named wallets). Instructions state 'either a file containing plaintext NWC connection secret (preferred)' indicating unencrypted storage.",
+      "remediation": "1. Implement encrypted credential storage using OS-native secure storage (macOS Keychain, Windows Credential Manager, Linux Secret Service). 2. Add file permission checks to ensure credential files are mode 0600 (owner read/write only). 3. Warn users about the security implications of plaintext storage. 4. Consider using ephemeral credentials or session tokens instead of long-lived secrets. 5. Add documentation about secure credential management best practices.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This bitcoin lightning wallet skill presents MODERATE TO HIGH security risks primarily related to credential management and financial operation controls. The most critical concerns are: (1) unencrypted plaintext storage of wallet connection secrets in predictable file locations, (2) credential exposure via environment variables, (3) unrestricted financial operations without transaction limits or mandatory confirmations, and (4) supply chain risks from executing unpinned external NPM packages with financial access. The skill does include positive security guidance (warning against sharing secrets, not logging credentials), but lacks technical controls to enforce these policies. The skill would benefit significantly from implementing encrypted credential storage, transaction limits, user confirmation requirements, and package integrity verification. The missing optional metadata fields (allowed-tools, compatibility) reduce transparency but are low severity informational issues. Overall, this skill requires security hardening before use in production environments with real financial assets.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (unencrypted credential storage)",
+          "Credential Theft (environment variable exposure)",
+          "Supply Chain Attack (unpinned NPM package execution)",
+          "Unauthorized Financial Transactions (unrestricted payment operations)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a documented design decision of the @getalby/cli tool. The skill accurately describes how the tool works. While this represents a real security risk, it's not a vulnerability introduced by the skill - it's an inherent limitation of the underlying CLI tool that users need to be aware of.",
+        "meta_exploitability": "Medium - Requires local access to user's home directory, but no authentication needed once access is gained",
+        "meta_impact": "High - Complete wallet access, ability to drain funds"
+      }
+    },
+    {
+      "id": "llm_finding_alby-bitcoin-payments-cli-skill_2",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "External NPM Package Execution Without Integrity Verification",
+      "description": "The skill instructs the agent to execute 'npx @getalby/cli' which downloads and runs code from the NPM registry without any integrity checks, version pinning, or provenance verification. The npx command automatically downloads and executes the latest version of the package, creating supply chain attack risks. A compromised NPM package, typosquatting attack, or malicious package update could execute arbitrary code with access to the user's wallet credentials and file system.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'npx @getalby/cli [options] <command>' - No version pinning (e.g., @getalby/cli@1.1.0), no integrity hashes, no signature verification. The package is executed directly with access to sensitive wallet operations.",
+      "remediation": "1. Pin to specific package version: 'npx @getalby/cli@1.1.0'. 2. Add integrity hash verification using --package-lock or subresource integrity. 3. Recommend pre-installation and verification: 'npm install -g @getalby/cli@1.1.0' with manual verification. 4. Document the package's NPM provenance and maintainer information. 5. Add warnings about supply chain risks when executing external code with financial access. 6. Consider bundling the CLI tool with the skill package instead of dynamic downloads.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This bitcoin lightning wallet skill presents MODERATE TO HIGH security risks primarily related to credential management and financial operation controls. The most critical concerns are: (1) unencrypted plaintext storage of wallet connection secrets in predictable file locations, (2) credential exposure via environment variables, (3) unrestricted financial operations without transaction limits or mandatory confirmations, and (4) supply chain risks from executing unpinned external NPM packages with financial access. The skill does include positive security guidance (warning against sharing secrets, not logging credentials), but lacks technical controls to enforce these policies. The skill would benefit significantly from implementing encrypted credential storage, transaction limits, user confirmation requirements, and package integrity verification. The missing optional metadata fields (allowed-tools, compatibility) reduce transparency but are low severity informational issues. Overall, this skill requires security hardening before use in production environments with real financial assets.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (unencrypted credential storage)",
+          "Credential Theft (environment variable exposure)",
+          "Supply Chain Attack (unpinned NPM package execution)",
+          "Unauthorized Financial Transactions (unrestricted payment operations)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a standard trade-off in package management. Unpinned versions get automatic security updates but have supply chain risks. Pinned versions are more secure against supply chain attacks but miss security patches. The skill follows common NPM practices, but could provide guidance on this trade-off.",
+        "meta_exploitability": "Low - Requires compromising the @getalby/cli NPM package or conducting a successful typosquatting attack",
+        "meta_impact": "High - If exploited, could access wallet credentials and drain funds"
+      }
+    },
+    {
+      "id": "llm_finding_alby-bitcoin-payments-cli-skill_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Unrestricted Financial Operations Without Transaction Limits",
+      "description": "The skill provides unrestricted access to wallet operations including 'pay-invoice' and 'pay-keysend' commands without any documented transaction limits, confirmation requirements, or spending controls. The instructions mention 'get-budget' command but don't enforce budget checks before payments. An agent following malicious instructions or experiencing prompt injection could authorize unlimited payments, potentially draining the entire wallet balance.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Commands listed include 'pay-invoice, pay-keysend' with no mention of transaction limits, confirmation prompts, or mandatory budget checks. The 'get-budget' command exists but is not enforced as a prerequisite for payment operations.",
+      "remediation": "1. Implement mandatory transaction confirmation for all payment operations above a threshold. 2. Enforce budget checks before executing payment commands. 3. Add transaction velocity limits (e.g., max payments per hour). 4. Require explicit user approval for payments above configurable limits. 5. Add audit logging for all financial operations. 6. Document safe usage patterns and spending controls in the instructions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This bitcoin lightning wallet skill presents MODERATE TO HIGH security risks primarily related to credential management and financial operation controls. The most critical concerns are: (1) unencrypted plaintext storage of wallet connection secrets in predictable file locations, (2) credential exposure via environment variables, (3) unrestricted financial operations without transaction limits or mandatory confirmations, and (4) supply chain risks from executing unpinned external NPM packages with financial access. The skill does include positive security guidance (warning against sharing secrets, not logging credentials), but lacks technical controls to enforce these policies. The skill would benefit significantly from implementing encrypted credential storage, transaction limits, user confirmation requirements, and package integrity verification. The missing optional metadata fields (allowed-tools, compatibility) reduce transparency but are low severity informational issues. Overall, this skill requires security hardening before use in production environments with real financial assets.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (unencrypted credential storage)",
+          "Credential Theft (environment variable exposure)",
+          "Supply Chain Attack (unpinned NPM package execution)",
+          "Unauthorized Financial Transactions (unrestricted payment operations)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The underlying NWC protocol and wallet services typically enforce budgets and permissions, but the skill instructions don't explicitly require the agent to check budgets or get user confirmation before payments. Adding these safeguards would improve security without changing the tool's functionality.",
+        "meta_exploitability": "Medium - Requires prompt injection or malicious instructions to trick agent into making unauthorized payments",
+        "meta_impact": "Medium-High - Could result in unauthorized payments up to wallet budget limits"
+      }
+    }
+  ],
+  "scan_duration_seconds": 46.864463090896606,
+  "duration_ms": 46864,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer"
+    "trigger_analyzer",
+    "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:01:11.605645"
+  "timestamp": "2026-02-05T18:58:44.034170"
 }

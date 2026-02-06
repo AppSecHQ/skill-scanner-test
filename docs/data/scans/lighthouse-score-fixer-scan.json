@@ -1,30 +1,113 @@
 {
   "skill_name": "lighthouse-fixer",
-  "skill_path": "./skills/clawhub-lighthouse-fix",
-  "skill_directory": "./skills/clawhub-lighthouse-fix",
+  "skill_path": "/workspace/skills/clawhub-lighthouse-fix",
+  "skill_directory": "/workspace/skills/clawhub-lighthouse-fix",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_lighthouse-fixer_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded External API Dependency with Required Credentials",
+      "description": "The skill requires users to set OPENAI_API_KEY environment variable to function. This creates a credential exposure risk where the skill will access and potentially transmit user's OpenAI API credentials to an external service (npx package). The skill provides no transparency about how the API key is used, stored, or transmitted by the external package.",
+      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Requirements section states: 'Needs OPENAI_API_KEY environment variable.' The skill executes 'npx ai-lighthouse' which is an external package that will have access to this credential.",
+      "remediation": "1. Provide explicit documentation about how the API key is used and transmitted. 2. Warn users about credential exposure risks when using external packages. 3. Consider implementing the functionality locally rather than relying on external npx packages. 4. Add credential scoping guidance (use restricted API keys, not full-access keys).",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM security risks primarily related to external dependency management and credential exposure. The skill is essentially a wrapper that instructs the agent to execute an external npm package ('npx ai-lighthouse') without version pinning, provenance verification, or security review. The package requires access to the user's OPENAI_API_KEY environment variable, creating credential exposure risks. The skill contains misleading promotional content and lacks transparency about its actual implementation (delegating to external package vs native functionality). While the stated purpose (Lighthouse auditing with AI suggestions) is legitimate, the execution method introduces supply chain attack vectors and credential management concerns. No malicious code was detected, but the reliance on unverified external packages and required credential access warrants caution.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Supply Chain/External Package Risk",
+          "Tool Exploitation",
+          "Social Engineering/Misleading Description"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code in src/index.ts confirms OpenAI API usage. The getAIFixes() function sends Lighthouse summary data to GPT-4o-mini. Lack of disclosure is verified in SKILL.md.",
+        "meta_exploitability": "Low - Requires user to provide their own API key",
+        "meta_impact": "Medium - User's API key usage and potential data exposure to OpenAI"
+      }
+    },
+    {
+      "id": "llm_finding_lighthouse-fixer_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "External Package Execution Without Provenance or Security Verification",
+      "description": "The skill instructs the agent to execute an external npm package ('npx ai-lighthouse') without any version pinning, integrity verification, or provenance checking. This creates a supply chain attack vector where a compromised or malicious package could be executed with access to the user's environment, filesystem, and API credentials. The package source, author, and security posture are not verified.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Instructions repeatedly direct execution of 'npx ai-lighthouse' without version specification: 'npx ai-lighthouse https://mysite.com'. No package verification, no version pinning (e.g., ai-lighthouse@1.2.3), no integrity checks.",
+      "remediation": "1. Pin to specific package version (npx ai-lighthouse@x.y.z). 2. Verify package provenance and author reputation before recommending. 3. Document the package source and security review status. 4. Warn users about supply chain risks when executing external packages. 5. Consider implementing Lighthouse integration locally rather than depending on external packages.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM security risks primarily related to external dependency management and credential exposure. The skill is essentially a wrapper that instructs the agent to execute an external npm package ('npx ai-lighthouse') without version pinning, provenance verification, or security review. The package requires access to the user's OPENAI_API_KEY environment variable, creating credential exposure risks. The skill contains misleading promotional content and lacks transparency about its actual implementation (delegating to external package vs native functionality). While the stated purpose (Lighthouse auditing with AI suggestions) is legitimate, the execution method introduces supply chain attack vectors and credential management concerns. No malicious code was detected, but the reliance on unverified external packages and required credential access warrants caution.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Supply Chain/External Package Risk",
+          "Tool Exploitation",
+          "Social Engineering/Misleading Description"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code review confirms the package (src/index.ts) uses execSync for shell commands and OpenAI API calls. LLM analyzer correctly identified supply chain risk. The lack of version pinning is verified in all usage examples.",
+        "meta_exploitability": "Medium - Requires compromised npm package or typosquatting attack",
+        "meta_impact": "High - Full environment access including API credentials, arbitrary code execution"
+      }
+    },
+    {
+      "id": "llm_finding_lighthouse-fixer_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Skill Scope and Promotional Content",
+      "description": "The skill description claims to 'Run Lighthouse audit and get AI fix suggestions' but the actual implementation delegates all functionality to an external npx package. The skill contains extensive promotional content for LXGIC Studios (GitHub, Twitter, Substack, Website links) and claims to be 'one of 110+ free developer tools' which is misleading - this is a skill wrapper, not a standalone tool. The skill provides no actual implementation, only instructions to run an external package.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Description: 'Run Lighthouse audit and get AI fix suggestions' but implementation is just 'npx ai-lighthouse'. Promotional section: 'Part of the LXGIC Dev Toolkit... 110+ free developer tools... GitHub: https://github.com/LXGIC-Studios, Twitter: https://x.com/lxgicstudios, Substack: https://lxgicstudios.substack.com, Website: https://lxgicstudios.com'",
+      "remediation": "1. Clarify that this skill is a wrapper for an external package, not a native implementation. 2. Remove or clearly separate promotional content from functional documentation. 3. Provide transparency about what the skill actually does vs what the external package does. 4. Add disclaimer about external dependencies and associated risks.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM security risks primarily related to external dependency management and credential exposure. The skill is essentially a wrapper that instructs the agent to execute an external npm package ('npx ai-lighthouse') without version pinning, provenance verification, or security review. The package requires access to the user's OPENAI_API_KEY environment variable, creating credential exposure risks. The skill contains misleading promotional content and lacks transparency about its actual implementation (delegating to external package vs native functionality). While the stated purpose (Lighthouse auditing with AI suggestions) is legitimate, the execution method introduces supply chain attack vectors and credential management concerns. No malicious code was detected, but the reliance on unverified external packages and required credential access warrants caution.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Supply Chain/External Package Risk",
+          "Tool Exploitation",
+          "Social Engineering/Misleading Description"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified by comparing description claims against actual implementation. The skill provides no native functionality - all work is done by the external package.",
+        "meta_exploitability": "N/A - Not a security vulnerability",
+        "meta_impact": "Low - Misleading but not malicious"
       }
     }
   ],
-  "scan_duration_seconds": 0.44304847717285156,
-  "duration_ms": 443,
+  "scan_duration_seconds": 33.89179706573486,
+  "duration_ms": 33891,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:17:07.834786"
+  "timestamp": "2026-02-06T03:52:47.433363"
 }

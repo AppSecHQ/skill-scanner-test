@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** railway
-**Directory:** ./skills/clawhub-railway-skill
+**Directory:** /workspace/skills/clawhub-railway-skill
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.53s
-**Timestamp:** 2026-02-03T16:02:17.759045
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:35:09.429862
 
 ## Summary
 

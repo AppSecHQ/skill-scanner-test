@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** wordpress-pro
-**Directory:** ./skills/clawhub-wordpress-pro
+**Directory:** /workspace/skills/clawhub-wordpress-pro
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 1.25s
-**Timestamp:** 2026-02-03T16:13:12.428723
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:53:42.844250
 
 ## Summary
 

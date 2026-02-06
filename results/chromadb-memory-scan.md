@@ -1,33 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** chromadb-memory
-**Directory:** ./skills/clawhub-chromadb-memory
+**Directory:** /workspace/skills/clawhub-chromadb-memory
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.40s
-**Timestamp:** 2026-02-03T16:09:59.170189
+**Max Severity:** MEDIUM
+**Scan Duration:** 40.61s
+**Timestamp:** 2026-02-05T21:41:25.975589
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 2
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 0
+- **Medium:** 1
 - **Low:** 1
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### MEDIUM Severity
 
-#### [LOW] Skill does not specify a license
+#### [MEDIUM] ChromaDB Collection Poisoning Risk - No Integrity Verification
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill trusts the ChromaDB collection contents without any integrity verification, provenance checking, or access controls. An attacker with access to the ChromaDB instance (localhost:8100) could poison the collection with malicious documents designed to manipulate agent behavior. The instructions explicitly state 'Use any ChromaDB-compatible indexer to populate your collection' without guidance on securing the collection or validating document sources. This creates a tool poisoning vector where the memory retrieval tool becomes a vehicle for injecting malicious content.
+
+### LOW Severity
+
+#### [LOW] Unencrypted Local Network Communication - Credential Exposure Risk
+
+**Severity:** LOW
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
+**Location:** SKILL.md
+
+**Description:** The skill communicates with ChromaDB (localhost:8100) and Ollama (localhost:11434) over unencrypted HTTP. While these are localhost connections, this creates risks: 1) Credentials or sensitive data in ChromaDB could be exposed to local network sniffers. 2) No authentication is specified for ChromaDB access. 3) In containerized/VM environments, 'localhost' may traverse network boundaries. 4) The curl command in installation instructions uses HTTP without TLS verification.
 
 ## Analyzers
 

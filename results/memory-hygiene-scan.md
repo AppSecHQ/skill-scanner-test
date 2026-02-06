@@ -1,44 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** memory-hygiene
-**Directory:** ./skills/clawhub-memory-hygiene
+**Directory:** /workspace/skills/clawhub-memory-hygiene
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** HIGH
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T15:59:29.358950
+**Scan Duration:** 31.73s
+**Timestamp:** 2026-02-06T04:29:23.967404
 
 ## Summary
 
 - **Total Findings:** 2
 - **Critical:** 0
 - **High:** 1
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
 ### HIGH Severity
 
-#### [HIGH] SYSTEM MANIPULATION detected by YARA
+#### [HIGH] Destructive Data Deletion Without User Confirmation
 
 **Severity:** HIGH
-**Category:** unauthorized_tool_use
-**Rule ID:** YARA_system_manipulation
-**Location:** SKILL.md:14
-
-**Description:** Detects system manipulation, privilege escalation, and destructive file operations: rm -rf
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Category:** resource_abuse
+**Rule ID:** LLM_RESOURCE_ABUSE
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill instructs the agent to execute 'rm -rf ~/.clawdbot/memory/lancedb/' which permanently deletes the user's entire vector memory database. This is a destructive operation with no confirmation, backup, or recovery mechanism. The command uses 'rm -rf' which forcefully removes directories recursively, risking data loss if executed accidentally or maliciously.
+
+### MEDIUM Severity
+
+#### [MEDIUM] Automated Cron Job with Destructive Operations
+
+**Severity:** MEDIUM
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
+**Location:** SKILL.md
+
+**Description:** The skill sets up a monthly cron job that automatically wipes the entire memory database without user intervention. This automated destructive operation runs at 4 AM on the first of every month, potentially causing unexpected data loss. The cron job combines multiple operations (wipe, parse, store) in an automated chain that could fail partially, leaving the system in an inconsistent state.
 
 ## Analyzers
 

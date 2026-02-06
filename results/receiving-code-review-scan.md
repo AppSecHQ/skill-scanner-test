@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** receiving-code-review
-**Directory:** ./skills/obra-superpowers/skills/receiving-code-review
+**Directory:** /workspace/skills/obra-superpowers/skills/receiving-code-review
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-02T02:56:10.088648
+**Scan Duration:** 0.28s
+**Timestamp:** 2026-02-06T07:35:31.175210
 
 ## Summary
 

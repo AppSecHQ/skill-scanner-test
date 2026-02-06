@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** referral-program
-**Directory:** ./skills/coreyhaines31-marketingskills/skills/referral-program
+**Directory:** /workspace/skills/coreyhaines31-marketingskills/skills/referral-program
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.40s
-**Timestamp:** 2026-02-02T02:55:18.393543
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:35:43.359426
 
 ## Summary
 

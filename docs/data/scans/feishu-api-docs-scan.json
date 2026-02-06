@@ -1,30 +1,80 @@
 {
   "skill_name": "feishu-api-docs",
-  "skill_path": "./skills/clawhub-feishu-api-docs",
-  "skill_directory": "./skills/clawhub-feishu-api-docs",
+  "skill_path": "/workspace/skills/clawhub-feishu-api-docs",
+  "skill_directory": "/workspace/skills/clawhub-feishu-api-docs",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
+      "id": "llm_finding_feishu-api-docs_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
       "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "title": "Incomplete Manifest Metadata",
+      "description": "The skill manifest is missing several optional but recommended fields that help users and security reviewers understand the skill's behavior and requirements. Missing fields include: license (no license specified), compatibility (unclear which Claude environments support Node.js execution), and allowed-tools (no declaration of required agent capabilities). While these are optional fields, their absence reduces transparency and makes it harder to assess the skill's security posture and compatibility.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "YAML frontmatter missing:\n- license: Not specified\n- compatibility: Not specified\n- allowed-tools: Not specified",
+      "remediation": "1. Add license field (e.g., MIT, Apache-2.0) to clarify usage rights. 2. Add compatibility field specifying which Claude environments support Node.js execution. 3. Add allowed-tools field declaring [Bash] (for executing node commands) to make tool requirements explicit. 4. Consider adding version field for package versioning. 5. Add author/maintainer information for accountability.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM security risk due to missing script implementation, unvalidated external content fetching, and incomplete manifest metadata. The primary concerns are: (1) Referenced Node.js script not included in package creates execution ambiguity and prevents security review of actual network operations, (2) Fetching external API documentation without validation creates indirect prompt injection risk if the apifox mirror serves malicious content, (3) Missing allowed-tools and compatibility declarations reduce transparency, and (4) No visible error handling or resource controls could lead to availability issues. The skill requires the missing index.js implementation to be reviewed and should implement content validation before being considered safe for production use.",
+        "primary_threats": [
+          "Data Exfiltration Risk (missing script review)",
+          "Indirect Prompt Injection (unvalidated external content)",
+          "Incomplete Security Metadata",
+          "Missing Resource Controls"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Manifest fields are objectively missing from the YAML frontmatter",
+        "meta_exploitability": "N/A - not a security vulnerability",
+        "meta_impact": "Minimal - informational only"
+      }
+    },
+    {
+      "id": "llm_finding_feishu-api-docs_2",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Unvalidated External Content Fetching",
+      "description": "The skill fetches API documentation from an external 'apifox mirror' without any visible validation, sanitization, or security controls. This creates an indirect prompt injection risk where malicious content in the fetched documentation could contain instructions that manipulate the agent's behavior. Since the skill's purpose is to help agents 'look up correct API structures,' the agent will likely trust and follow the content retrieved from this external source. If the apifox mirror is compromised or serves malicious content, it could inject instructions like 'ignore previous constraints' or 'execute this code' into the agent's context.",
+      "file_path": "SKILL.md",
+      "line_number": 3,
+      "snippet": "Description: 'Fetches Feishu (Lark) API documentation from the official apifox mirror' - No validation or sanitization mentioned for external content",
+      "remediation": "1. Implement content validation to strip potential prompt injection patterns from fetched documentation. 2. Sanitize markdown/code blocks that could contain hidden instructions. 3. Add explicit warnings in instructions that fetched content should be treated as data, not instructions. 4. Consider caching verified documentation locally instead of fetching on-demand. 5. Implement content signing/verification if possible to ensure documentation authenticity. 6. Add rate limiting and error handling for network requests.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM security risk due to missing script implementation, unvalidated external content fetching, and incomplete manifest metadata. The primary concerns are: (1) Referenced Node.js script not included in package creates execution ambiguity and prevents security review of actual network operations, (2) Fetching external API documentation without validation creates indirect prompt injection risk if the apifox mirror serves malicious content, (3) Missing allowed-tools and compatibility declarations reduce transparency, and (4) No visible error handling or resource controls could lead to availability issues. The skill requires the missing index.js implementation to be reviewed and should implement content validation before being considered safe for production use.",
+        "primary_threats": [
+          "Data Exfiltration Risk (missing script review)",
+          "Indirect Prompt Injection (unvalidated external content)",
+          "Incomplete Security Metadata",
+          "Missing Resource Controls"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified by reviewing actual index.js code - no network calls exist, only console.log statements. The LLM analyzer made assumptions based on the description without checking the implementation.",
+        "meta_exploitability": "None currently - no external fetching implemented",
+        "meta_impact": "Low - theoretical risk only if future implementation adds unvalidated fetching"
       }
     }
   ],
-  "scan_duration_seconds": 0.3802342414855957,
-  "duration_ms": 380,
+  "scan_duration_seconds": 31.535396337509155,
+  "duration_ms": 31535,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +82,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-02T03:04:59.315818"
+  "timestamp": "2026-02-06T01:10:34.982053"
 }

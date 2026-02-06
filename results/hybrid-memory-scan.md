@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** hybrid-memory
-**Directory:** ./skills/clawhub-hybrid-memory
+**Directory:** /workspace/skills/clawhub-hybrid-memory
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.29s
-**Timestamp:** 2026-02-03T16:10:41.896544
+**Max Severity:** SAFE
+**Scan Duration:** 7.03s
+**Timestamp:** 2026-02-06T03:14:09.933411
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

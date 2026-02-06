@@ -1,30 +1,78 @@
 {
   "skill_name": "core-vitals-fixer",
-  "skill_path": "./skills/clawhub-ai-core-vitals",
-  "skill_directory": "./skills/clawhub-ai-core-vitals",
+  "skill_path": "/workspace/skills/clawhub-ai-core-vitals",
+  "skill_directory": "/workspace/skills/clawhub-ai-core-vitals",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_core-vitals-fixer_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Skill Description - External Tool Masquerading as Agent Skill",
+      "description": "The skill presents itself as an agent skill for fixing Core Web Vitals issues, but the instructions describe an external NPX package ('npx ai-core-vitals') that requires OPENAI_API_KEY and makes external API calls. This is deceptive because: 1) Agent skills should contain executable code within the package, not just instructions to run external tools, 2) The skill provides no actual implementation files, 3) Users may believe they're using a local agent capability when they're actually executing an external package that sends code to OpenAI's API, 4) No disclosure about data transmission to third-party services.",
+      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Instructions state 'npx ai-core-vitals ./src/' and 'Needs OPENAI_API_KEY environment variable' and 'sends them to GPT-4o-mini' - indicating this is an external tool, not a self-contained agent skill",
+      "remediation": "Either: 1) Include actual implementation code in the skill package to make it a true agent skill, OR 2) Clearly disclose in the description that this is a wrapper for an external NPX package that sends code to OpenAI's API, OR 3) Reclassify this as documentation rather than an executable skill",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM security concerns primarily due to misleading representation and undisclosed external data transmission. The skill masquerades as an agent skill but is actually just instructions to run an external NPX package that sends user code to OpenAI's API. The main issues are: 1) Deceptive packaging - presented as agent skill but contains no implementation code, 2) Hidden data exfiltration - user source code is sent to third-party API without prominent disclosure, 3) Missing security metadata - no manifest fields indicating external dependencies or network access. While not malicious in intent, this skill could lead users to inadvertently expose sensitive code to external services. The skill should either include actual implementation code or clearly disclose its nature as an external tool wrapper with explicit warnings about data transmission.",
+        "primary_threats": [
+          "Social Engineering (Misleading Description)",
+          "Data Exposure (Undisclosed External API Transmission)",
+          "Tool Shadowing (No Implementation Code)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill package structure clearly shows no implementation files, only markdown documentation. The instructions exclusively reference an external NPX package. This is objectively not a self-contained agent skill.",
+        "meta_exploitability": "Low - Not directly exploitable, but creates confusion about what users are installing",
+        "meta_impact": "Low-Medium - Users may have incorrect expectations about data handling and tool behavior"
+      }
+    },
+    {
+      "id": "llm_finding_core-vitals-fixer_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Undisclosed External Data Transmission to Third-Party API",
+      "description": "The skill instructions reveal that user code is sent to OpenAI's GPT-4o-mini API ('sends them to GPT-4o-mini') without prominent disclosure in the description or manifest. This constitutes potential data exposure because: 1) User source code is transmitted to external servers, 2) The YAML description makes no mention of external API calls or data transmission, 3) Users may inadvertently expose proprietary code, credentials, or sensitive business logic, 4) No consent mechanism or privacy warning is provided before code transmission.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "'Scans your code files for common performance antipatterns, then sends them to GPT-4o-mini' - code is transmitted externally without clear upfront disclosure",
+      "remediation": "1) Add prominent disclosure in YAML description about external API usage and data transmission, 2) Warn users that source code will be sent to OpenAI, 3) Implement opt-in consent mechanism, 4) Provide guidance on excluding sensitive files, 5) Document data retention and privacy implications",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM security concerns primarily due to misleading representation and undisclosed external data transmission. The skill masquerades as an agent skill but is actually just instructions to run an external NPX package that sends user code to OpenAI's API. The main issues are: 1) Deceptive packaging - presented as agent skill but contains no implementation code, 2) Hidden data exfiltration - user source code is sent to third-party API without prominent disclosure, 3) Missing security metadata - no manifest fields indicating external dependencies or network access. While not malicious in intent, this skill could lead users to inadvertently expose sensitive code to external services. The skill should either include actual implementation code or clearly disclose its nature as an external tool wrapper with explicit warnings about data transmission.",
+        "primary_threats": [
+          "Social Engineering (Misleading Description)",
+          "Data Exposure (Undisclosed External API Transmission)",
+          "Tool Shadowing (No Implementation Code)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill explicitly states code is 'sent to GPT-4o-mini' in the 'How It Works' section, but the YAML description makes no mention of external API calls or data transmission. This is a clear disclosure gap that could lead to unintentional data exposure.",
+        "meta_exploitability": "Easy - Users following the instructions will automatically transmit code to external API without explicit consent",
+        "meta_impact": "Medium - Potential exposure of proprietary code, business logic, or accidentally committed secrets to third-party service"
       }
     }
   ],
-  "scan_duration_seconds": 0.4073600769042969,
-  "duration_ms": 407,
+  "scan_duration_seconds": 31.771949291229248,
+  "duration_ms": 31771,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +80,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:16:29.466130"
+  "timestamp": "2026-02-05T23:30:04.391799"
 }

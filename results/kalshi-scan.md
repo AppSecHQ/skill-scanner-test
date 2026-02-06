@@ -1,53 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** kalshi
-**Directory:** ./skills/clawhub-kalshi
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** HIGH
-**Scan Duration:** 3.08s
-**Timestamp:** 2026-02-02T03:06:40.591838
+**Directory:** /workspace/skills/clawhub-kalshi
+**Status:** [OK] SAFE
+**Max Severity:** MEDIUM
+**Scan Duration:** 23.50s
+**Timestamp:** 2026-02-06T03:44:41.214989
 
 ## Summary
 
-- **Total Findings:** 5
+- **Total Findings:** 2
 - **Critical:** 0
-- **High:** 2
+- **High:** 0
 - **Medium:** 2
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### HIGH Severity
-
-#### [HIGH] Suspicious URL detected: https://api.elections.kalshi.com/trade-api/v2
-
-**Severity:** HIGH
-**Category:** data_exfiltration
-**Rule ID:** BEHAVIOR_SUSPICIOUS_URL
-**Location:** skills/clawhub-kalshi/scripts/kalshi_portfolio.py
-
-**Description:** Script contains suspicious URL that may be used for data exfiltration
-
-#### [HIGH] Suspicious URL detected: https://api.elections.kalshi.com/trade-api/v2
-
-**Severity:** HIGH
-**Category:** data_exfiltration
-**Rule ID:** BEHAVIOR_SUSPICIOUS_URL
-**Location:** skills/clawhub-kalshi/scripts/kalshi_markets.py
-
-**Description:** Script contains suspicious URL that may be used for data exfiltration
-
 ### MEDIUM Severity
-
-#### [MEDIUM] HTTP client library imports that enable external communication
-
-**Severity:** MEDIUM
-**Category:** data_exfiltration
-**Rule ID:** DATA_EXFIL_NETWORK_REQUESTS
-**Location:** scripts/kalshi_markets.py:12
-
-**Description:** Pattern detected: import requests
 
 #### [MEDIUM] Undeclared network usage
 
@@ -57,16 +28,14 @@
 
 **Description:** Skill code uses network libraries but doesn't declare network requirement
 
-### LOW Severity
+#### [MEDIUM] Credential Storage in User Home Directory
 
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill stores API credentials (API key ID and private key) in ~/.kalshi/ directory with JSON configuration file. While this is a common pattern, it creates a persistent credential store that could be accessed by other processes or malicious skills. The private key file is set to 600 permissions, which is good, but the credentials.json file permissions are not explicitly restricted.
 
 ## Analyzers
 

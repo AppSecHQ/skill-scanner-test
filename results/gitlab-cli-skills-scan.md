@@ -1,33 +1,33 @@
 # Agent Skill Security Scan Report
 
 **Skill:** gitlab-cli-skills
-**Directory:** ./skills/clawhub-gitlab-cli-skills
+**Directory:** /workspace/skills/clawhub-gitlab-cli-skills
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.37s
-**Timestamp:** 2026-02-03T16:07:44.536118
+**Max Severity:** MEDIUM
+**Scan Duration:** 26.79s
+**Timestamp:** 2026-02-06T02:22:52.578574
 
 ## Summary
 
 - **Total Findings:** 1
 - **Critical:** 0
 - **High:** 0
-- **Medium:** 0
-- **Low:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### LOW Severity
+### MEDIUM Severity
 
-#### [LOW] Skill does not specify a license
+#### [MEDIUM] Transitive Trust in Sub-Skill Delegation
 
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** MEDIUM
+**Category:** unauthorized_tool_use
+**Rule ID:** LLM_UNAUTHORIZED_TOOL_USE
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** This routing skill delegates all actual functionality to 33 separate sub-skills without any apparent validation, security checks, or trust boundaries. The skill blindly trusts that all listed sub-skills (glab-auth, glab-api, glab-ci, etc.) are safe and properly implemented. If any of the 33 sub-skills are compromised, malicious, or contain vulnerabilities, this router will direct users to them without warning. This creates a transitive trust chain where the security of this skill depends entirely on the security of 33 other skills that are not analyzed here.
 
 ## Analyzers
 

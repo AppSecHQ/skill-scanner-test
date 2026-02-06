@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** dotnet-expert
-**Directory:** ./skills/clawhub-dotnet-expert
+**Directory:** /workspace/skills/clawhub-dotnet-expert
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.46s
-**Timestamp:** 2026-02-03T16:07:12.273769
+**Max Severity:** SAFE
+**Scan Duration:** 5.52s
+**Timestamp:** 2026-02-06T00:36:00.298422
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** signup-flow-cro
-**Directory:** ./skills/coreyhaines31-marketingskills/skills/signup-flow-cro
+**Directory:** /workspace/skills/coreyhaines31-marketingskills/skills/signup-flow-cro
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.53s
-**Timestamp:** 2026-02-02T02:54:52.813054
+**Scan Duration:** 0.20s
+**Timestamp:** 2026-02-06T07:37:07.269811
 
 ## Summary
 

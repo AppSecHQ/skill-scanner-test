@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** x-trends
-**Directory:** ./skills/clawhub-x-trends
+**Directory:** /workspace/skills/clawhub-x-trends
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-03T15:53:21.785340
+**Scan Duration:** 0.21s
+**Timestamp:** 2026-02-06T07:53:57.517674
 
 ## Summary
 

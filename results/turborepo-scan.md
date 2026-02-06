@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** turborepo
-**Directory:** ./skills/vercel-turborepo/skills/turborepo
+**Directory:** /workspace/skills/vercel-turborepo/skills/turborepo
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.42s
-**Timestamp:** 2026-02-02T02:54:31.740280
+**Scan Duration:** 0.32s
+**Timestamp:** 2026-02-06T07:51:52.683845
 
 ## Summary
 

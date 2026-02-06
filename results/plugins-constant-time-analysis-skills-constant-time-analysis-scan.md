@@ -1,71 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** constant-time-analysis
-**Directory:** ./skills/trailofbits-skills/plugins/constant-time-analysis/skills/constant-time-analysis
-**Status:** [FAIL] ISSUES FOUND
-**Max Severity:** CRITICAL
-**Scan Duration:** 0.46s
-**Timestamp:** 2026-02-03T14:13:02.345302
+**Directory:** /workspace/skills/trailofbits-skills/plugins/constant-time-analysis/skills/constant-time-analysis
+**Status:** [OK] SAFE
+**Max Severity:** SAFE
+**Scan Duration:** 9.87s
+**Timestamp:** 2026-02-06T06:59:48.081973
 
 ## Summary
 
-- **Total Findings:** 5
-- **Critical:** 4
+- **Total Findings:** 0
+- **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### CRITICAL Severity
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** SKILL.md:1
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: # 
-
-#### [CRITICAL] INJECTION ATTACK detected by YARA
-
-**Severity:** CRITICAL
-**Category:** command_injection
-**Rule ID:** YARA_script_injection
-**Location:** SKILL.md:171
-
-**Description:** Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: function (
-
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
-
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:3
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: leak secret
-
-#### [CRITICAL] CREDENTIAL HARVESTING detected by YARA
-
-**Severity:** CRITICAL
-**Category:** hardcoded_secrets
-**Rule ID:** YARA_credential_harvesting
-**Location:** SKILL.md:3
-
-**Description:** Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: leak secret
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

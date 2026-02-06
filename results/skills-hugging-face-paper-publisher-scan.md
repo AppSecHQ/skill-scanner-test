@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** hugging-face-paper-publisher
-**Directory:** ./skills/huggingface-skills/skills/hugging-face-paper-publisher
+**Directory:** /workspace/skills/huggingface-skills/skills/hugging-face-paper-publisher
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 1.09s
-**Timestamp:** 2026-02-03T14:18:46.855505
+**Scan Duration:** 0.90s
+**Timestamp:** 2026-02-06T07:48:25.718467
 
 ## Summary
 

@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** mermaid-diagrams
-**Directory:** ./skills/softaworks-agent-toolkit/skills/mermaid-diagrams
+**Directory:** /workspace/skills/softaworks-agent-toolkit/skills/mermaid-diagrams
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.30s
-**Timestamp:** 2026-02-02T02:56:36.507873
+**Max Severity:** SAFE
+**Scan Duration:** 7.96s
+**Timestamp:** 2026-02-06T04:34:30.865053
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

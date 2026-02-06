@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** aws-infra
-**Directory:** ./skills/clawhub-aws-infra
+**Directory:** /workspace/skills/clawhub-aws-infra
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-03T16:20:11.361457
+**Max Severity:** SAFE
+**Scan Duration:** 30.48s
+**Timestamp:** 2026-02-05T20:11:15.175918
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

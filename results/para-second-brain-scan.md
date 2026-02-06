@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** para-second-brain
-**Directory:** ./skills/clawhub-para-second-brain
+**Directory:** /workspace/skills/clawhub-para-second-brain
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T15:59:09.894694
+**Max Severity:** SAFE
+**Scan Duration:** 20.32s
+**Timestamp:** 2026-02-06T06:07:00.790899
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

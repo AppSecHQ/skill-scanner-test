@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** libfuzzer
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/libfuzzer
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/libfuzzer
 **Status:** [FAIL] ISSUES FOUND
 **Max Severity:** CRITICAL
-**Scan Duration:** 0.33s
-**Timestamp:** 2026-02-03T14:14:29.192183
+**Scan Duration:** 0.23s
+**Timestamp:** 2026-02-06T07:34:00.798530
 
 ## Summary
 

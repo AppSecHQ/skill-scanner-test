@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** x402
-**Directory:** ./skills/clawhub-x402
+**Directory:** /workspace/skills/clawhub-x402
 **Status:** [OK] SAFE
 **Max Severity:** MEDIUM
-**Scan Duration:** 0.44s
-**Timestamp:** 2026-02-03T16:16:51.296824
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-02-06T07:54:08.614840
 
 ## Summary
 

@@ -1,89 +1,44 @@
 # Agent Skill Security Scan Report
 
 **Skill:** pipedrive
-**Directory:** ./skills/clawhub-pipedrive
-**Status:** [OK] SAFE
-**Max Severity:** MEDIUM
-**Scan Duration:** 0.38s
-**Timestamp:** 2026-02-03T16:18:32.381457
+**Directory:** /workspace/skills/clawhub-pipedrive
+**Status:** [FAIL] ISSUES FOUND
+**Max Severity:** HIGH
+**Scan Duration:** 42.78s
+**Timestamp:** 2026-02-06T06:27:41.707316
 
 ## Summary
 
-- **Total Findings:** 7
+- **Total Findings:** 2
 - **Critical:** 0
-- **High:** 0
-- **Medium:** 6
-- **Low:** 1
+- **High:** 1
+- **Medium:** 1
+- **Low:** 0
 - **Info:** 0
 
 ## Findings
 
-### MEDIUM Severity
+### HIGH Severity
 
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
+#### [HIGH] Hardcoded API Token Exposure in Configuration File
 
-**Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** scripts/pipedrive.sh:129
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: get('email
-
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** scripts/pipedrive.sh:139
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: get('id')}\t{name}\t{email
-
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** scripts/pipedrive.sh:365
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: get('email
-
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** scripts/pipedrive.sh:405
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: get('cc_email'): print(f\"CC Email
-
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** scripts/pipedrive.sh:750
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: get('id')}\t{p.get('name', 'Unknown')[:35]}\t{email
-
-#### [MEDIUM] TOOL CHAINING ABUSE detected by YARA
-
-**Severity:** MEDIUM
-**Category:** tool_chaining_abuse
-**Rule ID:** YARA_tool_chaining_abuse
-**Location:** scripts/pipedrive.sh:750
-
-**Description:** Detects suspicious tool chaining patterns that could lead to data exfiltration: get('name', 'Unknown')[:35]}\t{email
-
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
+**Severity:** HIGH
+**Category:** data_exfiltration
+**Rule ID:** LLM_DATA_EXFILTRATION
 **Location:** SKILL.md
 
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+**Description:** The skill instructs users to store their Pipedrive API token in plaintext in ~/.clawdbot/clawdbot.json. This creates a credential exposure risk as the token is stored unencrypted on disk and could be accessed by other processes or malicious actors with file system access. API tokens provide full access to the user's Pipedrive CRM data including deals, contacts, organizations, and sensitive business information.
+
+### MEDIUM Severity
+
+#### [MEDIUM] Command Injection Risk in Search Functionality
+
+**Severity:** MEDIUM
+**Category:** command_injection
+**Rule ID:** LLM_COMMAND_INJECTION
+**Location:** scripts/pipedrive.sh
+
+**Description:** The bash script accepts user input for search queries and other parameters that are passed directly to curl commands. While the script uses proper quoting in most places, the complex argument parsing and string interpolation patterns could potentially be exploited if special characters or shell metacharacters are not properly sanitized. The script builds curl commands dynamically with user-provided input.
 
 ## Analyzers
 

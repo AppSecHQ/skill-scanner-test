@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** ssh-essentials
-**Directory:** ./skills/clawhub-ssh-essentials
+**Directory:** /workspace/skills/clawhub-ssh-essentials
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T15:58:40.024795
+**Scan Duration:** 0.19s
+**Timestamp:** 2026-02-06T07:49:56.549881
 
 ## Summary
 

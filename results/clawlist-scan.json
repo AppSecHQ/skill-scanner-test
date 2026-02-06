@@ -1,30 +1,113 @@
 {
   "skill_name": "clawlist",
-  "skill_path": "./skills/clawhub-clawlist",
-  "skill_directory": "./skills/clawhub-clawlist",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "skill_path": "/workspace/skills/clawhub-clawlist",
+  "skill_directory": "/workspace/skills/clawhub-clawlist",
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_clawlist_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "HIGH",
+      "title": "Aggressive Activation Directive - Forced Skill Usage",
+      "description": "The skill description contains a directive 'MUST use for any multi-step project' which attempts to override the agent's decision-making autonomy. This is a form of direct prompt injection that tries to force the agent to always use this skill regardless of whether it's appropriate for the task. The instruction body reinforces this with 'ALWAYS use clawlist when' followed by overly broad conditions that would match nearly any user request.",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "Description: 'MUST use for any multi-step project, long-running task, or infinite monitoring workflow'\nInstruction body: 'ALWAYS use clawlist when: Starting any new project or initiative, Setting up long-running monitoring, Breaking down complex goals'",
+      "remediation": "Remove the 'MUST' directive from the description. Change 'ALWAYS use clawlist when' to 'Consider using clawlist when'. Allow the agent to determine when this skill is appropriate rather than forcing its activation through instruction override attempts.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security concerns primarily around autonomy manipulation and unbounded execution patterns. The most significant issues are: (1) Direct prompt injection through 'MUST use' directives attempting to force skill activation, (2) Promotion of infinite loops without proper safeguards or termination conditions, (3) Complex tool chaining with automated execution via persistent file storage, and (4) Transitive trust in the ongoing-tasks.md file that could be exploited if compromised. The skill does not contain data exfiltration, credential theft, or command injection vulnerabilities. However, the aggressive activation language and infinite task patterns create availability risks and autonomy concerns. The missing optional metadata reduces transparency but is not a security threat. Remediation should focus on removing imperative activation language, adding termination conditions and user confirmation for long-running tasks, and implementing validation for the persistent task file.",
+        "primary_threats": [
+          "Direct Prompt Injection (forced activation)",
+          "Availability Disruption (infinite loops)",
+          "Tool Chaining (automated workflow)",
+          "Transitive Trust (persistent task file)"
+        ],
+        "aitech": "AITech-1.1",
+        "aitech_name": "Direct Prompt Injection",
+        "aisubtech": "AISubtech-1.1.1",
+        "aisubtech_name": "Instruction Manipulation (Direct Prompt Injection)",
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified aggressive activation language. However, this is a design pattern issue rather than a direct security exploit - the agent is not forced to comply.",
+        "meta_exploitability": "Low - Requires agent to interpret 'MUST' as binding rather than suggestive",
+        "meta_impact": "Low - May cause inappropriate skill activation but no data loss or system compromise"
+      }
+    },
+    {
+      "id": "llm_finding_clawlist_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Autonomy - Infinite Loop Encouragement",
+      "description": "The skill explicitly promotes 'infinite monitoring workflow' and 'infinite tasks' with examples like 'Moltbook Engagement (Infinite)' running 'Every 30 minutes' forever. This creates availability risks through unbounded resource consumption and continuous execution without clear termination conditions. The integration with 'heartbeat' to 'Execute due infinite tasks' suggests automated, perpetual execution.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "'MUST use for any multi-step project, long-running task, or infinite monitoring workflow'\n'Example: Moltbook Engagement (Infinite) - Type: Infinite loop - Schedule: Every 30 minutes'\n'Heartbeat reads ongoing-tasks.md every check to: Execute due infinite tasks'",
+      "remediation": "Add explicit termination conditions and resource limits for long-running tasks. Require user confirmation before starting infinite loops. Implement maximum iteration counts and timeout mechanisms. Change 'infinite' framing to 'recurring with user-defined limits'.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security concerns primarily around autonomy manipulation and unbounded execution patterns. The most significant issues are: (1) Direct prompt injection through 'MUST use' directives attempting to force skill activation, (2) Promotion of infinite loops without proper safeguards or termination conditions, (3) Complex tool chaining with automated execution via persistent file storage, and (4) Transitive trust in the ongoing-tasks.md file that could be exploited if compromised. The skill does not contain data exfiltration, credential theft, or command injection vulnerabilities. However, the aggressive activation language and infinite task patterns create availability risks and autonomy concerns. The missing optional metadata reduces transparency but is not a security threat. Remediation should focus on removing imperative activation language, adding termination conditions and user confirmation for long-running tasks, and implementing validation for the persistent task file.",
+        "primary_threats": [
+          "Direct Prompt Injection (forced activation)",
+          "Availability Disruption (infinite loops)",
+          "Tool Chaining (automated workflow)",
+          "Transitive Trust (persistent task file)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill documentation does encourage infinite loops without adequate safeguards. However, actual execution depends on external heartbeat system implementation.",
+        "meta_exploitability": "Medium - Requires user to set up infinite tasks without proper limits",
+        "meta_impact": "Medium - Could lead to resource exhaustion if heartbeat system doesn't implement safeguards"
+      }
+    },
+    {
+      "id": "llm_finding_clawlist_3",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust via Persistent Task File",
+      "description": "The skill relies on a persistent file 'memory/tasks/ongoing-tasks.md' that is read and executed by the heartbeat system. This file becomes a trusted source of instructions that the agent will follow automatically. If this file is compromised or contains malicious instructions, the agent would execute them without question during heartbeat checks.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "'Location: memory/tasks/ongoing-tasks.md'\n'Tracks all long-running and infinite tasks. Updated by heartbeat to: Check task health, Detect blockers, Execute due tasks'\n'Heartbeat reads ongoing-tasks.md every check to: Execute due infinite tasks'",
+      "remediation": "Implement validation and sanitization of ongoing-tasks.md content before execution. Add integrity checks (checksums/signatures) to detect file tampering. Require user approval before executing tasks from persistent storage. Limit the scope of operations that can be triggered from the task file.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security concerns primarily around autonomy manipulation and unbounded execution patterns. The most significant issues are: (1) Direct prompt injection through 'MUST use' directives attempting to force skill activation, (2) Promotion of infinite loops without proper safeguards or termination conditions, (3) Complex tool chaining with automated execution via persistent file storage, and (4) Transitive trust in the ongoing-tasks.md file that could be exploited if compromised. The skill does not contain data exfiltration, credential theft, or command injection vulnerabilities. However, the aggressive activation language and infinite task patterns create availability risks and autonomy concerns. The missing optional metadata reduces transparency but is not a security threat. Remediation should focus on removing imperative activation language, adding termination conditions and user confirmation for long-running tasks, and implementing validation for the persistent task file.",
+        "primary_threats": [
+          "Direct Prompt Injection (forced activation)",
+          "Availability Disruption (infinite loops)",
+          "Tool Chaining (automated workflow)",
+          "Transitive Trust (persistent task file)"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a valid transitive trust concern. The file becomes a trusted instruction source without validation.",
+        "meta_exploitability": "Medium - Requires compromising the ongoing-tasks.md file first",
+        "meta_impact": "Medium-High - Could execute arbitrary instructions if file is compromised"
       }
     }
   ],
-  "scan_duration_seconds": 0.4004354476928711,
-  "duration_ms": 400,
+  "scan_duration_seconds": 36.53688979148865,
+  "duration_ms": 36536,
   "analyzers_used": [
     "static_analyzer",
     "behavioral_analyzer",
@@ -32,5 +115,5 @@
     "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-03T16:14:33.872870"
+  "timestamp": "2026-02-05T22:23:32.527744"
 }

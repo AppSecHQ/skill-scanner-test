@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** telegram-auto-topic
-**Directory:** ./skills/clawhub-telegram-auto-topic
+**Directory:** /workspace/skills/clawhub-telegram-auto-topic
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.34s
-**Timestamp:** 2026-02-03T16:01:51.571739
+**Scan Duration:** 0.26s
+**Timestamp:** 2026-02-06T07:51:05.463461
 
 ## Summary
 

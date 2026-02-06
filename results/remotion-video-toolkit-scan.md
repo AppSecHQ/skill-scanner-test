@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** remotion-video-toolkit
-**Directory:** ./skills/clawhub-remotion-video-toolkit
+**Directory:** /workspace/skills/clawhub-remotion-video-toolkit
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.35s
-**Timestamp:** 2026-02-03T16:16:24.771230
+**Scan Duration:** 0.27s
+**Timestamp:** 2026-02-06T07:35:51.068918
 
 ## Summary
 

@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** ruzzy
-**Directory:** ./skills/trailofbits-skills/plugins/testing-handbook-skills/skills/ruzzy
+**Directory:** /workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/ruzzy
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.40s
-**Timestamp:** 2026-02-03T14:15:01.940413
+**Scan Duration:** 0.22s
+**Timestamp:** 2026-02-06T07:34:07.997248
 
 ## Summary
 

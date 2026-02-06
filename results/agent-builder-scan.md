@@ -1,33 +1,24 @@
 # Agent Skill Security Scan Report
 
 **Skill:** agent-builder
-**Directory:** ./skills/clawhub-agent-builder
+**Directory:** /workspace/skills/clawhub-agent-builder
 **Status:** [OK] SAFE
-**Max Severity:** LOW
-**Scan Duration:** 0.36s
-**Timestamp:** 2026-02-03T16:08:03.956301
+**Max Severity:** SAFE
+**Scan Duration:** 128.95s
+**Timestamp:** 2026-02-05T18:21:42.990639
 
 ## Summary
 
-- **Total Findings:** 1
+- **Total Findings:** 0
 - **Critical:** 0
 - **High:** 0
 - **Medium:** 0
-- **Low:** 1
+- **Low:** 0
 - **Info:** 0
 
-## Findings
+## [OK] No Issues Found
 
-### LOW Severity
-
-#### [LOW] Skill does not specify a license
-
-**Severity:** LOW
-**Category:** policy_violation
-**Rule ID:** MANIFEST_MISSING_LICENSE
-**Location:** SKILL.md
-
-**Description:** Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.
+This skill passed all security checks.
 
 ## Analyzers
 

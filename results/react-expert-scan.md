@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** react-expert
-**Directory:** ./skills/clawhub-react-expert
+**Directory:** /workspace/skills/clawhub-react-expert
 **Status:** [OK] SAFE
 **Max Severity:** LOW
-**Scan Duration:** 0.40s
-**Timestamp:** 2026-02-03T15:56:27.433970
+**Scan Duration:** 0.24s
+**Timestamp:** 2026-02-06T07:35:20.015584
 
 ## Summary
 

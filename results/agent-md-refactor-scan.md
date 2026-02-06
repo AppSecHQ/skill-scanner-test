@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
 **Skill:** agent-md-refactor
-**Directory:** ./skills/softaworks-agent-toolkit/skills/agent-md-refactor
+**Directory:** /workspace/skills/softaworks-agent-toolkit/skills/agent-md-refactor
 **Status:** [OK] SAFE
 **Max Severity:** SAFE
-**Scan Duration:** 0.32s
-**Timestamp:** 2026-02-02T02:56:40.535369
+**Scan Duration:** 6.71s
+**Timestamp:** 2026-02-05T18:37:45.668218
 
 ## Summary
 
