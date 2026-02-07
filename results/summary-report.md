@@ -1,6 +1,6 @@
 # AI Agent Skills Security Scan Report
 
-**Generated:** 2026-02-06T08:01:03.787673
+**Generated:** 2026-02-07T14:20:40.984939
 **Scanner:** cisco-ai-skill-scanner
 **Analyzers:** behavioral, llm, meta, static, trigger
 
@@ -1026,7 +1026,7 @@ The following skills were flagged by the scanner but have been manually reviewed
 
 - **Scanner:** cisco-ai-skill-scanner
 - **Analyzers:** behavioral_analyzer, llm_analyzer, meta_analyzer, static_analyzer, trigger_analyzer
-- **Scan Date:** 2026-02-06T08:01:03.787673
+- **Scan Date:** 2026-02-07T14:20:40.984939
 
 ### Limitations
 
