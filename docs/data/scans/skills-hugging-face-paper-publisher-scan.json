@@ -2,9 +2,9 @@
   "skill_name": "hugging-face-paper-publisher",
   "skill_path": "/workspace/skills/huggingface-skills/skills/hugging-face-paper-publisher",
   "skill_directory": "/workspace/skills/huggingface-skills/skills/hugging-face-paper-publisher",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 65,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 54,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -1025,276 +1025,84 @@
       }
     },
     {
-      "id": "ENV_VAR_EXFILTRATION_c6a307f95b",
-      "rule_id": "BEHAVIOR_ENV_VAR_EXFILTRATION",
+      "id": "llm_finding_hugging-face-paper-publisher_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Environment variable access with network calls detected",
-      "description": "Script accesses environment variables and makes network calls in skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "severity": "LOW",
+      "title": "Missing Optional Metadata Fields",
+      "description": "The skill's YAML manifest is missing optional fields: license, compatibility, and allowed-tools. While these fields are optional per the agent skills specification, their absence reduces transparency about the skill's requirements and restrictions. The allowed-tools field would help users understand which agent capabilities (Read, Write, Bash, Python, etc.) the skill requires.",
+      "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable harvesting or network transmission",
-      "analyzer": "behavioral",
+      "snippet": "YAML Manifest shows:\n- license: Not specified\n- compatibility: Not specified\n- allowed-tools: Not specified",
+      "remediation": "Add optional metadata fields to improve transparency:\n```yaml\nlicense: MIT\ncompatibility: Requires network access, HF API token\nallowed-tools: [Read, Write, Python, Bash]\n```",
+      "analyzer": "llm",
       "metadata": {
-        "has_network": true,
-        "has_env_access": true,
-        "suspicious_urls": [
-          "https://huggingface.co/papers/",
-          "https://huggingface.co/papers/",
-          "https://arxiv.org/abs/",
-          "https://huggingface.co/papers/",
-          "https://huggingface.co/",
-          "https://arxiv.org/abs/",
-          "https://huggingface.co/papers/",
-          "http://export.arxiv.org/api/query?id_list=",
-          "https://arxiv.org/abs/",
-          "https://arxiv.org/pdf/",
-          "https?://arxiv\\.org/(abs|pdf)/"
-        ],
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The hugging-face-paper-publisher skill is SAFE for use. It is a legitimate research paper management tool that interacts with the Hugging Face Hub API for indexing papers, managing authorship, and linking papers to models/datasets. The skill requires a Hugging Face API token with write permissions, which is properly documented. No malicious code, data exfiltration, prompt injection, or security vulnerabilities were detected. The skill follows standard practices for API authentication using environment variables and includes appropriate error handling. The only findings are minor informational issues related to missing optional metadata fields and potential improvements to network request handling. All referenced files that were found are internal to the skill package and contain legitimate functionality.",
+        "primary_threats": [],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
         "meta_reviewed": true
       }
     },
     {
-      "id": "ENV_VAR_HARVESTING_6940c69cf1",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "id": "llm_finding_hugging-face-paper-publisher_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
+      "severity": "LOW",
+      "title": "Environment Variable Token Usage",
+      "description": "The skill reads the HF_TOKEN from environment variables, which is a standard and acceptable practice for API authentication. However, users should be aware that the skill requires access to their Hugging Face authentication token with write permissions. This is properly documented in the prerequisites section.",
+      "file_path": "scripts/paper_manager.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
+      "snippet": "```python\nself.token = hf_token or os.getenv(\"HF_TOKEN\") or HfFolder.get_token()\nif not self.token:\n    print(\"Warning: No HF_TOKEN found. Some operations will fail.\")\n```",
+      "remediation": "Current implementation is acceptable. The skill properly documents the token requirement in prerequisites and handles missing tokens gracefully with warnings. No changes needed.",
+      "analyzer": "llm",
       "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The hugging-face-paper-publisher skill is SAFE for use. It is a legitimate research paper management tool that interacts with the Hugging Face Hub API for indexing papers, managing authorship, and linking papers to models/datasets. The skill requires a Hugging Face API token with write permissions, which is properly documented. No malicious code, data exfiltration, prompt injection, or security vulnerabilities were detected. The skill follows standard practices for API authentication using environment variables and includes appropriate error handling. The only findings are minor informational issues related to missing optional metadata fields and potential improvements to network request handling. All referenced files that were found are internal to the skill package and contain legitimate functionality.",
+        "primary_threats": [],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
         "meta_reviewed": true
       }
     },
     {
-      "id": "SUSPICIOUS_URL_28ce638457",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://huggingface.co/papers/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
+      "id": "llm_finding_hugging-face-paper-publisher_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Network Request Timeout Configuration",
+      "description": "The script makes HTTP requests with a 10-second timeout, which is reasonable. However, some operations like paper indexing may involve multiple API calls without explicit rate limiting or retry logic with backoff, which could potentially cause issues under heavy use.",
+      "file_path": "scripts/paper_manager.py",
+      "line_number": 60,
+      "snippet": "```python\nresponse = requests.get(paper_url, timeout=10)\n```",
+      "remediation": "Consider adding retry logic with exponential backoff for API calls:\n```python\nfrom requests.adapters import HTTPAdapter\nfrom requests.packages.urllib3.util.retry import Retry\n\nretry_strategy = Retry(total=3, backoff_factor=1)\nadapter = HTTPAdapter(max_retries=retry_strategy)\n```",
+      "analyzer": "llm",
       "metadata": {
-        "url": "https://huggingface.co/papers/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_28ce638457",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://huggingface.co/papers/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://huggingface.co/papers/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_6643c9d24c",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://arxiv.org/abs/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://arxiv.org/abs/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_28ce638457",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://huggingface.co/papers/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://huggingface.co/papers/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_9621a3528f",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://huggingface.co/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://huggingface.co/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_6643c9d24c",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://arxiv.org/abs/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://arxiv.org/abs/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_28ce638457",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://huggingface.co/papers/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://huggingface.co/papers/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_375b7c081a",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: http://export.arxiv.org/api/query?id_list=",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "http://export.arxiv.org/api/query?id_list=",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_6643c9d24c",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://arxiv.org/abs/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://arxiv.org/abs/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_e85d195136",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://arxiv.org/pdf/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://arxiv.org/pdf/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_3840128da1",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https?://arxiv\\.org/(abs|pdf)/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-paper-publisher/scripts/paper_manager.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https?://arxiv\\.org/(abs|pdf)/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "CROSSFILE_ENV_VAR_EXFILTRATION_e686a0c892",
-      "rule_id": "BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Cross-file env var exfiltration: 1 files",
-      "description": "Environment variable access with network calls in scripts/paper_manager.py",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review data flow across files: scripts/paper_manager.py",
-      "analyzer": "behavioral",
-      "metadata": {
-        "files_involved": [
-          "scripts/paper_manager.py"
-        ],
-        "threat_type": "env_var_exfiltration",
-        "evidence": {
-          "env_var_files": [
-            "scripts/paper_manager.py"
-          ],
-          "network_files": [
-            "scripts/paper_manager.py"
-          ]
-        },
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The hugging-face-paper-publisher skill is SAFE for use. It is a legitimate research paper management tool that interacts with the Hugging Face Hub API for indexing papers, managing authorship, and linking papers to models/datasets. The skill requires a Hugging Face API token with write permissions, which is properly documented. No malicious code, data exfiltration, prompt injection, or security vulnerabilities were detected. The skill follows standard practices for API authentication using environment variables and includes appropriate error handling. The only findings are minor informational issues related to missing optional metadata fields and potential improvements to network request handling. All referenced files that were found are internal to the skill package and contain legitimate functionality.",
+        "primary_threats": [],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
         "meta_reviewed": true
       }
     }
   ],
-  "scan_duration_seconds": 1.0047633647918701,
-  "duration_ms": 1004,
+  "scan_duration_seconds": 17.702112436294556,
+  "duration_ms": 17702,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:48:23.251544"
+  "timestamp": "2026-02-07T23:39:51.772040"
 }

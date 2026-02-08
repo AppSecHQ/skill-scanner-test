@@ -2,55 +2,81 @@
   "skill_name": "ui-test",
   "skill_path": "/workspace/skills/clawhub-ui-test",
   "skill_directory": "/workspace/skills/clawhub-ui-test",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
+      "id": "llm_finding_ui-test_0",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
       "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "title": "Undeclared Tool Usage - Browser Tool Not Listed in allowed-tools",
+      "description": "The skill extensively uses the 'browser' tool (browser action=start, browser action=snapshot, browser action=act, browser action=screenshot) but does not declare any allowed-tools in the YAML manifest. While allowed-tools is optional, the skill's heavy reliance on browser automation without explicit declaration creates ambiguity about intended tool permissions and could mask unauthorized tool usage.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "allowed-tools: Not specified\n\nBut instructions require: 'browser action=start profile=clawd', 'browser action=snapshot', 'browser action=act', 'browser action=screenshot'",
+      "remediation": "Add 'allowed-tools: [Bash, Python]' to YAML manifest to explicitly declare the browser tool dependency (browser tool is typically invoked via Bash/Python). This provides transparency about tool requirements and enables proper permission validation.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The ui-test skill has MEDIUM severity issues related to incomplete implementation and missing tool declarations. The skill's core functionality depends on external scripts (ui-test.js) that are not included in the package, creating a broken dependency. Additionally, the skill uses browser automation tools extensively but does not declare these dependencies in allowed-tools, reducing transparency. There are no critical security threats like data exfiltration, prompt injection, or credential theft. The skill's purpose (UI testing via browser automation) is legitimate and matches its description. The primary concerns are completeness and transparency rather than malicious intent.",
+        "primary_threats": [
+          "Tool Exploitation (undeclared browser tool usage)",
+          "Missing Implementation (broken script dependencies)",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Browser tool usage is clearly documented throughout the instructions. The absence of allowed-tools declaration is confirmed.",
+        "meta_exploitability": "Low - Browser tool is used as documented, no hidden behavior",
+        "meta_impact": "Low - Transparency issue, not a security threat"
       }
     },
     {
-      "id": "YARA_credential_harvesting_7bf49df141",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export <name> [outfile",
+      "id": "llm_finding_ui-test_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing Script Implementation - ui-test.js Not Provided",
+      "description": "The instructions reference 'node scripts/ui-test.js' multiple times for core functionality (get, save-run commands) but no JavaScript files are included in the skill package. This creates a broken dependency where the skill cannot function as described, potentially leading to unexpected behavior or errors when the agent attempts to execute the documented workflow.",
       "file_path": "SKILL.md",
-      "line_number": 71,
-      "snippet": "| `export <name> [outfile]` | Export as Playwright script |",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "Instructions reference:\n- 'node scripts/ui-test.js get \"<name>\"'\n- 'node scripts/ui-test.js save-run \"<name>\" passed=true/false'\n\nBut: 'No script files found.'",
+      "remediation": "Include the missing scripts/ui-test.js file in the skill package, or update instructions to use available tools. If the script is intentionally external, document this dependency clearly and provide installation/setup instructions.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The ui-test skill has MEDIUM severity issues related to incomplete implementation and missing tool declarations. The skill's core functionality depends on external scripts (ui-test.js) that are not included in the package, creating a broken dependency. Additionally, the skill uses browser automation tools extensively but does not declare these dependencies in allowed-tools, reducing transparency. There are no critical security threats like data exfiltration, prompt injection, or credential theft. The skill's purpose (UI testing via browser automation) is legitimate and matches its description. The primary concerns are completeness and transparency rather than malicious intent.",
+        "primary_threats": [
+          "Tool Exploitation (undeclared browser tool usage)",
+          "Missing Implementation (broken script dependencies)",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The script file IS present in the package (verified in file contents above). The finding is based on incorrect information, but highlights a real transparency issue about tool dependencies.",
+        "meta_exploitability": "Low - No direct exploit, but undeclared filesystem writes could be unexpected",
+        "meta_impact": "Medium - Writes to user's home directory without explicit permission in manifest"
       }
     }
   ],
-  "scan_duration_seconds": 0.21085476875305176,
-  "duration_ms": 210,
+  "scan_duration_seconds": 24.81975555419922,
+  "duration_ms": 24819,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:51:58.600610"
+  "timestamp": "2026-02-07T21:20:04.017262"
 }

@@ -4,91 +4,79 @@
   "skill_directory": "/workspace/skills/clawhub-smtp-send",
   "is_safe": false,
   "max_severity": "HIGH",
-  "findings_count": 4,
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_SENSITIVE_FILES_7566aa331a",
-      "rule_id": "DATA_EXFIL_SENSITIVE_FILES",
+      "id": "llm_finding_smtp-send_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "HIGH",
-      "title": "Accessing sensitive system or credential files",
-      "description": "Pattern detected: open(filepath",
+      "title": "Hardcoded Credential Storage in User Home Directory",
+      "description": "The skill requires users to store SMTP credentials (username and password) in plaintext in ~/.smtp_config file. While the documentation mentions file permissions should be 600, the script does not enforce this, and credentials remain in plaintext on disk. This creates a significant data exposure risk if the user's system is compromised or if file permissions are misconfigured.",
       "file_path": "scripts/send_email.py",
-      "line_number": 93,
-      "snippet": "with open(filepath, 'rb') as f:",
-      "remediation": "Do not access credential files or sensitive system files",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "open\\s*\\(\\s*filepath",
-        "matched_text": "open(filepath",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_ENV_VARS_23880fee6f",
-      "rule_id": "DATA_EXFIL_ENV_VARS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Reading environment variables that may contain secrets",
-      "description": "Pattern detected: os.getenv('SMTP_PASSWORD",
-      "file_path": "scripts/send_email.py",
-      "line_number": 45,
-      "snippet": "config['password'] = os.getenv('SMTP_PASSWORD', config.get('password'))",
-      "remediation": "Minimize access to environment variables. Document why needed",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "os\\.getenv\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
-        "matched_text": "os.getenv('SMTP_PASSWORD",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "ENV_VAR_HARVESTING_b29b1f4ae6",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/clawhub-smtp-send/scripts/send_email.py",
-      "file_path": "skills/clawhub-smtp-send/scripts/send_email.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
+      "snippet": "config_file = Path.home() / '.smtp_config'\nif config_file.exists():\n    try:\n        with open(config_file) as f:\n            config = json.load(f)",
+      "remediation": "Implement secure credential storage using system keychains (e.g., keyring library for Python). At minimum, enforce file permission checks (warn if not 600) and consider encrypting the config file. Recommend using environment variables or OAuth tokens instead of passwords where possible.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The smtp-send skill provides legitimate email functionality but has several security concerns primarily related to credential management and input validation. The most significant issue is the requirement to store SMTP credentials in plaintext in a config file without enforced security measures. While the skill's core functionality (sending emails via SMTP) is straightforward and not inherently malicious, the credential handling practices create unnecessary exposure risks. The skill would benefit from implementing secure credential storage, stronger input validation on file attachments, and resource limits. The missing metadata fields (allowed-tools, license, compatibility) reduce transparency but are not critical security issues. Overall, this skill is functional but requires security improvements before use in production environments with sensitive credentials.",
+        "primary_threats": [
+          "Data Exposure via Plaintext Credentials",
+          "Insufficient Input Validation",
+          "Missing Resource Limits"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that while plaintext credential storage is documented, there's no enforcement of secure file permissions. This is a real security concern for credential management.",
+        "meta_exploitability": "Medium - Requires local access to user's home directory, but credentials are in plaintext if accessed",
+        "meta_impact": "High - Full SMTP account compromise if credentials are exposed"
+      }
+    },
+    {
+      "id": "llm_finding_smtp-send_2",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Insufficient Input Validation on File Attachments",
+      "description": "The script accepts file paths for attachments via command-line arguments without sufficient validation. While it checks if files exist, it does not validate file types, sizes, or prevent path traversal. An attacker could potentially use this to attach sensitive system files or cause resource exhaustion with large files.",
+      "file_path": "scripts/send_email.py",
+      "line_number": null,
+      "snippet": "--attachments parameter accepts comma-separated file paths without validation of file type, size limits, or path traversal prevention",
+      "remediation": "Implement strict input validation: (1) Validate file paths to prevent directory traversal (e.g., reject paths with '..' or absolute paths outside allowed directories), (2) Implement file size limits, (3) Optionally validate file types against an allowlist, (4) Add user confirmation before attaching files from sensitive directories.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The smtp-send skill provides legitimate email functionality but has several security concerns primarily related to credential management and input validation. The most significant issue is the requirement to store SMTP credentials in plaintext in a config file without enforced security measures. While the skill's core functionality (sending emails via SMTP) is straightforward and not inherently malicious, the credential handling practices create unnecessary exposure risks. The skill would benefit from implementing secure credential storage, stronger input validation on file attachments, and resource limits. The missing metadata fields (allowed-tools, license, compatibility) reduce transparency but are not critical security issues. Overall, this skill is functional but requires security improvements before use in production environments with sensitive credentials.",
+        "primary_threats": [
+          "Data Exposure via Plaintext Credentials",
+          "Insufficient Input Validation",
+          "Missing Resource Limits"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The code clearly accepts arbitrary file paths without validation. While the skill's purpose is legitimate (sending email attachments), the lack of safeguards could allow unintended data exfiltration.",
+        "meta_exploitability": "Medium - Requires user to be tricked into attaching sensitive files, but no technical barriers prevent it",
+        "meta_impact": "Medium - Could expose sensitive files if user is socially engineered"
       }
     }
   ],
-  "scan_duration_seconds": 0.6777932643890381,
-  "duration_ms": 677,
+  "scan_duration_seconds": 28.79357123374939,
+  "duration_ms": 28793,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:49:32.185484"
+  "timestamp": "2026-02-07T20:26:41.525202"
 }

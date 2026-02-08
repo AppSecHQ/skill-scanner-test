@@ -3,34 +3,44 @@
   "skill_path": "/workspace/skills/clawhub-watch-my-money",
   "skill_directory": "/workspace/skills/clawhub-watch-my-money",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_watch-my-money_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Persistent state storage without explicit user consent",
+      "description": "The skill automatically persists data to ~/.watch_my_money/ including state.json (budgets, merchant overrides, history) and monthly reports without explicitly requesting user permission in the workflow. While the skill claims 'privacy: local-only' in metadata, users should be informed that transaction data, spending patterns, and merchant information will be saved to disk before analysis begins.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Persist to `~/.watch_my_money/`: state.json - budgets, merchant overrides, history; reports/YYYY-MM.json - machine-readable monthly data; reports/YYYY-MM.html - interactive report",
+      "remediation": "Add explicit user consent step in workflow: 'Before analysis, inform user that transaction data will be saved locally to ~/.watch_my_money/ for historical tracking. Ask for confirmation to proceed.' Also document data retention policy and provide clear instructions for the 'reset-state' command.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The watch-my-money skill is a legitimate personal finance analysis tool with no critical security threats detected. The skill analyzes bank transactions locally, categorizes spending, tracks budgets, and generates HTML reports. It claims 'privacy: local-only' and shows no evidence of data exfiltration, network calls, or malicious behavior. The main concerns are: (1) missing optional metadata fields (allowed-tools, license, compatibility) which would improve transparency, (2) multiple missing referenced files suggesting incomplete packaging or inconsistent file paths, and (3) automatic persistent storage of financial data without explicit user consent in the workflow. The skill appears to be a work-in-progress with documentation/packaging issues rather than malicious intent. No prompt injection, command injection, credential theft, or data exfiltration patterns were found.",
+        "primary_threats": [],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The skill genuinely is local-only (no network calls in instructions), but best practice for financial data handling requires explicit user consent before persisting sensitive information. This is a UX/transparency issue rather than a security vulnerability.",
+        "meta_exploitability": "N/A - Not a security vulnerability, but a privacy best practice gap",
+        "meta_impact": "Low - User financial data is stored locally without explicit warning, but no exfiltration occurs"
       }
     }
   ],
-  "scan_duration_seconds": 0.20860743522644043,
-  "duration_ms": 208,
+  "scan_duration_seconds": 26.42499613761902,
+  "duration_ms": 26424,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:53:06.079486"
+  "timestamp": "2026-02-07T21:33:05.700360"
 }

@@ -2,199 +2,116 @@
   "skill_name": "technews",
   "skill_path": "/workspace/skills/clawhub-technews",
   "skill_directory": "/workspace/skills/clawhub-technews",
-  "is_safe": false,
-  "max_severity": "HIGH",
-  "findings_count": 10,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_aedab8e22a",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "id": "llm_finding_technews_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import requests",
-      "file_path": "scripts/techmeme_scraper.py",
-      "line_number": 10,
-      "snippet": "import requests",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+requests",
-        "matched_text": "import requests",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_674a57aff2",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import requests",
+      "title": "Unvalidated External Network Requests to Arbitrary URLs",
+      "description": "The skill fetches content from arbitrary external URLs provided by TechMeme RSS feed without validation or domain allowlisting. The article_fetcher.py script makes HTTP requests to any URL in the feed, which could be exploited to access internal network resources, trigger SSRF attacks, or exfiltrate data through DNS queries. No domain validation, protocol restrictions, or URL sanitization is performed before making requests.",
       "file_path": "scripts/article_fetcher.py",
-      "line_number": 11,
-      "snippet": "import requests",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "response = requests.get(url, headers=headers, timeout=timeout, allow_redirects=True) - accepts any URL without validation",
+      "remediation": "Implement URL validation with domain allowlisting, restrict to HTTPS only, add SSRF protection by blocking private IP ranges (127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16), and validate URL schemes before making requests.",
+      "analyzer": "llm",
       "metadata": {
-        "matched_pattern": "import\\s+requests",
-        "matched_text": "import requests",
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The technews skill presents MODERATE security risks primarily related to unvalidated external network requests and resource management. The skill fetches and processes content from arbitrary URLs provided by TechMeme's RSS feed without domain validation or SSRF protection, which could be exploited to access internal network resources. The parallel fetching mechanism lacks rate limiting and could cause resource exhaustion. HTML processing uses regex patterns that may be vulnerable to ReDoS attacks. However, the skill does not exhibit critical threats like credential theft, command injection, or data exfiltration to attacker-controlled servers. The network requests are legitimate news aggregation functionality, though they need better security controls. Cache files are stored in plaintext but contain only public news data. The skill would benefit from URL validation, rate limiting, proper HTML parsing, and dependency version pinning.",
+        "primary_threats": [
+          "Unvalidated External Network Requests",
+          "Resource Exhaustion Risk",
+          "Regex Injection Vulnerability",
+          "Missing Security Controls"
+        ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
         "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified SSRF risk. The code makes requests to arbitrary URLs from external RSS feed without any validation. This is a real vulnerability.",
+        "meta_exploitability": "Medium - Requires attacker to inject malicious URLs into TechMeme RSS feed or compromise TechMeme",
+        "meta_impact": "Medium - Could access internal network resources, cloud metadata endpoints, or trigger DNS exfiltration"
       }
     },
     {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_5aac0348a7",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
+      "id": "llm_finding_technews_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
       "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import requests",
-      "file_path": "scripts/social_reactions.py",
-      "line_number": 10,
-      "snippet": "import requests",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
+      "title": "Regex Injection Risk in HTML Content Processing",
+      "description": "The article_fetcher.py uses regular expressions to process untrusted HTML content from external websites without proper sanitization. The regex pattern 're.sub(r'<[^>]+>', ' ', desc_text)' in techmeme_scraper.py and similar patterns in article_fetcher.py could be vulnerable to ReDoS (Regular Expression Denial of Service) attacks if malicious HTML with deeply nested or pathological patterns is encountered.",
+      "file_path": "scripts/techmeme_scraper.py",
+      "line_number": null,
+      "snippet": "desc_text = re.sub(r'<[^>]+>', ' ', desc_text) - processes untrusted HTML with regex",
+      "remediation": "Use a proper HTML parser (BeautifulSoup is already imported) for all HTML processing instead of regex. Implement timeouts for regex operations and validate input length before processing.",
+      "analyzer": "llm",
       "metadata": {
-        "matched_pattern": "import\\s+requests",
-        "matched_text": "import requests",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The technews skill presents MODERATE security risks primarily related to unvalidated external network requests and resource management. The skill fetches and processes content from arbitrary URLs provided by TechMeme's RSS feed without domain validation or SSRF protection, which could be exploited to access internal network resources. The parallel fetching mechanism lacks rate limiting and could cause resource exhaustion. HTML processing uses regex patterns that may be vulnerable to ReDoS attacks. However, the skill does not exhibit critical threats like credential theft, command injection, or data exfiltration to attacker-controlled servers. The network requests are legitimate news aggregation functionality, though they need better security controls. Cache files are stored in plaintext but contain only public news data. The skill would benefit from URL validation, rate limiting, proper HTML parsing, and dependency version pinning.",
+        "primary_threats": [
+          "Unvalidated External Network Requests",
+          "Resource Exhaustion Risk",
+          "Regex Injection Vulnerability",
+          "Missing Security Controls"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The specific regex pattern used is not vulnerable to ReDoS, but using regex for HTML is a bad practice. BeautifulSoup is already a dependency and used elsewhere.",
+        "meta_exploitability": "Low - The specific regex pattern is not vulnerable to catastrophic backtracking",
+        "meta_impact": "Low - Potential for ReDoS if regex patterns are changed in the future"
       }
     },
     {
-      "id": "TOOL_MISMATCH_NETWORK_b31bf451a1",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
+      "id": "llm_finding_technews_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
       "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
-      "file_path": null,
+      "title": "Unbounded Parallel Network Requests Without Rate Limiting",
+      "description": "The article_fetcher.py uses ThreadPoolExecutor to fetch multiple articles in parallel without rate limiting, connection pooling limits, or resource constraints. The 'fetch_multiple' function can spawn up to 'max_workers' threads (default appears unlimited based on ThreadPoolExecutor defaults) making simultaneous network requests, which could exhaust system resources, trigger rate limits on target servers, or be used for denial of service.",
+      "file_path": "scripts/article_fetcher.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
+      "snippet": "with ThreadPoolExecutor(max_workers=max_workers) as executor: futures = {executor.submit(fetch_article, story['url']): story for story in stories} - no rate limiting or resource bounds",
+      "remediation": "Add explicit max_workers limit (e.g., 5), implement rate limiting between requests, add connection pooling with limits, implement exponential backoff for retries, and add total timeout for the entire batch operation.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_54ac5b787d",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://www.techmeme.com/feed.xml",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-technews/scripts/techmeme_scraper.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://www.techmeme.com/feed.xml",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_40cfc1a627",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://hn.algolia.com/api/v1/search",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-technews/scripts/social_reactions.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://hn.algolia.com/api/v1/search",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_6a16587001",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https?://([^/]+)",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-technews/scripts/social_reactions.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https?://([^/]+)",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_d09e4737dc",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://news.ycombinator.com/item?id=",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-technews/scripts/social_reactions.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://news.ycombinator.com/item?id=",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_e521da8f9b",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://nitter.net/search",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-technews/scripts/social_reactions.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://nitter.net/search",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The technews skill presents MODERATE security risks primarily related to unvalidated external network requests and resource management. The skill fetches and processes content from arbitrary URLs provided by TechMeme's RSS feed without domain validation or SSRF protection, which could be exploited to access internal network resources. The parallel fetching mechanism lacks rate limiting and could cause resource exhaustion. HTML processing uses regex patterns that may be vulnerable to ReDoS attacks. However, the skill does not exhibit critical threats like credential theft, command injection, or data exfiltration to attacker-controlled servers. The network requests are legitimate news aggregation functionality, though they need better security controls. Cache files are stored in plaintext but contain only public news data. The skill would benefit from URL validation, rate limiting, proper HTML parsing, and dependency version pinning.",
+        "primary_threats": [
+          "Unvalidated External Network Requests",
+          "Resource Exhaustion Risk",
+          "Regex Injection Vulnerability",
+          "Missing Security Controls"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The finding is partially accurate - max_workers is actually set to 5, not unlimited. However, lack of rate limiting is a valid concern for repeated invocations.",
+        "meta_exploitability": "Low - Requires repeated skill invocations to cause resource exhaustion",
+        "meta_impact": "Medium - Could exhaust network connections or trigger rate limits on target servers"
       }
     }
   ],
-  "scan_duration_seconds": 2.48673152923584,
-  "duration_ms": 2486,
+  "scan_duration_seconds": 36.23666787147522,
+  "duration_ms": 36236,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:50:57.627970"
+  "timestamp": "2026-02-07T21:00:16.059236"
 }

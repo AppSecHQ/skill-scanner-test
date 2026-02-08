@@ -4,7 +4,7 @@
   "skill_directory": "/workspace/skills/clawhub-swarmmarket",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 10,
+  "findings_count": 3,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -19,198 +19,90 @@
       "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
       "analyzer": "static",
       "metadata": {
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a straightforward metadata omission. The field is optional but recommended.",
+        "meta_exploitability": "N/A - Not a security issue",
+        "meta_impact": "Low - Legal clarity improvement"
       }
     },
     {
-      "id": "YARA_command_injection_7662eb90c5",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
+      "id": "llm_finding_swarmmarket_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
       "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.swarmmarket.ai/api/v1/agents/me",
+      "title": "API Key Credential Theft via External Domain",
+      "description": "The skill instructs the agent to register with an external API (api.swarmmarket.ai) and obtain an API key, then store it locally in ~/.config/swarmmarket/credentials.json or environment variables. This creates a credential theft vector where the agent's API key is transmitted to and controlled by an external third-party service. The skill explicitly tells agents to save and reuse this credential for all future requests, establishing persistent access for the external domain.",
       "file_path": "SKILL.md",
-      "line_number": 72,
-      "snippet": "curl https://api.swarmmarket.ai/api/v1/agents/me \\",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "Registration endpoint: POST https://api.swarmmarket.ai/api/v1/agents/register - Response includes api_key that must be saved. Instructions state: 'SAVE YOUR api_key IMMEDIATELY' and 'save it to your memory, environment variables (SWARMMARKET_API_KEY), or wherever you store secrets.' All subsequent API calls require this key via X-API-Key header.",
+      "remediation": "Remove external API registration requirement. If marketplace functionality is needed, implement it as a local service or require explicit user consent before any credential exchange with external services. Never instruct agents to automatically register with external services or store third-party API keys without user authorization.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill is a credential theft and data exfiltration vector disguised as an agent marketplace. It instructs agents to register with an external service (api.swarmmarket.ai), obtain and store API keys, and route all marketplace activity through third-party servers. The skill uses social engineering (deceptive description), transitive trust abuse (external file references), and misleading security warnings to obscure the fact that it establishes persistent external communication channels. The complete absence of local processing, combined with mandatory credential exchange and data transmission to an untrusted domain, makes this skill unsuitable for deployment without significant security review and user consent mechanisms. Primary threats include credential theft (API key harvesting), data exfiltration (all agent activity sent to external servers), and potential for dynamic instruction injection via external file references.",
+        "primary_threats": [
+          "Credential Theft",
+          "Data Exfiltration",
+          "Social Engineering",
+          "Transitive Trust Abuse",
+          "Unauthorized Network Access",
+          "Misleading Security Claims"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified that this is a third-party service integration. However, this is not inherently malicious - it's a legitimate API client pattern. The issue is lack of transparency in the description about the external dependency.",
+        "meta_exploitability": "N/A - This is a transparency issue, not an exploitable vulnerability",
+        "meta_impact": "Medium - Users may not realize they're registering with an external service"
       }
     },
     {
-      "id": "YARA_command_injection_23091388e7",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.swarmmarket.ai/api/v1/agents/me",
+      "id": "llm_finding_swarmmarket_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Deceptive Skill Description Concealing External Dependencies",
+      "description": "The skill description ('The autonomous agent marketplace. Trade goods, services, and data with other AI agents.') presents this as a peer-to-peer agent marketplace, but the implementation requires all agents to register with and communicate through a centralized external service (api.swarmmarket.ai). This is social engineering through omission - users are not informed that using this skill means their agent will register with an external service and transmit data to third-party servers.",
       "file_path": "SKILL.md",
-      "line_number": 76,
-      "snippet": "curl https://api.swarmmarket.ai/api/v1/agents/me \\",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "Description: 'The autonomous agent marketplace. Trade goods, services, and data with other AI agents.' vs Reality: Centralized service requiring registration at api.swarmmarket.ai with API key authentication and all transactions routed through external servers.",
+      "remediation": "Update description to clearly state: 'Connects your agent to the SwarmMarket external service at api.swarmmarket.ai. Requires registration and API key. All marketplace activity is transmitted to third-party servers.' Add explicit warnings about external service dependencies in the description.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_d4876ff900",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.swarmmarket.ai/api/v1/agents/me",
-      "file_path": "SKILL.md",
-      "line_number": 89,
-      "snippet": "curl https://api.swarmmarket.ai/api/v1/agents/me \\",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_a3ce35acc7",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.swarmmarket.ai/api/v1/agents/AGENT_ID",
-      "file_path": "SKILL.md",
-      "line_number": 122,
-      "snippet": "curl https://api.swarmmarket.ai/api/v1/agents/AGENT_ID \\",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_de80220fc0",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.swarmmarket.ai/api/v1/agents/AGENT_ID/reputation",
-      "file_path": "SKILL.md",
-      "line_number": 129,
-      "snippet": "curl https://api.swarmmarket.ai/api/v1/agents/AGENT_ID/reputation \\",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_569c64bd09",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.swarmmarket.ai/api/v1/wallet/balance",
-      "file_path": "SKILL.md",
-      "line_number": 352,
-      "snippet": "curl https://api.swarmmarket.ai/api/v1/wallet/balance \\",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_7d1a372def",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.swarmmarket.ai/health",
-      "file_path": "SKILL.md",
-      "line_number": 453,
-      "snippet": "curl https://api.swarmmarket.ai/health",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_80b5b96527",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.swarmmarket.ai/api/v1/agents/{agent_id}/trust",
-      "file_path": "SKILL.md",
-      "line_number": 580,
-      "snippet": "curl https://api.swarmmarket.ai/api/v1/agents/{agent_id}/trust \\",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_command_injection_edd345cd36",
-      "rule_id": "YARA_command_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects command injection patterns in agent skills: shell operators, system commands, and network tools: curl https://api.swarmmarket.ai/api/v1/agents/{agent_id}/trust/history",
-      "file_path": "SKILL.md",
-      "line_number": 608,
-      "snippet": "curl https://api.swarmmarket.ai/api/v1/agents/{agent_id}/trust/history \\",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "command_injection",
-        "yara_namespace": "command_injection",
-        "matched_string": "$data_exfiltration_tools",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill is a credential theft and data exfiltration vector disguised as an agent marketplace. It instructs agents to register with an external service (api.swarmmarket.ai), obtain and store API keys, and route all marketplace activity through third-party servers. The skill uses social engineering (deceptive description), transitive trust abuse (external file references), and misleading security warnings to obscure the fact that it establishes persistent external communication channels. The complete absence of local processing, combined with mandatory credential exchange and data transmission to an untrusted domain, makes this skill unsuitable for deployment without significant security review and user consent mechanisms. Primary threats include credential theft (API key harvesting), data exfiltration (all agent activity sent to external servers), and potential for dynamic instruction injection via external file references.",
+        "primary_threats": [
+          "Credential Theft",
+          "Data Exfiltration",
+          "Social Engineering",
+          "Transitive Trust Abuse",
+          "Unauthorized Network Access",
+          "Misleading Security Claims"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The description could be clearer, but it's not actively deceptive. The full instructions explain the architecture. This is more of a best practice issue than a security threat.",
+        "meta_exploitability": "Low - Users can read the full instructions before use",
+        "meta_impact": "Low - Transparency improvement rather than security fix"
       }
     }
   ],
-  "scan_duration_seconds": 0.2415006160736084,
-  "duration_ms": 241,
+  "scan_duration_seconds": 49.8908417224884,
+  "duration_ms": 49890,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:50:32.265730"
+  "timestamp": "2026-02-07T20:52:46.301630"
 }

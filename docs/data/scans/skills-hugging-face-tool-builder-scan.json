@@ -4,7 +4,7 @@
   "skill_directory": "/workspace/skills/huggingface-skills/skills/hugging-face-tool-builder",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 13,
+  "findings_count": 12,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -225,47 +225,36 @@
       }
     },
     {
-      "id": "ENV_VAR_HARVESTING_8170c58e4f",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/huggingface-skills/skills/hugging-face-tool-builder/references/baseline_hf_api.py",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-tool-builder/references/baseline_hf_api.py",
+      "id": "llm_finding_hugging-face-tool-builder_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Optional Metadata Fields",
+      "description": "The skill's YAML manifest is missing optional metadata fields (license, compatibility, allowed-tools). While these fields are optional per the agent skills specification, their absence reduces transparency about the skill's requirements and constraints. The missing 'allowed-tools' field means users cannot verify which agent tools the skill intends to use.",
+      "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
+      "snippet": "license: Not specified\ncompatibility: Not specified\nallowed-tools: Not specified",
+      "remediation": "Add optional metadata fields to improve transparency:\n- license: Specify the license (e.g., MIT, Apache-2.0)\n- compatibility: Document where the skill works (e.g., 'Claude.ai, Claude Code, API')\n- allowed-tools: Declare which tools are used (e.g., [Bash, Python, Read, Write])",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_7b25f1088c",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://huggingface.co/api/models?limit=",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-tool-builder/references/baseline_hf_api.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://huggingface.co/api/models?limit=",
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The hugging-face-tool-builder skill is SAFE with minor documentation gaps. The skill creates reusable command-line scripts for interacting with the Hugging Face API. All scripts follow secure patterns: they use the HF_TOKEN environment variable for authentication (avoiding hardcoded secrets), include proper help documentation, handle errors gracefully, and perform legitimate API operations. The scripts read from internal reference files within the skill package (normal behavior for self-contained skills) and make authenticated API calls to huggingface.co (the legitimate service). No prompt injection, data exfiltration, command injection, or other security threats were detected. The only issue is missing optional metadata fields in the YAML manifest, which is a minor documentation concern rather than a security risk.",
+        "primary_threats": [],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
         "meta_reviewed": true
       }
     }
   ],
-  "scan_duration_seconds": 0.2366800308227539,
-  "duration_ms": 236,
+  "scan_duration_seconds": 1399.67356467247,
+  "duration_ms": 1399673,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:48:27.544519"
+  "timestamp": "2026-02-08T00:13:54.562663"
 }

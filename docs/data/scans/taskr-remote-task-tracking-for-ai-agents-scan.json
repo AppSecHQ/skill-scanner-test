@@ -3,8 +3,8 @@
   "skill_path": "/workspace/skills/clawhub-taskr",
   "skill_directory": "/workspace/skills/clawhub-taskr",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 6,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -21,16 +21,159 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_taskr_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded External API Endpoint Without Verification",
+      "description": "The skill hardcodes an external API endpoint (https://taskr.one/api/mcp) that will receive all task data, notes, and potentially sensitive project information. While this appears to be the legitimate Taskr service, there is no mechanism to verify the endpoint's authenticity or warn users about data transmission to third-party servers. Users may unknowingly send sensitive project details, code context, and work patterns to an external service.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```json\n{\n  \"skills\": {\n    \"entries\": {\n      \"taskr\": {\n        \"env\": {\n          \"MCP_API_URL\": \"https://taskr.one/api/mcp\",\n```",
+      "remediation": "1. Add explicit disclosure in the description that this skill transmits data to external servers\n2. Include privacy policy link and data handling information\n3. Warn users during setup about what data will be transmitted\n4. Consider adding opt-in consent for data transmission\n5. Document what data is sent to the external API",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Taskr skill presents MODERATE security concerns primarily related to data transmission and credential management. The skill functions as a cloud-based task tracking system that sends project data to an external API (taskr.one) without explicit user consent or privacy disclosures. While the service appears legitimate, users may unknowingly transmit sensitive project information, code context, and work patterns to third-party servers. The API key management approach stores credentials in configuration files without security guidance, creating exposure risks. The skill lacks critical metadata (license, compatibility) and has incomplete setup instructions. However, no active malicious behavior, prompt injection, or code execution vulnerabilities were detected. The skill appears to function as described, but requires better transparency about data handling and security practices.",
+        "primary_threats": [
+          "Data Exfiltration to External API",
+          "API Key Exposure Risk",
+          "Missing Security Disclosures",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_taskr_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "User API Key Exposure Risk",
+      "description": "The skill requires users to provide their API key (MCP_USER_API_KEY) through configuration, which will be stored in the gateway config. The instructions direct users to obtain this key from the Taskr web interface but provide no guidance on secure storage, rotation, or scope limitations. If the gateway config is compromised or accidentally shared, the API key could enable unauthorized access to the user's Taskr account and all associated project data.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "2. **Configure via gateway.config.patch:**\n   ```json\n   {\n     \"skills\": {\n       \"entries\": {\n         \"taskr\": {\n           \"env\": {\n             \"MCP_API_URL\": \"https://taskr.one/api/mcp\",\n             \"MCP_PROJECT_ID\": \"<project-id>\",",
+      "remediation": "1. Add security warnings about API key protection\n2. Recommend using environment variables instead of config files\n3. Provide guidance on key rotation and revocation\n4. Document the scope and permissions of the API key\n5. Warn against committing config files with keys to version control\n6. Consider implementing key validation before storage",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Taskr skill presents MODERATE security concerns primarily related to data transmission and credential management. The skill functions as a cloud-based task tracking system that sends project data to an external API (taskr.one) without explicit user consent or privacy disclosures. While the service appears legitimate, users may unknowingly transmit sensitive project information, code context, and work patterns to third-party servers. The API key management approach stores credentials in configuration files without security guidance, creating exposure risks. The skill lacks critical metadata (license, compatibility) and has incomplete setup instructions. However, no active malicious behavior, prompt injection, or code execution vulnerabilities were detected. The skill appears to function as described, but requires better transparency about data handling and security practices.",
+        "primary_threats": [
+          "Data Exfiltration to External API",
+          "API Key Exposure Risk",
+          "Missing Security Disclosures",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_taskr_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Critical Metadata Fields",
+      "description": "The skill manifest is missing several important metadata fields: 'license' (not specified), 'compatibility' (not specified), and 'allowed-tools' (not specified). While allowed-tools is optional, the absence of license and compatibility information makes it difficult for users to assess legal usage rights and technical requirements. The skill also references a custom 'openclaw' metadata section with environment requirements, but this non-standard format may not be recognized by all agent systems.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML Manifest Details:\n- name: taskr\n- description: Cloud Task Planning & Execution for OpenClaw...\n- license: Not specified\n- compatibility: Not specified\n- allowed-tools: Not specified\n- additional metadata: {'openclaw': {'emoji': '\ud83d\udccb', 'requires': {'env': ['MCP_API_URL', 'MCP_USER_API_KEY', 'MCP_PROJECT_ID']}, 'primaryEnv': 'MCP_USER_API_KEY'}}",
+      "remediation": "1. Add explicit license field (e.g., MIT, Apache-2.0, proprietary)\n2. Specify compatibility (which agent systems support this skill)\n3. Consider adding allowed-tools to document expected agent capabilities\n4. Document the 'openclaw' metadata format if it's a custom extension\n5. Add version field for skill versioning",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Taskr skill presents MODERATE security concerns primarily related to data transmission and credential management. The skill functions as a cloud-based task tracking system that sends project data to an external API (taskr.one) without explicit user consent or privacy disclosures. While the service appears legitimate, users may unknowingly transmit sensitive project information, code context, and work patterns to third-party servers. The API key management approach stores credentials in configuration files without security guidance, creating exposure risks. The skill lacks critical metadata (license, compatibility) and has incomplete setup instructions. However, no active malicious behavior, prompt injection, or code execution vulnerabilities were detected. The skill appears to function as described, but requires better transparency about data handling and security practices.",
+        "primary_threats": [
+          "Data Exfiltration to External API",
+          "API Key Exposure Risk",
+          "Missing Security Disclosures",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_taskr_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Incomplete Setup Instructions",
+      "description": "The setup instructions in SKILL.md are truncated, ending abruptly at line 50 with an incomplete JSON configuration block. The instruction shows 'MCP_PROJECT_ID': '<project-id>' but the JSON is not closed, and the MCP_USER_API_KEY configuration line is cut off. This could lead to configuration errors or users being unable to properly set up the skill.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "2. **Configure via gateway.config.patch:**\n   ```json\n   {\n     \"skills\": {\n       \"entries\": {\n         \"taskr\": {\n           \"env\": {\n             \"MCP_API_URL\": \"https://taskr.one/api/mcp\",\n             \"MCP_PROJECT_ID\": \"<project-id>\",\n             \n\n(instruction body ends abruptly)",
+      "remediation": "1. Complete the JSON configuration example with proper closing braces\n2. Include the full MCP_USER_API_KEY configuration line\n3. Add example values for all required fields\n4. Provide complete setup verification steps\n5. Include troubleshooting guidance for common setup issues",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Taskr skill presents MODERATE security concerns primarily related to data transmission and credential management. The skill functions as a cloud-based task tracking system that sends project data to an external API (taskr.one) without explicit user consent or privacy disclosures. While the service appears legitimate, users may unknowingly transmit sensitive project information, code context, and work patterns to third-party servers. The API key management approach stores credentials in configuration files without security guidance, creating exposure risks. The skill lacks critical metadata (license, compatibility) and has incomplete setup instructions. However, no active malicious behavior, prompt injection, or code execution vulnerabilities were detected. The skill appears to function as described, but requires better transparency about data handling and security practices.",
+        "primary_threats": [
+          "Data Exfiltration to External API",
+          "API Key Exposure Risk",
+          "Missing Security Disclosures",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_taskr_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Referenced Files Not Found in Package",
+      "description": "The skill references two files ('structured.py' and 'the.py') in its instructions, but these files are not included in the skill package. These appear to be false positives from filename extraction (likely extracted from phrases like 'structured' and 'the' in the markdown text), but their absence could cause confusion if users or agents attempt to locate them. This suggests potential issues with the skill packaging or documentation.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Referenced Files:\nFiles referenced in instructions: structured.py, the.py\n\n**Referenced File: structured.py** (not found)\n**Referenced File: the.py** (not found)",
+      "remediation": "1. Verify if these files should actually be included in the skill package\n2. If they are false positives, improve filename extraction logic\n3. If they are required, add them to the package\n4. Update documentation to clarify which files are included\n5. Add a manifest or file listing to document package contents",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Taskr skill presents MODERATE security concerns primarily related to data transmission and credential management. The skill functions as a cloud-based task tracking system that sends project data to an external API (taskr.one) without explicit user consent or privacy disclosures. While the service appears legitimate, users may unknowingly transmit sensitive project information, code context, and work patterns to third-party servers. The API key management approach stores credentials in configuration files without security guidance, creating exposure risks. The skill lacks critical metadata (license, compatibility) and has incomplete setup instructions. However, no active malicious behavior, prompt injection, or code execution vulnerabilities were detected. The skill appears to function as described, but requires better transparency about data handling and security practices.",
+        "primary_threats": [
+          "Data Exfiltration to External API",
+          "API Key Exposure Risk",
+          "Missing Security Disclosures",
+          "Incomplete Documentation"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.25864410400390625,
-  "duration_ms": 258,
+  "scan_duration_seconds": 35.35008716583252,
+  "duration_ms": 35350,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:50:51.556317"
+  "timestamp": "2026-02-07T20:58:38.520452"
 }

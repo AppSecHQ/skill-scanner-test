@@ -2,201 +2,45 @@
   "skill_name": "video-agent",
   "skill_path": "/workspace/skills/clawhub-video-agent",
   "skill_directory": "/workspace/skills/clawhub-video-agent",
-  "is_safe": false,
-  "max_severity": "HIGH",
-  "findings_count": 10,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_video-agent_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "API Key Required in Environment Variable",
+      "description": "The skill requires HEYGEN_API_KEY to be set as an environment variable. While this is a standard practice for API authentication, users should be aware that the scripts will have access to this credential. The skill does not implement any additional security measures like key validation, rotation reminders, or scope limitations.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "export HEYGEN_API_KEY=\"your-api-key\"",
+      "remediation": "Document security best practices: (1) Use API keys with minimal required permissions, (2) Rotate keys regularly, (3) Never commit keys to version control, (4) Consider using a secrets manager for production use, (5) Validate key format before making API calls to prevent accidental exposure in error messages.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_e95689e450",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import urllib.request",
-      "file_path": "scripts/generate.py",
-      "line_number": 8,
-      "snippet": "import urllib.request",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+urllib\\.request",
-        "matched_text": "import urllib.request",
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This HeyGen Video Agent skill is GENERALLY SAFE with minor security considerations. The skill provides a straightforward wrapper around HeyGen's Video Agent API for generating AI avatar videos. The code uses standard Python libraries (urllib, json, pathlib) without dangerous operations like eval/exec. Network calls are limited to the legitimate HeyGen API endpoints (api.heygen.com). The skill requires an API key via environment variable, which is standard practice but requires user awareness. File operations are limited to creating output directories and downloading videos to user-specified locations. The referenced prompt-optimizer.md file is an internal resource bundled with the skill (normal behavior) and contains legitimate guidance for writing effective video generation prompts. No prompt injection, data exfiltration, command injection, or social engineering threats were detected. The main considerations are proper API key management and the standard risks of executing Python scripts that make network calls and write files.",
+        "primary_threats": [],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
         "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_ENV_VARS_b7e55514e9",
-      "rule_id": "DATA_EXFIL_ENV_VARS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Reading environment variables that may contain secrets",
-      "description": "Pattern detected: os.environ.get(\"HEYGEN_API_KEY",
-      "file_path": "scripts/generate.py",
-      "line_number": 92,
-      "snippet": "api_key = os.environ.get(\"HEYGEN_API_KEY\")",
-      "remediation": "Minimize access to environment variables. Document why needed",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
-        "matched_text": "os.environ.get(\"HEYGEN_API_KEY",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_2856297e5e",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import urllib.request",
-      "file_path": "scripts/status.py",
-      "line_number": 8,
-      "snippet": "import urllib.request",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+urllib\\.request",
-        "matched_text": "import urllib.request",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_ENV_VARS_01749d720d",
-      "rule_id": "DATA_EXFIL_ENV_VARS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Reading environment variables that may contain secrets",
-      "description": "Pattern detected: os.environ.get(\"HEYGEN_API_KEY",
-      "file_path": "scripts/status.py",
-      "line_number": 68,
-      "snippet": "api_key = os.environ.get(\"HEYGEN_API_KEY\")",
-      "remediation": "Minimize access to environment variables. Document why needed",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
-        "matched_text": "os.environ.get(\"HEYGEN_API_KEY",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "TOOL_MISMATCH_NETWORK_800ed5a44a",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
-      "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "ENV_VAR_HARVESTING_5a84668b34",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/clawhub-video-agent/scripts/generate.py",
-      "file_path": "skills/clawhub-video-agent/scripts/generate.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_a1ab2e57dc",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://api.heygen.com",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-video-agent/scripts/generate.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://api.heygen.com",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "ENV_VAR_HARVESTING_ffcc0cfd7b",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/clawhub-video-agent/scripts/status.py",
-      "file_path": "skills/clawhub-video-agent/scripts/status.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_a1ab2e57dc",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://api.heygen.com",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-video-agent/scripts/status.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://api.heygen.com",
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified this as standard API authentication practice. The code only uses the key for legitimate HeyGen API endpoints (api.heygen.com). No exfiltration to other domains detected.",
+        "meta_exploitability": "None - This is legitimate functionality",
+        "meta_impact": "None - Standard API authentication pattern"
       }
     }
   ],
-  "scan_duration_seconds": 1.730348825454712,
-  "duration_ms": 1730,
+  "scan_duration_seconds": 18.605933666229248,
+  "duration_ms": 18605,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:52:53.289160"
+  "timestamp": "2026-02-07T21:29:46.683297"
 }

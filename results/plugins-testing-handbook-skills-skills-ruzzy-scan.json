@@ -3,8 +3,8 @@
   "skill_path": "/workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/ruzzy",
   "skill_directory": "/workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/ruzzy",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 8,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -21,16 +21,217 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_ruzzy_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing License Information",
+      "description": "The skill manifest does not specify a license field. While not a direct security threat, this creates legal ambiguity about usage rights and redistribution, which could expose users to legal risks.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "license: Not specified",
+      "remediation": "Add a license field to the YAML frontmatter (e.g., 'license: MIT' or 'license: Apache-2.0') to clarify usage terms.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Ruzzy skill is a legitimate fuzzing tool with moderate security concerns. The primary issues relate to unsafe configuration practices (disabled leak detection, LD_PRELOAD usage without warnings) and potential resource exhaustion from fuzzing operations. The skill does not exhibit malicious behavior such as data exfiltration, credential theft, or prompt injection. However, the instructions could lead to security issues if users follow them without understanding the implications. The missing metadata (license, compatibility, allowed-tools) reduces transparency but does not constitute a direct security threat. This skill should be used only in isolated development/testing environments with appropriate resource limits.",
+        "primary_threats": [
+          "Unsafe sanitizer configuration",
+          "LD_PRELOAD security risks",
+          "Resource exhaustion potential",
+          "Missing security warnings"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ruzzy_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Compatibility Information",
+      "description": "The skill does not specify compatibility information. Users may attempt to use this skill in unsupported environments, potentially leading to unexpected behavior or security issues.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "compatibility: Not specified",
+      "remediation": "Add compatibility field specifying supported environments (e.g., 'compatibility: Linux x86-64, AArch64/ARM64 only').",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Ruzzy skill is a legitimate fuzzing tool with moderate security concerns. The primary issues relate to unsafe configuration practices (disabled leak detection, LD_PRELOAD usage without warnings) and potential resource exhaustion from fuzzing operations. The skill does not exhibit malicious behavior such as data exfiltration, credential theft, or prompt injection. However, the instructions could lead to security issues if users follow them without understanding the implications. The missing metadata (license, compatibility, allowed-tools) reduces transparency but does not constitute a direct security threat. This skill should be used only in isolated development/testing environments with appropriate resource limits.",
+        "primary_threats": [
+          "Unsafe sanitizer configuration",
+          "LD_PRELOAD security risks",
+          "Resource exhaustion potential",
+          "Missing security warnings"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ruzzy_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill does not declare allowed-tools in the manifest. While this field is optional, its absence means users cannot verify which agent tools the skill intends to use, reducing transparency.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "allowed-tools: Not specified",
+      "remediation": "Add allowed-tools field to declare intended tool usage (e.g., 'allowed-tools: [Bash, Read, Write]' based on the skill's actual requirements).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Ruzzy skill is a legitimate fuzzing tool with moderate security concerns. The primary issues relate to unsafe configuration practices (disabled leak detection, LD_PRELOAD usage without warnings) and potential resource exhaustion from fuzzing operations. The skill does not exhibit malicious behavior such as data exfiltration, credential theft, or prompt injection. However, the instructions could lead to security issues if users follow them without understanding the implications. The missing metadata (license, compatibility, allowed-tools) reduces transparency but does not constitute a direct security threat. This skill should be used only in isolated development/testing environments with appropriate resource limits.",
+        "primary_threats": [
+          "Unsafe sanitizer configuration",
+          "LD_PRELOAD security risks",
+          "Resource exhaustion potential",
+          "Missing security warnings"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ruzzy_3",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Unsafe Environment Variable Configuration",
+      "description": "The skill instructs users to set ASAN_OPTIONS with 'detect_leaks=0' which disables leak detection in AddressSanitizer. While this may be necessary for fuzzing operations, it reduces security visibility and could mask memory leaks that might be exploitable.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "export ASAN_OPTIONS=\"allocator_may_return_null=1:detect_leaks=0:use_sigaltstack=0\"",
+      "remediation": "Document why leak detection is disabled and warn users about the security implications. Consider making this configurable or providing guidance on when leak detection should be re-enabled.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Ruzzy skill is a legitimate fuzzing tool with moderate security concerns. The primary issues relate to unsafe configuration practices (disabled leak detection, LD_PRELOAD usage without warnings) and potential resource exhaustion from fuzzing operations. The skill does not exhibit malicious behavior such as data exfiltration, credential theft, or prompt injection. However, the instructions could lead to security issues if users follow them without understanding the implications. The missing metadata (license, compatibility, allowed-tools) reduces transparency but does not constitute a direct security threat. This skill should be used only in isolated development/testing environments with appropriate resource limits.",
+        "primary_threats": [
+          "Unsafe sanitizer configuration",
+          "LD_PRELOAD security risks",
+          "Resource exhaustion potential",
+          "Missing security warnings"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ruzzy_4",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "LD_PRELOAD Usage Without Security Warnings",
+      "description": "The skill extensively uses LD_PRELOAD to inject the ASAN library, which is a powerful mechanism that can be abused for privilege escalation or code injection if misused. The instructions do not warn users about the security implications of using LD_PRELOAD.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "LD_PRELOAD=$(ruby -e 'require \"ruzzy\"; print Ruzzy::ASAN_PATH') ruby test_tracer.rb",
+      "remediation": "Add security warnings about LD_PRELOAD usage, explain that it should only be used in trusted development/testing environments, and warn against using it with elevated privileges or in production.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Ruzzy skill is a legitimate fuzzing tool with moderate security concerns. The primary issues relate to unsafe configuration practices (disabled leak detection, LD_PRELOAD usage without warnings) and potential resource exhaustion from fuzzing operations. The skill does not exhibit malicious behavior such as data exfiltration, credential theft, or prompt injection. However, the instructions could lead to security issues if users follow them without understanding the implications. The missing metadata (license, compatibility, allowed-tools) reduces transparency but does not constitute a direct security threat. This skill should be used only in isolated development/testing environments with appropriate resource limits.",
+        "primary_threats": [
+          "Unsafe sanitizer configuration",
+          "LD_PRELOAD security risks",
+          "Resource exhaustion potential",
+          "Missing security warnings"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ruzzy_5",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Fuzzing Operations May Cause Resource Exhaustion",
+      "description": "The skill enables fuzzing operations which by design generate large amounts of test cases and can consume significant CPU, memory, and disk resources. Without proper resource limits, fuzzing could lead to system instability or denial of service conditions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Ruzzy.fuzz(test_one_input) - unbounded fuzzing operation",
+      "remediation": "Add documentation about setting resource limits (ulimit, cgroups, timeout values) before running fuzzing operations. Recommend running in isolated environments (containers, VMs) to prevent resource exhaustion on the host system.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Ruzzy skill is a legitimate fuzzing tool with moderate security concerns. The primary issues relate to unsafe configuration practices (disabled leak detection, LD_PRELOAD usage without warnings) and potential resource exhaustion from fuzzing operations. The skill does not exhibit malicious behavior such as data exfiltration, credential theft, or prompt injection. However, the instructions could lead to security issues if users follow them without understanding the implications. The missing metadata (license, compatibility, allowed-tools) reduces transparency but does not constitute a direct security threat. This skill should be used only in isolated development/testing environments with appropriate resource limits.",
+        "primary_threats": [
+          "Unsafe sanitizer configuration",
+          "LD_PRELOAD security risks",
+          "Resource exhaustion potential",
+          "Missing security warnings"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_ruzzy_6",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Referenced Files Not Found",
+      "description": "The skill references two example files (test_one_input.py, malformed.py) that are not included in the package. While these appear to be documentation examples rather than required files, their absence could confuse users or indicate incomplete packaging.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Files referenced in instructions: test_one_input.py, malformed.py (not found)",
+      "remediation": "Either include the referenced example files in the skill package, or clarify in the documentation that these are example filenames that users should create themselves, not bundled files.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Ruzzy skill is a legitimate fuzzing tool with moderate security concerns. The primary issues relate to unsafe configuration practices (disabled leak detection, LD_PRELOAD usage without warnings) and potential resource exhaustion from fuzzing operations. The skill does not exhibit malicious behavior such as data exfiltration, credential theft, or prompt injection. However, the instructions could lead to security issues if users follow them without understanding the implications. The missing metadata (license, compatibility, allowed-tools) reduces transparency but does not constitute a direct security threat. This skill should be used only in isolated development/testing environments with appropriate resource limits.",
+        "primary_threats": [
+          "Unsafe sanitizer configuration",
+          "LD_PRELOAD security risks",
+          "Resource exhaustion potential",
+          "Missing security warnings"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.25313735008239746,
-  "duration_ms": 253,
+  "scan_duration_seconds": 1069.216979265213,
+  "duration_ms": 1069216,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:34:06.209754"
+  "timestamp": "2026-02-08T09:04:09.530136"
 }

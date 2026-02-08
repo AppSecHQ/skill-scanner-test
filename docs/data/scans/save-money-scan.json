@@ -7,66 +7,111 @@
   "findings_count": 3,
   "findings": [
     {
-      "id": "SOCIAL_ENG_ANTHROPIC_IMPERSONATION_7cd4bd28d6",
-      "rule_id": "SOCIAL_ENG_ANTHROPIC_IMPERSONATION",
-      "category": "social_engineering",
-      "severity": "MEDIUM",
-      "title": "Potential Anthropic brand impersonation",
-      "description": "Skill name or description contains 'Anthropic', suggesting official affiliation",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Do not impersonate official skills or use unauthorized branding",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_prompt_injection_1ada61c4d2",
-      "rule_id": "YARA_prompt_injection",
+      "id": "llm_finding_save-money_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
       "category": "prompt_injection",
       "severity": "CRITICAL",
-      "title": "PROMPT INJECTION detected by YARA",
-      "description": "Detects prompt strings used to override or force malicious tool calls: Do NOT mention",
+      "title": "Direct Prompt Injection in YAML Description Field",
+      "description": "The YAML description field contains embedded instructions that attempt to override the agent's core behavior. The description includes directives like 'RULES: Before responding, classify the task', 'Do NOT answer complex tasks yourself', 'ESCALATE:', 'NEVER on Haiku:', and 'STAY on Haiku:'. This is a direct prompt injection attack attempting to hijack the agent's decision-making process by embedding operational instructions in what should be a simple metadata description field.",
       "file_path": "SKILL.md",
-      "line_number": 129,
-      "snippet": "core routing logic must live in the description so the model always sees it.",
-      "remediation": "Review and remove prompt injection pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "description: Auto-detect task complexity for Claude models (Haiku + Sonnet). Route simple tasks to Haiku, escalate complex ones to Sonnet. Save 50%+ on API costs. | \u9069\u7528 Claude \u6a21\u578b\uff08Haiku + Sonnet\uff09\uff0c\u81ea\u52d5\u5075\u6e2c\u4efb\u52d9\u96e3\u5ea6\uff0c\u7c21\u55ae\u7528 Haiku\uff0c\u8907\u96dc\u5347\u7d1a Sonnet\uff0c\u8f15\u9b06\u7701\u4e0b 50% \u4ee5\u4e0a\u7684\u8cbb\u7528\u3002\u2014 RULES: Before responding, classify the task. If it matches an escalation trigger, call sessions_spawn with the full task and model anthropic/claude-sonnet-4-20250514 IMMEDIATELY. Do NOT answer complex tasks yourself. ESCALATE: analysis, comparisons, planning, strategy, code >10 lines, reports, proposals, multi-step reasoning, tables, outlines, charts, long writing >3 paragraphs, summarization, long translation. NEVER on Haiku: comparison tables, code >10 lines, multi-step analysis, reports, complex reasoning. STAY on Haiku: factual Q&A, definitions, greetings, reminders, short lookups, casual chat, 1-2 sentence tasks. When in doubt, escalate. Keep Haiku replies concise.",
+      "remediation": "Remove all instructional content from the YAML description field. The description should be a brief, factual summary of the skill's purpose (e.g., 'Routes tasks between Claude Haiku and Sonnet based on complexity'). Move operational instructions to the markdown body only, and ensure they are framed as suggestions rather than commands that override system behavior.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "prompt_injection",
-        "yara_namespace": "prompt_injection",
-        "matched_string": "$hidden_behavior",
-        "threat_type": "PROMPT INJECTION",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill exhibits CRITICAL security issues due to direct prompt injection attempts in both the YAML description field and markdown instructions. The skill attempts to override the agent's core decision-making behavior by embedding command-style directives that force the agent to classify and escalate tasks according to the skill's rules. The YAML description field contains extensive operational instructions that should never appear in metadata. The markdown body uses imperative language ('you MUST', 'Do NOT', 'NEVER', 'IMMEDIATELY') to hijack agent autonomy. Additionally, the unbounded escalation pattern ('when in doubt, escalate') creates availability risks through potential resource exhaustion. The skill's actual behavior (forcing behavioral modification) does not match its benign presentation as a cost-saving utility. While no data exfiltration or malicious code execution was detected, the prompt injection attempts represent a serious security threat that could compromise agent integrity and user trust. This skill should NOT be used in its current form.",
+        "primary_threats": [
+          "Direct Prompt Injection (AITech-1.1)",
+          "Instruction Override",
+          "Availability Disruption (AITech-13.3)",
+          "Social Engineering / Misleading Description (AITech-2.1)"
+        ],
+        "aitech": "AITech-1.1",
+        "aitech_name": "Direct Prompt Injection",
+        "aisubtech": "AISubtech-1.1.1",
+        "aisubtech_name": "Instruction Manipulation (Direct Prompt Injection)",
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The LLM analyzer correctly identified that embedding operational directives in the description field is problematic. While the skill's intent is legitimate (cost optimization through model routing), the implementation pattern matches prompt injection techniques by forcing behavioral changes through metadata fields. The author's own documentation confirms this was an intentional design choice to ensure the rules are 'always seen', which is exactly what makes it concerning from a security perspective.",
+        "meta_exploitability": "Medium - Requires user to install the skill, but once installed, the behavioral override is automatic and cannot be easily disabled without removing the skill entirely.",
+        "meta_impact": "Medium - Forces agent to follow routing rules that may not align with user intent in all contexts. Could lead to unexpected escalations or response patterns."
+      }
+    },
+    {
+      "id": "llm_finding_save-money_1",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "HIGH",
+      "title": "Instruction Override Directives in Markdown Body",
+      "description": "The markdown instructions contain multiple directive statements that attempt to override the agent's normal behavior patterns. Phrases like 'Before generating ANY response, you MUST:', 'Do NOT attempt to answer yourself', 'IMMEDIATELY call', 'NEVER do this on Haiku', and 'When in doubt, escalate' are command-style instructions attempting to hijack the agent's decision-making autonomy. The skill attempts to force the agent to always classify tasks according to its rules before responding.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Before generating ANY response, you MUST:\n1. Check: does this task match ANY escalation trigger below?\n2. If YES \u2192 call `sessions_spawn()` IMMEDIATELY. Do NOT attempt to answer yourself.\n3. If NO \u2192 respond directly on the current model.\n\nWhen in doubt, escalate. A wrong escalation only costs a few cents. A bad answer on Haiku wastes the user's time.\n\n## NEVER do this on Haiku\n- NEVER write a comparison table yourself \u2014 escalat",
+      "remediation": "Reframe instructions as suggestions rather than commands. Use language like 'Consider escalating when...', 'This skill can help route tasks by...', 'Suggested approach:' instead of 'you MUST', 'Do NOT', 'NEVER', 'IMMEDIATELY'. Remove all-caps emphasis on command words. Allow the agent to maintain its own decision-making autonomy while providing the skill as a tool option.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill exhibits CRITICAL security issues due to direct prompt injection attempts in both the YAML description field and markdown instructions. The skill attempts to override the agent's core decision-making behavior by embedding command-style directives that force the agent to classify and escalate tasks according to the skill's rules. The YAML description field contains extensive operational instructions that should never appear in metadata. The markdown body uses imperative language ('you MUST', 'Do NOT', 'NEVER', 'IMMEDIATELY') to hijack agent autonomy. Additionally, the unbounded escalation pattern ('when in doubt, escalate') creates availability risks through potential resource exhaustion. The skill's actual behavior (forcing behavioral modification) does not match its benign presentation as a cost-saving utility. While no data exfiltration or malicious code execution was detected, the prompt injection attempts represent a serious security threat that could compromise agent integrity and user trust. This skill should NOT be used in its current form.",
+        "primary_threats": [
+          "Direct Prompt Injection (AITech-1.1)",
+          "Instruction Override",
+          "Availability Disruption (AITech-13.3)",
+          "Social Engineering / Misleading Description (AITech-2.1)"
+        ],
+        "aitech": "AITech-1.1",
+        "aitech_name": "Direct Prompt Injection",
+        "aisubtech": "AISubtech-1.1.1",
+        "aisubtech_name": "Instruction Manipulation (Direct Prompt Injection)",
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The imperative language is consistent with how behavioral skills typically provide guidance. The concern is more about tone than actual malicious intent. The skill is transparent about its purpose and the instructions are in the body (not hidden), so users can review them before installation.",
+        "meta_exploitability": "Low - The instructions are visible and transparent. Users can review the skill before installation and understand what behavioral changes it will attempt.",
+        "meta_impact": "Low - The instructions guide legitimate cost-optimization behavior. The main concern is the aggressive tone rather than malicious functionality."
+      }
+    },
+    {
+      "id": "llm_finding_save-money_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Escalation Pattern Creates Availability Risk",
+      "description": "The skill's escalation logic uses 'When in doubt, escalate' as a guiding principle, which could lead to excessive and unnecessary model switching. The broad escalation triggers (e.g., 'Prompt is longer than 200 characters', 'Multi-step reasoning', 'anything with first... then... finally') combined with the 'when in doubt' directive could cause the agent to constantly spawn new sessions, leading to resource exhaustion, increased latency, and degraded user experience. This creates an availability disruption risk through over-escalation.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "When in doubt, escalate. A wrong escalation only costs a few cents. A bad answer on Haiku wastes the user's time.\n\n### By complexity signals\n- Prompt is longer than 200 characters with specific requirements\n- Contains multiple conditions or constraints\n- Asks for structured output (tables, outlines, formatted documents)",
+      "remediation": "Implement more precise escalation criteria with clear boundaries. Add safeguards against over-escalation, such as: (1) Require multiple trigger conditions to be met, not just one; (2) Add a confidence threshold before escalating; (3) Remove the 'when in doubt, escalate' blanket directive; (4) Implement rate limiting or cooldown periods for escalations; (5) Add user confirmation for escalations when the task classification is ambiguous.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill exhibits CRITICAL security issues due to direct prompt injection attempts in both the YAML description field and markdown instructions. The skill attempts to override the agent's core decision-making behavior by embedding command-style directives that force the agent to classify and escalate tasks according to the skill's rules. The YAML description field contains extensive operational instructions that should never appear in metadata. The markdown body uses imperative language ('you MUST', 'Do NOT', 'NEVER', 'IMMEDIATELY') to hijack agent autonomy. Additionally, the unbounded escalation pattern ('when in doubt, escalate') creates availability risks through potential resource exhaustion. The skill's actual behavior (forcing behavioral modification) does not match its benign presentation as a cost-saving utility. While no data exfiltration or malicious code execution was detected, the prompt injection attempts represent a serious security threat that could compromise agent integrity and user trust. This skill should NOT be used in its current form.",
+        "primary_threats": [
+          "Direct Prompt Injection (AITech-1.1)",
+          "Instruction Override",
+          "Availability Disruption (AITech-13.3)",
+          "Social Engineering / Misleading Description (AITech-2.1)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The concern about over-escalation is valid based on the broad triggers, but the actual impact depends on how the agent interprets these rules in practice. The 200-character threshold is objectively low, but whether this causes problems in real usage would require empirical testing.",
+        "meta_exploitability": "Low - This is a design issue rather than a security vulnerability. The worst case is increased costs, not security compromise.",
+        "meta_impact": "Medium - Could increase costs rather than save them, contradicting the skill's stated purpose. May also increase latency due to frequent model switching."
       }
     }
   ],
-  "scan_duration_seconds": 0.21501541137695312,
-  "duration_ms": 215,
+  "scan_duration_seconds": 40.30760598182678,
+  "duration_ms": 40307,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:36:15.048508"
+  "timestamp": "2026-02-07T19:59:50.390789"
 }

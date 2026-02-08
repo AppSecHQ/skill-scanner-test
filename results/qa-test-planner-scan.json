@@ -4,7 +4,7 @@
   "skill_directory": "/workspace/skills/softaworks-agent-toolkit/skills/qa-test-planner",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 19,
+  "findings_count": 22,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -385,16 +385,95 @@
         "threat_type": "INJECTION ATTACK",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_qa-test-planner_0",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing allowed-tools Declaration Creates Ambiguity",
+      "description": "The skill manifest does not specify the 'allowed-tools' field, making it unclear which agent tools (Read, Write, Bash, Python, etc.) are authorized for use. While this field is optional per the spec, the skill includes Bash scripts that perform file operations and user input collection. Without explicit tool declarations, users cannot verify if the skill's behavior aligns with intended restrictions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML manifest shows: allowed-tools: Not specified. However, the skill includes executable Bash scripts (generate_test_cases.sh, create_bug_report.sh) that would require Bash tool access.",
+      "remediation": "Add 'allowed-tools: [Read, Bash]' to the YAML frontmatter to explicitly declare required agent tools and improve transparency.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The qa-test-planner skill is a legitimate QA testing utility with LOW to MEDIUM security concerns. The skill provides test planning, test case generation, and bug reporting functionality through interactive Bash scripts. No critical security threats were identified - there is no data exfiltration, no prompt injection attempts, no credential theft, and no command injection vulnerabilities. The Bash scripts use safe practices with proper input validation and 'set -e' error handling. The primary concerns are: (1) missing 'allowed-tools' declaration which creates ambiguity about authorized agent tools, (2) missing license/compatibility metadata, and (3) incomplete file references. The skill reads only from its own internal package files (references/* directory), which is normal and expected behavior for self-contained skills. The Figma MCP integration mentioned in documentation appears to be an external dependency that users would configure separately, not a security risk within this skill package. Overall, this skill demonstrates good security practices and poses minimal risk to users.",
+        "primary_threats": [
+          "Missing metadata (allowed-tools, license, compatibility)",
+          "Incomplete file references"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_qa-test-planner_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing License and Compatibility Metadata",
+      "description": "The skill manifest lacks 'license' and 'compatibility' fields, which are important for users to understand usage rights and platform compatibility. While not a direct security threat, missing metadata reduces transparency and trust.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML shows: license: Not specified, compatibility: Not specified",
+      "remediation": "Add license field (e.g., 'license: MIT') and compatibility field (e.g., 'compatibility: Claude.ai, Claude Code, API') to improve skill metadata completeness.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The qa-test-planner skill is a legitimate QA testing utility with LOW to MEDIUM security concerns. The skill provides test planning, test case generation, and bug reporting functionality through interactive Bash scripts. No critical security threats were identified - there is no data exfiltration, no prompt injection attempts, no credential theft, and no command injection vulnerabilities. The Bash scripts use safe practices with proper input validation and 'set -e' error handling. The primary concerns are: (1) missing 'allowed-tools' declaration which creates ambiguity about authorized agent tools, (2) missing license/compatibility metadata, and (3) incomplete file references. The skill reads only from its own internal package files (references/* directory), which is normal and expected behavior for self-contained skills. The Figma MCP integration mentioned in documentation appears to be an external dependency that users would configure separately, not a security risk within this skill package. Overall, this skill demonstrates good security practices and poses minimal risk to users.",
+        "primary_threats": [
+          "Missing metadata (allowed-tools, license, compatibility)",
+          "Incomplete file references"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_qa-test-planner_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Multiple Missing Referenced Files",
+      "description": "The skill references 15 files in its documentation, but 9 of these files are missing from the package (assets/test_case_templates.md, assets/figma_validation.md, right.py, Figma.py, templates/*, mobile.py, assets/regression_testing.md). While the core functionality appears intact with the existing reference files, missing files could indicate incomplete packaging or create confusion for users expecting these resources.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Referenced but missing: assets/test_case_templates.md, assets/figma_validation.md, right.py, Figma.py, templates/regression_testing.md, templates/figma_validation.md, templates/test_case_templates.md, templates/bug_report_templates.md, mobile.py, assets/regression_testing.md",
+      "remediation": "Either include all referenced files in the package or remove references to non-existent files from the documentation. Verify that right.py, Figma.py, and mobile.py are not required for core functionality.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The qa-test-planner skill is a legitimate QA testing utility with LOW to MEDIUM security concerns. The skill provides test planning, test case generation, and bug reporting functionality through interactive Bash scripts. No critical security threats were identified - there is no data exfiltration, no prompt injection attempts, no credential theft, and no command injection vulnerabilities. The Bash scripts use safe practices with proper input validation and 'set -e' error handling. The primary concerns are: (1) missing 'allowed-tools' declaration which creates ambiguity about authorized agent tools, (2) missing license/compatibility metadata, and (3) incomplete file references. The skill reads only from its own internal package files (references/* directory), which is normal and expected behavior for self-contained skills. The Figma MCP integration mentioned in documentation appears to be an external dependency that users would configure separately, not a security risk within this skill package. Overall, this skill demonstrates good security practices and poses minimal risk to users.",
+        "primary_threats": [
+          "Missing metadata (allowed-tools, license, compatibility)",
+          "Incomplete file references"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.2733194828033447,
-  "duration_ms": 273,
+  "scan_duration_seconds": 778.0016496181488,
+  "duration_ms": 778001,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:34:56.460651"
+  "timestamp": "2026-02-08T04:09:05.754892"
 }

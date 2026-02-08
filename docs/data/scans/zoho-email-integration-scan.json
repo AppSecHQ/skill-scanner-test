@@ -4,108 +4,8 @@
   "skill_directory": "/workspace/skills/clawhub-zoho-email-integration",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 69,
+  "findings_count": 53,
   "findings": [
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "COMMAND_INJECTION_USER_INPUT_1181eb0c39",
-      "rule_id": "COMMAND_INJECTION_USER_INPUT",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "User input used in command substitution - potential injection risk",
-      "description": "Pattern detected: eval \"$",
-      "file_path": "test-app-password.sh",
-      "line_number": 52,
-      "snippet": "if eval \"$command\"; then",
-      "remediation": "Validate and sanitize all user inputs before using in commands",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "eval\\s+.*\\$",
-        "matched_text": "eval \"$",
-        "aitech": "AITech-9.1",
-        "aitech_name": "Model or Agentic System Manipulation",
-        "scanner_category": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "COMMAND_INJECTION_USER_INPUT_c251b28225",
-      "rule_id": "COMMAND_INJECTION_USER_INPUT",
-      "category": "command_injection",
-      "severity": "MEDIUM",
-      "title": "User input used in command substitution - potential injection risk",
-      "description": "Pattern detected: $(dirname \"$0\")",
-      "file_path": "test-batch-operations.sh",
-      "line_number": 16,
-      "snippet": "cd \"$(dirname \"$0\")\"",
-      "remediation": "Validate and sanitize all user inputs before using in commands",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "\\$\\([^)]*\\$[0-9]+[^)]*\\)",
-        "matched_text": "$(dirname \"$0\")",
-        "aitech": "AITech-9.1",
-        "aitech_name": "Model or Agentic System Manipulation",
-        "scanner_category": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_ENV_VARS_05239c250f",
-      "rule_id": "DATA_EXFIL_ENV_VARS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Reading environment variables that may contain secrets",
-      "description": "Pattern detected: os.environ.get('ZOHO_PASSWORD",
-      "file_path": "examples/batch-cleanup.py",
-      "line_number": 163,
-      "snippet": "if not os.environ.get('ZOHO_EMAIL') or not os.environ.get('ZOHO_PASSWORD'):",
-      "remediation": "Minimize access to environment variables. Document why needed",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
-        "matched_text": "os.environ.get('ZOHO_PASSWORD",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_61044aa850",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import urllib.request",
-      "file_path": "scripts/zoho-email.py",
-      "line_number": 75,
-      "snippet": "import urllib.request",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+urllib\\.request",
-        "matched_text": "import urllib.request",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
     {
       "id": "DATA_EXFIL_NETWORK_REQUESTS_13e54727fa",
       "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
@@ -170,27 +70,6 @@
       }
     },
     {
-      "id": "DATA_EXFIL_SOCKET_CONNECT_e5300e7ddb",
-      "rule_id": "DATA_EXFIL_SOCKET_CONNECT",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Direct socket connection to external server",
-      "description": "Pattern detected: socket.create_connection",
-      "file_path": "scripts/zoho-email.py",
-      "line_number": 1796,
-      "snippet": "sock = socket.create_connection((host, int(port)), timeout=timeout)",
-      "remediation": "Remove socket connections unless absolutely necessary and documented",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "socket\\.create_connection",
-        "matched_text": "socket.create_connection",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
       "id": "DATA_EXFIL_ENV_VARS_5fc08fdedf",
       "rule_id": "DATA_EXFIL_ENV_VARS",
       "category": "data_exfiltration",
@@ -226,27 +105,6 @@
       "metadata": {
         "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
         "matched_text": "os.environ.get(\"ZOHO_PASSWORD",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_BASE64_AND_NETWORK_ef43dbaa2a",
-      "rule_id": "DATA_EXFIL_BASE64_AND_NETWORK",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Base64 encoding (often used before data exfiltration)",
-      "description": "Pattern detected: base64.b64encode",
-      "file_path": "scripts/zoho-email.py",
-      "line_number": 99,
-      "snippet": "return base64.b64encode(auth_string.encode()).decode()",
-      "remediation": "Review base64 usage, especially if combined with network calls",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "base64\\.(?:b64encode|encodebytes)",
-        "matched_text": "base64.b64encode",
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
         "scanner_category": "SECURITY VIOLATION",
@@ -338,22 +196,6 @@
       }
     },
     {
-      "id": "TOOL_MISMATCH_NETWORK_9b3c25fc71",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
-      "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
       "id": "DATA_EXFIL_ENV_VARS_05239c250f",
       "rule_id": "DATA_EXFIL_ENV_VARS",
       "category": "data_exfiltration",
@@ -372,26 +214,6 @@
         "aitech_name": "Data Exfiltration / Exposure",
         "scanner_category": "SECURITY VIOLATION",
         "reference_depth": 0,
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_c6ab80f399",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Get a specific email",
-      "file_path": "SKILL.md",
-      "line_number": 114,
-      "snippet": "python3 scripts/zoho-email.py get INBOX <id>",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
         "meta_reviewed": true
       }
     },
@@ -456,26 +278,6 @@
       }
     },
     {
-      "id": "YARA_credential_harvesting_249c59ae8d",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: Export your Zoho credentials",
-      "file_path": "SKILL.md",
-      "line_number": 62,
-      "snippet": "export ZOHO_EMAIL=\"your-email@domain.com\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
       "id": "YARA_credential_harvesting_7606ad84e7",
       "rule_id": "YARA_credential_harvesting",
       "category": "hardcoded_secrets",
@@ -496,26 +298,6 @@
       }
     },
     {
-      "id": "YARA_skill_discovery_abuse_619577a7a2",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
-      "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
-      "file_path": "SKILL.md",
-      "line_number": 201,
-      "snippet": "### Search Inbox",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
       "id": "YARA_skill_discovery_abuse_d34172c08f",
       "rule_id": "YARA_skill_discovery_abuse",
       "category": "skill_discovery_abuse",
@@ -532,26 +314,6 @@
         "yara_namespace": "skill_discovery_abuse",
         "matched_string": "$overpromising",
         "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_a0751c6881",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: \\033[0;32m",
-      "file_path": "test-app-password.sh",
-      "line_number": 8,
-      "snippet": "GREEN='\\033[0;32m'",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$ansi_deception",
-        "threat_type": "INJECTION ATTACK",
         "meta_reviewed": true
       }
     },
@@ -981,26 +743,6 @@
       "category": "command_injection",
       "severity": "CRITICAL",
       "title": "INJECTION ATTACK detected by YARA",
-      "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: <script>",
-      "file_path": "scripts/oauth-setup.py",
-      "line_number": 57,
-      "snippet": "<script>setTimeout(function() { window.close(); }, 3000);</script>",
-      "remediation": "Review and remove injection attack pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "script_injection",
-        "yara_namespace": "script_injection",
-        "matched_string": "$tags",
-        "threat_type": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_script_injection_b1dbe4d481",
-      "rule_id": "YARA_script_injection",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "INJECTION ATTACK detected by YARA",
       "description": "Detects embedded scripting payloads (JS, VBScript, etc.) in MCP tool descriptions: </script>",
       "file_path": "scripts/oauth-setup.py",
       "line_number": 57,
@@ -1216,204 +958,222 @@
       }
     },
     {
-      "id": "ENV_VAR_HARVESTING_0b35c71a98",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "id": "llm_finding_zoho-email_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Hardcoded Credentials in Test Scripts",
+      "description": "Multiple test scripts contain hardcoded email addresses (brian@creativestudio.co.za) that could expose the developer's actual email account. While these appear to be test scripts, they demonstrate a pattern of hardcoding sensitive information and could lead to credential exposure if users copy these patterns.",
+      "file_path": "test-rest-api-fixes.sh",
+      "line_number": null,
+      "snippet": "export ZOHO_EMAIL=\"brian@creativestudio.co.za\" in test scripts and TEST_RECIPIENT=\"brian@creativestudio.co.za\" in examples",
+      "remediation": "Remove all hardcoded email addresses from test scripts. Use environment variables or placeholder values like 'user@example.com'. Add warnings in documentation about not committing real credentials.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Zoho Email integration skill presents MULTIPLE SERIOUS SECURITY CONCERNS that require immediate attention. The most critical issues are: (1) hardcoded credentials in test scripts exposing real email accounts, (2) insecure plaintext credential storage recommendations, (3) command injection risks in email query processing, and (4) missing tool restrictions. The skill handles sensitive email data and credentials but lacks adequate security controls. While OAuth2 support is present, the implementation stores tokens in plaintext. The bulk operation features could be abused for resource exhaustion. The skill requires significant security improvements before production use, particularly around credential management, input validation, and security documentation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Command Injection",
+          "Insecure Credential Storage",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Social Engineering (Misleading Claims)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified hardcoded email address exists in multiple test scripts. While not a password, it exposes a real email account and sets a bad example for users.",
+        "meta_exploitability": "Medium - Requires access to test scripts, but exposes real email account",
+        "meta_impact": "Medium - Email address exposure, potential spam/phishing target, bad security example"
+      }
+    },
+    {
+      "id": "llm_finding_zoho-email_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Insecure Credential Storage Recommendation",
+      "description": "The skill's setup instructions recommend storing credentials in plaintext files (~/.clawdbot/zoho-credentials.sh) with only basic file permissions (chmod 600). While better than no protection, this approach stores passwords in plaintext on disk, making them vulnerable to file system access, backups, or malware.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Create ~/.clawdbot/zoho-credentials.sh with export ZOHO_EMAIL and export ZOHO_PASSWORD in plaintext",
+      "remediation": "Recommend using system keychains (macOS Keychain, Windows Credential Manager, Linux Secret Service) or encrypted credential stores. Provide examples using keyring libraries. Emphasize OAuth2 as the preferred authentication method.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Zoho Email integration skill presents MULTIPLE SERIOUS SECURITY CONCERNS that require immediate attention. The most critical issues are: (1) hardcoded credentials in test scripts exposing real email accounts, (2) insecure plaintext credential storage recommendations, (3) command injection risks in email query processing, and (4) missing tool restrictions. The skill handles sensitive email data and credentials but lacks adequate security controls. While OAuth2 support is present, the implementation stores tokens in plaintext. The bulk operation features could be abused for resource exhaustion. The skill requires significant security improvements before production use, particularly around credential management, input validation, and security documentation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Command Injection",
+          "Insecure Credential Storage",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Social Engineering (Misleading Claims)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Documentation explicitly recommends plaintext credential storage. This is a verified security anti-pattern.",
+        "meta_exploitability": "Medium - Requires file system access, but plaintext credentials are easily extracted",
+        "meta_impact": "High - Full email account compromise if credentials file is accessed"
+      }
+    },
+    {
+      "id": "llm_finding_zoho-email_2",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Command Injection Risk in Email Processing",
+      "description": "The zoho-email.py script processes email content and subjects that could contain malicious payloads. While the code uses json.dumps for output, there are multiple places where email content is processed without sanitization, particularly in search queries and email body handling. The IMAP search functionality accepts user-controlled query strings that are passed directly to IMAP commands.",
+      "file_path": "scripts/zoho-email.py",
+      "line_number": null,
+      "snippet": "query parameter in search_emails() is passed to IMAP search without sanitization: mail.search(None, query)",
+      "remediation": "Implement strict input validation and sanitization for all email-related queries. Use parameterized queries where possible. Validate and escape IMAP search query syntax. Add content security warnings in documentation about processing untrusted email content.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Zoho Email integration skill presents MULTIPLE SERIOUS SECURITY CONCERNS that require immediate attention. The most critical issues are: (1) hardcoded credentials in test scripts exposing real email accounts, (2) insecure plaintext credential storage recommendations, (3) command injection risks in email query processing, and (4) missing tool restrictions. The skill handles sensitive email data and credentials but lacks adequate security controls. While OAuth2 support is present, the implementation stores tokens in plaintext. The bulk operation features could be abused for resource exhaustion. The skill requires significant security improvements before production use, particularly around credential management, input validation, and security documentation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Command Injection",
+          "Insecure Credential Storage",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Social Engineering (Misleading Claims)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "IMAP search injection is possible but limited in impact. The code does use IMAP library which provides some protection, but user input is not validated.",
+        "meta_exploitability": "Medium - Requires crafting malicious IMAP queries, limited by IMAP protocol constraints",
+        "meta_impact": "Medium - Could cause unexpected search results or errors, but unlikely to compromise system"
+      }
+    },
+    {
+      "id": "llm_finding_zoho-email_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Unrestricted Tool Usage - Missing allowed-tools Declaration",
+      "description": "The skill does not declare 'allowed-tools' in its YAML manifest, meaning it can use any agent tool without restriction. The skill executes Python scripts that perform network operations, file I/O, and email operations. Users cannot verify what tools the skill will use before installation.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML manifest shows: allowed-tools: Not specified. Python scripts perform network requests, file operations, and execute external commands.",
+      "remediation": "Add 'allowed-tools: [Python, Bash, Read, Write]' to YAML manifest to explicitly declare tool requirements. This allows users to make informed decisions about granting permissions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Zoho Email integration skill presents MULTIPLE SERIOUS SECURITY CONCERNS that require immediate attention. The most critical issues are: (1) hardcoded credentials in test scripts exposing real email accounts, (2) insecure plaintext credential storage recommendations, (3) command injection risks in email query processing, and (4) missing tool restrictions. The skill handles sensitive email data and credentials but lacks adequate security controls. While OAuth2 support is present, the implementation stores tokens in plaintext. The bulk operation features could be abused for resource exhaustion. The skill requires significant security improvements before production use, particularly around credential management, input validation, and security documentation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Command Injection",
+          "Insecure Credential Storage",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Social Engineering (Misleading Claims)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified that allowed-tools is not specified in manifest, and code clearly uses Python, network, and file operations.",
+        "meta_exploitability": "Low - Requires malicious modification of skill code",
+        "meta_impact": "Medium - Users cannot verify tool usage before installation"
+      }
+    },
+    {
+      "id": "llm_finding_zoho-email_4",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/clawhub-zoho-email-integration/examples/batch-cleanup.py",
-      "file_path": "skills/clawhub-zoho-email-integration/examples/batch-cleanup.py",
+      "title": "OAuth2 Token Storage Without Encryption",
+      "description": "OAuth2 tokens are stored in plaintext JSON files (~/.clawdbot/zoho-mail-tokens.json) without encryption. While file permissions may restrict access, the tokens (including refresh tokens) are vulnerable if the file system is compromised. Refresh tokens provide long-term access and should be protected with encryption.",
+      "file_path": "scripts/zoho-email.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
+      "snippet": "with open(token_path, 'w') as f: json.dump(tokens, f, indent=2) - tokens stored in plaintext",
+      "remediation": "Encrypt OAuth2 tokens at rest using system keychain services or encrypted storage. Use libraries like 'keyring' for cross-platform secure storage. Add file integrity checks to detect token tampering.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "ENV_VAR_EXFILTRATION_b192575150",
-      "rule_id": "BEHAVIOR_ENV_VAR_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Environment variable access with network calls detected",
-      "description": "Script accesses environment variables and makes network calls in skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
-      "file_path": "skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable harvesting or network transmission",
-      "analyzer": "behavioral",
-      "metadata": {
-        "has_network": true,
-        "has_env_access": true,
-        "suspicious_urls": [
-          "https://mail.zoho.com/api",
-          "https://accounts.zoho.com/oauth/v2/token"
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Zoho Email integration skill presents MULTIPLE SERIOUS SECURITY CONCERNS that require immediate attention. The most critical issues are: (1) hardcoded credentials in test scripts exposing real email accounts, (2) insecure plaintext credential storage recommendations, (3) command injection risks in email query processing, and (4) missing tool restrictions. The skill handles sensitive email data and credentials but lacks adequate security controls. While OAuth2 support is present, the implementation stores tokens in plaintext. The bulk operation features could be abused for resource exhaustion. The skill requires significant security improvements before production use, particularly around credential management, input validation, and security documentation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Command Injection",
+          "Insecure Credential Storage",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Social Engineering (Misleading Claims)"
         ],
-        "meta_reviewed": true
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified that tokens are stored in plaintext JSON. This is a common security issue with OAuth2 implementations.",
+        "meta_exploitability": "Medium - Requires file system access to ~/.clawdbot/ directory",
+        "meta_impact": "High - Compromised refresh token provides long-term email account access"
       }
     },
     {
-      "id": "ENV_VAR_HARVESTING_b13ec2c40f",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
+      "id": "llm_finding_zoho-email_5",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
       "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
-      "file_path": "skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
+      "title": "Potential Resource Exhaustion in Bulk Operations",
+      "description": "The bulk_action and empty-spam/empty-trash functions can process large numbers of emails without rate limiting or resource constraints. The code includes a limit parameter but defaults to processing 100 emails at once, which could cause performance issues or trigger rate limits on Zoho's servers.",
+      "file_path": "scripts/zoho-email.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
+      "snippet": "limit parameter defaults to 100, no rate limiting between operations, no timeout protection for large batches",
+      "remediation": "Implement rate limiting between batch operations. Add configurable delays between API calls. Set reasonable default limits (e.g., 50 emails). Add progress indicators and allow interruption of long-running operations. Document Zoho API rate limits.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_f92b695a00",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://mail.zoho.com/api",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://mail.zoho.com/api",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_199c4738a7",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://accounts.zoho.com/oauth/v2/token",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-zoho-email-integration/scripts/zoho-email.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://accounts.zoho.com/oauth/v2/token",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_0d97775de1",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://accounts.zoho.com/oauth/v2/auth",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-zoho-email-integration/scripts/oauth-setup.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://accounts.zoho.com/oauth/v2/auth",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_199c4738a7",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://accounts.zoho.com/oauth/v2/token",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-zoho-email-integration/scripts/oauth-setup.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://accounts.zoho.com/oauth/v2/token",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "CROSSFILE_EXFILTRATION_CHAIN_193b3140cc",
-      "rule_id": "BEHAVIOR_CROSSFILE_EXFILTRATION_CHAIN",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Cross-file exfiltration chain: 3 files",
-      "description": "Multi-file exfiltration chain detected: examples/batch-cleanup.py, scripts/zoho-email.py collect data \u2192 scripts/zoho-email.py, scripts/oauth-setup.py \u2192 scripts/zoho-email.py, scripts/oauth-setup.py transmit to network",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review data flow across files: scripts/oauth-setup.py, examples/batch-cleanup.py, scripts/zoho-email.py",
-      "analyzer": "behavioral",
-      "metadata": {
-        "files_involved": [
-          "scripts/oauth-setup.py",
-          "examples/batch-cleanup.py",
-          "scripts/zoho-email.py"
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Zoho Email integration skill presents MULTIPLE SERIOUS SECURITY CONCERNS that require immediate attention. The most critical issues are: (1) hardcoded credentials in test scripts exposing real email accounts, (2) insecure plaintext credential storage recommendations, (3) command injection risks in email query processing, and (4) missing tool restrictions. The skill handles sensitive email data and credentials but lacks adequate security controls. While OAuth2 support is present, the implementation stores tokens in plaintext. The bulk operation features could be abused for resource exhaustion. The skill requires significant security improvements before production use, particularly around credential management, input validation, and security documentation.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure",
+          "Command Injection",
+          "Insecure Credential Storage",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Social Engineering (Misleading Claims)"
         ],
-        "threat_type": "exfiltration_chain",
-        "evidence": {
-          "collection_files": [
-            "examples/batch-cleanup.py",
-            "scripts/zoho-email.py"
-          ],
-          "encoding_files": [
-            "scripts/zoho-email.py",
-            "scripts/oauth-setup.py"
-          ],
-          "network_files": [
-            "scripts/zoho-email.py",
-            "scripts/oauth-setup.py"
-          ]
-        },
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "CROSSFILE_ENV_VAR_EXFILTRATION_9c410fb61f",
-      "rule_id": "BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "Cross-file env var exfiltration: 3 files",
-      "description": "Environment variable access with network calls in examples/batch-cleanup.py, scripts/zoho-email.py",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review data flow across files: scripts/oauth-setup.py, examples/batch-cleanup.py, scripts/zoho-email.py",
-      "analyzer": "behavioral",
-      "metadata": {
-        "files_involved": [
-          "scripts/oauth-setup.py",
-          "examples/batch-cleanup.py",
-          "scripts/zoho-email.py"
-        ],
-        "threat_type": "env_var_exfiltration",
-        "evidence": {
-          "env_var_files": [
-            "examples/batch-cleanup.py",
-            "scripts/zoho-email.py"
-          ],
-          "network_files": [
-            "scripts/zoho-email.py",
-            "scripts/oauth-setup.py"
-          ]
-        },
-        "meta_reviewed": true
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Code shows bulk operations without rate limiting, but actual impact depends on Zoho's server-side rate limits which may provide protection.",
+        "meta_exploitability": "Low - Requires intentional abuse or misconfiguration",
+        "meta_impact": "Low - Could trigger rate limits or temporary account restrictions, but unlikely to cause permanent damage"
       }
     }
   ],
-  "scan_duration_seconds": 8.801664352416992,
-  "duration_ms": 8801,
+  "scan_duration_seconds": 53.69175052642822,
+  "duration_ms": 53691,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:54:46.380965"
+  "timestamp": "2026-02-07T22:01:15.536606"
 }

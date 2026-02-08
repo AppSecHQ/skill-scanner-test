@@ -3,8 +3,8 @@
   "skill_path": "/workspace/skills/obra-superpowers/skills/using-git-worktrees",
   "skill_directory": "/workspace/skills/obra-superpowers/skills/using-git-worktrees",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 6,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -21,16 +21,154 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_using-git-worktrees_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The SKILL.md manifest does not specify the 'allowed-tools' field. While this field is optional per the agent skills specification, declaring it would improve transparency about which agent tools (Bash, Read, Write, etc.) this skill requires. The instructions clearly involve Bash execution, file reading (CLAUDE.md, .gitignore), and file writing (.gitignore modifications).",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "YAML frontmatter missing 'allowed-tools' field. Instructions reference: bash commands (ls, grep, git), file reading (CLAUDE.md, .gitignore), file writing (adding to .gitignore).",
+      "remediation": "Add 'allowed-tools: [Bash, Read, Write]' to the YAML frontmatter to explicitly declare the required agent capabilities.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The using-git-worktrees skill is generally well-designed for creating isolated git worktrees with safety verification. The core security posture is MODERATE with no critical threats detected. Primary concerns are: (1) command injection risk from unsanitized branch names, (2) unbounded resource consumption from automatic dependency installation and test execution without user confirmation or timeouts, and (3) missing metadata transparency. The skill correctly implements safety verification for .gitignore and follows systematic directory selection. No data exfiltration, credential theft, or prompt injection detected. The skill operates entirely locally with standard git operations. Recommended improvements: sanitize branch name input, add user confirmation for resource-intensive operations, and declare allowed-tools explicitly.",
+        "primary_threats": [
+          "Command Injection (unsanitized branch names)",
+          "Resource Exhaustion (unbounded dependency installation)",
+          "Resource Exhaustion (unbounded test execution)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_using-git-worktrees_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk in Branch Name Variable",
+      "description": "The skill uses $BRANCH_NAME variable directly in shell commands without validation or sanitization. If the branch name contains shell metacharacters (semicolons, backticks, command substitution syntax), it could lead to command injection when passed to 'git worktree add' or path construction. Example: a branch name like 'feature; rm -rf /' would execute unintended commands.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "git worktree add \"$path\" -b \"$BRANCH_NAME\" - The $BRANCH_NAME variable is used directly without sanitization. Path construction also uses unsanitized input: path=\"$LOCATION/$BRANCH_NAME\"",
+      "remediation": "Validate branch names against git's allowed character set before use. Sanitize input by rejecting names containing shell metacharacters (;|&$`\\n). Use git's built-in branch name validation or regex pattern matching: ^[a-zA-Z0-9/_-]+$",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The using-git-worktrees skill is generally well-designed for creating isolated git worktrees with safety verification. The core security posture is MODERATE with no critical threats detected. Primary concerns are: (1) command injection risk from unsanitized branch names, (2) unbounded resource consumption from automatic dependency installation and test execution without user confirmation or timeouts, and (3) missing metadata transparency. The skill correctly implements safety verification for .gitignore and follows systematic directory selection. No data exfiltration, credential theft, or prompt injection detected. The skill operates entirely locally with standard git operations. Recommended improvements: sanitize branch name input, add user confirmation for resource-intensive operations, and declare allowed-tools explicitly.",
+        "primary_threats": [
+          "Command Injection (unsanitized branch names)",
+          "Resource Exhaustion (unbounded dependency installation)",
+          "Resource Exhaustion (unbounded test execution)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_using-git-worktrees_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Dependency Installation Without User Confirmation",
+      "description": "The skill automatically runs package installation commands (npm install, pip install, cargo build, etc.) without user confirmation or resource limits. This could lead to excessive resource consumption, long-running operations, or installation of large dependency trees that exhaust disk space or network bandwidth. No timeout or size limits are specified.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "if [ -f package.json ]; then npm install; fi\nif [ -f Cargo.toml ]; then cargo build; fi\nif [ -f requirements.txt ]; then pip install -r requirements.txt; fi\nif [ -f pyproject.toml ]; then poetry install; fi\nif [ -f go.mod ]; then go mod download; fi",
+      "remediation": "Add user confirmation before running dependency installation: 'Found package.json. Install dependencies with npm install? (y/n)'. Consider adding timeout limits and disk space checks. Warn users about potential resource usage before proceeding.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The using-git-worktrees skill is generally well-designed for creating isolated git worktrees with safety verification. The core security posture is MODERATE with no critical threats detected. Primary concerns are: (1) command injection risk from unsanitized branch names, (2) unbounded resource consumption from automatic dependency installation and test execution without user confirmation or timeouts, and (3) missing metadata transparency. The skill correctly implements safety verification for .gitignore and follows systematic directory selection. No data exfiltration, credential theft, or prompt injection detected. The skill operates entirely locally with standard git operations. Recommended improvements: sanitize branch name input, add user confirmation for resource-intensive operations, and declare allowed-tools explicitly.",
+        "primary_threats": [
+          "Command Injection (unsanitized branch names)",
+          "Resource Exhaustion (unbounded dependency installation)",
+          "Resource Exhaustion (unbounded test execution)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_using-git-worktrees_3",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Unbounded Test Execution Without Timeout",
+      "description": "The skill runs project test suites automatically without timeout limits or resource constraints. Test suites could contain infinite loops, hang indefinitely, or consume excessive resources. While the skill asks whether to proceed if tests fail, there's no protection against tests that never complete.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "npm test\ncargo test\npytest\ngo test ./...\n\nNo timeout or resource limits specified for test execution.",
+      "remediation": "Add timeout limits to test execution commands (e.g., timeout 5m npm test). Provide user option to skip tests if they prefer. Document expected test duration and warn if tests exceed reasonable time limits.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The using-git-worktrees skill is generally well-designed for creating isolated git worktrees with safety verification. The core security posture is MODERATE with no critical threats detected. Primary concerns are: (1) command injection risk from unsanitized branch names, (2) unbounded resource consumption from automatic dependency installation and test execution without user confirmation or timeouts, and (3) missing metadata transparency. The skill correctly implements safety verification for .gitignore and follows systematic directory selection. No data exfiltration, credential theft, or prompt injection detected. The skill operates entirely locally with standard git operations. Recommended improvements: sanitize branch name input, add user confirmation for resource-intensive operations, and declare allowed-tools explicitly.",
+        "primary_threats": [
+          "Command Injection (unsanitized branch names)",
+          "Resource Exhaustion (unbounded dependency installation)",
+          "Resource Exhaustion (unbounded test execution)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_using-git-worktrees_4",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing License and Compatibility Metadata",
+      "description": "The skill manifest does not specify 'license' or 'compatibility' fields. While optional, these fields help users understand usage rights and which environments (Claude.ai, Claude Code, API) the skill is designed for. This is informational only and does not indicate a security threat.",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "YAML frontmatter shows:\n- license: Not specified\n- compatibility: Not specified",
+      "remediation": "Add license field (e.g., 'license: MIT') and compatibility field (e.g., 'compatibility: Works in Claude.ai, Claude Code, API with Bash access') to improve transparency.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The using-git-worktrees skill is generally well-designed for creating isolated git worktrees with safety verification. The core security posture is MODERATE with no critical threats detected. Primary concerns are: (1) command injection risk from unsanitized branch names, (2) unbounded resource consumption from automatic dependency installation and test execution without user confirmation or timeouts, and (3) missing metadata transparency. The skill correctly implements safety verification for .gitignore and follows systematic directory selection. No data exfiltration, credential theft, or prompt injection detected. The skill operates entirely locally with standard git operations. Recommended improvements: sanitize branch name input, add user confirmation for resource-intensive operations, and declare allowed-tools explicitly.",
+        "primary_threats": [
+          "Command Injection (unsanitized branch names)",
+          "Resource Exhaustion (unbounded dependency installation)",
+          "Resource Exhaustion (unbounded test execution)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.24097156524658203,
-  "duration_ms": 240,
+  "scan_duration_seconds": 29.54505157470703,
+  "duration_ms": 29545,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:52:29.487177"
+  "timestamp": "2026-02-08T02:05:37.527861"
 }

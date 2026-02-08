@@ -3,34 +3,47 @@
   "skill_path": "/workspace/skills/clawhub-sql-assistant",
   "skill_directory": "/workspace/skills/clawhub-sql-assistant",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_sql-assistant_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "SQL Injection Risk - Unvalidated User Input in Query Examples",
+      "description": "The skill provides extensive SQL query examples and templates without any guidance on parameterized queries or input validation. The instruction body shows direct string concatenation patterns in SQL queries without warning about SQL injection risks. While the skill itself doesn't execute queries, it teaches unsafe SQL practices that could lead to SQL injection vulnerabilities when users implement the suggested patterns.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Examples show direct value insertion like \"WHERE status = 'active'\" without discussing parameterized queries or prepared statements. No mention of SQL injection prevention, input sanitization, or use of parameterized queries throughout the extensive documentation.",
+      "remediation": "Add a dedicated security section covering: (1) Always use parameterized queries/prepared statements, (2) Never concatenate user input directly into SQL strings, (3) Include examples of safe query patterns using placeholders (?, :param, etc.), (4) Warn about SQL injection risks when constructing dynamic queries.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The sql-assistant skill is a comprehensive SQL query assistant that provides educational content about SQL operations, optimization, and troubleshooting. The primary security concern is that it teaches SQL query construction without adequate coverage of SQL injection prevention, which could lead users to implement unsafe patterns. The skill itself does not execute queries or access databases directly, limiting the immediate risk. However, the absence of security guidance in an SQL-focused skill is a notable gap. Additionally, the skill has incomplete packaging with multiple referenced files missing, and lacks optional metadata fields for transparency. No evidence of data exfiltration, prompt injection, credential theft, or malicious code execution was found. The skill appears to be a legitimate educational tool with room for improvement in security guidance and completeness.",
+        "primary_threats": [
+          "SQL Injection Risk (Educational Gap)",
+          "Incomplete Package (Missing Files)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill explicitly teaches SQL query construction but provides minimal guidance on SQL injection prevention despite mentioning it in best practices. This is a legitimate educational gap for a skill focused on SQL.",
+        "meta_exploitability": "Low - The skill itself doesn't execute queries, but users implementing these patterns without additional security knowledge could create vulnerable applications",
+        "meta_impact": "Medium - Could lead to SQL injection vulnerabilities in user applications if patterns are copied without security considerations"
       }
     }
   ],
-  "scan_duration_seconds": 0.2685091495513916,
-  "duration_ms": 268,
+  "scan_duration_seconds": 22.587871313095093,
+  "duration_ms": 22587,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:49:47.215485"
+  "timestamp": "2026-02-07T20:38:55.202126"
 }

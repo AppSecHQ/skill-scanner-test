@@ -3,34 +3,48 @@
   "skill_path": "/workspace/skills/clawhub-url-shortener",
   "skill_directory": "/workspace/skills/clawhub-url-shortener",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_shorten_0",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing Implementation - Tool Exploitation Risk",
+      "description": "The skill declares functionality to shorten URLs using is.gd service but provides no implementation scripts. The SKILL.md shows bash usage examples ('shorten \"https://example.com\"') suggesting a bash command should exist, but no .sh or .py files are present. This creates a tool shadowing risk where the agent might attempt to execute a non-existent 'shorten' command, potentially allowing malicious actors to provide their own implementation or causing the agent to misinterpret the instruction and execute unintended commands.",
+      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Usage examples show: shorten \"https://example.com/very/long/url\" but no corresponding shorten.sh or shorten.py script exists in the package",
+      "remediation": "Add the missing implementation script (e.g., shorten.sh) that safely calls the is.gd API. Ensure proper input validation and URL encoding to prevent command injection.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The skill has a MEDIUM severity issue due to missing implementation, creating a tool exploitation risk. The concept is straightforward (URL shortening via is.gd), but without actual scripts, the agent cannot safely execute this functionality and may be vulnerable to tool shadowing attacks. Additionally, there are LOW severity transparency issues: missing optional metadata fields and undeclared network access requirements. The skill would be safe once a proper implementation script is added with input validation and the metadata is completed to inform users about network dependencies.",
+        "primary_threats": [
+          "Tool Exploitation (Missing Implementation)",
+          "Transparency Issues (Missing Metadata)",
+          "Undeclared Network Access"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The package.json explicitly references './shorten.sh' which does not exist in the provided file list. This is a clear implementation gap that creates a tool shadowing attack surface.",
+        "meta_exploitability": "Medium - Requires attacker to have PATH manipulation or ability to provide a malicious 'shorten' command in the execution environment",
+        "meta_impact": "Medium - Could lead to arbitrary command execution if attacker provides malicious implementation"
       }
     }
   ],
-  "scan_duration_seconds": 0.25267791748046875,
-  "duration_ms": 252,
+  "scan_duration_seconds": 20.975910425186157,
+  "duration_ms": 20975,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:52:22.253839"
+  "timestamp": "2026-02-07T21:26:05.798711"
 }

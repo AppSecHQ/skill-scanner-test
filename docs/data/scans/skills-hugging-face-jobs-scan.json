@@ -2,9 +2,9 @@
   "skill_name": "hugging-face-jobs",
   "skill_path": "/workspace/skills/huggingface-skills/skills/hugging-face-jobs",
   "skill_directory": "/workspace/skills/huggingface-skills/skills/hugging-face-jobs",
-  "is_safe": false,
-  "max_severity": "HIGH",
-  "findings_count": 7,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 8,
   "findings": [
     {
       "id": "DATA_EXFIL_ENV_VARS_0958fc3f0d",
@@ -90,63 +90,120 @@
       }
     },
     {
-      "id": "ENV_VAR_HARVESTING_0918ca9377",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
+      "id": "llm_finding_hugging-face-jobs_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/huggingface-skills/skills/hugging-face-jobs/scripts/cot-self-instruct.py",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-jobs/scripts/cot-self-instruct.py",
+      "title": "Hardcoded Token Exposure Risk in Documentation",
+      "description": "The skill's documentation and referenced files contain multiple examples showing token handling patterns that could lead users to hardcode tokens. While the skill correctly recommends using '$HF_TOKEN' placeholder (automatic token), the extensive documentation about 'Method 2: Explicit Token' and examples of token extraction using 'get_token()' may encourage insecure practices. The references/token_usage.md file shows explicit token usage patterns that are marked 'Not Recommended' but still documented in detail.",
+      "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
+      "snippet": "Method 2: Explicit Token (Not Recommended) section shows: hf_jobs('uv', {'script': 'your_script.py', 'secrets': {'HF_TOKEN': 'hf_...'} # Hardcoded token",
+      "remediation": "Remove or minimize documentation of explicit token methods. Focus exclusively on the automatic '$HF_TOKEN' placeholder method. Add stronger warnings about never hardcoding tokens in examples.",
+      "analyzer": "llm",
       "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The hugging-face-jobs skill is a legitimate cloud compute orchestration tool with MEDIUM security posture. The skill correctly implements token security through the '$HF_TOKEN' placeholder mechanism and provides comprehensive documentation about secure practices. However, the extensive documentation of alternative (less secure) token methods and missing optional manifest fields represent areas for improvement. The skill's core functionality\u2014submitting jobs to Hugging Face infrastructure\u2014is appropriate and does not exhibit malicious behavior. The example scripts demonstrate proper security practices including token validation and secure Hub interactions. The primary concern is documentation that may inadvertently encourage insecure token handling, though the skill itself recommends secure methods.",
+        "primary_threats": [
+          "Data exposure risk through documentation",
+          "Missing metadata declarations"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
         "meta_reviewed": true
       }
     },
     {
-      "id": "ENV_VAR_HARVESTING_9444211f19",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/huggingface-skills/skills/hugging-face-jobs/scripts/finepdfs-stats.py",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-jobs/scripts/finepdfs-stats.py",
+      "id": "llm_finding_hugging-face-jobs_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill manifest does not specify the 'allowed-tools' field. While this field is optional per the agent skills specification, its absence means there are no declared restrictions on which agent tools (Read, Write, Bash, Python, etc.) can be used. This is informational only, as the skill legitimately needs broad tool access for job submission and monitoring.",
+      "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
+      "snippet": "allowed-tools: Not specified",
+      "remediation": "Consider adding 'allowed-tools: [Read, Write, Python, Bash]' to explicitly declare the tools this skill requires, improving transparency for users.",
+      "analyzer": "llm",
       "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The hugging-face-jobs skill is a legitimate cloud compute orchestration tool with MEDIUM security posture. The skill correctly implements token security through the '$HF_TOKEN' placeholder mechanism and provides comprehensive documentation about secure practices. However, the extensive documentation of alternative (less secure) token methods and missing optional manifest fields represent areas for improvement. The skill's core functionality\u2014submitting jobs to Hugging Face infrastructure\u2014is appropriate and does not exhibit malicious behavior. The example scripts demonstrate proper security practices including token validation and secure Hub interactions. The primary concern is documentation that may inadvertently encourage insecure token handling, though the skill itself recommends secure methods.",
+        "primary_threats": [
+          "Data exposure risk through documentation",
+          "Missing metadata declarations"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
         "meta_reviewed": true
       }
     },
     {
-      "id": "SUSPICIOUS_URL_fb7dca142a",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://huggingface.co/datasets/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/huggingface-skills/skills/hugging-face-jobs/scripts/finepdfs-stats.py",
+      "id": "llm_finding_hugging-face-jobs_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Missing compatibility Declaration",
+      "description": "The skill manifest does not specify the 'compatibility' field. While optional, this field helps users understand which environments (Claude.ai, Claude Code, API) the skill is designed for. This is informational only.",
+      "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
+      "snippet": "compatibility: Not specified",
+      "remediation": "Add 'compatibility' field to manifest specifying supported environments (e.g., 'compatibility: Claude.ai, Claude Code, API').",
+      "analyzer": "llm",
       "metadata": {
-        "url": "https://huggingface.co/datasets/",
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The hugging-face-jobs skill is a legitimate cloud compute orchestration tool with MEDIUM security posture. The skill correctly implements token security through the '$HF_TOKEN' placeholder mechanism and provides comprehensive documentation about secure practices. However, the extensive documentation of alternative (less secure) token methods and missing optional manifest fields represent areas for improvement. The skill's core functionality\u2014submitting jobs to Hugging Face infrastructure\u2014is appropriate and does not exhibit malicious behavior. The example scripts demonstrate proper security practices including token validation and secure Hub interactions. The primary concern is documentation that may inadvertently encourage insecure token handling, though the skill itself recommends secure methods.",
+        "primary_threats": [
+          "Data exposure risk through documentation",
+          "Missing metadata declarations"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_hugging-face-jobs_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Environment Variable Access Without Validation",
+      "description": "The example scripts access environment variables (HF_TOKEN, HF_XET_HIGH_PERFORMANCE) without comprehensive validation in some code paths. While assertions are present in many places, some scripts show direct os.environ.get() usage without validation that could lead to silent failures if tokens are missing.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "os.environ.get('HF_TOKEN') used without consistent validation across all scripts",
+      "remediation": "Ensure all scripts consistently validate HF_TOKEN presence at startup with clear error messages: assert 'HF_TOKEN' in os.environ, 'HF_TOKEN required for Hub operations!'",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The hugging-face-jobs skill is a legitimate cloud compute orchestration tool with MEDIUM security posture. The skill correctly implements token security through the '$HF_TOKEN' placeholder mechanism and provides comprehensive documentation about secure practices. However, the extensive documentation of alternative (less secure) token methods and missing optional manifest fields represent areas for improvement. The skill's core functionality\u2014submitting jobs to Hugging Face infrastructure\u2014is appropriate and does not exhibit malicious behavior. The example scripts demonstrate proper security practices including token validation and secure Hub interactions. The primary concern is documentation that may inadvertently encourage insecure token handling, though the skill itself recommends secure methods.",
+        "primary_threats": [
+          "Data exposure risk through documentation",
+          "Missing metadata declarations"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
         "meta_reviewed": true
       }
     }
   ],
-  "scan_duration_seconds": 2.9899981021881104,
-  "duration_ms": 2989,
+  "scan_duration_seconds": 25.482038021087646,
+  "duration_ms": 25482,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:48:05.538803"
+  "timestamp": "2026-02-07T23:15:01.169738"
 }

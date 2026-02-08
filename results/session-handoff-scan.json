@@ -4,7 +4,7 @@
   "skill_directory": "/workspace/skills/softaworks-agent-toolkit/skills/session-handoff",
   "is_safe": false,
   "max_severity": "HIGH",
-  "findings_count": 4,
+  "findings_count": 9,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -83,16 +83,149 @@
         "threat_type": "CODE EXECUTION",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_session-handoff_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Potential Credential Exposure in Git Log Capture",
+      "description": "The create_handoff.py script captures recent git commit messages and modified files without filtering. If developers include sensitive information in commit messages (API keys, passwords, internal URLs, etc.), this data will be written to handoff documents. The script runs 'git log -10' and includes full commit messages in the generated handoff file.",
+      "file_path": "scripts/create_handoff.py",
+      "line_number": null,
+      "snippet": "result = subprocess.run(['git', 'log', '-10', '--oneline'], ...) captures commit messages that may contain secrets. No filtering or sanitization is applied before writing to handoff document.",
+      "remediation": "Add commit message sanitization to detect and redact potential secrets before including in handoff documents. Warn users if sensitive patterns are detected in git history. Consider using the same SECRET_PATTERNS from validate_handoff.py to scan commit messages.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The session-handoff skill is a legitimate productivity tool for managing AI agent context across sessions. It creates handoff documents containing project state, git history, and work progress. The skill demonstrates good security practices with built-in secret detection and validation. However, there are MEDIUM severity concerns around potential credential exposure through git commit messages and file path disclosure. The skill does not exhibit malicious behavior (no data exfiltration, no prompt injection, no command injection). The primary risks are unintentional information disclosure if handoff documents are mishandled. With proper user awareness and the recommended remediations, this skill is safe for use.",
+        "primary_threats": [
+          "Data Exposure",
+          "Information Disclosure"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_session-handoff_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "File Path Disclosure in Handoff Documents",
+      "description": "The scripts capture and store absolute file paths, git branch names, and project directory structures in handoff documents. While this is necessary for functionality, it exposes internal project organization and potentially sensitive directory names (e.g., /home/username/secret-project/). If handoff documents are shared externally or committed to public repositories, this constitutes information disclosure.",
+      "file_path": "scripts/create_handoff.py",
+      "line_number": null,
+      "snippet": "project_path = os.getcwd() and full absolute paths are written to handoff documents without sanitization. Branch names and directory structures are exposed in metadata sections.",
+      "remediation": "Add a warning in documentation that handoff documents contain project metadata and should not be shared publicly. Consider adding an option to generate 'sanitized' handoffs with relative paths only. Add .claude/handoffs/ to .gitignore recommendations.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The session-handoff skill is a legitimate productivity tool for managing AI agent context across sessions. It creates handoff documents containing project state, git history, and work progress. The skill demonstrates good security practices with built-in secret detection and validation. However, there are MEDIUM severity concerns around potential credential exposure through git commit messages and file path disclosure. The skill does not exhibit malicious behavior (no data exfiltration, no prompt injection, no command injection). The primary risks are unintentional information disclosure if handoff documents are mishandled. With proper user awareness and the recommended remediations, this skill is safe for use.",
+        "primary_threats": [
+          "Data Exposure",
+          "Information Disclosure"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_session-handoff_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Unbounded Git Log Retrieval",
+      "description": "The check_staleness.py script retrieves git commits since handoff creation without limiting the number of commits. For long-running projects or old handoffs, this could retrieve thousands of commits, causing performance issues or resource exhaustion.",
+      "file_path": "scripts/check_staleness.py",
+      "line_number": null,
+      "snippet": "git log command uses '--since' parameter without '--max-count' limit. For a handoff created months ago, this could retrieve unlimited commits.",
+      "remediation": "Add a reasonable limit to git log queries (e.g., --max-count=100) and warn users if the limit is reached. Display a message like 'More than 100 commits since handoff - showing first 100'.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The session-handoff skill is a legitimate productivity tool for managing AI agent context across sessions. It creates handoff documents containing project state, git history, and work progress. The skill demonstrates good security practices with built-in secret detection and validation. However, there are MEDIUM severity concerns around potential credential exposure through git commit messages and file path disclosure. The skill does not exhibit malicious behavior (no data exfiltration, no prompt injection, no command injection). The primary risks are unintentional information disclosure if handoff documents are mishandled. With proper user awareness and the recommended remediations, this skill is safe for use.",
+        "primary_threats": [
+          "Data Exposure",
+          "Information Disclosure"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_session-handoff_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill manifest does not specify the 'allowed-tools' field. While this field is optional per the agent skills specification, declaring it would improve transparency about which agent capabilities this skill requires (Read, Write, Bash, Python).",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML manifest shows: allowed-tools: Not specified. The skill uses Python scripts extensively and reads/writes files.",
+      "remediation": "Add 'allowed-tools: [Read, Write, Bash, Python]' to the YAML frontmatter to explicitly declare required agent capabilities.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The session-handoff skill is a legitimate productivity tool for managing AI agent context across sessions. It creates handoff documents containing project state, git history, and work progress. The skill demonstrates good security practices with built-in secret detection and validation. However, there are MEDIUM severity concerns around potential credential exposure through git commit messages and file path disclosure. The skill does not exhibit malicious behavior (no data exfiltration, no prompt injection, no command injection). The primary risks are unintentional information disclosure if handoff documents are mishandled. With proper user awareness and the recommended remediations, this skill is safe for use.",
+        "primary_threats": [
+          "Data Exposure",
+          "Information Disclosure"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_session-handoff_4",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Secret Detection Patterns May Have False Negatives",
+      "description": "The validate_handoff.py script includes secret detection patterns, but the patterns may not catch all secret formats (e.g., AWS access keys, Azure connection strings, JWT tokens, etc.). The validation provides a false sense of security if users rely solely on it.",
+      "file_path": "scripts/validate_handoff.py",
+      "line_number": null,
+      "snippet": "SECRET_PATTERNS list covers common cases but is not comprehensive. Missing patterns for: AWS keys (AKIA...), Azure keys, GCP service account keys, JWT tokens, SSH private keys in non-PEM format.",
+      "remediation": "Expand SECRET_PATTERNS to include more secret formats. Add a disclaimer that validation is not foolproof and users should manually review handoffs for secrets. Consider integrating with dedicated secret scanning tools like truffleHog or gitleaks.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The session-handoff skill is a legitimate productivity tool for managing AI agent context across sessions. It creates handoff documents containing project state, git history, and work progress. The skill demonstrates good security practices with built-in secret detection and validation. However, there are MEDIUM severity concerns around potential credential exposure through git commit messages and file path disclosure. The skill does not exhibit malicious behavior (no data exfiltration, no prompt injection, no command injection). The primary risks are unintentional information disclosure if handoff documents are mishandled. With proper user awareness and the recommended remediations, this skill is safe for use.",
+        "primary_threats": [
+          "Data Exposure",
+          "Information Disclosure"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 3.797304153442383,
-  "duration_ms": 3797,
+  "scan_duration_seconds": 1266.0427939891815,
+  "duration_ms": 1266042,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:36:55.218308"
+  "timestamp": "2026-02-08T04:30:43.560625"
 }

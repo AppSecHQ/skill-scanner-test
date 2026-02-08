@@ -2,35 +2,113 @@
   "skill_name": "undetectable-ai",
   "skill_path": "/workspace/skills/clawhub-undetectable-ai",
   "skill_directory": "/workspace/skills/clawhub-undetectable-ai",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_undetectable-ai_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Skill Designed to Facilitate Academic Dishonesty and Deception",
+      "description": "This skill's explicit purpose is to help users evade AI detection systems (GPTZero, Turnitin, Originality.ai) by making AI-generated content appear human-written. The description states 'bypass AI detection, evade checkers, or humanize text before submission' and the workflow includes scanning, auto-fixing, and re-scanning to 'verify' evasion success. This directly facilitates academic dishonesty, plagiarism, and deceptive content submission in educational and professional contexts.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Description: 'Make AI text undetectable...auto-fixes them to pass as human-written. Use to bypass AI detection, evade checkers, or humanize text before submission.' Workflow step 4: 'Re-scan to verify' evasion success.",
+      "remediation": "This skill should not be used. Its core purpose violates academic integrity policies and facilitates deception. If text modification tools are needed, they should focus on legitimate writing improvement (clarity, conciseness) rather than detection evasion.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill poses significant ethical and policy concerns rather than traditional security threats. Its explicit purpose is to help users evade AI detection systems to pass off AI-generated content as human-written, directly facilitating academic dishonesty, plagiarism, and deceptive content submission. While the skill does not contain traditional security vulnerabilities (no data exfiltration, command injection, or credential theft), it is designed to enable systematic deception at scale. The technical implementation appears straightforward (TypeScript CLI tools with pattern matching and text transformation), but the use case is fundamentally problematic. The skill should be rejected based on its intended purpose of facilitating fraud and policy violations, even though it lacks conventional security exploits.",
+        "primary_threats": [
+          "Harmful/Misleading Content (AITech-15.1)",
+          "Social Engineering/Deception (AITech-2.1)",
+          "Systematic Deception Enablement"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill's description, documentation, and workflow explicitly describe detection evasion as the primary use case. The LLM analyzer correctly identified this as the core threat. The technical implementation (pattern matching and text transformation) is straightforward, but the intended use case is fundamentally problematic.",
+        "meta_exploitability": "Trivial - Users can immediately use this to submit fraudulent academic work or deceptive content",
+        "meta_impact": "Critical - Enables systematic academic dishonesty, undermines educational integrity, facilitates plagiarism at scale"
+      }
+    },
+    {
+      "id": "llm_finding_undetectable-ai_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Deceptive Framing as Legitimate Writing Tool",
+      "description": "The skill frames AI detection evasion as a neutral technical capability ('TypeScript CLI tools', 'removing telltale patterns') without acknowledging the ethical implications or primary use case (academic dishonesty). The clinical, technical presentation obscures that the tool's main purpose is to help users deceive detection systems and misrepresent AI-generated work as their own.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Title: 'Undetectable AI' with subtitle 'TypeScript CLI tools for bypassing AI content detectors' presented as neutral technical documentation without ethical warnings or legitimate use case justification.",
+      "remediation": "If such tools exist for legitimate purposes (e.g., testing detection systems, research), they must include prominent warnings about misuse, ethical guidelines, and restrictions on use cases. The current framing is deceptive.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill poses significant ethical and policy concerns rather than traditional security threats. Its explicit purpose is to help users evade AI detection systems to pass off AI-generated content as human-written, directly facilitating academic dishonesty, plagiarism, and deceptive content submission. While the skill does not contain traditional security vulnerabilities (no data exfiltration, command injection, or credential theft), it is designed to enable systematic deception at scale. The technical implementation appears straightforward (TypeScript CLI tools with pattern matching and text transformation), but the use case is fundamentally problematic. The skill should be rejected based on its intended purpose of facilitating fraud and policy violations, even though it lacks conventional security exploits.",
+        "primary_threats": [
+          "Harmful/Misleading Content (AITech-15.1)",
+          "Social Engineering/Deception (AITech-2.1)",
+          "Systematic Deception Enablement"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The framing is problematic, but this is more about presentation than the core threat. The skill's explicit purpose (Finding #1) is the primary issue.",
+        "meta_exploitability": "N/A - This is about deceptive framing, not a direct exploit",
+        "meta_impact": "Medium - Normalizes fraud by presenting it as technical problem-solving"
+      }
+    },
+    {
+      "id": "llm_finding_undetectable-ai_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Facilitates Systematic Deception at Scale",
+      "description": "The skill includes batch processing capabilities ('Scan all docs', 'Transform all') that enable users to systematically process multiple documents to evade detection. This industrializes the deception process, making it easier to submit large volumes of AI-generated content fraudulently across multiple assignments or submissions.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Batch processing examples: 'for f in *.txt; do...npx ts-node scripts/analyze.ts \"$f\"...done' and 'for f in *.md; do...npx ts-node scripts/transform.ts \"$f\"...' enabling mass processing of documents.",
+      "remediation": "Remove batch processing capabilities. Any legitimate use case would not require processing multiple documents simultaneously to evade detection systems.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill poses significant ethical and policy concerns rather than traditional security threats. Its explicit purpose is to help users evade AI detection systems to pass off AI-generated content as human-written, directly facilitating academic dishonesty, plagiarism, and deceptive content submission. While the skill does not contain traditional security vulnerabilities (no data exfiltration, command injection, or credential theft), it is designed to enable systematic deception at scale. The technical implementation appears straightforward (TypeScript CLI tools with pattern matching and text transformation), but the use case is fundamentally problematic. The skill should be rejected based on its intended purpose of facilitating fraud and policy violations, even though it lacks conventional security exploits.",
+        "primary_threats": [
+          "Harmful/Misleading Content (AITech-15.1)",
+          "Social Engineering/Deception (AITech-2.1)",
+          "Systematic Deception Enablement"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Batch processing code is explicitly documented in SKILL.md with clear examples showing how to process multiple files. This amplifies the scale of potential misuse.",
+        "meta_exploitability": "Easy - Copy-paste shell commands enable mass processing",
+        "meta_impact": "High - Enables systematic fraud across multiple documents/assignments"
       }
     }
   ],
-  "scan_duration_seconds": 0.22021174430847168,
-  "duration_ms": 220,
+  "scan_duration_seconds": 28.24951720237732,
+  "duration_ms": 28249,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:52:14.489401"
+  "timestamp": "2026-02-07T21:22:16.227084"
 }

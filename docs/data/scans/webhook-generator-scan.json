@@ -3,34 +3,80 @@
   "skill_path": "/workspace/skills/clawhub-webhook-gen",
   "skill_directory": "/workspace/skills/clawhub-webhook-gen",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_webhook-gen_0",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Deceptive Skill Description - External Tool Masquerading as Agent Skill",
+      "description": "The skill description and instructions describe an external npm package ('npx ai-webhook') rather than an agent skill that the AI assistant can execute. The entire SKILL.md contains instructions for a command-line tool that requires Node.js and npm, not instructions for the agent to follow. This is misleading because users expect agent skills to extend the agent's capabilities directly, not to be documentation for external tools. The skill appears to be promotional content for LXGIC Studios' developer toolkit rather than a functional agent skill.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Quick Start section shows 'npx ai-webhook \"stripe payment succeeded\"' - this is an external npm command, not an agent capability. The entire document describes CLI usage patterns, npm installation, and external tool features rather than agent instructions.",
+      "remediation": "Either: (1) Convert this into an actual agent skill with Python/Bash scripts that implement webhook generation logic the agent can execute, or (2) Clearly label this as documentation/reference material rather than an executable skill. Remove misleading skill metadata that suggests this extends agent capabilities.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill package has MEDIUM severity issues primarily related to deceptive presentation. The skill masquerades as an agent capability but actually describes an external npm CLI tool ('npx ai-webhook'), making it misleading to users who expect agent skills to extend the AI assistant's direct capabilities. The package contains no executable scripts (Python/Bash) and instead provides documentation for a Node.js command-line tool. Additionally, the skill includes promotional content for LXGIC Studios' developer toolkit, which is inappropriate for agent skill packages. While there are no critical security threats like data exfiltration or command injection (since there's no executable code), the deceptive nature of the skill description and the promotional content constitute social engineering concerns. The skill also has minor issues with missing referenced files and incomplete metadata. This appears to be either a misunderstanding of what agent skills are, or an attempt to use the agent skills ecosystem for promotional purposes rather than providing genuine agent capabilities.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Skill Description)",
+          "Misleading Content (External Tool Masquerading as Agent Skill)",
+          "Promotional Content Abuse"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The entire package structure confirms this is npm CLI tool documentation, not an agent skill. No executable scripts for agents exist. The TypeScript source code in src/ is for a standalone CLI tool, not agent-executable code.",
+        "meta_exploitability": "N/A - Not a security exploit, but a fundamental misrepresentation",
+        "meta_impact": "Medium - Users are misled about what this skill provides. They expect agent capabilities but get external tool documentation. This wastes user time and creates confusion about what agent skills are."
+      }
+    },
+    {
+      "id": "llm_finding_webhook-gen_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Promotional Content Disguised as Functional Skill",
+      "description": "The skill contains extensive promotional content for LXGIC Studios ('Part of the LXGIC Dev Toolkit', 'This is one of 110+ free developer tools built by LXGIC Studios', links to GitHub, Twitter, Substack, website). This promotional material is embedded within what appears to be a functional skill description, which is misleading. Agent skills should focus on providing capabilities to the agent, not serving as advertisement platforms.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Section titled 'Part of the LXGIC Dev Toolkit' contains: 'This is one of 110+ free developer tools built by LXGIC Studios. No paywalls, no sign-ups, no API keys on free tiers. Just tools that work.' followed by multiple promotional links.",
+      "remediation": "Remove promotional content from the skill instructions. If attribution is needed, limit it to a brief author/source line in the YAML frontmatter. Agent skills should be functional tools, not marketing materials.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill package has MEDIUM severity issues primarily related to deceptive presentation. The skill masquerades as an agent capability but actually describes an external npm CLI tool ('npx ai-webhook'), making it misleading to users who expect agent skills to extend the AI assistant's direct capabilities. The package contains no executable scripts (Python/Bash) and instead provides documentation for a Node.js command-line tool. Additionally, the skill includes promotional content for LXGIC Studios' developer toolkit, which is inappropriate for agent skill packages. While there are no critical security threats like data exfiltration or command injection (since there's no executable code), the deceptive nature of the skill description and the promotional content constitute social engineering concerns. The skill also has minor issues with missing referenced files and incomplete metadata. This appears to be either a misunderstanding of what agent skills are, or an attempt to use the agent skills ecosystem for promotional purposes rather than providing genuine agent capabilities.",
+        "primary_threats": [
+          "Social Engineering (Deceptive Skill Description)",
+          "Misleading Content (External Tool Masquerading as Agent Skill)",
+          "Promotional Content Abuse"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The promotional section is clearly visible in SKILL.md and contains explicit marketing language and multiple promotional links.",
+        "meta_exploitability": "N/A - Not exploitable, but inappropriate content",
+        "meta_impact": "Low - Clutters documentation and suggests misuse of the skills ecosystem for promotional purposes, but doesn't cause direct harm"
       }
     }
   ],
-  "scan_duration_seconds": 0.2398519515991211,
-  "duration_ms": 239,
+  "scan_duration_seconds": 29.26803183555603,
+  "duration_ms": 29268,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:53:12.950207"
+  "timestamp": "2026-02-07T21:34:15.532409"
 }

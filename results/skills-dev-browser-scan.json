@@ -4,7 +4,7 @@
   "skill_directory": "/workspace/skills/SawyerHood-dev-browser/skills/dev-browser",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "findings_count": 7,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -41,16 +41,159 @@
         "threat_type": "TRANSITIVE TRUST ABUSE",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_dev-browser_0",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill does not declare 'allowed-tools' in its YAML manifest. While this field is optional per the agent skills specification, its absence means there are no explicit restrictions on which agent tools can be used. Given that this skill involves browser automation with network access, file system operations, and script execution, declaring allowed-tools would improve transparency and security posture.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML manifest shows: allowed-tools: Not specified",
+      "remediation": "Add 'allowed-tools: [Bash, Python]' to the YAML frontmatter to explicitly declare the tools this skill requires. This improves transparency and allows users to understand the skill's capabilities before activation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The dev-browser skill presents MEDIUM security risks primarily related to unrestricted network access and authenticated session control. The skill provides legitimate browser automation functionality but lacks security guardrails around URL navigation, authenticated session access, and resource limits. The most significant concerns are: (1) Extension Mode's access to authenticated browser sessions without additional safeguards, (2) unrestricted navigation to arbitrary URLs that could be exploited for data exfiltration or phishing, and (3) missing allowed-tools declaration that would improve transparency. The skill does not contain malicious code, prompt injection attempts, or hardcoded credentials. The referenced files are internal to the skill package (normal behavior) except for missing files that don't pose security risks. With proper security warnings, URL validation, and user confirmation workflows, this skill could be used safely for legitimate browser automation tasks.",
+        "primary_threats": [
+          "Tool Exploitation",
+          "Data Exposure",
+          "Authenticated Session Access",
+          "Unrestricted Network Access"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_dev-browser_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Unrestricted Network Access via Browser Automation",
+      "description": "The skill provides unrestricted browser automation capabilities that can navigate to any URL, including potentially malicious sites. The instructions explicitly mention 'go to [url]' as a trigger phrase, and scripts can call page.goto() with arbitrary URLs. This creates risk of: (1) navigating to phishing/malware sites, (2) exfiltrating data by navigating to attacker-controlled domains, (3) credential theft if the browser has saved passwords, (4) session hijacking in Extension Mode where the user's authenticated browser is controlled.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Instructions state: 'Use when users ask to navigate websites, fill forms, take screenshots, extract web data, test web apps, or automate browser workflows. Trigger phrases include \"go to [url]\"'. Scripts show: 'await page.goto(\"https://example.com\")' with no URL validation or allowlisting.",
+      "remediation": "Implement URL allowlisting or require explicit user confirmation before navigating to new domains. Add warnings about Extension Mode risks when controlling authenticated browser sessions. Consider sandboxing browser instances and restricting network access to known-safe domains.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The dev-browser skill presents MEDIUM security risks primarily related to unrestricted network access and authenticated session control. The skill provides legitimate browser automation functionality but lacks security guardrails around URL navigation, authenticated session access, and resource limits. The most significant concerns are: (1) Extension Mode's access to authenticated browser sessions without additional safeguards, (2) unrestricted navigation to arbitrary URLs that could be exploited for data exfiltration or phishing, and (3) missing allowed-tools declaration that would improve transparency. The skill does not contain malicious code, prompt injection attempts, or hardcoded credentials. The referenced files are internal to the skill package (normal behavior) except for missing files that don't pose security risks. With proper security warnings, URL validation, and user confirmation workflows, this skill could be used safely for legitimate browser automation tasks.",
+        "primary_threats": [
+          "Tool Exploitation",
+          "Data Exposure",
+          "Authenticated Session Access",
+          "Unrestricted Network Access"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_dev-browser_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Extension Mode Enables Access to Authenticated Sessions",
+      "description": "Extension Mode connects to the user's existing Chrome browser with active login sessions. The instructions explicitly state 'Use this when: The user is already logged into sites and wants you to do things behind an authed experience'. This creates significant data exposure risks: (1) the agent can access any authenticated site the user is logged into, (2) credentials and session tokens are accessible, (3) actions can be performed on behalf of the user without additional authentication, (4) sensitive data from authenticated sessions can be extracted.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Instructions state: 'Connects to user's existing Chrome browser. Use this when: The user is already logged into sites and wants you to do things behind an authed experience that isn't local dev.' and 'Automation runs on the user's actual browser session'",
+      "remediation": "Add prominent security warnings about Extension Mode risks. Require explicit user confirmation before each action in Extension Mode. Implement session isolation or require re-authentication for sensitive operations. Consider restricting Extension Mode to read-only operations by default.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The dev-browser skill presents MEDIUM security risks primarily related to unrestricted network access and authenticated session control. The skill provides legitimate browser automation functionality but lacks security guardrails around URL navigation, authenticated session access, and resource limits. The most significant concerns are: (1) Extension Mode's access to authenticated browser sessions without additional safeguards, (2) unrestricted navigation to arbitrary URLs that could be exploited for data exfiltration or phishing, and (3) missing allowed-tools declaration that would improve transparency. The skill does not contain malicious code, prompt injection attempts, or hardcoded credentials. The referenced files are internal to the skill package (normal behavior) except for missing files that don't pose security risks. With proper security warnings, URL validation, and user confirmation workflows, this skill could be used safely for legitimate browser automation tasks.",
+        "primary_threats": [
+          "Tool Exploitation",
+          "Data Exposure",
+          "Authenticated Session Access",
+          "Unrestricted Network Access"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_dev-browser_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing License and Compatibility Metadata",
+      "description": "The skill does not specify a license or compatibility information in its YAML manifest. While not a direct security threat, missing license information creates legal uncertainty, and missing compatibility information prevents users from understanding platform requirements and limitations.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML manifest shows: license: Not specified, compatibility: Not specified",
+      "remediation": "Add 'license: MIT' (or appropriate license) and 'compatibility: Works in Claude.ai, Claude Code, API' to the YAML frontmatter to improve transparency and legal clarity.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The dev-browser skill presents MEDIUM security risks primarily related to unrestricted network access and authenticated session control. The skill provides legitimate browser automation functionality but lacks security guardrails around URL navigation, authenticated session access, and resource limits. The most significant concerns are: (1) Extension Mode's access to authenticated browser sessions without additional safeguards, (2) unrestricted navigation to arbitrary URLs that could be exploited for data exfiltration or phishing, and (3) missing allowed-tools declaration that would improve transparency. The skill does not contain malicious code, prompt injection attempts, or hardcoded credentials. The referenced files are internal to the skill package (normal behavior) except for missing files that don't pose security risks. With proper security warnings, URL validation, and user confirmation workflows, this skill could be used safely for legitimate browser automation tasks.",
+        "primary_threats": [
+          "Tool Exploitation",
+          "Data Exposure",
+          "Authenticated Session Access",
+          "Unrestricted Network Access"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_dev-browser_4",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Potential for Unbounded Script Execution",
+      "description": "The skill allows execution of arbitrary TypeScript code via heredocs with no apparent timeout or resource limits. The instructions mention 'page.waitForTimeout(3000)' and network request interception that could run indefinitely if pages don't load or APIs don't respond. While not explicitly malicious, this creates potential for resource exhaustion or hanging processes.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Instructions show: 'npx tsx <<'EOF' ... await page.waitForTimeout(3000); ... EOF' with no timeout limits. Scraping guide shows pagination loops with no bounds checking.",
+      "remediation": "Add timeout limits to all page operations. Implement maximum execution time for scripts. Add resource monitoring and automatic termination for runaway processes. Document recommended timeout values in instructions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The dev-browser skill presents MEDIUM security risks primarily related to unrestricted network access and authenticated session control. The skill provides legitimate browser automation functionality but lacks security guardrails around URL navigation, authenticated session access, and resource limits. The most significant concerns are: (1) Extension Mode's access to authenticated browser sessions without additional safeguards, (2) unrestricted navigation to arbitrary URLs that could be exploited for data exfiltration or phishing, and (3) missing allowed-tools declaration that would improve transparency. The skill does not contain malicious code, prompt injection attempts, or hardcoded credentials. The referenced files are internal to the skill package (normal behavior) except for missing files that don't pose security risks. With proper security warnings, URL validation, and user confirmation workflows, this skill could be used safely for legitimate browser automation tasks.",
+        "primary_threats": [
+          "Tool Exploitation",
+          "Data Exposure",
+          "Authenticated Session Access",
+          "Unrestricted Network Access"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.22159719467163086,
-  "duration_ms": 221,
+  "scan_duration_seconds": 895.4610450267792,
+  "duration_ms": 895461,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:47:10.066404"
+  "timestamp": "2026-02-08T03:55:51.023730"
 }

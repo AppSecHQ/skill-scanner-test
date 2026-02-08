@@ -7,50 +7,76 @@
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_primer-x402_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill does not declare allowed-tools in its YAML manifest. While this field is optional, the skill's instructions clearly require Bash and Python execution (npx, pip, x402 CLI commands). Without explicit tool declarations, users cannot verify the skill's intended tool usage scope.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "allowed-tools: Not specified\n\nBut instructions require:\n- npx @primersystems/x402 openclaw init\n- pip install primer-x402\n- x402 wallet create\n- Bash command execution",
+      "remediation": "Add allowed-tools declaration to YAML frontmatter:\nallowed-tools: [Bash, Python]\n\nThis provides transparency about required agent capabilities.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The primer-x402 skill is a legitimate cryptocurrency payment integration tool with MODERATE security concerns. The skill enables HTTP-native crypto payments using the x402 protocol and USDC on EVM chains. Primary concerns include: (1) private key handling via environment variables without adequate security warnings, (2) missing allowed-tools declaration despite requiring Bash/Python execution, and (3) incomplete documentation with missing example files. The skill does NOT exhibit malicious behavior such as data exfiltration, prompt injection, or command injection. The core functionality (making crypto payments via CLI tools) is transparent and matches the stated description. The skill appropriately uses external package managers (npx, pip) to install the x402 CLI tool rather than bundling potentially malicious code. However, the financial nature of the skill (handling private keys and payments) means security documentation should be more comprehensive. Recommended actions: add allowed-tools declaration, enhance private key security guidance, complete code examples, and include missing reference files.",
+        "primary_threats": [
+          "Private key exposure via environment variables",
+          "Missing tool usage declarations",
+          "Incomplete documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill clearly requires Bash (for npx, x402 CLI commands) and Python (pip install) based on the instructions. This is a documentation improvement rather than a security vulnerability.",
+        "meta_exploitability": "N/A - This is a metadata/documentation issue, not an exploitable vulnerability",
+        "meta_impact": "Low - Informational only, helps users understand tool requirements"
       }
     },
     {
-      "id": "YARA_skill_discovery_abuse_e00d8fae03",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
+      "id": "llm_finding_primer-x402_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: Perfect",
+      "title": "Private Key Handling in Environment Variables",
+      "description": "The skill instructs users to pass private keys via environment variables (X402_PRIVATE_KEY) in command-line examples. While this is a common pattern, it poses risks: environment variables can leak through process listings, shell history, logs, and error messages. The skill does not provide warnings about secure key management or alternative methods.",
       "file_path": "SKILL.md",
-      "line_number": 3,
-      "snippet": "x402 enables instant stablecoin payments directly over HTTP using the 402 Payment Required status code. Perfect for AI agents paying for APIs, data, or compute on-demand.",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "# Pay for an API (max $0.10)\nX402_PRIVATE_KEY=0x... npx @primersystems/x402 pay https://api.example.com/paid --max-amount 0.10",
+      "remediation": "1. Add security warnings about private key handling\n2. Recommend using the openclaw init setup which stores keys securely in ~/.openclaw/\n3. Warn against exposing keys in shell history\n4. Suggest using --private-key-file option if available\n5. Document key storage best practices",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The primer-x402 skill is a legitimate cryptocurrency payment integration tool with MODERATE security concerns. The skill enables HTTP-native crypto payments using the x402 protocol and USDC on EVM chains. Primary concerns include: (1) private key handling via environment variables without adequate security warnings, (2) missing allowed-tools declaration despite requiring Bash/Python execution, and (3) incomplete documentation with missing example files. The skill does NOT exhibit malicious behavior such as data exfiltration, prompt injection, or command injection. The core functionality (making crypto payments via CLI tools) is transparent and matches the stated description. The skill appropriately uses external package managers (npx, pip) to install the x402 CLI tool rather than bundling potentially malicious code. However, the financial nature of the skill (handling private keys and payments) means security documentation should be more comprehensive. Recommended actions: add allowed-tools declaration, enhance private key security guidance, complete code examples, and include missing reference files.",
+        "primary_threats": [
+          "Private key exposure via environment variables",
+          "Missing tool usage declarations",
+          "Incomplete documentation"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a legitimate security concern for a financial application. While environment variables are a common pattern, the lack of security warnings for a crypto wallet application handling real funds is a documentation gap that could lead to credential exposure.",
+        "meta_exploitability": "Medium - Requires local access to view process listings or shell history, but these are common attack vectors on compromised systems",
+        "meta_impact": "High - Exposed private keys grant full control over the wallet and all funds"
       }
     }
   ],
-  "scan_duration_seconds": 0.22663521766662598,
-  "duration_ms": 226,
+  "scan_duration_seconds": 29.862653732299805,
+  "duration_ms": 29862,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:34:52.760935"
+  "timestamp": "2026-02-07T19:43:10.889470"
 }

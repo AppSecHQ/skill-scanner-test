@@ -2,26 +2,10 @@
   "skill_name": "stealth-browser",
   "skill_path": "/workspace/skills/clawhub-kesslerio-stealth-browser",
   "skill_directory": "/workspace/skills/clawhub-kesslerio-stealth-browser",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 6,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 3,
   "findings": [
-    {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
     {
       "id": "TOOL_ABUSE_SYSTEM_PACKAGE_INSTALL_32a2252c5e",
       "rule_id": "TOOL_ABUSE_SYSTEM_PACKAGE_INSTALL",
@@ -40,96 +24,88 @@
         "aitech": "AITech-12.1",
         "aitech_name": "Tool Exploitation",
         "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is documented, expected behavior for browser automation setup. The skill runs in an isolated container, and the packages are legitimate browser dependencies.",
+        "meta_exploitability": "Very Low - User must explicitly run setup.sh. Container isolation limits impact.",
+        "meta_impact": "Very Low - Installs legitimate dependencies in isolated container"
       }
     },
     {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_8eb010a8bc",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
+      "id": "llm_finding_stealth-browser_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
       "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import requests",
-      "file_path": "scripts/curl-api.py",
-      "line_number": 23,
-      "snippet": "from curl_cffi import requests",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+requests",
-        "matched_text": "import requests",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_HTTP_POST_4f536bfa34",
-      "rule_id": "DATA_EXFIL_HTTP_POST",
-      "category": "data_exfiltration",
-      "severity": "CRITICAL",
-      "title": "HTTP POST request that may send data externally",
-      "description": "Pattern detected: requests.post(",
-      "file_path": "scripts/curl-api.py",
-      "line_number": 73,
-      "snippet": "response = requests.post(url, **kwargs)",
-      "remediation": "Review all POST requests. Ensure they don't send sensitive data",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "requests\\.post\\s*\\(",
-        "matched_text": "requests.post(",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "TOOL_MISMATCH_NETWORK_ab83c3eb83",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
-      "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "title": "Unbounded Wait Operations Without Timeout",
+      "description": "The camoufox-fetch.py script uses asyncio.sleep() for page load waits but lacks overall timeout controls. The camoufox-session.py script has infinite retry loops without maximum attempt limits, which could lead to resource exhaustion if a page never loads or login never succeeds.",
       "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
+      "snippet": "await asyncio.sleep(wait) without timeout wrapper, while loops without max iteration limits in session management",
+      "remediation": "Implement asyncio.wait_for() with reasonable timeouts (30-60s) around all async operations. Add max_retries parameters to session management functions. Include timeout configuration options.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The stealth-browser skill presents MEDIUM-HIGH security risks primarily related to credential handling, input validation, and resource management. The skill's core functionality (anti-bot browser automation) is legitimate, but implementation issues create security vulnerabilities. Key concerns include hardcoded credential patterns in documentation, lack of input validation in proxy URL parsing, unbounded operations without timeouts, and unrestricted file system access for cookie management. The use of distrobox containers provides some isolation, but sudo operations within containers and potential command injection vectors reduce this protection. The skill would benefit from implementing proper input validation, credential management via environment variables, timeout controls, and file system access restrictions. No evidence of malicious intent (data exfiltration, prompt injection) was found - issues are implementation weaknesses rather than deliberate threats.",
+        "primary_threats": [
+          "Data Exposure (Hardcoded Credentials)",
+          "Command Injection (Proxy URL Parsing)",
+          "Resource Exhaustion (Unbounded Operations)",
+          "Unauthorized File Access (Cookie Management)",
+          "Container Privilege Escalation"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Code review confirms no timeout controls. However, Playwright/Camoufox has default timeouts (30s for navigation), so this is not unbounded. More of a best practice issue.",
+        "meta_exploitability": "Low - Requires targeting a page that never loads. Default browser timeouts provide some protection.",
+        "meta_impact": "Low - Resource consumption, not system compromise"
       }
     },
     {
-      "id": "YARA_tool_chaining_abuse_24b1c01ed7",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
+      "id": "llm_finding_stealth-browser_2",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
       "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: GET, POST",
-      "file_path": "scripts/curl-api.py",
-      "line_number": 11,
-      "snippet": "--method METHOD   HTTP method (GET, POST, etc.)",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
+      "title": "Command Injection Risk in Proxy URL Parsing",
+      "description": "The camoufox-fetch.py script parses proxy URLs by splitting on '@' and ':' characters without proper validation or sanitization. If a malicious proxy URL is provided with special characters or shell metacharacters, it could lead to unexpected behavior or injection attacks when passed to the browser.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "auth_part = proxy.split('@')[0].replace('http://', '').replace('https://', ''); user, password = auth_part.split(':') - no validation of input",
+      "remediation": "Use urllib.parse.urlparse() for proper URL parsing. Validate and sanitize all components before use. Add input validation to reject URLs with suspicious characters.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The stealth-browser skill presents MEDIUM-HIGH security risks primarily related to credential handling, input validation, and resource management. The skill's core functionality (anti-bot browser automation) is legitimate, but implementation issues create security vulnerabilities. Key concerns include hardcoded credential patterns in documentation, lack of input validation in proxy URL parsing, unbounded operations without timeouts, and unrestricted file system access for cookie management. The use of distrobox containers provides some isolation, but sudo operations within containers and potential command injection vectors reduce this protection. The skill would benefit from implementing proper input validation, credential management via environment variables, timeout controls, and file system access restrictions. No evidence of malicious intent (data exfiltration, prompt injection) was found - issues are implementation weaknesses rather than deliberate threats.",
+        "primary_threats": [
+          "Data Exposure (Hardcoded Credentials)",
+          "Command Injection (Proxy URL Parsing)",
+          "Resource Exhaustion (Unbounded Operations)",
+          "Unauthorized File Access (Cookie Management)",
+          "Container Privilege Escalation"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code review confirms unsafe string splitting without validation. However, values are passed to Camoufox API (not shell), reducing actual injection risk. Main issue is crash potential from malformed input.",
+        "meta_exploitability": "Low - Requires user to provide malformed proxy URL. No shell execution involved.",
+        "meta_impact": "Low - Application crash or unexpected behavior, not system compromise"
       }
     }
   ],
-  "scan_duration_seconds": 1.4510259628295898,
-  "duration_ms": 1451,
+  "scan_duration_seconds": 34.25377821922302,
+  "duration_ms": 34253,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:50:04.856261"
+  "timestamp": "2026-02-07T19:37:46.775483"
 }

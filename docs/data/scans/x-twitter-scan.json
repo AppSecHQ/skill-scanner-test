@@ -7,50 +7,74 @@
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_twitter-openclaw_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Missing Credential Security Documentation",
+      "description": "The skill requires sensitive Twitter API credentials (TWITTER_BEARER_TOKEN, TWITTER_API_KEY, TWITTER_API_SECRET) but provides no guidance on secure storage, rotation, or scope limitations. Users may inadvertently expose credentials through insecure environment variable handling or overly permissive API tokens.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Requires a Twitter API Bearer Token set as `TWITTER_BEARER_TOKEN`. Optionally set `TWITTER_API_KEY` and `TWITTER_API_SECRET` for write operations",
+      "remediation": "Add documentation on: (1) Using read-only tokens when possible, (2) Storing credentials securely (not in shell history or unencrypted files), (3) Token rotation best practices, (4) Minimum required API scopes",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The twitter-openclaw skill is a legitimate Twitter/X API wrapper with NO CRITICAL SECURITY THREATS detected. The skill appropriately delegates all Twitter API interactions to the external 'twclaw' CLI tool rather than implementing custom code, which reduces attack surface. The primary concerns are around credential management documentation (MEDIUM severity) and operational safety (unbounded fetching). No prompt injection, data exfiltration, command injection, or malicious code patterns were found. The skill's behavior matches its description and there are no deceptive elements. The missing referenced files (list.py, a.py) appear to be documentation artifacts rather than security issues.",
+        "primary_threats": [
+          "Credential exposure risk",
+          "Resource exhaustion potential"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill legitimately requires Twitter API credentials and lacks security guidance. This is a documentation gap that could lead to credential exposure through user error, not a malicious design.",
+        "meta_exploitability": "Medium - Requires user to misconfigure credentials or use overly permissive tokens",
+        "meta_impact": "Medium - Could lead to unauthorized Twitter account access if credentials are exposed or overly permissive"
       }
     },
     {
-      "id": "YARA_tool_chaining_abuse_c7365809be",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Read, search, post",
+      "id": "llm_finding_twitter-openclaw_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Unbounded Data Fetching with --all Flag",
+      "description": "The skill supports an '--all' flag for pagination that could fetch unlimited data without user confirmation or rate limiting guidance. This could lead to API rate limit exhaustion, excessive resource consumption, or unintended costs if the Twitter API has usage-based pricing.",
       "file_path": "SKILL.md",
-      "line_number": 117,
-      "snippet": "**TL;DR**: Read, search, post, and engage on Twitter/X. Always confirm before write actions.",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
+      "line_number": 113,
+      "snippet": "--all           # Fetch all pages (use with caution)",
+      "remediation": "Add explicit warnings about rate limits, implement confirmation prompts for --all operations, document expected data volumes, and suggest reasonable -n limits for common use cases",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The twitter-openclaw skill is a legitimate Twitter/X API wrapper with NO CRITICAL SECURITY THREATS detected. The skill appropriately delegates all Twitter API interactions to the external 'twclaw' CLI tool rather than implementing custom code, which reduces attack surface. The primary concerns are around credential management documentation (MEDIUM severity) and operational safety (unbounded fetching). No prompt injection, data exfiltration, command injection, or malicious code patterns were found. The skill's behavior matches its description and there are no deceptive elements. The missing referenced files (list.py, a.py) appear to be documentation artifacts rather than security issues.",
+        "primary_threats": [
+          "Credential exposure risk",
+          "Resource exhaustion potential"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The --all flag is documented with a caution note, and the guidelines section already mentions rate limits. However, more explicit warnings about the risks would improve safety.",
+        "meta_exploitability": "Low - Requires user to explicitly use --all flag, and Twitter API has built-in rate limiting",
+        "meta_impact": "Low - Temporary API rate limit exhaustion, no data loss or security breach"
       }
     }
   ],
-  "scan_duration_seconds": 0.2075974941253662,
-  "duration_ms": 207,
+  "scan_duration_seconds": 21.52749276161194,
+  "duration_ms": 21527,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:53:59.120379"
+  "timestamp": "2026-02-07T21:49:40.613426"
 }

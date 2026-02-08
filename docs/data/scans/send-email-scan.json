@@ -4,90 +4,79 @@
   "skill_directory": "/workspace/skills/clawhub-send-email",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 4,
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_ENV_VARS_2ad2f4d370",
-      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "id": "llm_finding_send-email_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "Reading environment variables that may contain secrets",
-      "description": "Pattern detected: os.getenv(\"EMAIL_SMTP_PASSWORD",
-      "file_path": "send_email.py",
-      "line_number": 20,
-      "snippet": "AUTHORIZATION_CODE = os.getenv(\"EMAIL_SMTP_PASSWORD\")",
-      "remediation": "Minimize access to environment variables. Document why needed",
-      "analyzer": "static",
+      "title": "Hardcoded Credential Storage Location Exposure",
+      "description": "The skill instructions explicitly direct users to store SMTP credentials (EMAIL_SMTP_PASSWORD) in plaintext within ~/.openclaw/openclaw.json. While the skill correctly avoids reading this file directly (preventing credential exposure in tool output), the configuration pattern itself creates a security risk by encouraging plaintext credential storage in a predictable location. If the user's system is compromised, these credentials are easily accessible.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Configure in **`~/.openclaw/openclaw.json`**:\n\n```json\n\"skills\": {\n  \"entries\": {\n    \"send-email\": {\n      \"enabled\": true,\n      \"env\": {\n        \"EMAIL_SMTP_SERVER\": \"smtp.163.com\",\n        \"EMAIL_SMTP_PORT\": \"465\",\n        \"EMAIL_SENDER\": \"your-email@163.com\",\n        \"EMAIL_SMTP_PASSWORD\": \"YOUR_AUTH_CODE\"\n      }\n    }\n  }\n}\n```",
+      "remediation": "Recommend using system keychain/credential managers (e.g., macOS Keychain, Windows Credential Manager, Linux Secret Service) or encrypted credential storage. Document secure credential management practices. Consider integrating with OS-native credential storage APIs instead of plaintext JSON files.",
+      "analyzer": "llm",
       "metadata": {
-        "matched_pattern": "os\\.getenv\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
-        "matched_text": "os.getenv(\"EMAIL_SMTP_PASSWORD",
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The send-email skill is a legitimate email-sending utility with MODERATE security concerns. The skill correctly avoids reading credential files directly (preventing credential exposure in tool output), but encourages plaintext credential storage in a predictable location. The primary risks are: (1) plaintext credential storage pattern in ~/.openclaw/openclaw.json, (2) potential command injection through unvalidated email parameters, and (3) missing input validation. The skill does not exhibit malicious behavior such as data exfiltration, prompt injection, or tool poisoning. The functionality matches the description, and the code is straightforward without obfuscation. Recommended actions: implement input validation, document secure credential management practices, and add explicit tool declarations.",
+        "primary_threats": [
+          "Plaintext credential storage",
+          "Command injection risk",
+          "Missing input validation"
+        ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
         "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The documentation explicitly shows plaintext password storage as the primary configuration method. This is a documented pattern, not speculative.",
+        "meta_exploitability": "Medium - Requires local file access or configuration file exposure, but the predictable location (~/.openclaw/openclaw.json) makes it a known target",
+        "meta_impact": "Medium - Credential theft allows unauthorized email sending from user's account, potential spam/phishing abuse"
       }
     },
     {
-      "id": "YARA_tool_chaining_abuse_99b48eed91",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
+      "id": "llm_finding_send-email_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
       "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: read config files. OpenClaw injects `skills.entries.send-email",
-      "file_path": "SKILL.md",
-      "line_number": 34,
-      "snippet": "1. **Credentials**: Never read config files. OpenClaw injects `skills.entries.send-email.env` when the script runs \u2014 do not use the read tool on `~/.openclaw/openclaw.json` or `workspace/openclaw.json` (exposes secrets). If the skill is enabled, assume env is configured; do not ask the user for passwords. Do not use ~/.msmtprc.",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "ENV_VAR_HARVESTING_7e6349ba18",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/clawhub-send-email/send_email.py",
-      "file_path": "skills/clawhub-send-email/send_email.py",
+      "title": "Command Injection Risk via Unvalidated Email Parameters",
+      "description": "The Python script (send_email.py) accepts email recipient, subject, and body as command-line arguments without apparent input validation or sanitization. While the script uses email.mime libraries (which provide some protection), the bash script (send_email.sh) directly interpolates these arguments into shell commands and file operations. An attacker could potentially inject shell metacharacters through these parameters if the agent passes unsanitized user input.",
+      "file_path": "send_email.sh",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
+      "snippet": "Bash script: TO=\"$1\"\nSUBJECT=\"$2\"\nBODY=\"$3\"\n\nPython script accepts sys.argv without validation:\nto_email = sys.argv[1]\nsubject = sys.argv[2]\ncontent = sys.argv[3]",
+      "remediation": "Implement strict input validation for all email parameters: validate email addresses against RFC 5322 format, sanitize subject and body content to remove shell metacharacters, limit parameter lengths, and use parameterized commands instead of string interpolation. Consider using Python's shlex.quote() for shell argument escaping in the bash script.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The send-email skill is a legitimate email-sending utility with MODERATE security concerns. The skill correctly avoids reading credential files directly (preventing credential exposure in tool output), but encourages plaintext credential storage in a predictable location. The primary risks are: (1) plaintext credential storage pattern in ~/.openclaw/openclaw.json, (2) potential command injection through unvalidated email parameters, and (3) missing input validation. The skill does not exhibit malicious behavior such as data exfiltration, prompt injection, or tool poisoning. The functionality matches the description, and the code is straightforward without obfuscation. Recommended actions: implement input validation, document secure credential management practices, and add explicit tool declarations.",
+        "primary_threats": [
+          "Plaintext credential storage",
+          "Command injection risk",
+          "Missing input validation"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The bash script clearly uses unquoted variable expansion in contexts where shell interpretation occurs. While the Python script is safer, the bash script presents a real command injection risk if user-controlled data reaches it.",
+        "meta_exploitability": "Medium - Requires agent to pass unsanitized user input to the bash script. The SKILL.md instructions direct users to use the Python script, reducing likelihood.",
+        "meta_impact": "High - Successful exploitation allows arbitrary command execution with agent privileges"
       }
     }
   ],
-  "scan_duration_seconds": 0.24836444854736328,
-  "duration_ms": 248,
+  "scan_duration_seconds": 27.325549125671387,
+  "duration_ms": 27325,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:36:34.900773"
+  "timestamp": "2026-02-07T20:08:00.500501"
 }

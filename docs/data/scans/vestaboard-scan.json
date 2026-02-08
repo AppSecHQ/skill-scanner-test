@@ -3,8 +3,8 @@
   "skill_path": "/workspace/skills/clawhub-vestaboard",
   "skill_directory": "/workspace/skills/clawhub-vestaboard",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 7,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -21,16 +21,188 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_vestaboard_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Token Environment Variable Names",
+      "description": "The skill requires API tokens via environment variables (VESTABOARD_TOKEN or VESTABOARD_RW_KEY) but provides no validation, sanitization, or secure handling guidance. While using environment variables is better than hardcoding secrets, the skill does not verify token format, implement rate limiting, or provide guidance on token rotation. The legacy fallback (VESTABOARD_RW_KEY) suggests potential use of deprecated authentication methods that may have weaker security properties.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "- Preferred: `VESTABOARD_TOKEN`\n- Optional legacy fallback: `VESTABOARD_RW_KEY`",
+      "remediation": "1. Document token format requirements and validation steps\n2. Implement token validation before API calls\n3. Add guidance on secure token storage and rotation\n4. Deprecate legacy RW_KEY with migration timeline\n5. Consider implementing token expiration checks",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Vestaboard skill presents MEDIUM security risk primarily due to external API communication with user-provided credentials and missing implementation verification. The skill's stated purpose (controlling a Vestaboard display via cloud API) is legitimate, but several security concerns exist: (1) API tokens are required via environment variables without validation guidance, (2) network communication to third-party API cannot be verified as properly restricted, (3) missing input validation and rate limiting could enable abuse, (4) file path handling lacks documented validation, and (5) critical implementation files are missing, preventing code-level security verification. The skill would benefit from: explicit input validation, rate limiting, endpoint restriction verification, path traversal protection, and inclusion of all referenced implementation files. The missing metadata fields (license, compatibility, allowed-tools) reduce transparency but are lower severity. No evidence of prompt injection, command injection, or deliberate data exfiltration was found in the provided documentation.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unverified API endpoint restriction)",
+          "Missing Input Validation",
+          "Credential Exposure Risk (environment variables without validation)",
+          "Missing Implementation Files (cannot verify security claims)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_vestaboard_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "External Network Communication to Third-Party API",
+      "description": "The skill makes network calls to cloud.vestaboard.com API using user-provided credentials. While this is the stated purpose, there is no implementation code provided to verify that data transmission is limited to the Vestaboard API endpoint only. The skill could potentially be modified to exfiltrate data to other endpoints, and without seeing the actual implementation (scripts/vb.js), we cannot verify proper certificate validation, request sanitization, or endpoint restriction.",
+      "file_path": "SKILL.md",
+      "line_number": 1,
+      "snippet": "Read and write messages on a Vestaboard using the Vestaboard Cloud API (cloud.vestaboard.com)",
+      "remediation": "1. Implement strict endpoint validation (whitelist cloud.vestaboard.com only)\n2. Use certificate pinning for API connections\n3. Validate all API responses before processing\n4. Implement request/response logging for audit trails\n5. Add network error handling and timeout limits",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Vestaboard skill presents MEDIUM security risk primarily due to external API communication with user-provided credentials and missing implementation verification. The skill's stated purpose (controlling a Vestaboard display via cloud API) is legitimate, but several security concerns exist: (1) API tokens are required via environment variables without validation guidance, (2) network communication to third-party API cannot be verified as properly restricted, (3) missing input validation and rate limiting could enable abuse, (4) file path handling lacks documented validation, and (5) critical implementation files are missing, preventing code-level security verification. The skill would benefit from: explicit input validation, rate limiting, endpoint restriction verification, path traversal protection, and inclusion of all referenced implementation files. The missing metadata fields (license, compatibility, allowed-tools) reduce transparency but are lower severity. No evidence of prompt injection, command injection, or deliberate data exfiltration was found in the provided documentation.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unverified API endpoint restriction)",
+          "Missing Input Validation",
+          "Credential Exposure Risk (environment variables without validation)",
+          "Missing Implementation Files (cannot verify security claims)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_vestaboard_2",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Missing Input Validation and Resource Limits",
+      "description": "The skill accepts arbitrary text input for display on the Vestaboard without documented input validation, sanitization, or rate limiting. While the 6x22 character constraint provides some natural limitation, there is no mention of: (1) maximum input length before truncation, (2) rate limiting to prevent API abuse, (3) validation of character codes in numeric layouts, or (4) handling of malformed JSON layout files. This could lead to excessive API calls or processing of malicious layout files.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Text input is formatted to 6x22 by default (uppercase + word wrap; truncates overflow)",
+      "remediation": "1. Implement maximum input length validation (e.g., 1000 chars before processing)\n2. Add rate limiting (e.g., max 10 API calls per minute)\n3. Validate JSON layout files against schema before processing\n4. Sanitize character codes to valid Vestaboard range\n5. Implement exponential backoff for API retries",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Vestaboard skill presents MEDIUM security risk primarily due to external API communication with user-provided credentials and missing implementation verification. The skill's stated purpose (controlling a Vestaboard display via cloud API) is legitimate, but several security concerns exist: (1) API tokens are required via environment variables without validation guidance, (2) network communication to third-party API cannot be verified as properly restricted, (3) missing input validation and rate limiting could enable abuse, (4) file path handling lacks documented validation, and (5) critical implementation files are missing, preventing code-level security verification. The skill would benefit from: explicit input validation, rate limiting, endpoint restriction verification, path traversal protection, and inclusion of all referenced implementation files. The missing metadata fields (license, compatibility, allowed-tools) reduce transparency but are lower severity. No evidence of prompt injection, command injection, or deliberate data exfiltration was found in the provided documentation.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unverified API endpoint restriction)",
+          "Missing Input Validation",
+          "Credential Exposure Risk (environment variables without validation)",
+          "Missing Implementation Files (cannot verify security claims)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_vestaboard_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "LOW",
+      "title": "Missing File Path Validation for Layout Files",
+      "description": "The skill references layout files in content/layouts/*.json and preview files in content/previews/*.md without documented path validation or sanitization. An attacker could potentially use path traversal (e.g., ../../etc/passwd) to read arbitrary files if the implementation does not properly validate file paths. The referenced file 'Quarterbridge.py' is not found, suggesting potential broken references or missing validation.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "- Numeric layouts live in `content/layouts/*.json`\n- Human review previews live in `content/previews/*.md`",
+      "remediation": "1. Implement strict path validation (whitelist content/ directory only)\n2. Reject paths containing '..' or absolute paths\n3. Verify all referenced files exist before processing\n4. Use safe file reading APIs that prevent traversal\n5. Document expected file structure and validation rules",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Vestaboard skill presents MEDIUM security risk primarily due to external API communication with user-provided credentials and missing implementation verification. The skill's stated purpose (controlling a Vestaboard display via cloud API) is legitimate, but several security concerns exist: (1) API tokens are required via environment variables without validation guidance, (2) network communication to third-party API cannot be verified as properly restricted, (3) missing input validation and rate limiting could enable abuse, (4) file path handling lacks documented validation, and (5) critical implementation files are missing, preventing code-level security verification. The skill would benefit from: explicit input validation, rate limiting, endpoint restriction verification, path traversal protection, and inclusion of all referenced implementation files. The missing metadata fields (license, compatibility, allowed-tools) reduce transparency but are lower severity. No evidence of prompt injection, command injection, or deliberate data exfiltration was found in the provided documentation.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unverified API endpoint restriction)",
+          "Missing Input Validation",
+          "Credential Exposure Risk (environment variables without validation)",
+          "Missing Implementation Files (cannot verify security claims)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_vestaboard_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Metadata Fields in Manifest",
+      "description": "The YAML manifest is missing several important metadata fields: license, compatibility, and allowed-tools. While allowed-tools is optional, its absence means there are no declared restrictions on which agent tools can be used. The missing license field creates legal ambiguity, and missing compatibility information prevents users from understanding platform requirements. This is informational but reduces transparency about the skill's capabilities and constraints.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "- license: Not specified\n- compatibility: Not specified\n- allowed-tools: Not specified",
+      "remediation": "1. Add explicit license field (e.g., MIT, Apache-2.0)\n2. Document compatibility (e.g., 'Requires Node.js 18+, network access')\n3. Add allowed-tools field declaring required tools (e.g., [Bash] for CLI execution)\n4. Document any platform-specific requirements\n5. Add version field for skill versioning",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Vestaboard skill presents MEDIUM security risk primarily due to external API communication with user-provided credentials and missing implementation verification. The skill's stated purpose (controlling a Vestaboard display via cloud API) is legitimate, but several security concerns exist: (1) API tokens are required via environment variables without validation guidance, (2) network communication to third-party API cannot be verified as properly restricted, (3) missing input validation and rate limiting could enable abuse, (4) file path handling lacks documented validation, and (5) critical implementation files are missing, preventing code-level security verification. The skill would benefit from: explicit input validation, rate limiting, endpoint restriction verification, path traversal protection, and inclusion of all referenced implementation files. The missing metadata fields (license, compatibility, allowed-tools) reduce transparency but are lower severity. No evidence of prompt injection, command injection, or deliberate data exfiltration was found in the provided documentation.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unverified API endpoint restriction)",
+          "Missing Input Validation",
+          "Credential Exposure Risk (environment variables without validation)",
+          "Missing Implementation Files (cannot verify security claims)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_vestaboard_5",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "LOW",
+      "title": "Missing Implementation Files",
+      "description": "The skill references a Node.js script (scripts/vb.js) and a Python file (Quarterbridge.py) that are not included in the analyzed package. Without the actual implementation code, it is impossible to verify: (1) proper API authentication handling, (2) input sanitization, (3) network request validation, (4) error handling, or (5) absence of malicious code. The missing files create a trust gap where the actual behavior cannot be verified against the documented behavior.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "node scripts/vb.js preview\nFiles referenced in instructions: Quarterbridge.py (not found)",
+      "remediation": "1. Include all referenced script files in the skill package\n2. Provide source code for scripts/vb.js\n3. Clarify purpose of Quarterbridge.py or remove reference\n4. Document all dependencies and installation requirements\n5. Add integrity checks (checksums) for script files",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Vestaboard skill presents MEDIUM security risk primarily due to external API communication with user-provided credentials and missing implementation verification. The skill's stated purpose (controlling a Vestaboard display via cloud API) is legitimate, but several security concerns exist: (1) API tokens are required via environment variables without validation guidance, (2) network communication to third-party API cannot be verified as properly restricted, (3) missing input validation and rate limiting could enable abuse, (4) file path handling lacks documented validation, and (5) critical implementation files are missing, preventing code-level security verification. The skill would benefit from: explicit input validation, rate limiting, endpoint restriction verification, path traversal protection, and inclusion of all referenced implementation files. The missing metadata fields (license, compatibility, allowed-tools) reduce transparency but are lower severity. No evidence of prompt injection, command injection, or deliberate data exfiltration was found in the provided documentation.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unverified API endpoint restriction)",
+          "Missing Input Validation",
+          "Credential Exposure Risk (environment variables without validation)",
+          "Missing Implementation Files (cannot verify security claims)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.2767069339752197,
-  "duration_ms": 276,
+  "scan_duration_seconds": 39.5037899017334,
+  "duration_ms": 39503,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:52:48.021215"
+  "timestamp": "2026-02-07T21:28:39.849025"
 }

@@ -3,34 +3,82 @@
   "skill_path": "/workspace/skills/clawhub-twitter",
   "skill_directory": "/workspace/skills/clawhub-twitter",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_twitter_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Missing Implementation Creates Credential Exposure Risk",
+      "description": "The skill declares Twitter API credentials (TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN) in setup instructions but provides no script files to implement the functionality. This creates a security risk where users may expose credentials in their environment without any actual secure implementation to use them. The skill cannot function as described, yet encourages credential configuration.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "```bash\nexport TWITTER_API_KEY=\"your_api_key\"\nexport TWITTER_API_SECRET=\"your_api_secret\"\nexport TWITTER_ACCESS_TOKEN=\"your_access_token\"\n```\nNo corresponding Python/Bash scripts found to securely handle these credentials.",
+      "remediation": "1. Implement actual script files (Python/Bash) that securely handle Twitter API credentials. 2. Use secure credential storage mechanisms instead of environment variables (e.g., encrypted credential stores). 3. Add input validation and secure API call implementations. 4. Include error handling for credential failures. 5. Document secure credential management practices.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Twitter integration skill presents MEDIUM severity security risks primarily due to its incomplete implementation. The skill solicits sensitive Twitter API credentials (API key, secret, access token) through environment variable configuration but provides zero implementation files to actually use these credentials securely. This creates a credential exposure risk where users may configure sensitive tokens without any functional code to protect them. Additionally, the skill engages in social engineering by claiming comprehensive Twitter functionality (posting, timeline reading, follower management, analytics, scheduling) while containing no actual implementation - this false advertising could mislead users into trusting and installing a non-functional skill. The skill also lacks important optional metadata (license, compatibility, allowed-tools) and declares external binary dependencies (curl, jq) without validation. While no active malicious code was detected (since no code exists), the combination of credential solicitation without implementation and deceptive functionality claims represents a moderate security concern. This appears to be either an abandoned template or an incomplete skill that should not be distributed in its current state.",
+        "primary_threats": [
+          "Data Exfiltration Risk (Credential Exposure)",
+          "Social Engineering (Deceptive Claims)",
+          "Missing Implementation",
+          "Incomplete Dependency Management"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified that SKILL.md contains credential setup instructions but no implementation files exist to use these credentials. This is a real risk of unnecessary credential exposure.",
+        "meta_exploitability": "Low - Requires user to follow instructions and configure credentials",
+        "meta_impact": "Medium - Credentials exposed in environment without functional code to protect them"
+      }
+    },
+    {
+      "id": "llm_finding_twitter_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Deceptive Functionality Claims Without Implementation",
+      "description": "The skill claims to provide comprehensive Twitter integration features (post tweets, read timeline, search, manage followers, analytics, schedule posts) but contains zero implementation files. This is social engineering through false advertising - users may trust and install the skill believing it provides these capabilities, potentially exposing credentials or attempting to use non-existent functionality.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Claimed features:\n- Post tweets\n- Read timeline\n- Search tweets\n- Manage followers\n- Analytics\n- Schedule posts\n\nActual implementation: No script files found.",
+      "remediation": "1. Remove the skill entirely or clearly mark as 'template/placeholder'. 2. If keeping as template, add prominent warnings that implementation is required. 3. Implement all claimed features before distribution. 4. Add 'status: incomplete' or 'status: template' to YAML manifest. 5. Do not encourage credential configuration until implementation exists.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Twitter integration skill presents MEDIUM severity security risks primarily due to its incomplete implementation. The skill solicits sensitive Twitter API credentials (API key, secret, access token) through environment variable configuration but provides zero implementation files to actually use these credentials securely. This creates a credential exposure risk where users may configure sensitive tokens without any functional code to protect them. Additionally, the skill engages in social engineering by claiming comprehensive Twitter functionality (posting, timeline reading, follower management, analytics, scheduling) while containing no actual implementation - this false advertising could mislead users into trusting and installing a non-functional skill. The skill also lacks important optional metadata (license, compatibility, allowed-tools) and declares external binary dependencies (curl, jq) without validation. While no active malicious code was detected (since no code exists), the combination of credential solicitation without implementation and deceptive functionality claims represents a moderate security concern. This appears to be either an abandoned template or an incomplete skill that should not be distributed in its current state.",
+        "primary_threats": [
+          "Data Exfiltration Risk (Credential Exposure)",
+          "Social Engineering (Deceptive Claims)",
+          "Missing Implementation",
+          "Incomplete Dependency Management"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Verified that SKILL.md claims 6+ features but the skill package contains only SKILL.md with no implementation files. This is objectively deceptive.",
+        "meta_exploitability": "Low - No active exploitation, but misleads users into wasting time or exposing credentials",
+        "meta_impact": "Medium - Users may configure sensitive credentials for non-functional code, or waste time troubleshooting"
       }
     }
   ],
-  "scan_duration_seconds": 0.28972625732421875,
-  "duration_ms": 289,
+  "scan_duration_seconds": 30.795866012573242,
+  "duration_ms": 30795,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:51:54.581510"
+  "timestamp": "2026-02-07T21:18:54.533316"
 }

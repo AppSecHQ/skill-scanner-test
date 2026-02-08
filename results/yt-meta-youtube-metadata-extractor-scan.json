@@ -3,50 +3,115 @@
   "skill_path": "/workspace/skills/clawhub-yt-meta",
   "skill_directory": "/workspace/skills/clawhub-yt-meta",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 2,
+  "max_severity": "MEDIUM",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_INVALID_NAME_794e30271c",
-      "rule_id": "MANIFEST_INVALID_NAME",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill name does not follow agent skills naming rules",
-      "description": "Skill name 'YT Meta - YouTube Metadata Extractor' is invalid. Agent skills require lowercase letters, numbers, and hyphens only, with a maximum length of 64 characters.",
+      "id": "llm_finding_YT Meta - YouTube Metadata Extractor_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Unverified Third-Party Package Installation",
+      "description": "The skill instructs the agent to install a third-party npm package 'yt-meta-cli' globally without version pinning or provenance verification. This creates a supply chain risk where a malicious or compromised package could be installed on the user's system with global permissions.",
       "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Rename the skill to match `[a-z0-9-]{1,64}` (e.g., 'pdf-processing')",
-      "analyzer": "static",
+      "line_number": 7,
+      "snippet": "npm install -g yt-meta-cli (no version specified, global installation)",
+      "remediation": "1) Pin to a specific verified version (e.g., 'npm install -g yt-meta-cli@1.2.3'), 2) Add package verification steps (checksum, signature), 3) Document the package source and maintainer, 4) Consider using npx for non-persistent execution, 5) Warn users about global installation implications.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security risks primarily related to supply chain security and unverified third-party dependencies. The skill itself contains no malicious code (no script files are included), but it instructs the agent to install and execute an external npm package globally without version pinning or verification. The main concerns are: (1) Supply chain risk from unverified npm package installation, (2) Lack of transparency about what the external tool actually does with data, (3) Missing optional metadata that would help users assess compatibility and tool requirements, (4) Potential for resource exhaustion with unbounded data collection operations. The skill would benefit from adding version pinning, security disclosures, and clearer documentation about the external dependency's behavior and data handling.",
+        "primary_threats": [
+          "Supply Chain Risk",
+          "Unverified Third-Party Dependency",
+          "Missing Security Metadata",
+          "Potential Resource Exhaustion"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a real supply chain risk. Installing unversioned global npm packages is a well-documented security concern. The skill provides no verification mechanism.",
+        "meta_exploitability": "Medium - Requires attacker to compromise the npm package or perform typosquatting attack",
+        "meta_impact": "High - Global installation grants system-wide access; malicious package could exfiltrate data, install backdoors, or compromise the system"
       }
     },
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_YT Meta - YouTube Metadata Extractor_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Potential Social Engineering via Unverified External Tool",
+      "description": "The skill description claims 'No API key required. Free CLI tool' which could be used to build false trust. The skill delegates all functionality to an external npm package (yt-meta-cli) whose behavior, safety, and data handling practices are not verified within the skill itself. Users may trust the skill based on its description without understanding they're installing and running unverified third-party code.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Description: 'No API key required. Free CLI tool for content research and analysis' - delegates to unverified external package",
+      "remediation": "1) Add clear disclosure that this skill installs and runs third-party software, 2) Include security warnings about external dependencies, 3) Provide links to the package's source code for user review, 4) Document what data the external tool may access or transmit, 5) Consider implementing the functionality directly rather than depending on external packages.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security risks primarily related to supply chain security and unverified third-party dependencies. The skill itself contains no malicious code (no script files are included), but it instructs the agent to install and execute an external npm package globally without version pinning or verification. The main concerns are: (1) Supply chain risk from unverified npm package installation, (2) Lack of transparency about what the external tool actually does with data, (3) Missing optional metadata that would help users assess compatibility and tool requirements, (4) Potential for resource exhaustion with unbounded data collection operations. The skill would benefit from adding version pinning, security disclosures, and clearer documentation about the external dependency's behavior and data handling.",
+        "primary_threats": [
+          "Supply Chain Risk",
+          "Unverified Third-Party Dependency",
+          "Missing Security Metadata",
+          "Potential Resource Exhaustion"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The lack of disclosure is real, but whether this constitutes 'social engineering' depends on intent. The skill may simply be a convenience wrapper without malicious intent. However, the lack of transparency is a legitimate concern.",
+        "meta_exploitability": "Low - Requires user to trust and install without verification",
+        "meta_impact": "Medium - Users unknowingly grant trust to unverified third-party code"
+      }
+    },
+    {
+      "id": "llm_finding_YT Meta - YouTube Metadata Extractor_3",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Unbounded Data Collection Without Limits",
+      "description": "Several commands allow potentially unbounded data collection (e.g., '--all' for entire playlists, '--limit 500' for comments, channel videos without default limits). While limits can be specified, the instructions don't warn about resource consumption or provide sensible defaults, which could lead to excessive API calls, memory usage, or long-running operations.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Commands like 'yt-meta playlist PLxxx --all', 'yt-meta comments VIDEO_ID --limit 500', 'yt-meta channel @mkbhd --videos --limit 500' allow large-scale data collection",
+      "remediation": "1) Document recommended limits for different use cases, 2) Add warnings about resource consumption for large operations, 3) Suggest incremental/paginated approaches for large datasets, 4) Implement or document timeout mechanisms, 5) Provide guidance on appropriate limit values.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE security risks primarily related to supply chain security and unverified third-party dependencies. The skill itself contains no malicious code (no script files are included), but it instructs the agent to install and execute an external npm package globally without version pinning or verification. The main concerns are: (1) Supply chain risk from unverified npm package installation, (2) Lack of transparency about what the external tool actually does with data, (3) Missing optional metadata that would help users assess compatibility and tool requirements, (4) Potential for resource exhaustion with unbounded data collection operations. The skill would benefit from adding version pinning, security disclosures, and clearer documentation about the external dependency's behavior and data handling.",
+        "primary_threats": [
+          "Supply Chain Risk",
+          "Unverified Third-Party Dependency",
+          "Missing Security Metadata",
+          "Potential Resource Exhaustion"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The concern is valid - unbounded operations can cause issues. However, this is more of a usability/best-practice issue than a direct security threat. The external tool likely has its own rate limiting.",
+        "meta_exploitability": "Low - User must explicitly request large operations",
+        "meta_impact": "Low - Temporary resource consumption, potential rate limiting"
       }
     }
   ],
-  "scan_duration_seconds": 0.3104696273803711,
-  "duration_ms": 310,
+  "scan_duration_seconds": 26.215290546417236,
+  "duration_ms": 26215,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:54:34.166492"
+  "timestamp": "2026-02-07T21:59:01.591944"
 }

@@ -7,51 +7,76 @@
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "id": "llm_finding_rei_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Hardcoded API Key Exposure in Backup File",
+      "description": "The setup.sh script creates a backup of the Clawdbot config file (clawdbot.json.bak) that contains the user's API key in plaintext. This backup file persists on disk and could be inadvertently exposed through file sharing, backups, or version control systems. The API key is embedded directly in the JSON configuration without encryption or secure storage mechanisms.",
+      "file_path": "scripts/setup.sh",
+      "line_number": 30,
+      "snippet": "cp \"$CONFIG_FILE\" \"${CONFIG_FILE}.bak\"\n# Later embeds API key:\n\"apiKey\": \"$API_KEY\"",
+      "remediation": "1. Warn users that API keys will be stored in plaintext in config files\n2. Set restrictive permissions on backup files (chmod 600)\n3. Consider using environment variables or secure credential storage instead of embedding keys in config files\n4. Add .bak files to .gitignore if version control is used\n5. Document secure key management practices in the skill documentation",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The 'rei' skill is a configuration utility for adding the Rei Qwen3 Coder model provider to Clawdbot. The skill presents MEDIUM security risks primarily related to credential handling and input validation. The main concerns are: (1) API keys stored in plaintext in backup files without proper protection, (2) potential command injection through unsanitized API key input, and (3) inadequate error handling that could leave the system in an inconsistent state. The skill does not exhibit malicious behavior such as data exfiltration, prompt injection, or unauthorized tool use. However, the credential management practices need improvement to prevent accidental exposure. The scripts perform legitimate configuration tasks (JSON manipulation, service restart) appropriate for their stated purpose. No deceptive behavior or social engineering was detected - the skill accurately describes its functionality.",
+        "primary_threats": [
+          "Data Exposure (plaintext API keys in backups)",
+          "Command Injection (unsanitized API key input)",
+          "Availability Issues (missing error handling)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "This is a confirmed behavior - the script does create a plaintext backup. However, this is standard practice for configuration scripts and the risk is LOW because: (1) the backup is in the user's home directory with normal file permissions, (2) the original config also contains the API key, (3) this is expected behavior for a configuration tool.",
+        "meta_exploitability": "Low - Requires local file system access or user error (committing to git, cloud sync)",
+        "meta_impact": "Low - API key exposure, but limited to local file system. User can revoke and rotate the key."
       }
     },
     {
-      "id": "TOOL_ABUSE_SYSTEM_PACKAGE_INSTALL_30de2bb928",
-      "rule_id": "TOOL_ABUSE_SYSTEM_PACKAGE_INSTALL",
-      "category": "unauthorized_tool_use",
+      "id": "llm_finding_rei_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
       "severity": "MEDIUM",
-      "title": "Attempting to install system packages with elevated privileges",
-      "description": "Pattern detected: sudo dnf install",
+      "title": "Command Injection Risk via API Key Input",
+      "description": "The setup.sh script accepts an API key as a command-line argument or via interactive prompt and embeds it directly into a JSON structure without proper sanitization or escaping. If a malicious API key containing special characters (quotes, backticks, dollar signs) is provided, it could break out of the JSON structure or cause command injection when the jq command processes the configuration. While jq provides some protection, the lack of input validation is a security concern.",
       "file_path": "scripts/setup.sh",
-      "line_number": 28,
-      "snippet": "echo \"Install with: sudo dnf install jq (Fedora) or brew install jq (macOS)\"",
-      "remediation": "Use user-level installs without sudo. Document if system install is necessary",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "REI_PROVIDER=$(cat <<EOF\n{\n  \"apiKey\": \"$API_KEY\",\n  ...\n}\nEOF\n)\njq --argjson rei \"$REI_PROVIDER\" ...",
+      "remediation": "1. Validate API key format before use (alphanumeric + allowed special chars)\n2. Use jq's --arg flag instead of --argjson for string values to ensure proper escaping\n3. Sanitize user input by rejecting keys with shell metacharacters\n4. Example: jq --arg key \"$API_KEY\" '.models.providers.rei.apiKey = $key'\n5. Add input validation: if [[ ! \"$API_KEY\" =~ ^[a-zA-Z0-9_-]+$ ]]; then echo \"Invalid key format\"; exit 1; fi",
+      "analyzer": "llm",
       "metadata": {
-        "matched_pattern": "sudo\\s+dnf\\s+install",
-        "matched_text": "sudo dnf install",
-        "aitech": "AITech-12.1",
-        "aitech_name": "Tool Exploitation",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The 'rei' skill is a configuration utility for adding the Rei Qwen3 Coder model provider to Clawdbot. The skill presents MEDIUM security risks primarily related to credential handling and input validation. The main concerns are: (1) API keys stored in plaintext in backup files without proper protection, (2) potential command injection through unsanitized API key input, and (3) inadequate error handling that could leave the system in an inconsistent state. The skill does not exhibit malicious behavior such as data exfiltration, prompt injection, or unauthorized tool use. However, the credential management practices need improvement to prevent accidental exposure. The scripts perform legitimate configuration tasks (JSON manipulation, service restart) appropriate for their stated purpose. No deceptive behavior or social engineering was detected - the skill accurately describes its functionality.",
+        "primary_threats": [
+          "Data Exposure (plaintext API keys in backups)",
+          "Command Injection (unsanitized API key input)",
+          "Availability Issues (missing error handling)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The jq --argjson usage provides some protection by parsing JSON, but the heredoc expansion with unvalidated user input is a potential attack vector. The risk is mitigated by the fact that jq will fail on malformed JSON, but input validation is still a best practice.",
+        "meta_exploitability": "Medium - Requires crafting a malicious API key that breaks JSON parsing while still being accepted by the script",
+        "meta_impact": "Medium - Could potentially cause command execution or configuration corruption if JSON structure is broken"
       }
     }
   ],
-  "scan_duration_seconds": 0.24323439598083496,
-  "duration_ms": 243,
+  "scan_duration_seconds": 29.464041471481323,
+  "duration_ms": 29464,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:35:45.315546"
+  "timestamp": "2026-02-07T19:53:51.119835"
 }

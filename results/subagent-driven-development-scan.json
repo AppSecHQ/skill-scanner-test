@@ -3,8 +3,8 @@
   "skill_path": "/workspace/skills/obra-superpowers/skills/subagent-driven-development",
   "skill_directory": "/workspace/skills/obra-superpowers/skills/subagent-driven-development",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 5,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -21,16 +21,130 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_subagent-driven-development_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse via External Subagent Prompts",
+      "description": "The skill references external prompt files (./implementer-prompt.md, ./spec-reviewer-prompt.md, ./code-quality-reviewer-prompt.md) that are not included in the skill package. These files control the behavior of dispatched subagents but their content cannot be verified. If these files contain malicious instructions or are modified by an attacker, the subagents could be manipulated to perform unauthorized actions. This creates a transitive trust vulnerability where the main agent trusts content from unverified external files.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "References to ./implementer-prompt.md, ./spec-reviewer-prompt.md, and ./code-quality-reviewer-prompt.md without including these files in the package or validating their content",
+      "remediation": "Include all referenced prompt files within the skill package so their content can be verified during security analysis. Alternatively, embed the prompt instructions directly in SKILL.md rather than referencing external files. If external files must be used, implement content validation and integrity checks before using them to dispatch subagents.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill implements a complex subagent orchestration workflow for development tasks. The primary security concerns are: (1) transitive trust abuse through unverified external prompt files that control subagent behavior, (2) potential resource exhaustion from unbounded autonomous iteration loops without user confirmation gates, (3) missing metadata that would help users understand requirements and constraints, and (4) an undocumented dependency on an external skill. The skill does not contain data exfiltration, credential theft, or command injection vulnerabilities. However, the autonomous nature of the workflow and reliance on external unverified content create moderate security risks. The skill would benefit from including all referenced files in the package, implementing iteration limits, and adding user confirmation checkpoints.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Unbounded Autonomous Iteration",
+          "Missing Metadata",
+          "Undocumented Dependencies"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_subagent-driven-development_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Autonomous Iteration Without User Confirmation",
+      "description": "The skill implements an automated loop that dispatches multiple subagents and performs iterative fix cycles without explicit user confirmation between iterations. The process includes: implementer subagent \u2192 spec reviewer \u2192 fixes \u2192 code quality reviewer \u2192 fixes, all happening autonomously. The instruction 'Faster iteration (no human-in-loop between tasks)' explicitly describes removing human oversight. This could lead to resource exhaustion through excessive subagent spawning, infinite fix loops if reviewers continuously reject implementations, or runaway automation consuming computational resources.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Process flow shows automated loops: 'Implementer subagent fixes spec gaps' and 'Implementer subagent fixes quality issues' with decision diamonds that could loop indefinitely. Description states 'Faster iteration (no human-in-loop between tasks)' indicating intentional removal of user confirmation gates.",
+      "remediation": "Implement iteration limits (e.g., maximum 3 fix attempts per review stage). Add user confirmation checkpoints before starting fix cycles. Include timeout mechanisms to prevent infinite loops. Add resource monitoring to detect and halt excessive subagent spawning. Provide user override options to abort the automated process at any stage.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill implements a complex subagent orchestration workflow for development tasks. The primary security concerns are: (1) transitive trust abuse through unverified external prompt files that control subagent behavior, (2) potential resource exhaustion from unbounded autonomous iteration loops without user confirmation gates, (3) missing metadata that would help users understand requirements and constraints, and (4) an undocumented dependency on an external skill. The skill does not contain data exfiltration, credential theft, or command injection vulnerabilities. However, the autonomous nature of the workflow and reliance on external unverified content create moderate security risks. The skill would benefit from including all referenced files in the package, implementing iteration limits, and adding user confirmation checkpoints.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Unbounded Autonomous Iteration",
+          "Missing Metadata",
+          "Undocumented Dependencies"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_subagent-driven-development_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Critical Metadata Fields",
+      "description": "The skill manifest is missing several important metadata fields that help users and systems understand the skill's requirements and constraints. Missing fields include: license (legal usage terms), compatibility (which environments/platforms are supported), and allowed-tools (which agent capabilities are required). While allowed-tools is optional per the specification, its absence makes it harder to assess whether the skill's behavior aligns with expected tool usage patterns, especially given the skill's complex subagent orchestration requirements.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML manifest shows: license: Not specified, compatibility: Not specified, allowed-tools: Not specified",
+      "remediation": "Add complete metadata to the YAML frontmatter: specify an appropriate open-source license (e.g., MIT, Apache-2.0), document compatibility requirements (e.g., 'Requires Claude with subagent support'), and declare allowed-tools to indicate which agent capabilities are needed (likely [Read, Write, Bash] or [Read, Write, Python] for implementation tasks).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill implements a complex subagent orchestration workflow for development tasks. The primary security concerns are: (1) transitive trust abuse through unverified external prompt files that control subagent behavior, (2) potential resource exhaustion from unbounded autonomous iteration loops without user confirmation gates, (3) missing metadata that would help users understand requirements and constraints, and (4) an undocumented dependency on an external skill. The skill does not contain data exfiltration, credential theft, or command injection vulnerabilities. However, the autonomous nature of the workflow and reliance on external unverified content create moderate security risks. The skill would benefit from including all referenced files in the package, implementing iteration limits, and adding user confirmation checkpoints.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Unbounded Autonomous Iteration",
+          "Missing Metadata",
+          "Undocumented Dependencies"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_subagent-driven-development_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "LOW",
+      "title": "Undocumented Dependency on External Skill",
+      "description": "The skill instructions reference 'superpowers:finishing-a-development-branch' as a final step in the process, but this external skill is not declared as a dependency in the manifest. This creates an implicit dependency that may fail if the referenced skill is not available in the user's environment. The skill cannot complete its stated workflow without this external dependency, but users are not informed of this requirement upfront.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Instruction states 'Use superpowers:finishing-a-development-branch' with special formatting (style=filled fillcolor=lightgreen) suggesting it's a required external skill, but no dependencies are declared in the YAML manifest",
+      "remediation": "Add a 'dependencies' or 'requires' field to the YAML manifest listing 'superpowers:finishing-a-development-branch' as a required skill. Alternatively, document this dependency clearly in the description or add a prerequisites section to the instructions. Consider making this step optional or providing fallback instructions if the external skill is unavailable.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill implements a complex subagent orchestration workflow for development tasks. The primary security concerns are: (1) transitive trust abuse through unverified external prompt files that control subagent behavior, (2) potential resource exhaustion from unbounded autonomous iteration loops without user confirmation gates, (3) missing metadata that would help users understand requirements and constraints, and (4) an undocumented dependency on an external skill. The skill does not contain data exfiltration, credential theft, or command injection vulnerabilities. However, the autonomous nature of the workflow and reliance on external unverified content create moderate security risks. The skill would benefit from including all referenced files in the package, implementing iteration limits, and adding user confirmation checkpoints.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Unbounded Autonomous Iteration",
+          "Missing Metadata",
+          "Undocumented Dependencies"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.2085564136505127,
-  "duration_ms": 208,
+  "scan_duration_seconds": 2710.883581638336,
+  "duration_ms": 2710883,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:50:24.832514"
+  "timestamp": "2026-02-08T01:53:19.421583"
 }

@@ -4,7 +4,7 @@
   "skill_directory": "/workspace/skills/trailofbits-skills/plugins/testing-handbook-skills/skills/constant-time-testing",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 10,
+  "findings_count": 12,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -201,16 +201,68 @@
         "threat_type": "CREDENTIAL HARVESTING",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_constant-time-testing_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Missing Referenced Files Create Transitive Trust Risk",
+      "description": "The SKILL.md instructions reference five Python files (tool.py, implementation.py, OpenSSL.py, scratch.py, cryptographic.py) that are not included in the skill package. If these files are expected to be provided by users or fetched from external sources, the skill could execute untrusted code or follow malicious instructions embedded in those files. This creates a transitive trust vulnerability where the skill delegates trust to external content without validation.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Files referenced in instructions: tool.py, implementation.py, OpenSSL.py, scratch.py, cryptographic.py - All marked as 'not found'",
+      "remediation": "1. Bundle all required files within the skill package, OR 2. Add explicit validation and sandboxing for user-provided files, OR 3. Clearly document that these are example filenames and add warnings about analyzing untrusted code, OR 4. Remove references to specific filenames if they are just examples",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The constant-time-testing skill appears to be an educational resource about timing side-channel vulnerabilities in cryptographic code. The skill contains no executable scripts and consists only of instructional markdown content explaining timing attacks, common vulnerability patterns, and testing methodologies. However, there are two security concerns: (1) MEDIUM severity - The skill references five Python files that are not included in the package, creating potential transitive trust risks if these files are expected from external or user-provided sources; (2) LOW severity - Missing optional metadata fields reduce transparency. The instructional content itself does not contain prompt injection attempts, malicious directives, or deceptive descriptions. If the referenced files are purely illustrative examples rather than actual dependencies, the primary risk is reduced, but this should be clarified in the documentation.",
+        "primary_threats": [
+          "Transitive Trust (Missing Referenced Files)",
+          "Missing Metadata (Transparency)"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_constant-time-testing_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Optional Metadata Fields",
+      "description": "The skill manifest is missing optional metadata fields: license, compatibility, and allowed-tools. While these fields are not required per the agent skills specification, their absence reduces transparency about the skill's intended usage constraints and compatibility. The 'allowed-tools' field would help users understand which agent capabilities the skill expects to use.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "license: Not specified, compatibility: Not specified, allowed-tools: Not specified",
+      "remediation": "Add optional metadata fields to improve transparency: 1. Specify license (e.g., MIT, Apache-2.0), 2. Document compatibility (e.g., 'Works in Claude.ai, Claude Code, API'), 3. Declare allowed-tools (e.g., [Read, Python] if the skill needs to read files and execute Python for timing analysis)",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The constant-time-testing skill appears to be an educational resource about timing side-channel vulnerabilities in cryptographic code. The skill contains no executable scripts and consists only of instructional markdown content explaining timing attacks, common vulnerability patterns, and testing methodologies. However, there are two security concerns: (1) MEDIUM severity - The skill references five Python files that are not included in the package, creating potential transitive trust risks if these files are expected from external or user-provided sources; (2) LOW severity - Missing optional metadata fields reduce transparency. The instructional content itself does not contain prompt injection attempts, malicious directives, or deceptive descriptions. If the referenced files are purely illustrative examples rather than actual dependencies, the primary risk is reduced, but this should be clarified in the documentation.",
+        "primary_threats": [
+          "Transitive Trust (Missing Referenced Files)",
+          "Missing Metadata (Transparency)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.24934601783752441,
-  "duration_ms": 249,
+  "scan_duration_seconds": 1218.3042027950287,
+  "duration_ms": 1218304,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:33:37.307782"
+  "timestamp": "2026-02-08T06:48:10.145543"
 }

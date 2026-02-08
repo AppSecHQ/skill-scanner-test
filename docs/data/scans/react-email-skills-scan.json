@@ -3,16 +3,82 @@
   "skill_path": "/workspace/skills/clawhub-react-email-skills",
   "skill_directory": "/workspace/skills/clawhub-react-email-skills",
   "is_safe": true,
-  "max_severity": "SAFE",
-  "findings_count": 0,
-  "findings": [],
-  "scan_duration_seconds": 0.21654081344604492,
-  "duration_ms": 216,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "llm_finding_react-email_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk via Unvalidated Package Manager Execution",
+      "description": "The skill instructs the agent to execute arbitrary shell commands (npx, yarn, pnpm, bun) to scaffold a new project and install dependencies without any validation or sandboxing. The commands use 'create-email@latest' which fetches and executes code from npm registry at runtime. An attacker could potentially compromise the npm package or perform typosquatting attacks. Additionally, the 'EXECUTE NOW' directive attempts to force immediate execution without user confirmation.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "npx create-email@latest\nyarn create email\npnpm create email\nbun create email\n\nEXECUTE NOW: Complete the above TODO list to achieve: The React Email development server is running and accessible at localhost:3000, displaying email template previews.",
+      "remediation": "1. Remove the 'EXECUTE NOW' directive that bypasses user confirmation. 2. Add explicit warnings about executing third-party code. 3. Recommend verifying package integrity before installation. 4. Suggest pinning to specific versions instead of '@latest'. 5. Implement user confirmation before executing any shell commands.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The react-email skill presents MEDIUM security risks primarily related to command execution safety and prompt injection. The skill requires executing arbitrary shell commands to scaffold projects and install dependencies from npm, which introduces supply chain risks. The 'EXECUTE NOW' directive in the instructions attempts direct prompt injection to force immediate execution without user confirmation. The skill also starts an unbounded development server without lifecycle management guidance. However, the skill's core functionality (creating email templates with React) is legitimate, and the referenced files contain standard documentation without malicious content. The internal reference files (COMPONENTS.md, PATTERNS.md, I18N.md, SENDING.md) are normal skill resources and not security threats. Missing optional metadata (allowed-tools, compatibility) reduces transparency but is not a critical issue. With proper safeguards around command execution and removal of imperative directives, this skill could be used safely.",
+        "primary_threats": [
+          "Command Injection",
+          "Direct Prompt Injection",
+          "Availability Disruption",
+          "Credential Exposure Risk"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "While the commands are legitimate development tools, the use of '@latest' without version pinning represents standard supply chain risk. This is a best practice issue rather than active malicious behavior.",
+        "meta_exploitability": "Low - Requires compromised npm package or typosquatting, which is mitigated by npm's security measures",
+        "meta_impact": "Medium - If package were compromised, could execute arbitrary code during installation"
+      }
+    },
+    {
+      "id": "llm_finding_react-email_1",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Direct Prompt Injection via 'EXECUTE NOW' Command",
+      "description": "The SKILL.md instructions contain a direct prompt injection attempt using 'EXECUTE NOW: Complete the above TODO list' which tries to force the agent to immediately execute commands without user oversight. This directive attempts to override the agent's normal confirmation and safety mechanisms by issuing imperative commands.",
+      "file_path": "SKILL.md",
+      "line_number": 58,
+      "snippet": "EXECUTE NOW: Complete the above TODO list to achieve: The React Email development server is running and accessible at localhost:3000, displaying email template previews.",
+      "remediation": "Remove all 'EXECUTE NOW' or similar imperative directives from skill instructions. Replace with conditional language like 'If the user requests, you may...' or 'When appropriate, consider...'. Ensure all actions require explicit user confirmation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The react-email skill presents MEDIUM security risks primarily related to command execution safety and prompt injection. The skill requires executing arbitrary shell commands to scaffold projects and install dependencies from npm, which introduces supply chain risks. The 'EXECUTE NOW' directive in the instructions attempts direct prompt injection to force immediate execution without user confirmation. The skill also starts an unbounded development server without lifecycle management guidance. However, the skill's core functionality (creating email templates with React) is legitimate, and the referenced files contain standard documentation without malicious content. The internal reference files (COMPONENTS.md, PATTERNS.md, I18N.md, SENDING.md) are normal skill resources and not security threats. Missing optional metadata (allowed-tools, compatibility) reduces transparency but is not a critical issue. With proper safeguards around command execution and removal of imperative directives, this skill could be used safely.",
+        "primary_threats": [
+          "Command Injection",
+          "Direct Prompt Injection",
+          "Availability Disruption",
+          "Credential Exposure Risk"
+        ],
+        "aitech": "AITech-1.1",
+        "aitech_name": "Direct Prompt Injection",
+        "aisubtech": "AISubtech-1.1.1",
+        "aisubtech_name": "Instruction Manipulation (Direct Prompt Injection)",
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The 'EXECUTE NOW' directive is explicitly present in the code and represents a clear attempt at direct prompt injection using imperative commands. This is a documented anti-pattern in agent skill design.",
+        "meta_exploitability": "Medium - Requires agent to follow imperative commands without confirmation prompts",
+        "meta_impact": "Medium - Could bypass user confirmation for command execution, but limited to documented npm commands"
+      }
+    }
+  ],
+  "scan_duration_seconds": 35.73436760902405,
+  "duration_ms": 35734,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer"
+    "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:35:14.828754"
+  "timestamp": "2026-02-07T19:49:10.558754"
 }

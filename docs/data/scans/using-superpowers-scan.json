@@ -2,9 +2,9 @@
   "skill_name": "using-superpowers",
   "skill_path": "/workspace/skills/obra-superpowers/skills/using-superpowers",
   "skill_directory": "/workspace/skills/obra-superpowers/skills/using-superpowers",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 5,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -21,16 +21,126 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_using-superpowers_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "HIGH",
+      "title": "Direct Prompt Injection - Mandatory Skill Invocation Override",
+      "description": "The skill contains explicit instructions that override the agent's normal decision-making process by forcing mandatory skill invocation before ANY response, including clarifying questions. The use of '<EXTREMELY-IMPORTANT>' tags and absolute language ('ABSOLUTELY MUST', 'NOT negotiable', 'NOT optional', 'cannot rationalize your way out') constitutes a direct prompt injection attempt to override system-level behavior and eliminate agent autonomy in task assessment.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "<EXTREMELY-IMPORTANT>\nIf you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.\n\nIF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.\n\nThis is not negotiable. This is not optional. You cannot rationalize your way out of this.\n</EXTREMELY-IMPORTANT>",
+      "remediation": "Remove coercive language and absolute directives. Replace with guidance-based recommendations that preserve agent autonomy. Use phrases like 'Consider invoking skills when relevant' rather than 'MUST invoke'. Remove psychological manipulation tactics like the 'Red Flags' section that attempts to override agent reasoning.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill exhibits HIGH severity security concerns due to direct prompt injection attempts that override agent autonomy and decision-making. The skill uses coercive language, absolute directives, and psychological manipulation tactics to force mandatory skill invocation regardless of relevance. The 'Red Flags' section systematically attempts to suppress normal agent reasoning patterns. The deceptively broad activation scope ('any conversation', 'ANY response') would cause inappropriate universal invocation. While the skill contains no executable code or data exfiltration risks, its behavioral manipulation and prompt injection characteristics pose significant threats to agent system integrity and user experience. The skill should be substantially revised to provide guidance rather than coercion, preserve agent autonomy, and accurately scope its applicability.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Behavioral Manipulation",
+          "Deceptive Activation Scope"
+        ],
+        "aitech": "AITech-1.1",
+        "aitech_name": "Direct Prompt Injection",
+        "aisubtech": "AISubtech-1.1.1",
+        "aisubtech_name": "Instruction Manipulation (Direct Prompt Injection)",
+        "scanner_category": "PROMPT INJECTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_using-superpowers_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Behavioral Manipulation - Agent Reasoning Override",
+      "description": "The 'Red Flags' section systematically attempts to suppress normal agent reasoning patterns by labeling standard analytical behaviors as 'rationalizing'. This creates a psychological manipulation framework that discourages critical thinking and forces blind adherence to skill invocation regardless of actual relevance. Phrases like 'These thoughts mean STOP\u2014you're rationalizing' attempt to override the agent's judgment capabilities.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "These thoughts mean STOP\u2014you're rationalizing:\n'This is just a simple question' | Questions are tasks. Check for skills.\n'I need more context first' | Skill check comes BEFORE clarifying questions.\n'Let me explore the codebase first' | Skills tell you HOW to explore. Check first.",
+      "remediation": "Remove the 'Red Flags' manipulation framework. Replace with balanced guidance that helps agents identify when skills are genuinely applicable without suppressing legitimate analytical reasoning. Allow agents to assess task complexity and skill relevance independently.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill exhibits HIGH severity security concerns due to direct prompt injection attempts that override agent autonomy and decision-making. The skill uses coercive language, absolute directives, and psychological manipulation tactics to force mandatory skill invocation regardless of relevance. The 'Red Flags' section systematically attempts to suppress normal agent reasoning patterns. The deceptively broad activation scope ('any conversation', 'ANY response') would cause inappropriate universal invocation. While the skill contains no executable code or data exfiltration risks, its behavioral manipulation and prompt injection characteristics pose significant threats to agent system integrity and user experience. The skill should be substantially revised to provide guidance rather than coercion, preserve agent autonomy, and accurately scope its applicability.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Behavioral Manipulation",
+          "Deceptive Activation Scope"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_using-superpowers_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Deceptive Skill Description and Activation Scope",
+      "description": "The skill description claims it should be used 'when starting any conversation' and applies to ALL interactions, which is deceptively broad. This creates an over-broad activation trigger that would cause the skill to be invoked inappropriately for virtually any user interaction, regardless of actual relevance. The description misrepresents the skill as a universal conversation starter rather than a specific capability.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "description: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions",
+      "remediation": "Revise the description to accurately reflect specific use cases where skill discovery guidance is genuinely needed. Remove universal activation language like 'any conversation' and 'ANY response'. Scope the skill to appropriate contexts such as 'Use when users need guidance on discovering and applying available skills'.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill exhibits HIGH severity security concerns due to direct prompt injection attempts that override agent autonomy and decision-making. The skill uses coercive language, absolute directives, and psychological manipulation tactics to force mandatory skill invocation regardless of relevance. The 'Red Flags' section systematically attempts to suppress normal agent reasoning patterns. The deceptively broad activation scope ('any conversation', 'ANY response') would cause inappropriate universal invocation. While the skill contains no executable code or data exfiltration risks, its behavioral manipulation and prompt injection characteristics pose significant threats to agent system integrity and user experience. The skill should be substantially revised to provide guidance rather than coercion, preserve agent autonomy, and accurately scope its applicability.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Behavioral Manipulation",
+          "Deceptive Activation Scope"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_using-superpowers_3",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "Missing Optional Metadata Fields",
+      "description": "The skill manifest is missing optional metadata fields including 'license', 'compatibility', and 'allowed-tools'. While these fields are not required per the agent skills specification, their absence reduces transparency about the skill's intended usage constraints and compatibility requirements.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "license: Not specified\ncompatibility: Not specified\nallowed-tools: Not specified",
+      "remediation": "Add optional metadata fields to improve skill transparency: specify a license (e.g., MIT, Apache-2.0), document compatibility requirements (e.g., 'Works in Claude Code, requires Skill tool support'), and declare allowed-tools if the skill has specific tool requirements.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill exhibits HIGH severity security concerns due to direct prompt injection attempts that override agent autonomy and decision-making. The skill uses coercive language, absolute directives, and psychological manipulation tactics to force mandatory skill invocation regardless of relevance. The 'Red Flags' section systematically attempts to suppress normal agent reasoning patterns. The deceptively broad activation scope ('any conversation', 'ANY response') would cause inappropriate universal invocation. While the skill contains no executable code or data exfiltration risks, its behavioral manipulation and prompt injection characteristics pose significant threats to agent system integrity and user experience. The skill should be substantially revised to provide guidance rather than coercion, preserve agent autonomy, and accurately scope its applicability.",
+        "primary_threats": [
+          "Direct Prompt Injection",
+          "Behavioral Manipulation",
+          "Deceptive Activation Scope"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.2858104705810547,
-  "duration_ms": 285,
+  "scan_duration_seconds": 2896.786571741104,
+  "duration_ms": 2896786,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:52:33.203325"
+  "timestamp": "2026-02-08T02:54:11.516029"
 }

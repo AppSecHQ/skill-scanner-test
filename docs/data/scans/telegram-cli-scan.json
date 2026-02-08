@@ -3,34 +3,80 @@
   "skill_path": "/workspace/skills/clawhub-tg",
   "skill_directory": "/workspace/skills/clawhub-tg",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_tg_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Telegram API Credentials Required Without Security Guidance",
+      "description": "The skill requires users to obtain Telegram API credentials from my.telegram.org/apps and authenticate via 'tg auth' command, but provides no security guidance on credential storage, session management, or the security implications of granting API access. The underlying CLI tool will store authentication tokens locally, creating potential credential exposure risks if not properly secured.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "First-time setup requires API credentials from https://my.telegram.org/apps\n\n```bash\ntg auth\n```",
+      "remediation": "Add security warnings about: (1) Credential storage location and permissions, (2) Session token security, (3) Risks of using API credentials vs bot tokens, (4) Recommendation to use application-specific passwords if available, (5) Instructions for revoking access if compromised.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Telegram CLI skill presents MODERATE security risks primarily related to data access and credential management. The skill provides legitimate functionality for interacting with Telegram via a third-party CLI tool (@cyberdrk/tg), but lacks important security safeguards. Key concerns include: (1) No guidance on secure credential storage for Telegram API tokens, (2) Unrestricted access to all user Telegram data without access controls, (3) Missing security documentation about the implications of granting API access, (4) Hardcoded developer paths that expose unnecessary information. The skill does not contain malicious code, prompt injection attempts, or data exfiltration mechanisms. However, the broad data access capabilities combined with insufficient security guidance create risks if the agent or user environment is compromised. The skill would benefit from adding security warnings, implementing access controls, and providing clear documentation about credential management.",
+        "primary_threats": [
+          "Data Exposure Risk",
+          "Credential Management",
+          "Missing Security Guidance"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill legitimately requires Telegram API credentials for functionality, but lacks any security warnings or guidance. This is a documentation gap that creates real risk if users don't understand the implications of granting API access.",
+        "meta_exploitability": "Medium - Requires local access to the machine where credentials are stored, but no additional authentication needed once stored",
+        "meta_impact": "Medium - Exposed credentials grant full access to user's Telegram account including all messages, contacts, and ability to send messages"
+      }
+    },
+    {
+      "id": "llm_finding_tg_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Unrestricted Access to Sensitive Telegram Data",
+      "description": "The skill provides broad access to read all Telegram messages, contacts, group memberships, and admin status without any access controls or data minimization principles. Commands like 'tg inbox', 'tg chats', 'tg read', and 'tg search --all' can access the user's entire Telegram history. While this matches the stated functionality, there are no safeguards against over-collection or unauthorized access if the agent is compromised.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "tg inbox                               # Unread messages summary\ntg chats                               # List all chats\ntg read \"ChatName\" -n 50               # Read last 50 messages\ntg search \"query\" --all                # Search all chats",
+      "remediation": "Add security recommendations: (1) Implement read-only mode by default, (2) Require explicit user confirmation before accessing sensitive chats, (3) Add rate limiting to prevent bulk data extraction, (4) Log all access operations for audit purposes, (5) Consider implementing chat whitelisting to restrict which conversations can be accessed.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Telegram CLI skill presents MODERATE security risks primarily related to data access and credential management. The skill provides legitimate functionality for interacting with Telegram via a third-party CLI tool (@cyberdrk/tg), but lacks important security safeguards. Key concerns include: (1) No guidance on secure credential storage for Telegram API tokens, (2) Unrestricted access to all user Telegram data without access controls, (3) Missing security documentation about the implications of granting API access, (4) Hardcoded developer paths that expose unnecessary information. The skill does not contain malicious code, prompt injection attempts, or data exfiltration mechanisms. However, the broad data access capabilities combined with insufficient security guidance create risks if the agent or user environment is compromised. The skill would benefit from adding security warnings, implementing access controls, and providing clear documentation about credential management.",
+        "primary_threats": [
+          "Data Exposure Risk",
+          "Credential Management",
+          "Missing Security Guidance"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is more of a privacy best practice than a security vulnerability. The broad access is inherent to the tool's legitimate functionality, but users should be informed.",
+        "meta_exploitability": "Low - Requires the agent to be instructed to access data, not automatic",
+        "meta_impact": "Low - Privacy concern rather than security breach, assuming the agent itself is trusted"
       }
     }
   ],
-  "scan_duration_seconds": 0.2662475109100342,
-  "duration_ms": 266,
+  "scan_duration_seconds": 29.449697732925415,
+  "duration_ms": 29449,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:51:07.331797"
+  "timestamp": "2026-02-07T21:09:24.421454"
 }

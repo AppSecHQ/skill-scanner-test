@@ -3,34 +3,48 @@
   "skill_path": "/workspace/skills/coreyhaines31-marketingskills/skills/popup-cro",
   "skill_directory": "/workspace/skills/coreyhaines31-marketingskills/skills/popup-cro",
   "is_safe": true,
-  "max_severity": "LOW",
+  "max_severity": "MEDIUM",
   "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_popup-cro_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse via External Product Marketing Context File",
+      "description": "The skill instructions direct the agent to read and trust content from `.claude/product-marketing-context.md` without validation. This file is external to the skill package and could contain malicious instructions that the agent would follow. The instruction 'read it before asking questions. Use that context' creates a transitive trust relationship where untrusted external content can influence agent behavior.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "If `.claude/product-marketing-context.md` exists, read it before asking questions. Use that context and only ask for information not already covered or specific to this task.",
+      "remediation": "Either: (1) Bundle product-marketing-context.md within the skill package as an internal reference file, or (2) Add explicit validation that the external file contains only data/context and not instructions, or (3) Clearly document that this file should be treated as untrusted user input and sanitized before use.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The popup-cro skill is a conversion rate optimization assistant focused on popup and modal design guidance. The skill appears to be primarily instructional/advisory with no executable scripts. The main security concern is MEDIUM severity: the skill instructs the agent to read and trust external content from `.claude/product-marketing-context.md` without validation, creating a transitive trust vulnerability (AITech-1.2). An attacker who controls this external file could inject malicious instructions that the agent would follow. Additionally, there is a LOW severity issue with a missing referenced file (corner.py) that could indicate incomplete packaging or potential tool shadowing risk. The skill also lacks optional metadata fields (LOW severity, informational). No data exfiltration, command injection, or direct prompt injection threats were detected. The skill's core functionality - providing CRO advice for popups - appears legitimate and matches its description.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust)",
+          "Missing referenced file (potential tool shadowing)",
+          "Incomplete metadata"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a transitive trust vulnerability. The skill explicitly instructs the agent to read and use external content without validation, creating an indirect prompt injection vector (AITech-1.2). An attacker with write access to `.claude/product-marketing-context.md` could inject malicious instructions.",
+        "meta_exploitability": "Medium - Requires attacker to control `.claude/product-marketing-context.md` in the user's workspace, but no authentication or special privileges needed beyond file write access",
+        "meta_impact": "Medium - Could redirect agent behavior, leak information, or cause unintended actions, but limited to the scope of this skill's capabilities (CRO advice, no code execution)"
       }
     }
   ],
-  "scan_duration_seconds": 0.20304560661315918,
-  "duration_ms": 203,
+  "scan_duration_seconds": 20.972352743148804,
+  "duration_ms": 20972,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:34:45.429211"
+  "timestamp": "2026-02-07T22:09:49.162521"
 }

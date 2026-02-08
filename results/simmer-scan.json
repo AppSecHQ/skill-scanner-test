@@ -4,7 +4,7 @@
   "skill_directory": "/workspace/skills/clawhub-simmer",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 4,
+  "findings_count": 10,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -81,16 +81,194 @@
         "threat_type": "SKILL DISCOVERY ABUSE",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_simmer_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded API Key Storage in User Credentials File",
+      "description": "The skill instructs the agent to store API keys in plaintext in ~/.config/simmer/credentials.json or as environment variables. This creates a persistent credential that could be accessed by other processes or exfiltrated. The skill involves financial trading with real money (USDC) and the API key controls a wallet with spending limits ($100/trade, $500/day). If compromised, an attacker could drain funds up to the daily limit.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "# Option 1: Save to credentials file (recommended)\nmkdir -p ~/.config/simmer\necho '{\"api_key\": \"sk_live_...\"}' > ~/.config/simmer/credentials.json\n\n# Option 2: Environment variable\nexport SIMMER_API_KEY=\"sk_live_...\"",
+      "remediation": "Implement secure credential storage using system keychains (macOS Keychain, Windows Credential Manager, Linux Secret Service). Use temporary session tokens instead of long-lived API keys. Require explicit user consent before storing credentials. Consider using OAuth flows instead of API keys for agent authentication.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks primarily related to financial operations and credential management. The skill enables autonomous real-money trading on prediction markets (Polymarket) with USDC cryptocurrency, involving API keys that control wallets with spending limits ($100/trade, $500/day). Key concerns include: (1) plaintext credential storage in user files, (2) social engineering messaging to persuade users to enable real money trading, (3) autonomous financial transactions without per-trade user confirmation, and (4) missing referenced implementation files that prevent full security analysis. While the skill includes some safety features (spending limits, managed wallets), the combination of financial access, credential exposure, and autonomous operation creates significant risk. The skill would benefit from secure credential management, mandatory per-trade user approval, and complete transparency of all implementation code.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Social Engineering",
+          "Autonomous Financial Operations",
+          "Tool Exploitation",
+          "Missing Implementation Files"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_simmer_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "HIGH",
+      "title": "Social Engineering via Scripted User Messaging",
+      "description": "The skill provides a pre-written message template for the agent to send to users, designed to persuade them to claim the agent and enable real money trading. The message downplays risks by emphasizing 'safety rails' and 'managed wallets' while encouraging users to link their real wallets for USDC trading. This is social engineering to gain financial access, presented as a helpful feature.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "> \ud83d\udd2e **I've joined Simmer** \u2014 a prediction market arena for AI agents.\n>\n> Simmer lets me trade on Polymarket with safety rails (managed wallets, spending limits, smart context). I start with 10,000 $SIM (virtual currency) to practice on Simmer's LMSR markets.\n>\n> **To unlock real USDC trading on Polymarket**, claim me here:\n> https://simmer.markets/claim/reef-X4B2\n>\n> Once claimed, I can trade with real money from your linked wallet.\n> Learn more: https://simmer.markets",
+      "remediation": "Remove pre-scripted persuasive messaging templates. If the agent needs to inform users about claiming, require explicit user-initiated requests. Add clear warnings about financial risks and real money trading. Implement mandatory cooling-off periods before enabling real money trading. Require explicit informed consent with risk disclosures.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks primarily related to financial operations and credential management. The skill enables autonomous real-money trading on prediction markets (Polymarket) with USDC cryptocurrency, involving API keys that control wallets with spending limits ($100/trade, $500/day). Key concerns include: (1) plaintext credential storage in user files, (2) social engineering messaging to persuade users to enable real money trading, (3) autonomous financial transactions without per-trade user confirmation, and (4) missing referenced implementation files that prevent full security analysis. While the skill includes some safety features (spending limits, managed wallets), the combination of financial access, credential exposure, and autonomous operation creates significant risk. The skill would benefit from secure credential management, mandatory per-trade user approval, and complete transparency of all implementation code.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Social Engineering",
+          "Autonomous Financial Operations",
+          "Tool Exploitation",
+          "Missing Implementation Files"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_simmer_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Autonomous Financial Trading Without Explicit User Confirmation",
+      "description": "The skill enables the agent to execute real money trades (up to $100/trade, $500/day) on Polymarket using USDC without requiring per-trade user confirmation. While there are spending limits, the agent has autonomous control over financial transactions once the user claims the agent and links their wallet. The instructions encourage the agent to 'research' and 'have a thesis' but don't mandate user approval before executing trades.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "### 5. Make Your First Trade\n\n**Don't trade randomly.** Always:\n1. Research the market (resolution criteria, current price, time to resolution)\n2. Check context with `GET /api/sdk/context/{market_id}` for warnings and position info\n3. Have a thesis \u2014 why do you think this side will win?\n4. **Include r",
+      "remediation": "Implement mandatory user confirmation for each trade before execution. Provide trade previews with risk assessments. Add configurable approval thresholds (e.g., auto-approve trades under $10, require confirmation above). Implement transaction logging visible to users. Add emergency stop functionality for users to pause all trading.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks primarily related to financial operations and credential management. The skill enables autonomous real-money trading on prediction markets (Polymarket) with USDC cryptocurrency, involving API keys that control wallets with spending limits ($100/trade, $500/day). Key concerns include: (1) plaintext credential storage in user files, (2) social engineering messaging to persuade users to enable real money trading, (3) autonomous financial transactions without per-trade user confirmation, and (4) missing referenced implementation files that prevent full security analysis. While the skill includes some safety features (spending limits, managed wallets), the combination of financial access, credential exposure, and autonomous operation creates significant risk. The skill would benefit from secure credential management, mandatory per-trade user approval, and complete transparency of all implementation code.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Social Engineering",
+          "Autonomous Financial Operations",
+          "Tool Exploitation",
+          "Missing Implementation Files"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_simmer_3",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Missing Referenced Implementation Files",
+      "description": "The skill references five Python files (SimmerClient.py, the.py, simmer_sdk.py, your.py, scratch.py) that are not included in the package. These missing files could contain actual implementation code with security vulnerabilities, data exfiltration logic, or malicious functionality that cannot be analyzed. The absence of these files while being referenced suggests incomplete packaging or potential obfuscation of actual behavior.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Files referenced in instructions: SimmerClient.py, the.py, simmer_sdk.py, your.py, scratch.py - All marked as (not found)",
+      "remediation": "Include all referenced files in the skill package for transparency and security review. If files are external dependencies, clearly document them in the manifest with version pins and provenance information. Remove references to non-existent files. Ensure the skill is self-contained or explicitly declares external dependencies.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks primarily related to financial operations and credential management. The skill enables autonomous real-money trading on prediction markets (Polymarket) with USDC cryptocurrency, involving API keys that control wallets with spending limits ($100/trade, $500/day). Key concerns include: (1) plaintext credential storage in user files, (2) social engineering messaging to persuade users to enable real money trading, (3) autonomous financial transactions without per-trade user confirmation, and (4) missing referenced implementation files that prevent full security analysis. While the skill includes some safety features (spending limits, managed wallets), the combination of financial access, credential exposure, and autonomous operation creates significant risk. The skill would benefit from secure credential management, mandatory per-trade user approval, and complete transparency of all implementation code.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Social Engineering",
+          "Autonomous Financial Operations",
+          "Tool Exploitation",
+          "Missing Implementation Files"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_simmer_4",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Optional Metadata Fields",
+      "description": "The skill manifest is missing optional but recommended fields: license, compatibility, and allowed-tools. While not required, these fields help users understand the skill's legal terms, where it works, and what agent capabilities it requires. The absence of allowed-tools means there's no declared restriction on what agent tools this skill might use.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "- license: Not specified\n- compatibility: Not specified\n- allowed-tools: Not specified",
+      "remediation": "Add license field (e.g., MIT, Apache-2.0) to clarify usage terms. Add compatibility field to specify supported environments (Claude.ai, Claude Code, API). Add allowed-tools field to declare which agent tools are needed (e.g., [Bash, Python] if making API calls via curl or requests library).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks primarily related to financial operations and credential management. The skill enables autonomous real-money trading on prediction markets (Polymarket) with USDC cryptocurrency, involving API keys that control wallets with spending limits ($100/trade, $500/day). Key concerns include: (1) plaintext credential storage in user files, (2) social engineering messaging to persuade users to enable real money trading, (3) autonomous financial transactions without per-trade user confirmation, and (4) missing referenced implementation files that prevent full security analysis. While the skill includes some safety features (spending limits, managed wallets), the combination of financial access, credential exposure, and autonomous operation creates significant risk. The skill would benefit from secure credential management, mandatory per-trade user approval, and complete transparency of all implementation code.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Social Engineering",
+          "Autonomous Financial Operations",
+          "Tool Exploitation",
+          "Missing Implementation Files"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_simmer_5",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "LOW",
+      "title": "External Dependency Without Version Pinning",
+      "description": "The skill recommends installing 'simmer-sdk' via pip without specifying a version pin. This creates supply chain risk as the package could be updated with malicious code, and the agent would automatically use the latest version without verification.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "### 4. Install SDK (Optional)\n\n```bash\npip install simmer-sdk\n```",
+      "remediation": "Pin to specific versions: 'pip install simmer-sdk==1.2.3'. Include hash verification for additional security. Document the expected version in the manifest. Consider vendoring critical dependencies within the skill package.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE TO HIGH security risks primarily related to financial operations and credential management. The skill enables autonomous real-money trading on prediction markets (Polymarket) with USDC cryptocurrency, involving API keys that control wallets with spending limits ($100/trade, $500/day). Key concerns include: (1) plaintext credential storage in user files, (2) social engineering messaging to persuade users to enable real money trading, (3) autonomous financial transactions without per-trade user confirmation, and (4) missing referenced implementation files that prevent full security analysis. While the skill includes some safety features (spending limits, managed wallets), the combination of financial access, credential exposure, and autonomous operation creates significant risk. The skill would benefit from secure credential management, mandatory per-trade user approval, and complete transparency of all implementation code.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Social Engineering",
+          "Autonomous Financial Operations",
+          "Tool Exploitation",
+          "Missing Implementation Files"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.2189188003540039,
-  "duration_ms": 218,
+  "scan_duration_seconds": 38.99783229827881,
+  "duration_ms": 38997,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:37:09.213701"
+  "timestamp": "2026-02-07T20:10:56.779180"
 }

@@ -2,17 +2,112 @@
   "skill_name": "youtube-voice-summarizer",
   "skill_path": "/workspace/skills/clawhub-youtube-voice-summarizer-elevenlabs",
   "skill_directory": "/workspace/skills/clawhub-youtube-voice-summarizer-elevenlabs",
-  "is_safe": true,
-  "max_severity": "SAFE",
-  "findings_count": 0,
-  "findings": [],
-  "scan_duration_seconds": 0.22431111335754395,
-  "duration_ms": 224,
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
+  "findings": [
+    {
+      "id": "llm_finding_youtube-voice-summarizer_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Localhost Backend Dependency with Unverified External Service",
+      "description": "The skill requires users to deploy and run a backend server from an external GitHub repository (https://github.com/Franciscomoney/elevenlabs-moltbot.git) on localhost:3050. This creates multiple security risks: (1) Users must clone and execute code from an external, unverified source, (2) The skill makes network calls to localhost:3050 which could be hijacked if malicious software binds to that port first, (3) No integrity verification (checksums, signatures) for the cloned repository, (4) The backend server requires three API keys (ElevenLabs, Supadata, OpenRouter) stored in .env file with no guidance on secure storage.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "```bash\ngit clone https://github.com/Franciscomoney/elevenlabs-moltbot.git\ncd elevenlabs-moltbot\nnpm install\ncp .env.example .env\n# Add your API keys to .env\nnpm start\n```",
+      "remediation": "(1) Include the backend code directly in the skill package or provide cryptographic verification (git commit hash, checksums), (2) Document security implications of running external code, (3) Provide secure credential management guidance (environment variables, secret managers), (4) Validate the localhost service before making requests, (5) Consider using authenticated endpoints to prevent port hijacking attacks.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE to HIGH security risks primarily due to its dependency on an external, unverified GitHub repository that users must clone and execute locally. The skill requires users to run a Node.js backend service with three API keys stored in plaintext, creating credential exposure risks. The hardcoded localhost dependency (port 3050) could be exploited through port hijacking attacks. Additionally, the polling mechanism lacks timeout controls, potentially causing infinite loops. The manifest is misleading by not declaring required Bash tool access. While the skill's core functionality (YouTube summarization) is legitimate, the implementation introduces supply chain risks, credential management issues, and availability concerns that should be addressed before deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded localhost dependency, API key management)",
+          "Tool Exploitation (undeclared Bash requirement, misleading manifest)",
+          "Availability Disruption (unbounded polling loop)",
+          "Social Engineering (misleading compatibility claims)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Clear supply chain risk with no integrity verification. This is a legitimate security concern for any skill requiring external code execution.",
+        "meta_exploitability": "Medium - Requires attacker to compromise the external repository or perform MITM attack during git clone",
+        "meta_impact": "High - Arbitrary code execution with access to three API keys (ElevenLabs, Supadata, OpenRouter)"
+      }
+    },
+    {
+      "id": "llm_finding_youtube-voice-summarizer_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Compatibility and Tool Requirements",
+      "description": "The skill manifest claims 'compatibility: Not specified' and 'allowed-tools: Not specified', but the skill fundamentally requires Bash tool access to execute curl commands. The skill cannot function without Bash capability, yet this critical requirement is not declared in the manifest. This is misleading to users and agents about the skill's actual requirements and capabilities.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML Manifest shows:\n- compatibility: Not specified\n- allowed-tools: Not specified\n\nBut instructions require: `curl -s -X POST http://127.0.0.1:3050/api/summarize` (Bash tool required)",
+      "remediation": "Update SKILL.md YAML frontmatter to include:\n```yaml\nallowed-tools: [Bash]\ncompatibility: Requires Bash access and external localhost service on port 3050\n```",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE to HIGH security risks primarily due to its dependency on an external, unverified GitHub repository that users must clone and execute locally. The skill requires users to run a Node.js backend service with three API keys stored in plaintext, creating credential exposure risks. The hardcoded localhost dependency (port 3050) could be exploited through port hijacking attacks. Additionally, the polling mechanism lacks timeout controls, potentially causing infinite loops. The manifest is misleading by not declaring required Bash tool access. While the skill's core functionality (YouTube summarization) is legitimate, the implementation introduces supply chain risks, credential management issues, and availability concerns that should be addressed before deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded localhost dependency, API key management)",
+          "Tool Exploitation (undeclared Bash requirement, misleading manifest)",
+          "Availability Disruption (unbounded polling loop)",
+          "Social Engineering (misleading compatibility claims)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Objectively verifiable - the skill uses curl commands which require Bash tool access, but this is not declared in the manifest.",
+        "meta_exploitability": "N/A - This is a policy/transparency issue, not a security exploit",
+        "meta_impact": "Low - Causes skill failure if Bash is not available, but no security breach"
+      }
+    },
+    {
+      "id": "llm_finding_youtube-voice-summarizer_3",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Potential Infinite Polling Loop Without Timeout",
+      "description": "The instructions direct the agent to 'Keep polling until status is completed' with 3-5 second intervals, but provide no maximum retry limit or timeout. If the backend service fails, hangs, or returns perpetual 'processing' status, the agent could enter an infinite loop consuming resources indefinitely.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Step 2 instructions: \"Poll for completion (wait 3-5 seconds between checks)\" followed by \"Keep polling until status is 'completed'\" with no termination condition if the job never completes.",
+      "remediation": "Add explicit timeout and retry limits to instructions: 'Poll for up to 20 attempts (60-100 seconds total). If status is not completed after maximum attempts, inform user that summarization timed out and suggest checking the backend service logs.'",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MODERATE to HIGH security risks primarily due to its dependency on an external, unverified GitHub repository that users must clone and execute locally. The skill requires users to run a Node.js backend service with three API keys stored in plaintext, creating credential exposure risks. The hardcoded localhost dependency (port 3050) could be exploited through port hijacking attacks. Additionally, the polling mechanism lacks timeout controls, potentially causing infinite loops. The manifest is misleading by not declaring required Bash tool access. While the skill's core functionality (YouTube summarization) is legitimate, the implementation introduces supply chain risks, credential management issues, and availability concerns that should be addressed before deployment.",
+        "primary_threats": [
+          "Data Exfiltration/Exposure (hardcoded localhost dependency, API key management)",
+          "Tool Exploitation (undeclared Bash requirement, misleading manifest)",
+          "Availability Disruption (unbounded polling loop)",
+          "Social Engineering (misleading compatibility claims)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    }
+  ],
+  "scan_duration_seconds": 40.43890070915222,
+  "duration_ms": 40438,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer"
+    "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:54:18.451006"
+  "timestamp": "2026-02-07T21:54:21.160502"
 }

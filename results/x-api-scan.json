@@ -3,114 +3,80 @@
   "skill_path": "/workspace/skills/clawhub-x-api",
   "skill_directory": "/workspace/skills/clawhub-x-api",
   "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 5,
+  "max_severity": "HIGH",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_x-api_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Credential Storage in Plaintext Configuration File",
+      "description": "The skill instructs users to store sensitive X/Twitter API credentials (API keys, secrets, access tokens) in a plaintext JSON file at ~/.clawdbot/secrets/x-api.json without encryption or secure storage mechanisms. This creates a significant data exposure risk as these credentials provide full read-write access to the user's X/Twitter account.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Config file at ~/.clawdbot/secrets/x-api.json containing consumerKey, consumerSecret, accessToken, accessTokenSecret in plaintext JSON format",
+      "remediation": "Implement secure credential storage using system keychains (macOS Keychain, Windows Credential Manager, Linux Secret Service). Alternatively, use encrypted credential storage with proper key management, or rely solely on environment variables with clear warnings about credential security.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The x-api skill presents MODERATE security risks primarily related to credential management and supply chain security. The skill's core functionality (posting to X/Twitter via official API) is legitimate, but the implementation guidance creates significant credential exposure risks through plaintext storage and unsecured environment variables. The external npm dependency without version pinning introduces supply chain vulnerabilities. No prompt injection, data exfiltration, or malicious code patterns were detected in the instructions. The skill would benefit from secure credential storage recommendations, dependency pinning, and better error handling guidance. Missing optional metadata fields reduce transparency but don't pose security threats.",
+        "primary_threats": [
+          "Credential Exposure",
+          "Supply Chain Risk",
+          "Insecure Configuration"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The documentation does recommend plaintext credential storage without security warnings. However, this is standard practice for API setup documentation and the skill itself doesn't exfiltrate credentials - it's a legitimate API integration tool. The risk is in user implementation, not malicious intent.",
+        "meta_exploitability": "Low - Requires local file system access to the user's machine. The skill itself doesn't expose credentials.",
+        "meta_impact": "Medium - If credentials are compromised through poor file permissions, attacker gains full access to user's X/Twitter account with read-write permissions."
       }
     },
     {
-      "id": "YARA_credential_harvesting_1e93cd1d59",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export X_API_KEY=\"your-api-key",
+      "id": "llm_finding_x-api_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "External Dependency Without Integrity Verification",
+      "description": "The skill requires installing 'twitter-api-v2' npm package globally without version pinning, integrity checks, or provenance verification. This creates supply chain risks including package substitution, typosquatting, or malicious updates. Global installation also affects the entire system rather than being isolated to the skill.",
       "file_path": "SKILL.md",
-      "line_number": 29,
-      "snippet": "export X_API_KEY=\"your-api-key\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "npm install -g twitter-api-v2 without version specification or integrity hash",
+      "remediation": "Pin to specific version (e.g., twitter-api-v2@1.15.2), include integrity hash verification, specify package scope (@latest from official registry), use local installation instead of global (-g flag), and verify package authenticity before installation.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_18a6594b75",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export X_API_SECRET=\"your-api-secret",
-      "file_path": "SKILL.md",
-      "line_number": 30,
-      "snippet": "export X_API_SECRET=\"your-api-secret\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_283ad15fd1",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export X_ACCESS_TOKEN=\"your-access-token",
-      "file_path": "SKILL.md",
-      "line_number": 31,
-      "snippet": "export X_ACCESS_TOKEN=\"your-access-token\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_76b7e54130",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export X_ACCESS_SECRET=\"your-access-token-secret",
-      "file_path": "SKILL.md",
-      "line_number": 32,
-      "snippet": "export X_ACCESS_SECRET=\"your-access-token-secret\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The x-api skill presents MODERATE security risks primarily related to credential management and supply chain security. The skill's core functionality (posting to X/Twitter via official API) is legitimate, but the implementation guidance creates significant credential exposure risks through plaintext storage and unsecured environment variables. The external npm dependency without version pinning introduces supply chain vulnerabilities. No prompt injection, data exfiltration, or malicious code patterns were detected in the instructions. The skill would benefit from secure credential storage recommendations, dependency pinning, and better error handling guidance. Missing optional metadata fields reduce transparency but don't pose security threats.",
+        "primary_threats": [
+          "Credential Exposure",
+          "Supply Chain Risk",
+          "Insecure Configuration"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The package.json does specify ^1.19.0, but the installation instructions don't reference this. Global installation without version pinning is a supply chain risk, though the twitter-api-v2 package is legitimate and widely used.",
+        "meta_exploitability": "Low - Requires malicious package update or typosquatting attack on npm registry.",
+        "meta_impact": "Medium - Could introduce breaking changes or malicious code if a compromised version is installed."
       }
     }
   ],
-  "scan_duration_seconds": 0.2144029140472412,
-  "duration_ms": 214,
+  "scan_duration_seconds": 27.418094158172607,
+  "duration_ms": 27418,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:53:52.217374"
+  "timestamp": "2026-02-07T21:45:02.315242"
 }

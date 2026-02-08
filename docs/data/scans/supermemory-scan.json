@@ -7,90 +7,144 @@
   "findings_count": 4,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_595e6831ec",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
+      "id": "llm_finding_supermemory_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
       "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export SUPERMEMORY_API_KEY",
+      "title": "Hardcoded API Key Exposed in Documentation",
+      "description": "The SKILL.md file contains a hardcoded SuperMemory API key (sm_oiZHA2HcwT4tqSKmA7cCoK_opSRFViNFNxbYqjkjpVNfjSPqQWCNoOBAcxKZkKBfRVVrEQDVxLWHJPvepxqwEPe) in the setup instructions. This is a live credential that provides full access to the SuperMemory API account. Anyone with access to this skill can use this key to access, modify, or delete memories, potentially exposing sensitive user data stored in the SuperMemory service.",
       "file_path": "SKILL.md",
       "line_number": 9,
       "snippet": "export SUPERMEMORY_API_KEY=\"sm_oiZHA2HcwT4tqSKmA7cCoK_opSRFViNFNxbYqjkjpVNfjSPqQWCNoOBAcxKZkKBfRVVrEQDVxLWHJPvepxqwEPe\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
+      "remediation": "Immediately revoke the exposed API key through the SuperMemory dashboard. Remove the hardcoded key from documentation. Update instructions to guide users to obtain their own API keys from SuperMemory. Never include live credentials in example code - use placeholder values like 'your-api-key-here' instead.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to a hardcoded API key exposure and HIGH risks from potential data exfiltration to third-party servers. The hardcoded credential (sm_oiZHA2HcwT4tqSKmA7cCoK_opSRFViNFNxbYqjkjpVNfjSPqQWCNoOBAcxKZkKBfRVVrEQDVxLWHJPvepxqwEPe) must be revoked immediately. The skill encourages storing sensitive data (including API keys) in an external service without adequate warnings about data handling or privacy implications. Additional concerns include command injection risks in bash scripts and misleading documentation that promotes insecure practices. The skill requires immediate remediation before safe use.",
+        "primary_threats": [
+          "Hardcoded API Key Exposure",
+          "Data Exfiltration to Third-Party Service",
+          "Command Injection Vulnerability",
+          "Misleading Security Guidance"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer confirmed this is a real, hardcoded API key in documentation. The key format matches SuperMemory's pattern (sm_*) and is exposed in a public-facing file. This is unambiguous credential exposure.",
+        "meta_exploitability": "Trivial - key is publicly visible in the skill package, no authentication required to access",
+        "meta_impact": "Critical - full access to the SuperMemory account, can read/write/delete all stored memories, potential exposure of sensitive user data"
       }
     },
     {
-      "id": "YARA_credential_harvesting_2777419dbc",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export SUPERMEMORY_API_KEY=\\\"your-api-key",
-      "file_path": "scripts/search.sh",
-      "line_number": 18,
-      "snippet": "echo \"Please set it with: export SUPERMEMORY_API_KEY=\\\"your-api-key\\\"\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_84344733ce",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
-      "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export SUPERMEMORY_API_KEY=\\\"your-api-key",
+      "id": "llm_finding_supermemory_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Potential Data Exfiltration via Third-Party API",
+      "description": "The skill sends user content and queries to an external third-party API (api.supermemory.ai) without explicit user consent or data handling disclosure. Users may unknowingly store sensitive information (API keys, passwords, personal data) in their 'memories' which are then transmitted to and stored on external servers. The example usage even suggests storing API credentials: 'Remember that my API key is xyz'. This creates a significant data exposure risk.",
       "file_path": "scripts/add-memory.sh",
-      "line_number": 19,
-      "snippet": "echo \"Please set it with: export SUPERMEMORY_API_KEY=\\\"your-api-key\\\"\"",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "Example from SKILL.md: 'Remember that my API key is xyz' \u2192 supermemory add 'My API key is xyz'. All scripts make POST requests to https://api.supermemory.ai with user content.",
+      "remediation": "Add prominent warnings in SKILL.md about data being sent to external servers. Explicitly warn users NOT to store credentials or sensitive data. Include a privacy/data handling section explaining what data is transmitted and stored externally. Consider implementing local filtering to detect and warn about sensitive data patterns (API keys, passwords) before transmission.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to a hardcoded API key exposure and HIGH risks from potential data exfiltration to third-party servers. The hardcoded credential (sm_oiZHA2HcwT4tqSKmA7cCoK_opSRFViNFNxbYqjkjpVNfjSPqQWCNoOBAcxKZkKBfRVVrEQDVxLWHJPvepxqwEPe) must be revoked immediately. The skill encourages storing sensitive data (including API keys) in an external service without adequate warnings about data handling or privacy implications. Additional concerns include command injection risks in bash scripts and misleading documentation that promotes insecure practices. The skill requires immediate remediation before safe use.",
+        "primary_threats": [
+          "Hardcoded API Key Exposure",
+          "Data Exfiltration to Third-Party Service",
+          "Command Injection Vulnerability",
+          "Misleading Security Guidance"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "LLM analyzer correctly identified that data is sent to external servers. However, this is the INTENDED functionality of the skill (integrating with SuperMemory API). The issue is lack of disclosure, not unauthorized exfiltration. Downgraded from HIGH to MEDIUM severity because this is documented behavior (the skill is explicitly for SuperMemory integration).",
+        "meta_exploitability": "Low - this is intended functionality, not a vulnerability. Risk comes from user misunderstanding, not exploitation",
+        "meta_impact": "Medium - potential exposure of sensitive data if users don't understand where their data goes"
+      }
+    },
+    {
+      "id": "llm_finding_supermemory_2",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk in Bash Scripts",
+      "description": "The bash scripts use user-provided input directly in JSON payloads and shell commands without proper sanitization. While the scripts use double quotes, special characters in user input (like double quotes, backticks, or dollar signs) could break out of the JSON structure or be interpreted by the shell. The CONTENT and QUERY variables are directly interpolated into JSON without escaping.",
+      "file_path": "scripts/add-memory.sh",
+      "line_number": null,
+      "snippet": "DATA=$(cat <<EOF\n{\n    \"content\": \"$CONTENT\",\n    \"customId\": \"memory_$(date +%s)\",\n    \"containerTags\": [\"$SANITIZED_DESC\"]\n}\nEOF\n)",
+      "remediation": "Use proper JSON escaping for user input. Consider using jq or python to construct JSON payloads safely instead of string interpolation. Validate and sanitize input before use. Example: use jq --arg to safely pass variables: jq -n --arg content \"$CONTENT\" '{content: $content, customId: \"memory_\\(now)\"}'.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to a hardcoded API key exposure and HIGH risks from potential data exfiltration to third-party servers. The hardcoded credential (sm_oiZHA2HcwT4tqSKmA7cCoK_opSRFViNFNxbYqjkjpVNfjSPqQWCNoOBAcxKZkKBfRVVrEQDVxLWHJPvepxqwEPe) must be revoked immediately. The skill encourages storing sensitive data (including API keys) in an external service without adequate warnings about data handling or privacy implications. Additional concerns include command injection risks in bash scripts and misleading documentation that promotes insecure practices. The skill requires immediate remediation before safe use.",
+        "primary_threats": [
+          "Hardcoded API Key Exposure",
+          "Data Exfiltration to Third-Party Service",
+          "Command Injection Vulnerability",
+          "Misleading Security Guidance"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "LLM analyzer identified a real injection risk. While the scripts use heredocs which provide some protection, special characters could still break JSON structure. The risk is real but exploitation requires specific input.",
+        "meta_exploitability": "Medium - requires crafted input with special characters, but the scripts accept arbitrary user input",
+        "meta_impact": "Medium - could lead to command execution or API manipulation, but limited by curl's POST context"
+      }
+    },
+    {
+      "id": "llm_finding_supermemory_3",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Security Example in Documentation",
+      "description": "The documentation provides a dangerous example that encourages users to store API credentials in the memory system: 'Remember that my API key is xyz' \u2192 supermemory add 'My API key is xyz' --description 'API credentials'. This is a security anti-pattern that could lead users to store sensitive credentials in an external third-party service, creating credential exposure risks.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "**Store important information:**\n- \"Remember that my API key is xyz\" \u2192 `supermemory add \"My API key is xyz\" --description \"API credentials\"`",
+      "remediation": "Remove examples that suggest storing credentials. Replace with safe examples like storing non-sensitive notes, bookmarks, or learning summaries. Add explicit warnings against storing passwords, API keys, tokens, or other sensitive credentials in the memory system.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents CRITICAL security risks due to a hardcoded API key exposure and HIGH risks from potential data exfiltration to third-party servers. The hardcoded credential (sm_oiZHA2HcwT4tqSKmA7cCoK_opSRFViNFNxbYqjkjpVNfjSPqQWCNoOBAcxKZkKBfRVVrEQDVxLWHJPvepxqwEPe) must be revoked immediately. The skill encourages storing sensitive data (including API keys) in an external service without adequate warnings about data handling or privacy implications. Additional concerns include command injection risks in bash scripts and misleading documentation that promotes insecure practices. The skill requires immediate remediation before safe use.",
+        "primary_threats": [
+          "Hardcoded API Key Exposure",
+          "Data Exfiltration to Third-Party Service",
+          "Command Injection Vulnerability",
+          "Misleading Security Guidance"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified this as promoting insecure practices. The example explicitly shows storing an API key, which is a clear security anti-pattern.",
+        "meta_exploitability": "Medium - requires user to follow the bad example, but documentation actively encourages this behavior",
+        "meta_impact": "Medium - could lead to credential exposure if users follow the example, but requires user action"
       }
     }
   ],
-  "scan_duration_seconds": 0.22468018531799316,
-  "duration_ms": 224,
+  "scan_duration_seconds": 32.767979860305786,
+  "duration_ms": 32767,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:50:28.514529"
+  "timestamp": "2026-02-07T20:50:18.375265"
 }

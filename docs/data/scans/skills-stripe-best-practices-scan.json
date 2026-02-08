@@ -3,8 +3,8 @@
   "skill_path": "/workspace/skills/stripe-ai/skills/stripe-best-practices",
   "skill_directory": "/workspace/skills/stripe-ai/skills/stripe-best-practices",
   "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "max_severity": "MEDIUM",
+  "findings_count": 4,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -21,16 +21,98 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_stripe-best-practices_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
+      "severity": "MEDIUM",
+      "title": "Transitive Trust Abuse - External Documentation Dependencies",
+      "description": "The skill instructs the agent to follow and prioritize external Stripe documentation URLs (docs.stripe.com) without any validation or security controls. This creates a transitive trust relationship where the agent will follow instructions from external sources that could be compromised or manipulated. If Stripe's documentation were compromised or if an attacker could perform DNS/routing attacks, malicious instructions could be injected into the agent's workflow.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "When designing an integration, always prefer the documentation in [Stripe's Integration Options doc](https://docs.stripe.com/payments/payment-methods/integration-options.md)\nThe [API Tour](https://docs.stripe.com/payments-api/tour.md)\nUse the [Go Live Checklist](https://docs.stripe.com/get-started/checklist/go-live.md)",
+      "remediation": "1. Bundle critical Stripe documentation within the skill package as internal reference files instead of relying on external URLs. 2. Add explicit warnings that external documentation should be verified before following. 3. Implement content validation if external sources must be used. 4. Consider caching and versioning external documentation to prevent real-time manipulation.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Stripe best practices skill presents MEDIUM security risk primarily due to transitive trust abuse through external documentation dependencies. The skill instructs the agent to follow and prioritize content from external Stripe documentation URLs without validation, creating a potential indirect prompt injection vector if those sources were compromised. Additionally, the skill references a missing file ('another.py') which indicates incomplete packaging and could be exploited in social engineering scenarios. The skill contains no executable scripts, which limits the attack surface, but the reliance on external content and missing metadata reduce overall security posture. The skill would benefit from bundling critical documentation internally, removing broken file references, and completing manifest metadata.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust)",
+          "Incomplete skill packaging",
+          "Missing security metadata"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_stripe-best-practices_1",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "LOW",
+      "title": "Missing Referenced File - Broken Tool Chain",
+      "description": "The skill references 'another.py' in its instructions but this file is not found in the skill package. This creates a broken tool chain where the agent may attempt to access or execute a non-existent file, potentially leading to unexpected behavior or errors. While not directly exploitable, this indicates incomplete skill packaging and could be leveraged in social engineering attacks where an attacker provides a malicious 'another.py' file.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "Files referenced in instructions: another.py\n**Referenced File: another.py** (not found)",
+      "remediation": "1. Remove the reference to 'another.py' if it's not needed. 2. Include the missing 'another.py' file in the skill package if it's required. 3. Add validation to check for required files before skill execution. 4. Document all file dependencies clearly in the manifest.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Stripe best practices skill presents MEDIUM security risk primarily due to transitive trust abuse through external documentation dependencies. The skill instructs the agent to follow and prioritize content from external Stripe documentation URLs without validation, creating a potential indirect prompt injection vector if those sources were compromised. Additionally, the skill references a missing file ('another.py') which indicates incomplete packaging and could be exploited in social engineering scenarios. The skill contains no executable scripts, which limits the attack surface, but the reliance on external content and missing metadata reduce overall security posture. The skill would benefit from bundling critical documentation internally, removing broken file references, and completing manifest metadata.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust)",
+          "Incomplete skill packaging",
+          "Missing security metadata"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_stripe-best-practices_2",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Incomplete Manifest Metadata",
+      "description": "The skill manifest is missing several optional but recommended fields: 'license', 'compatibility', and 'allowed-tools'. While these fields are optional per the agent skills specification, their absence reduces transparency about the skill's intended usage constraints and compatibility requirements. This makes it harder for users to assess the skill's trustworthiness and appropriate usage context.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "- license: Not specified\n- compatibility: Not specified\n- allowed-tools: Not specified",
+      "remediation": "1. Add 'license' field to specify the skill's licensing terms (e.g., MIT, Apache-2.0). 2. Add 'compatibility' field to document which agent environments this skill works with. 3. Add 'allowed-tools' field to explicitly declare which agent tools this skill requires (e.g., [Read] for documentation access). This improves transparency and helps users make informed decisions about skill usage.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Stripe best practices skill presents MEDIUM security risk primarily due to transitive trust abuse through external documentation dependencies. The skill instructs the agent to follow and prioritize content from external Stripe documentation URLs without validation, creating a potential indirect prompt injection vector if those sources were compromised. Additionally, the skill references a missing file ('another.py') which indicates incomplete packaging and could be exploited in social engineering scenarios. The skill contains no executable scripts, which limits the attack surface, but the reliance on external content and missing metadata reduce overall security posture. The skill would benefit from bundling critical documentation internally, removing broken file references, and completing manifest metadata.",
+        "primary_threats": [
+          "Indirect Prompt Injection (transitive trust)",
+          "Incomplete skill packaging",
+          "Missing security metadata"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.19530606269836426,
-  "duration_ms": 195,
+  "scan_duration_seconds": 239.74416184425354,
+  "duration_ms": 239744,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:48:57.509881"
+  "timestamp": "2026-02-08T05:10:06.700191"
 }

@@ -4,70 +4,79 @@
   "skill_directory": "/workspace/skills/clawhub-searxng",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 3,
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_97a66eb17b",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "id": "llm_finding_searxng_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import httpx",
+      "title": "Unvalidated External Network Requests to User-Controlled URL",
+      "description": "The skill makes HTTP requests to a user-controlled SearXNG instance URL (SEARXNG_URL environment variable) without validation or restrictions. While the default is localhost, users can configure this to point to any external server. The skill sends search queries and receives responses from this endpoint without verifying the destination is trustworthy. An attacker could configure SEARXNG_URL to point to a malicious server that logs queries or returns crafted responses to exploit the agent.",
       "file_path": "scripts/searxng.py",
-      "line_number": 13,
-      "snippet": "import httpx",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "SEARXNG_URL = os.getenv(\"SEARXNG_URL\", \"http://localhost:8080\")\n...\nresponse = httpx.get(f\"{SEARXNG_URL}/search\", params=params, verify=False, timeout=30.0)",
+      "remediation": "1. Validate SEARXNG_URL format (must be http://localhost or https://localhost with optional port). 2. Reject external URLs unless explicitly allowlisted. 3. Add URL validation function to ensure only local instances are used. 4. Document security implications of pointing to external instances.",
+      "analyzer": "llm",
       "metadata": {
-        "matched_pattern": "import\\s+httpx",
-        "matched_text": "import httpx",
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The searxng skill is a privacy-focused web search tool that interfaces with a local SearXNG instance. The primary security concerns are: (1) unvalidated external network requests to user-controlled URLs, allowing potential data exfiltration if misconfigured, and (2) disabled SSL certificate verification creating MITM vulnerability. The skill does not contain prompt injection, credential theft, or malicious code execution. However, the lack of URL validation and disabled SSL verification represent moderate security risks. The skill's behavior matches its description, and there are no deceptive elements. With proper URL validation and SSL verification, this would be a safe skill for local use.",
+        "primary_threats": [
+          "Unvalidated external network requests",
+          "Disabled SSL certificate verification",
+          "Missing input validation on SEARXNG_URL"
+        ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
         "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified this as a data exfiltration risk. The code does accept arbitrary URLs from environment variables without validation. This is a real attack vector if an attacker can control the environment.",
+        "meta_exploitability": "Medium - Requires ability to set environment variables (e.g., compromised config file, social engineering user to add malicious config). Not exploitable remotely without prior access.",
+        "meta_impact": "Medium - Search queries may contain sensitive context from the agent's conversation. Exfiltrating these could leak private information, but impact depends on what the agent is searching for."
       }
     },
     {
-      "id": "TOOL_MISMATCH_NETWORK_2b4406bceb",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
+      "id": "llm_finding_searxng_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
       "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
-      "file_path": null,
+      "title": "SSL Certificate Verification Disabled",
+      "description": "The script explicitly disables SSL certificate verification (verify=False) and suppresses SSL warnings. This makes the connection vulnerable to man-in-the-middle attacks if users configure an HTTPS SearXNG instance. While intended for local self-signed certificates, this creates a security risk when users point to external HTTPS instances.",
+      "file_path": "scripts/searxng.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
+      "snippet": "warnings.filterwarnings('ignore', message='Unverified HTTPS request')\n...\nresponse = httpx.get(f\"{SEARXNG_URL}/search\", params=params, verify=False, timeout=30.0)",
+      "remediation": "1. Remove verify=False and allow proper SSL verification. 2. If self-signed certificates are needed, provide documentation on proper certificate installation. 3. Add a configuration option for certificate verification rather than disabling it globally. 4. Remove the SSL warning suppression.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The searxng skill is a privacy-focused web search tool that interfaces with a local SearXNG instance. The primary security concerns are: (1) unvalidated external network requests to user-controlled URLs, allowing potential data exfiltration if misconfigured, and (2) disabled SSL certificate verification creating MITM vulnerability. The skill does not contain prompt injection, credential theft, or malicious code execution. However, the lack of URL validation and disabled SSL verification represent moderate security risks. The skill's behavior matches its description, and there are no deceptive elements. With proper URL validation and SSL verification, this would be a safe skill for local use.",
+        "primary_threats": [
+          "Unvalidated external network requests",
+          "Disabled SSL certificate verification",
+          "Missing input validation on SEARXNG_URL"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified this as a real security vulnerability. Disabling SSL verification is a well-known MITM attack vector. The code explicitly sets verify=False for all requests.",
+        "meta_exploitability": "Medium - Requires network position (local network or compromised router) but no authentication. Trivial to exploit if attacker has network access.",
+        "meta_impact": "High - Attacker can intercept search queries (potential privacy leak) and inject malicious search results that could mislead the agent or user."
       }
     }
   ],
-  "scan_duration_seconds": 0.6861157417297363,
-  "duration_ms": 686,
+  "scan_duration_seconds": 25.954909563064575,
+  "duration_ms": 25954,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:36:27.134815"
+  "timestamp": "2026-02-07T20:03:16.901716"
 }

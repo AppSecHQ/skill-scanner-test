@@ -2,35 +2,116 @@
   "skill_name": "telegram-auto-topic",
   "skill_path": "/workspace/skills/clawhub-telegram-auto-topic",
   "skill_directory": "/workspace/skills/clawhub-telegram-auto-topic",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
+      "id": "llm_finding_telegram-auto-topic_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Bot Token Exposure Risk",
+      "description": "The script reads the Telegram bot token from a configuration file at a predictable location ($HOME/.openclaw/openclaw.json). If this skill is distributed or shared, it could expose the bot token to unauthorized parties. The token provides full control over the Telegram bot, allowing message sending, group manipulation, and potential data exfiltration through the bot's API access.",
+      "file_path": "scripts/telegram-auto-topic.sh",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "BOT_TOKEN=$(jq -r '.channels.telegram.botToken // empty' \"$CONFIG_FILE\")\nif [ -z \"$BOT_TOKEN\" ]; then\n  echo \"ERROR: Bot token not found in $CONFIG_FILE\" >&2\n  exit 1\nfi",
+      "remediation": "1. Ensure the skill documentation clearly warns users about token security. 2. Recommend using environment variables instead of config files for sensitive credentials. 3. Add file permission checks to verify the config file is only readable by the owner (chmod 600). 4. Consider implementing token encryption at rest.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Telegram Auto-Topic skill presents MEDIUM-HIGH security risks primarily related to credential exposure, command injection vulnerabilities, and undisclosed external dependencies. The skill requires a pre-configured Telegram bot with admin permissions and makes external API calls, but these requirements are not clearly disclosed in the manifest. The bash script handles user-controlled input (sender names, message content) without sufficient sanitization, creating command injection risks. Most critically, the bot token is read from a predictable file location without encryption or access controls, potentially exposing full bot control to unauthorized parties. The skill would benefit from: explicit security disclosures in the manifest, input validation and sanitization, proper credential management, and comprehensive error handling. While the core functionality (creating Telegram forum topics) is legitimate, the implementation has security gaps that should be addressed before production use.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unauthorized External API Access",
+          "Incomplete Security Disclosure"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is standard practice for OpenClaw skills - reading credentials from the framework's config file. The risk is environmental (system compromise) rather than a vulnerability in the skill itself. However, the skill doesn't document security best practices for protecting the config file.",
+        "meta_exploitability": "Low - Requires prior system compromise or access to the user's home directory",
+        "meta_impact": "High - Full bot control if token is exposed, but requires separate compromise vector"
+      }
+    },
+    {
+      "id": "llm_finding_telegram-auto-topic_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Command Injection Risk in Shell Script Arguments",
+      "description": "The bash script accepts user-controlled input (sender name, title, text) as command-line arguments and uses them in curl commands without proper sanitization. While the script uses jq for JSON encoding, the arguments are passed through shell variable expansion which could allow command injection if special characters are not properly escaped. An attacker could craft malicious input in the sender name or message content to inject shell commands.",
+      "file_path": "scripts/telegram-auto-topic.sh",
+      "line_number": null,
+      "snippet": "./telegram-auto-topic.sh <chat_id> <message_id> <sender> [title] [text]\n\nThese arguments are used in curl commands with variable expansion, potentially allowing injection through special characters in sender names or message content.",
+      "remediation": "1. Add input validation and sanitization for all user-controlled arguments. 2. Use printf '%q' or similar shell escaping mechanisms for all variables used in commands. 3. Consider rewriting critical sections in Python with proper input validation. 4. Implement allowlists for expected character sets in sender names and titles.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Telegram Auto-Topic skill presents MEDIUM-HIGH security risks primarily related to credential exposure, command injection vulnerabilities, and undisclosed external dependencies. The skill requires a pre-configured Telegram bot with admin permissions and makes external API calls, but these requirements are not clearly disclosed in the manifest. The bash script handles user-controlled input (sender names, message content) without sufficient sanitization, creating command injection risks. Most critically, the bot token is read from a predictable file location without encryption or access controls, potentially exposing full bot control to unauthorized parties. The skill would benefit from: explicit security disclosures in the manifest, input validation and sanitization, proper credential management, and comprehensive error handling. While the core functionality (creating Telegram forum topics) is legitimate, the implementation has security gaps that should be addressed before production use.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unauthorized External API Access",
+          "Incomplete Security Disclosure"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The script uses proper escaping mechanisms (HTML entity encoding, --data-urlencode for curl), but the risk depends on how the calling agent constructs the command. The SKILL.md instructions don't explicitly show proper quoting, creating potential for injection if special characters in user input aren't handled correctly.",
+        "meta_exploitability": "Medium - Requires the agent to improperly construct the shell command without quoting arguments",
+        "meta_impact": "Medium - Could allow command execution in the context of the bot process"
+      }
+    },
+    {
+      "id": "llm_finding_telegram-auto-topic_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Unauthorized External API Access",
+      "description": "The skill makes direct HTTP requests to the Telegram API (api.telegram.org) using curl, which constitutes network access. The YAML manifest does not declare 'allowed-tools', and the description does not clearly indicate that external network calls will be made. This represents unauthorized tool use as the skill performs network operations that may not be expected by users based on the description alone.",
+      "file_path": "scripts/telegram-auto-topic.sh",
+      "line_number": 38,
+      "snippet": "API=\"https://api.telegram.org/bot$BOT_TOKEN\"\n\nThe script makes multiple curl requests to external Telegram API endpoints without explicit user consent for each operation.",
+      "remediation": "1. Add 'allowed-tools: [Bash]' to the YAML manifest to declare tool usage. 2. Update the description to explicitly mention that the skill makes external API calls to Telegram. 3. Add user confirmation prompts before making network requests. 4. Implement rate limiting to prevent API abuse.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This Telegram Auto-Topic skill presents MEDIUM-HIGH security risks primarily related to credential exposure, command injection vulnerabilities, and undisclosed external dependencies. The skill requires a pre-configured Telegram bot with admin permissions and makes external API calls, but these requirements are not clearly disclosed in the manifest. The bash script handles user-controlled input (sender names, message content) without sufficient sanitization, creating command injection risks. Most critically, the bot token is read from a predictable file location without encryption or access controls, potentially exposing full bot control to unauthorized parties. The skill would benefit from: explicit security disclosures in the manifest, input validation and sanitization, proper credential management, and comprehensive error handling. While the core functionality (creating Telegram forum topics) is legitimate, the implementation has security gaps that should be addressed before production use.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unauthorized External API Access",
+          "Incomplete Security Disclosure"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill's purpose is explicitly Telegram integration, so network access is expected and documented. The missing manifest field is a documentation issue, not a security violation.",
+        "meta_exploitability": "N/A - This is a documentation gap, not an exploitable vulnerability",
+        "meta_impact": "Low - Users installing a Telegram skill expect it to access Telegram's API"
       }
     }
   ],
-  "scan_duration_seconds": 0.22592830657958984,
-  "duration_ms": 225,
+  "scan_duration_seconds": 38.89582657814026,
+  "duration_ms": 38895,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:51:03.615843"
+  "timestamp": "2026-02-07T21:02:01.200604"
 }

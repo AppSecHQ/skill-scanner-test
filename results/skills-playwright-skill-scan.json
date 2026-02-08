@@ -4,73 +4,47 @@
   "skill_directory": "/workspace/skills/lackeyjb-playwright-skill/skills/playwright-skill",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 3,
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_playwright-skill_0",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill manifest does not specify the 'allowed-tools' field, which is optional but recommended for transparency. The skill executes Bash commands and Node.js scripts, but users cannot verify tool restrictions from the manifest. This reduces transparency about what agent capabilities the skill will use.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "YAML manifest missing 'allowed-tools' field. Skill uses Bash execution (cd $SKILL_DIR && node run.js) and file operations (writing to /tmp).",
+      "remediation": "Add 'allowed-tools: [Bash, Write, Read]' to YAML frontmatter to explicitly declare required agent capabilities.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_transitive_trust_abuse_a8c00ad018",
-      "rule_id": "YARA_transitive_trust_abuse",
-      "category": "transitive_trust_abuse",
-      "severity": "MEDIUM",
-      "title": "TRANSITIVE TRUST ABUSE detected by YARA",
-      "description": "Detects skills that delegate trust to untrusted external content: execute code",
-      "file_path": "SKILL.md",
-      "line_number": 276,
-      "snippet": "For quick one-off tasks, you can execute code inline without creating files:",
-      "remediation": "Review and remove transitive trust abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "transitive_trust_abuse",
-        "yara_namespace": "transitive_trust_abuse",
-        "matched_string": "$execute_inline",
-        "threat_type": "TRANSITIVE TRUST ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_14cb2b8506",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
-      "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: use this first",
-      "file_path": "SKILL.md",
-      "line_number": 303,
-      "snippet": "const servers = await helpers.detectDevServers();",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$activation_priority",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The playwright-skill is a legitimate browser automation tool with MODERATE security concerns. The skill's core functionality (writing Playwright test scripts and executing them via Node.js) is appropriate for its stated purpose. Primary concerns include: (1) missing allowed-tools declaration reducing transparency, (2) dynamic path resolution pattern that requires agent-side variable substitution, and (3) use of shared /tmp directory for executable scripts. No evidence of data exfiltration, credential theft, prompt injection, or malicious behavior was found. The skill appears to be a genuine development tool for browser testing. The referenced files (this.py, skill.py, user.py) were not found, but API_REFERENCE.md contains legitimate Playwright documentation. Recommended for use with the remediation steps applied.",
+        "primary_threats": [
+          "Missing tool declarations",
+          "Dynamic path resolution",
+          "Shared temporary directory usage"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill clearly uses Bash commands and file operations. The allowed-tools field is documented as optional but recommended for transparency.",
+        "meta_exploitability": "N/A - This is a transparency issue, not a security vulnerability",
+        "meta_impact": "LOW - Reduces user visibility into tool usage, but does not enable attacks"
       }
     }
   ],
-  "scan_duration_seconds": 0.225663423538208,
-  "duration_ms": 225,
+  "scan_duration_seconds": 27.80107808113098,
+  "duration_ms": 27801,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:48:49.858183"
+  "timestamp": "2026-02-08T01:06:32.511177"
 }

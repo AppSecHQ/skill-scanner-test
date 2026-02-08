@@ -4,144 +4,151 @@
   "skill_directory": "/workspace/skills/clawhub-channel",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 7,
+  "findings_count": 4,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_cb69553515",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "id": "llm_finding_channel_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import urllib.request",
-      "file_path": "scripts/channel.py",
-      "line_number": 12,
-      "snippet": "import urllib.request",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+urllib\\.request",
-        "matched_text": "import urllib.request",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_ENV_VARS_efb0b07910",
-      "rule_id": "DATA_EXFIL_ENV_VARS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Reading environment variables that may contain secrets",
-      "description": "Pattern detected: os.getenv('WECHAT_APPSECRET",
-      "file_path": "scripts/channel.py",
-      "line_number": 32,
-      "snippet": "appsecret = os.getenv('WECHAT_APPSECRET')",
-      "remediation": "Minimize access to environment variables. Document why needed",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "os\\.getenv\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
-        "matched_text": "os.getenv('WECHAT_APPSECRET",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "TOOL_MISMATCH_NETWORK_78ae7ffb30",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
-      "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
-      "file_path": null,
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_credential_harvesting_a9033fde32",
-      "rule_id": "YARA_credential_harvesting",
-      "category": "hardcoded_secrets",
       "severity": "CRITICAL",
-      "title": "CREDENTIAL HARVESTING detected by YARA",
-      "description": "Detects potential exposure of sensitive information like API keys, passwords, tokens, and certificates: export WECHAT_APPSECRET=\"your-app-secret",
+      "title": "Hardcoded API Credentials Exposure Risk",
+      "description": "The skill requires users to store WeChat API credentials (WECHAT_APPID and WECHAT_APPSECRET) as environment variables. While environment variables are better than hardcoding, the instructions explicitly guide users to add these sensitive credentials to ~/.zshrc, which persists them in plaintext in shell configuration files. This creates a credential exposure risk if the shell config is accidentally committed to version control, shared, or accessed by malicious scripts. The skill also caches access tokens in ~/.config/channel/access_token.json without encryption.",
       "file_path": "SKILL.md",
-      "line_number": 64,
-      "snippet": "### \u6b63\u6587\u683c\u5f0f",
-      "remediation": "Review and remove credential harvesting pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "credential_harvesting",
-        "yara_namespace": "credential_harvesting",
-        "matched_string": "$leak_param",
-        "threat_type": "CREDENTIAL HARVESTING",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "ENV_VAR_HARVESTING_df2795965b",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/clawhub-channel/scripts/channel.py",
-      "file_path": "skills/clawhub-channel/scripts/channel.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
+      "snippet": "```bash\n# \u6dfb\u52a0\u5230 ~/.zshrc\nexport WECHAT_APPID=\"your-app-id\"\nexport WECHAT_APPSECRET=\"your-app-secret\"\n```",
+      "remediation": "Recommend using a secure credential management system (e.g., system keychain, encrypted credential store) instead of plaintext environment variables in shell configs. Implement encryption for cached access tokens. Warn users about the security implications of storing credentials in shell configuration files.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This WeChat Official Account management skill presents CRITICAL and HIGH security risks primarily related to credential management and data exfiltration potential. The skill requires users to store API credentials in plaintext environment variables and makes unrestricted network requests to external APIs. While the core functionality (managing WeChat drafts) is legitimate, the implementation has significant security gaps: hardcoded credential storage patterns, lack of input validation on file paths (command injection risk), unrestricted network access without user confirmation, and missing security controls on cache files. The skill would benefit from implementing secure credential storage, input validation, explicit user consent for network operations, and proper error handling. The missing 'allowed-tools' declaration and license information are lower-priority concerns but should be addressed for transparency.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unrestricted Network Access",
+          "Insecure Credential Storage",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified a real security concern. The documentation explicitly instructs users to store secrets in shell config files, which is a known anti-pattern. This is validated by examining the actual SKILL.md content.",
+        "meta_exploitability": "Medium - Requires user to follow insecure documentation instructions, then credentials must be exposed through dotfile sharing or repository commits",
+        "meta_impact": "High - Exposed credentials grant full access to WeChat Official Account API, allowing unauthorized article publishing, data access, and account manipulation"
       }
     },
     {
-      "id": "SUSPICIOUS_URL_dbc0ae4bda",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
+      "id": "llm_finding_channel_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Command Injection via Unvalidated File Paths",
+      "description": "The script accepts file paths from command-line arguments (--file, --cover) and directly opens them without proper validation or sanitization. An attacker could potentially inject malicious file paths or use path traversal techniques to read arbitrary files from the system. The script uses os.path.expanduser() which could be exploited with crafted input.",
+      "file_path": "scripts/channel.py",
+      "line_number": null,
+      "snippet": "File path handling in upload_image() and create_draft() functions accepts user input without validation: `with open(image_path, 'rb') as f:` and `with open(args.file, 'r', encoding='utf-8') as f:`",
+      "remediation": "Implement strict file path validation: 1) Validate file extensions against an allowlist, 2) Resolve paths and check they don't escape intended directories, 3) Validate file existence and readability before opening, 4) Sanitize user input to prevent path traversal attacks (../, ~/, etc.)",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This WeChat Official Account management skill presents CRITICAL and HIGH security risks primarily related to credential management and data exfiltration potential. The skill requires users to store API credentials in plaintext environment variables and makes unrestricted network requests to external APIs. While the core functionality (managing WeChat drafts) is legitimate, the implementation has significant security gaps: hardcoded credential storage patterns, lack of input validation on file paths (command injection risk), unrestricted network access without user confirmation, and missing security controls on cache files. The skill would benefit from implementing secure credential storage, input validation, explicit user consent for network operations, and proper error handling. The missing 'allowed-tools' declaration and license information are lower-priority concerns but should be addressed for transparency.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unrestricted Network Access",
+          "Insecure Credential Storage",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The risk is real but exploitability is limited. The script is executed locally by the user, so an attacker would need to control command-line arguments. This is more of a defense-in-depth issue than an immediate critical threat.",
+        "meta_exploitability": "Low - Requires attacker to control command-line arguments of a locally-executed script, which typically means they already have local access",
+        "meta_impact": "Medium - Could read arbitrary files accessible to the user, potentially exposing sensitive data if combined with the network upload functionality"
+      }
+    },
+    {
+      "id": "llm_finding_channel_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "HIGH",
-      "title": "Suspicious URL detected: https://api.weixin.qq.com/cgi-bin",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-channel/scripts/channel.py",
+      "title": "Unrestricted Network Access to External API",
+      "description": "The skill makes unrestricted HTTPS requests to WeChat API endpoints (api.weixin.qq.com) without any network access controls or user confirmation. While this is necessary for the skill's functionality, it creates a data exfiltration channel. The skill sends user-provided content (article titles, content, images) to external servers without explicit user consent for each transmission. If credentials are compromised, an attacker could exfiltrate arbitrary data through the WeChat API.",
+      "file_path": "scripts/channel.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
+      "snippet": "Multiple urllib.request.urlopen() calls to external API: `urllib.request.urlopen(req)` sending user data to https://api.weixin.qq.com without confirmation",
+      "remediation": "1) Implement explicit user confirmation before each network transmission, 2) Add network access logging to track what data is sent, 3) Implement rate limiting to prevent bulk data exfiltration, 4) Consider adding a dry-run mode that shows what would be sent without actually transmitting",
+      "analyzer": "llm",
       "metadata": {
-        "url": "https://api.weixin.qq.com/cgi-bin",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This WeChat Official Account management skill presents CRITICAL and HIGH security risks primarily related to credential management and data exfiltration potential. The skill requires users to store API credentials in plaintext environment variables and makes unrestricted network requests to external APIs. While the core functionality (managing WeChat drafts) is legitimate, the implementation has significant security gaps: hardcoded credential storage patterns, lack of input validation on file paths (command injection risk), unrestricted network access without user confirmation, and missing security controls on cache files. The skill would benefit from implementing secure credential storage, input validation, explicit user consent for network operations, and proper error handling. The missing 'allowed-tools' declaration and license information are lower-priority concerns but should be addressed for transparency.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unrestricted Network Access",
+          "Insecure Credential Storage",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a legitimate concern about transparency and user control, but the network usage is documented and expected for a WeChat API integration tool. The missing allowed-tools declaration is a policy issue rather than a direct security vulnerability.",
+        "meta_exploitability": "Low - Requires compromised credentials or malicious modification of the skill",
+        "meta_impact": "Medium - Could exfiltrate user data if credentials are stolen, but the API endpoint is documented and expected"
+      }
+    },
+    {
+      "id": "llm_finding_channel_5",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Potential Resource Exhaustion via Unbounded File Operations",
+      "description": "The script reads entire files into memory without size limits when processing content files (--file) and images (--cover). Large files could cause memory exhaustion. The list command also has a configurable limit but no maximum cap, potentially allowing retrieval of thousands of drafts in a single operation.",
+      "file_path": "scripts/channel.py",
+      "line_number": null,
+      "snippet": "Unbounded file reads: `content = f.read()` without size checks, `image_data = f.read()` without size validation, list command accepts arbitrary --limit values",
+      "remediation": "1) Implement file size limits (e.g., max 10MB for content, max 5MB for images), 2) Add size validation before reading files, 3) Cap the maximum --limit value for list operations (e.g., max 100), 4) Implement streaming for large file operations instead of loading entire files into memory",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This WeChat Official Account management skill presents CRITICAL and HIGH security risks primarily related to credential management and data exfiltration potential. The skill requires users to store API credentials in plaintext environment variables and makes unrestricted network requests to external APIs. While the core functionality (managing WeChat drafts) is legitimate, the implementation has significant security gaps: hardcoded credential storage patterns, lack of input validation on file paths (command injection risk), unrestricted network access without user confirmation, and missing security controls on cache files. The skill would benefit from implementing secure credential storage, input validation, explicit user consent for network operations, and proper error handling. The missing 'allowed-tools' declaration and license information are lower-priority concerns but should be addressed for transparency.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Command Injection",
+          "Unrestricted Network Access",
+          "Insecure Credential Storage",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "This is a valid resource management concern, but the practical risk is low since users control the input files. It's more of a robustness issue than a security vulnerability.",
+        "meta_exploitability": "Very Low - User must intentionally provide extremely large files to their own script",
+        "meta_impact": "Low - Could cause script to crash or consume excessive memory, but only affects the user running the script"
       }
     }
   ],
-  "scan_duration_seconds": 2.2100186347961426,
-  "duration_ms": 2210,
+  "scan_duration_seconds": 49.13312911987305,
+  "duration_ms": 49133,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:53:18.603141"
+  "timestamp": "2026-02-07T19:32:26.448703"
 }

@@ -4,7 +4,7 @@
   "skill_directory": "/workspace/skills/clawhub-update-plus",
   "is_safe": false,
   "max_severity": "CRITICAL",
-  "findings_count": 8,
+  "findings_count": 15,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -162,16 +162,231 @@
         "threat_type": "SYSTEM MANIPULATION",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_update-plus_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Command Injection via Unvalidated Backup ID in Restore Function",
+      "description": "The restore_backup() function in bin/lib/restore.sh accepts a user-provided backup_id parameter and uses it directly in file path operations and tar extraction without proper validation. An attacker could provide a malicious backup_id containing path traversal sequences (../) or command injection payloads to access arbitrary files or execute commands. The backup_id is used in: backup_path=\"${BACKUP_DIR}/${backup_id}\" and tar -xzf \"$backup_path\", allowing potential directory traversal or malicious archive extraction.",
+      "file_path": "bin/lib/restore.sh",
+      "line_number": null,
+      "snippet": "restore_backup() {\n  local backup_id=\"$1\"\n  ...\n  local backup_path=\"${BACKUP_DIR}/${backup_id}\"\n  ...\n  if ! tar -xzf \"$backup_path\" -C \"$tmp_extract_dir\" 2>/dev/null; then",
+      "remediation": "Implement strict validation for backup_id: 1) Use a whitelist pattern to ensure backup_id matches expected format (e.g., openclaw-backup-YYYY-MM-DD-HH:MM:SS.tar.gz), 2) Reject any input containing path traversal sequences (../, .., /), 3) Use basename to strip directory components, 4) Verify the resolved path stays within BACKUP_DIR using realpath validation before extraction.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The update-plus skill presents MULTIPLE HIGH-SEVERITY security vulnerabilities primarily related to command injection and insufficient input validation. The restore functionality accepts unvalidated user input (backup_id) that is used directly in file operations and tar extraction, creating command injection and path traversal risks. The extensive use of shell scripting with user-controlled configuration values (loaded from JSON) without proper quoting and validation creates additional injection vectors throughout the codebase. MEDIUM-severity concerns include potential credential exposure through unencrypted backups of sensitive directories, undeclared tool permissions despite broad file system and network operations, and resource exhaustion risks from unbounded backup creation. The skill performs powerful operations (backup, restore, update, remote sync) but lacks adequate security controls, input validation, and user warnings about the risks involved. While the functionality is useful for system maintenance, the implementation requires significant security hardening before it can be considered safe for production use.",
+        "primary_threats": [
+          "Command Injection",
+          "Path Traversal",
+          "Insufficient Input Validation",
+          "Credential Exposure via Unencrypted Backups",
+          "Undeclared Tool Permissions",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_update-plus_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "HIGH",
+      "title": "Command Injection via eval and Unvalidated User Input in Multiple Functions",
+      "description": "Multiple shell scripts use eval with user-controlled or external data without proper sanitization. In bin/lib/utils.sh, the expand_path() function uses sed to perform variable substitution which could be exploited. More critically, configuration values loaded from JSON (which could be user-modified) are used in shell commands throughout the codebase without proper quoting or validation. The jq outputs are used directly in while loops and command construction, creating injection opportunities.",
+      "file_path": "bin/lib/utils.sh",
+      "line_number": null,
+      "snippet": "expand_path() {\n  local path=\"$1\"\n  echo \"$path\" | sed \"s|\\${HOME}|$HOME|g\" | sed \"s|~|$HOME|g\"\n}\n\n# Used throughout with user-controlled paths:\ndir_path=$(echo \"$dir_config\" | jq -r '.path')\ndir_path=$(expand_path \"$dir_path\")",
+      "remediation": "1) Never use eval with user-controlled input, 2) Properly quote all variable expansions in shell commands, 3) Validate and sanitize all JSON configuration values before use, 4) Use parameter expansion instead of sed for path manipulation, 5) Implement a whitelist of allowed characters for paths and configuration values, 6) Use -- to separate options from arguments in commands like tar, rsync, etc.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The update-plus skill presents MULTIPLE HIGH-SEVERITY security vulnerabilities primarily related to command injection and insufficient input validation. The restore functionality accepts unvalidated user input (backup_id) that is used directly in file operations and tar extraction, creating command injection and path traversal risks. The extensive use of shell scripting with user-controlled configuration values (loaded from JSON) without proper quoting and validation creates additional injection vectors throughout the codebase. MEDIUM-severity concerns include potential credential exposure through unencrypted backups of sensitive directories, undeclared tool permissions despite broad file system and network operations, and resource exhaustion risks from unbounded backup creation. The skill performs powerful operations (backup, restore, update, remote sync) but lacks adequate security controls, input validation, and user warnings about the risks involved. While the functionality is useful for system maintenance, the implementation requires significant security hardening before it can be considered safe for production use.",
+        "primary_threats": [
+          "Command Injection",
+          "Path Traversal",
+          "Insufficient Input Validation",
+          "Credential Exposure via Unencrypted Backups",
+          "Undeclared Tool Permissions",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_update-plus_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Potential Credential Exposure via Backup of Sensitive Directories",
+      "description": "The backup functionality backs up the entire ~/.openclaw directory by default, which may contain sensitive credentials, API keys, or tokens. The configuration allows arbitrary paths to be backed up via backup_paths in the JSON config. If users configure backups of ~/.ssh, ~/.aws, or other credential directories, these will be included in backups. While encryption is optional (ENCRYPTION_ENABLED), it defaults to false, meaning backups are stored unencrypted by default. Additionally, backups can be synced to remote storage (rclone) without enforcing encryption.",
+      "file_path": "bin/lib/backup.sh",
+      "line_number": null,
+      "snippet": "# Default backup includes entire .openclaw directory\nBACKUP_PATHS_JSON=\"\"\n# Encryption is optional and defaults to false\nENCRYPTION_ENABLED=\"false\"\n# Remote storage sync without mandatory encryption\nREMOTE_STORAGE_ENABLED=\"false\"",
+      "remediation": "1) Implement a blacklist of sensitive directories that should never be backed up (e.g., ~/.ssh, ~/.aws, ~/.gnupg), 2) Make encryption mandatory when remote storage is enabled, 3) Add warnings when backing up directories that may contain credentials, 4) Document secure backup practices in SKILL.md, 5) Consider implementing automatic detection and exclusion of common credential files (.env, *_key, *.pem, etc.).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The update-plus skill presents MULTIPLE HIGH-SEVERITY security vulnerabilities primarily related to command injection and insufficient input validation. The restore functionality accepts unvalidated user input (backup_id) that is used directly in file operations and tar extraction, creating command injection and path traversal risks. The extensive use of shell scripting with user-controlled configuration values (loaded from JSON) without proper quoting and validation creates additional injection vectors throughout the codebase. MEDIUM-severity concerns include potential credential exposure through unencrypted backups of sensitive directories, undeclared tool permissions despite broad file system and network operations, and resource exhaustion risks from unbounded backup creation. The skill performs powerful operations (backup, restore, update, remote sync) but lacks adequate security controls, input validation, and user warnings about the risks involved. While the functionality is useful for system maintenance, the implementation requires significant security hardening before it can be considered safe for production use.",
+        "primary_threats": [
+          "Command Injection",
+          "Path Traversal",
+          "Insufficient Input Validation",
+          "Credential Exposure via Unencrypted Backups",
+          "Undeclared Tool Permissions",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_update-plus_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Tool Restriction Violation - Undeclared Network and File System Operations",
+      "description": "The skill's YAML manifest does not declare allowed-tools, but the scripts perform extensive file system operations (Read, Write, Glob) and network operations (curl for connection checks, npm/pnpm for updates, rclone for remote storage, notification APIs). While allowed-tools is optional, the absence of this declaration combined with the broad scope of operations (backup, restore, update, remote sync) creates ambiguity about the skill's intended permissions. The skill can modify arbitrary files via restore operations and make network calls without explicit permission declaration.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "# YAML manifest missing allowed-tools\nallowed-tools: Not specified\n\n# But scripts perform:\n- File operations: tar, rsync, mkdir, rm -rf\n- Network operations: curl, npm, rclone\n- Notifications: openclaw messaging API calls",
+      "remediation": "1) Add explicit allowed-tools declaration to YAML manifest listing: [Read, Write, Glob, Bash, Python] to match actual behavior, 2) Document network requirements in compatibility field, 3) Consider splitting functionality into separate skills with narrower permissions (e.g., backup-only vs update-only), 4) Add user confirmation prompts before destructive operations (restore, update).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The update-plus skill presents MULTIPLE HIGH-SEVERITY security vulnerabilities primarily related to command injection and insufficient input validation. The restore functionality accepts unvalidated user input (backup_id) that is used directly in file operations and tar extraction, creating command injection and path traversal risks. The extensive use of shell scripting with user-controlled configuration values (loaded from JSON) without proper quoting and validation creates additional injection vectors throughout the codebase. MEDIUM-severity concerns include potential credential exposure through unencrypted backups of sensitive directories, undeclared tool permissions despite broad file system and network operations, and resource exhaustion risks from unbounded backup creation. The skill performs powerful operations (backup, restore, update, remote sync) but lacks adequate security controls, input validation, and user warnings about the risks involved. While the functionality is useful for system maintenance, the implementation requires significant security hardening before it can be considered safe for production use.",
+        "primary_threats": [
+          "Command Injection",
+          "Path Traversal",
+          "Insufficient Input Validation",
+          "Credential Exposure via Unencrypted Backups",
+          "Undeclared Tool Permissions",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_update-plus_4",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Potential Resource Exhaustion via Unbounded Backup Creation",
+      "description": "The backup functionality lacks safeguards against resource exhaustion. While BACKUP_COUNT limits the number of retained backups (default 5), there are no checks for: 1) Maximum backup size before creation, 2) Total disk space consumption by all backups, 3) Rate limiting on backup creation. The check_disk_space() function only checks available space, not total consumption. An attacker or misconfiguration could trigger repeated backup operations, filling disk space. The cron job (install_cron) can be set to run at any interval without rate limiting.",
+      "file_path": "bin/lib/backup.sh",
+      "line_number": null,
+      "snippet": "# Backup count limit exists but no size limits\nBACKUP_COUNT=\"5\"\n# Disk space check is optional and only checks available space\ncheck_disk_space() {\n  local required_mb=\"${1:-500}\"\n  local check_enabled=\"${CHECK_DISK:-true}\"\n# Cron can be set to any schedule without validation\ninstall_cron() {\n  local cron_schedule=\"${1:-0 2 * * *}\"",
+      "remediation": "1) Implement maximum backup size limits (e.g., reject backups over 10GB), 2) Add total backup directory size monitoring and alerts, 3) Implement rate limiting: prevent backup creation more than once per hour, 4) Validate cron schedules to prevent excessive frequency (minimum 1 hour intervals), 5) Add disk space monitoring with automatic cleanup when space is low, 6) Implement backup compression level options to reduce storage consumption.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The update-plus skill presents MULTIPLE HIGH-SEVERITY security vulnerabilities primarily related to command injection and insufficient input validation. The restore functionality accepts unvalidated user input (backup_id) that is used directly in file operations and tar extraction, creating command injection and path traversal risks. The extensive use of shell scripting with user-controlled configuration values (loaded from JSON) without proper quoting and validation creates additional injection vectors throughout the codebase. MEDIUM-severity concerns include potential credential exposure through unencrypted backups of sensitive directories, undeclared tool permissions despite broad file system and network operations, and resource exhaustion risks from unbounded backup creation. The skill performs powerful operations (backup, restore, update, remote sync) but lacks adequate security controls, input validation, and user warnings about the risks involved. While the functionality is useful for system maintenance, the implementation requires significant security hardening before it can be considered safe for production use.",
+        "primary_threats": [
+          "Command Injection",
+          "Path Traversal",
+          "Insufficient Input Validation",
+          "Credential Exposure via Unencrypted Backups",
+          "Undeclared Tool Permissions",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_update-plus_5",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Hardcoded Sensitive Path Patterns Without Validation",
+      "description": "The scripts contain hardcoded paths to potentially sensitive directories (~/.aws, ~/.ssh mentioned in comments/documentation) and the code walks directory trees without validating against sensitive locations. While not actively exploited in the current code, the rsync and tar operations could inadvertently include sensitive files if users configure broad backup paths. The exclude mechanism relies on user configuration rather than enforcing security boundaries.",
+      "file_path": "bin/lib/backup.sh",
+      "line_number": null,
+      "snippet": "# Rsync with user-defined excludes only\nlocal rsync_args=\"-a\"\nwhile IFS= read -r exclude_pattern; do\n  rsync_args=\"$rsync_args --exclude=$exclude_pattern\"\ndone <<< \"$dir_excludes\"\n# No hardcoded exclusions for sensitive paths",
+      "remediation": "1) Implement hardcoded exclusion patterns for common sensitive files: .env, *_key, *.pem, id_rsa, credentials, 2) Add automatic detection of sensitive file patterns during backup with warnings, 3) Provide a --include-sensitive flag that must be explicitly set to backup sensitive directories, 4) Document security implications of backing up different directory types.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The update-plus skill presents MULTIPLE HIGH-SEVERITY security vulnerabilities primarily related to command injection and insufficient input validation. The restore functionality accepts unvalidated user input (backup_id) that is used directly in file operations and tar extraction, creating command injection and path traversal risks. The extensive use of shell scripting with user-controlled configuration values (loaded from JSON) without proper quoting and validation creates additional injection vectors throughout the codebase. MEDIUM-severity concerns include potential credential exposure through unencrypted backups of sensitive directories, undeclared tool permissions despite broad file system and network operations, and resource exhaustion risks from unbounded backup creation. The skill performs powerful operations (backup, restore, update, remote sync) but lacks adequate security controls, input validation, and user warnings about the risks involved. While the functionality is useful for system maintenance, the implementation requires significant security hardening before it can be considered safe for production use.",
+        "primary_threats": [
+          "Command Injection",
+          "Path Traversal",
+          "Insufficient Input Validation",
+          "Credential Exposure via Unencrypted Backups",
+          "Undeclared Tool Permissions",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_update-plus_6",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Missing Security Warnings in Skill Description",
+      "description": "The skill description and documentation do not adequately warn users about security implications of the operations performed. The skill can: 1) Execute arbitrary code from git repositories during updates, 2) Restore potentially malicious backup archives, 3) Sync backups to remote storage, 4) Execute with elevated privileges via cron. The SKILL.md presents these as convenience features without security warnings about verifying backup integrity, validating update sources, or risks of automatic updates.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "description: Full backup, update, and restore for OpenClaw - config, workspace, and skills with auto-rollback\n\n# No warnings about:\n- Verifying backup integrity before restore\n- Risks of automatic updates from git\n- Remote storage security implications\n- Cron job running with user privileges",
+      "remediation": "1) Add security warnings section to SKILL.md covering: backup verification, update source validation, remote storage encryption requirements, 2) Implement backup signature verification (GPG signing), 3) Add --verify flag to validate backup integrity before restore, 4) Document threat model and trust assumptions, 5) Recommend users review update changes before applying (--dry-run first).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The update-plus skill presents MULTIPLE HIGH-SEVERITY security vulnerabilities primarily related to command injection and insufficient input validation. The restore functionality accepts unvalidated user input (backup_id) that is used directly in file operations and tar extraction, creating command injection and path traversal risks. The extensive use of shell scripting with user-controlled configuration values (loaded from JSON) without proper quoting and validation creates additional injection vectors throughout the codebase. MEDIUM-severity concerns include potential credential exposure through unencrypted backups of sensitive directories, undeclared tool permissions despite broad file system and network operations, and resource exhaustion risks from unbounded backup creation. The skill performs powerful operations (backup, restore, update, remote sync) but lacks adequate security controls, input validation, and user warnings about the risks involved. While the functionality is useful for system maintenance, the implementation requires significant security hardening before it can be considered safe for production use.",
+        "primary_threats": [
+          "Command Injection",
+          "Path Traversal",
+          "Insufficient Input Validation",
+          "Credential Exposure via Unencrypted Backups",
+          "Undeclared Tool Permissions",
+          "Resource Exhaustion"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.25582122802734375,
-  "duration_ms": 255,
+  "scan_duration_seconds": 63.59376764297485,
+  "duration_ms": 63593,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:52:18.552370"
+  "timestamp": "2026-02-07T21:24:11.903367"
 }

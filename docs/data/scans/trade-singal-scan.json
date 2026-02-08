@@ -2,35 +2,116 @@
   "skill_name": "trade-signal",
   "skill_path": "/workspace/skills/clawhub-trade-signal",
   "skill_directory": "/workspace/skills/clawhub-trade-signal",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "is_safe": false,
+  "max_severity": "HIGH",
+  "findings_count": 3,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_trade-signal_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Unvalidated External API Data Exfiltration Risk",
+      "description": "The skill sends user queries directly to an external API (https://terminal-x.ai/api) without any validation, authentication mechanism visibility, or data handling transparency. User queries may contain sensitive information about investment positions, portfolio details, or trading strategies that are transmitted to a third-party service. There is no disclosure about data retention, logging, or privacy practices of the external API.",
+      "file_path": "scripts/search.sh",
+      "line_number": 13,
+      "snippet": "ENCODED=$(python3 -c \"import urllib.parse; print(urllib.parse.quote('''$QUERY'''))\")\\ncurl -sL \"https://terminal-x.ai/api/lite-search?query=${ENCODED}\"",
+      "remediation": "1. Add explicit user consent mechanism before sending queries to external API. 2. Implement local caching to minimize external calls. 3. Document the external API's data handling and privacy policies in SKILL.md. 4. Consider adding query sanitization to remove potentially sensitive information. 5. Implement authentication/API key mechanism with user-controlled credentials rather than anonymous calls.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM-HIGH security risk primarily due to unvalidated external API data transmission and misleading capability claims. The skill is essentially a wrapper around an external financial search API (terminal-x.ai) but markets itself as providing 'executable trade signals' and 'real-time recommendations' which overstates its actual functionality. The main security concern is that user queries containing potentially sensitive financial information are sent to an external third-party API without transparency about data handling, authentication, or privacy practices. Additionally, the skill references non-existent Python files and lacks important metadata. While there are no direct prompt injection attempts or malicious code execution patterns, the combination of external data transmission, misleading marketing, and incomplete implementation creates meaningful security and trust concerns for users making financial decisions.",
+        "primary_threats": [
+          "Data exfiltration to external API",
+          "Misleading capability claims",
+          "Missing referenced files",
+          "Inadequate financial disclaimers"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The code clearly transmits user input to an external API. This is documented functionality, not hidden behavior, but lacks privacy transparency. The LLM analyzer correctly identified this as a data handling concern rather than malicious exfiltration.",
+        "meta_exploitability": "Low - Requires user to voluntarily input sensitive information in queries",
+        "meta_impact": "Medium - Potential exposure of investment strategies or financial interests to third party"
+      }
+    },
+    {
+      "id": "llm_finding_trade-signal_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Scope and Capability Claims",
+      "description": "The skill description claims to provide 'executable Buy/Sell/Hold recommendations' and 'real-time trade signals' but the actual implementation only performs web searches against an external API. The skill cannot execute trades, provide real-time data (it's a search API), or generate independent trade signals. The description uses aggressive marketing language ('institution-grade trade thesis', 'actionable intelligence') that overstates the capability of a simple API wrapper. This could mislead users into making financial decisions based on misunderstood capabilities.",
       "file_path": "SKILL.md",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "snippet": "Description claims: 'Real-time trade signals with executable Buy/Sell/Hold recommendations' and 'institution-grade trade thesis'\\nActual implementation: curl request to search API endpoint with no signal generation, execution capability, or real-time data processing",
+      "remediation": "1. Revise description to accurately reflect that this is a financial information search tool, not a trading signal generator. 2. Remove claims about 'executable' recommendations and 'real-time' signals. 3. Add clear disclaimers that this is for informational purposes only and not financial advice. 4. Clarify that the skill queries an external search API rather than generating independent analysis.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM-HIGH security risk primarily due to unvalidated external API data transmission and misleading capability claims. The skill is essentially a wrapper around an external financial search API (terminal-x.ai) but markets itself as providing 'executable trade signals' and 'real-time recommendations' which overstates its actual functionality. The main security concern is that user queries containing potentially sensitive financial information are sent to an external third-party API without transparency about data handling, authentication, or privacy practices. Additionally, the skill references non-existent Python files and lacks important metadata. While there are no direct prompt injection attempts or malicious code execution patterns, the combination of external data transmission, misleading marketing, and incomplete implementation creates meaningful security and trust concerns for users making financial decisions.",
+        "primary_threats": [
+          "Data exfiltration to external API",
+          "Misleading capability claims",
+          "Missing referenced files",
+          "Inadequate financial disclaimers"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Clear mismatch between claimed capabilities ('executable recommendations', 'real-time signals') and actual implementation (search API wrapper). The LLM analyzer correctly identified this as misleading marketing.",
+        "meta_exploitability": "Medium - Users may make financial decisions based on misunderstood capabilities",
+        "meta_impact": "Medium - Potential financial harm from misinterpreted tool capabilities"
+      }
+    },
+    {
+      "id": "llm_finding_trade-signal_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "LOW",
+      "title": "Insufficient Financial Disclaimer",
+      "description": "The skill provides financial market information and analysis but lacks adequate disclaimers about the nature of the information, investment risks, or regulatory compliance. Given the sensitive nature of financial advice and potential for user harm from misinterpreted data, stronger disclaimers are needed.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Skill provides 'Buy/Sell/Hold recommendations' and 'price targets' without disclaimers about: not being financial advice, past performance, risk of loss, or regulatory status",
+      "remediation": "1. Add prominent disclaimer that information is for educational purposes only and not financial advice. 2. Include standard risk warnings about investment losses. 3. Clarify that users should consult licensed financial advisors. 4. Add disclaimer about data accuracy and timeliness limitations. 5. Consider regulatory compliance requirements (SEC, FINRA) for financial information distribution.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This skill presents MEDIUM-HIGH security risk primarily due to unvalidated external API data transmission and misleading capability claims. The skill is essentially a wrapper around an external financial search API (terminal-x.ai) but markets itself as providing 'executable trade signals' and 'real-time recommendations' which overstates its actual functionality. The main security concern is that user queries containing potentially sensitive financial information are sent to an external third-party API without transparency about data handling, authentication, or privacy practices. Additionally, the skill references non-existent Python files and lacks important metadata. While there are no direct prompt injection attempts or malicious code execution patterns, the combination of external data transmission, misleading marketing, and incomplete implementation creates meaningful security and trust concerns for users making financial decisions.",
+        "primary_threats": [
+          "Data exfiltration to external API",
+          "Misleading capability claims",
+          "Missing referenced files",
+          "Inadequate financial disclaimers"
+        ],
+        "aitech": "AITech-15.1",
+        "aitech_name": "Harmful / Misleading / Inaccurate Content",
+        "aisubtech": "AISubtech-15.1.1",
+        "aisubtech_name": "Deceptive or Misleading Content",
+        "scanner_category": "DECEPTIVE CONTENT",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "Standard practice for financial information tools, though the skill is primarily a search wrapper rather than an advisory service. The lack of disclaimer could still mislead users about the nature of the information.",
+        "meta_exploitability": "Low - Requires user misinterpretation of tool purpose",
+        "meta_impact": "Low - Informational gap rather than direct security threat"
       }
     }
   ],
-  "scan_duration_seconds": 0.223557710647583,
-  "duration_ms": 223,
+  "scan_duration_seconds": 34.02283239364624,
+  "duration_ms": 34022,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:51:35.793317"
+  "timestamp": "2026-02-07T21:14:53.964850"
 }

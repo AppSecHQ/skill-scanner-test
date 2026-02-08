@@ -2,9 +2,9 @@
   "skill_name": "telegram-pairing-customization",
   "skill_path": "/workspace/skills/clawhub-telegram-pairing-customization",
   "skill_directory": "/workspace/skills/clawhub-telegram-pairing-customization",
-  "is_safe": true,
-  "max_severity": "LOW",
-  "findings_count": 1,
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 7,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -21,16 +21,194 @@
       "metadata": {
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_telegram-pairing-customization_0",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "Arbitrary File Modification of System Node.js Package",
+      "description": "The skill modifies a critical system file (/usr/lib/node_modules/openclaw/dist/telegram/bot-message-context.js) without proper authorization checks. This constitutes arbitrary code modification of an installed system package, which could compromise the integrity of the OpenClaw application and potentially introduce security vulnerabilities or backdoors.",
+      "file_path": "scripts/apply-pairing-fix.sh",
+      "line_number": null,
+      "snippet": "ORIGINAL_FILE=\"/usr/lib/node_modules/openclaw/dist/telegram/bot-message-context.js\"\ncp \"$ORIGINAL_FILE\" \"$BACKUP_FILE\"\nsed 's/if (created) {/if (code) {/' \"$ORIGINAL_FILE\" > \"$ORIGINAL_FILE.tmp\" && mv \"$ORIGINAL_FILE.tmp\" \"$ORIGINAL_FILE\"",
+      "remediation": "1. Never modify system-installed packages directly. 2. Use proper extension/plugin mechanisms provided by the application. 3. Implement configuration-based changes rather than code modification. 4. Require explicit user confirmation before modifying system files. 5. Validate file integrity and permissions before modification. 6. Consider using patch files with checksums instead of direct sed replacements.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK: This skill performs dangerous system-level modifications to installed Node.js packages without proper safeguards. The primary threat is arbitrary code modification of the OpenClaw application through direct file manipulation using sed. The skill requires elevated privileges, lacks proper validation and error handling, and could leave the system in an inconsistent state. The modification approach is fragile and will be overwritten by application updates. This skill should NOT be used in its current form. Users should instead request this feature through proper OpenClaw development channels or use configuration-based customization if available.",
+        "primary_threats": [
+          "Arbitrary system file modification (AITech-9.1)",
+          "Privilege escalation requirements (AITech-13.3)",
+          "Unsafe code transformation (AITech-12.1)",
+          "Inadequate error handling (AITech-13.3)",
+          "Misleading risk communication (AITech-2.1)"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_telegram-pairing-customization_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "HIGH",
+      "title": "Privilege Escalation Risk via System Directory Write Access",
+      "description": "The script requires write access to /usr/lib/node_modules/, which typically requires root/sudo privileges. The skill does not validate permissions or warn users about privilege requirements, potentially leading to failed executions or encouraging users to run with elevated privileges unnecessarily.",
+      "file_path": "scripts/apply-pairing-fix.sh",
+      "line_number": 15,
+      "snippet": "ORIGINAL_FILE=\"/usr/lib/node_modules/openclaw/dist/telegram/bot-message-context.js\"",
+      "remediation": "1. Check for required permissions before attempting modifications. 2. Provide clear warnings about privilege requirements. 3. Suggest alternative approaches that don't require system-level modifications. 4. Implement proper error handling for permission-denied scenarios. 5. Consider user-space alternatives to system package modification.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK: This skill performs dangerous system-level modifications to installed Node.js packages without proper safeguards. The primary threat is arbitrary code modification of the OpenClaw application through direct file manipulation using sed. The skill requires elevated privileges, lacks proper validation and error handling, and could leave the system in an inconsistent state. The modification approach is fragile and will be overwritten by application updates. This skill should NOT be used in its current form. Users should instead request this feature through proper OpenClaw development channels or use configuration-based customization if available.",
+        "primary_threats": [
+          "Arbitrary system file modification (AITech-9.1)",
+          "Privilege escalation requirements (AITech-13.3)",
+          "Unsafe code transformation (AITech-12.1)",
+          "Inadequate error handling (AITech-13.3)",
+          "Misleading risk communication (AITech-2.1)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_telegram-pairing-customization_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Unsafe Pattern Matching and Code Replacement",
+      "description": "The script uses simple sed pattern matching to modify JavaScript code without validating the surrounding context or ensuring the modification is safe. The pattern 'if (created) {' could potentially match unintended code locations, and the replacement doesn't verify that the modification maintains code integrity or doesn't introduce syntax errors.",
+      "file_path": "scripts/apply-pairing-fix.sh",
+      "line_number": 25,
+      "snippet": "sed 's/if (created) {/if (code) {/' \"$ORIGINAL_FILE\" > \"$ORIGINAL_FILE.tmp\" && mv \"$ORIGINAL_FILE.tmp\" \"$ORIGINAL_FILE\"",
+      "remediation": "1. Implement more robust pattern matching with context validation. 2. Verify the modification doesn't break JavaScript syntax. 3. Use AST-based code transformation instead of text replacement. 4. Add pre-flight checks to validate the target code structure. 5. Implement rollback mechanisms if modification fails. 6. Test the modified code before replacing the original.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK: This skill performs dangerous system-level modifications to installed Node.js packages without proper safeguards. The primary threat is arbitrary code modification of the OpenClaw application through direct file manipulation using sed. The skill requires elevated privileges, lacks proper validation and error handling, and could leave the system in an inconsistent state. The modification approach is fragile and will be overwritten by application updates. This skill should NOT be used in its current form. Users should instead request this feature through proper OpenClaw development channels or use configuration-based customization if available.",
+        "primary_threats": [
+          "Arbitrary system file modification (AITech-9.1)",
+          "Privilege escalation requirements (AITech-13.3)",
+          "Unsafe code transformation (AITech-12.1)",
+          "Inadequate error handling (AITech-13.3)",
+          "Misleading risk communication (AITech-2.1)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_telegram-pairing-customization_3",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Inadequate Error Handling and Recovery",
+      "description": "The script uses 'set -e' to exit on errors but doesn't implement proper cleanup or rollback mechanisms. If the modification fails partway through, the system could be left in an inconsistent state with a partially modified file and no clear recovery path.",
+      "file_path": "scripts/apply-pairing-fix.sh",
+      "line_number": 6,
+      "snippet": "set -e  # Exit on any error\n... (no trap or cleanup handlers)",
+      "remediation": "1. Implement trap handlers for cleanup on error/exit. 2. Add rollback functionality to restore from backup on failure. 3. Validate the modified file before replacing the original. 4. Provide clear error messages and recovery instructions. 5. Test modifications in a safe environment before applying to production files.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK: This skill performs dangerous system-level modifications to installed Node.js packages without proper safeguards. The primary threat is arbitrary code modification of the OpenClaw application through direct file manipulation using sed. The skill requires elevated privileges, lacks proper validation and error handling, and could leave the system in an inconsistent state. The modification approach is fragile and will be overwritten by application updates. This skill should NOT be used in its current form. Users should instead request this feature through proper OpenClaw development channels or use configuration-based customization if available.",
+        "primary_threats": [
+          "Arbitrary system file modification (AITech-9.1)",
+          "Privilege escalation requirements (AITech-13.3)",
+          "Unsafe code transformation (AITech-12.1)",
+          "Inadequate error handling (AITech-13.3)",
+          "Misleading risk communication (AITech-2.1)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_telegram-pairing-customization_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Misleading Skill Description and Scope",
+      "description": "The skill description presents this as a 'customization' or 'modification' feature, but it actually performs invasive system-level changes to installed software. The description doesn't adequately warn users about the risks of modifying system packages, potential warranty/support implications, or the fact that updates to OpenClaw will overwrite these changes.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description: Modify OpenClaw's Telegram pairing logic so unapproved users receive pairing codes on every /start message before approval.\n\nThe skill presents this as a routine customization without emphasizing the invasive nature of modifying system-installed packages.",
+      "remediation": "1. Clearly label this as an 'advanced/dangerous' modification. 2. Warn about risks of modifying system packages. 3. Explain that updates will overwrite changes. 4. Recommend contacting OpenClaw developers for proper feature requests. 5. Suggest configuration-based alternatives if available. 6. Require explicit user acknowledgment of risks.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK: This skill performs dangerous system-level modifications to installed Node.js packages without proper safeguards. The primary threat is arbitrary code modification of the OpenClaw application through direct file manipulation using sed. The skill requires elevated privileges, lacks proper validation and error handling, and could leave the system in an inconsistent state. The modification approach is fragile and will be overwritten by application updates. This skill should NOT be used in its current form. Users should instead request this feature through proper OpenClaw development channels or use configuration-based customization if available.",
+        "primary_threats": [
+          "Arbitrary system file modification (AITech-9.1)",
+          "Privilege escalation requirements (AITech-13.3)",
+          "Unsafe code transformation (AITech-12.1)",
+          "Inadequate error handling (AITech-13.3)",
+          "Misleading risk communication (AITech-2.1)"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_telegram-pairing-customization_5",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing Metadata Fields",
+      "description": "The skill manifest is missing optional but recommended metadata fields: license, compatibility, and allowed-tools. While not a security threat, this reduces transparency about the skill's requirements and behavior.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "license: Not specified\ncompatibility: Not specified\nallowed-tools: Not specified",
+      "remediation": "Add complete metadata to the YAML frontmatter: 1. Specify license (e.g., MIT, Apache-2.0). 2. Document compatibility requirements (requires OpenClaw installation, root/sudo access). 3. Declare allowed-tools: [Bash] to indicate shell script execution.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK: This skill performs dangerous system-level modifications to installed Node.js packages without proper safeguards. The primary threat is arbitrary code modification of the OpenClaw application through direct file manipulation using sed. The skill requires elevated privileges, lacks proper validation and error handling, and could leave the system in an inconsistent state. The modification approach is fragile and will be overwritten by application updates. This skill should NOT be used in its current form. Users should instead request this feature through proper OpenClaw development channels or use configuration-based customization if available.",
+        "primary_threats": [
+          "Arbitrary system file modification (AITech-9.1)",
+          "Privilege escalation requirements (AITech-13.3)",
+          "Unsafe code transformation (AITech-12.1)",
+          "Inadequate error handling (AITech-13.3)",
+          "Misleading risk communication (AITech-2.1)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.2659766674041748,
-  "duration_ms": 265,
+  "scan_duration_seconds": 33.13845658302307,
+  "duration_ms": 33138,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:56:06.088680"
+  "timestamp": "2026-02-07T21:03:40.677912"
 }

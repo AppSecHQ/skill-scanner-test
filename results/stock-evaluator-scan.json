@@ -7,50 +7,76 @@
   "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
+      "id": "llm_finding_stock-evaluator-v3_0",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Missing allowed-tools Declaration",
+      "description": "The skill manifest does not specify the 'allowed-tools' field, which is optional but recommended for transparency. Given the skill's requirements for web searches and data retrieval, users cannot verify which agent tools (Read, Write, Bash, Python, etc.) the skill intends to use. This reduces transparency about the skill's capabilities and potential system access.",
       "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
+      "line_number": 1,
+      "snippet": "YAML Manifest shows: allowed-tools: Not specified",
+      "remediation": "Add an 'allowed-tools' field to the YAML frontmatter specifying which agent tools are required (e.g., [Read, Bash] for web searches, or [Read, Python] if using Python for data processing).",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The stock-evaluator-v3 skill is a comprehensive stock analysis tool with MODERATE security concerns. The skill demonstrates good security practices by mandating web searches with cited sources and explicitly prohibiting data fabrication. However, it has transparency issues (missing allowed-tools declaration), potential resource exhaustion risks (unbounded web searches without rate limiting), and package integrity concerns (19 referenced files not found). The skill does NOT exhibit high-risk behaviors like data exfiltration, prompt injection, credential theft, or command injection. The primary concerns are operational robustness and transparency rather than malicious intent. With the recommended remediations (adding allowed-tools, implementing rate limiting, and resolving missing file references), this skill would be suitable for use.",
+        "primary_threats": [
+          "Missing Tool Transparency",
+          "Resource Exhaustion Risk",
+          "Incomplete Package Distribution"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The skill clearly requires web search capabilities (8 mandatory searches) and artifact creation (React dashboard). The missing declaration is a transparency issue, not a security threat. No evidence of tool abuse or unauthorized access.",
+        "meta_exploitability": "N/A - This is a transparency issue, not an exploitable vulnerability",
+        "meta_impact": "LOW - Users cannot verify intended tool usage, but the skill's behavior is well-documented in instructions"
       }
     },
     {
-      "id": "YARA_skill_discovery_abuse_fc4db1b8f9",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
+      "id": "llm_finding_stock-evaluator-v3_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
       "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: perfect",
+      "title": "Unbounded Web Search Requirements Without Rate Limiting",
+      "description": "The skill mandates a minimum of 8 web searches per analysis with no rate limiting, timeout controls, or failure handling specified. The instruction 'If you cannot complete any item, STOP and ask for clarification' could lead to analysis paralysis if searches fail. No guidance on retry limits, timeout thresholds, or graceful degradation when data sources are unavailable.",
       "file_path": "SKILL.md",
-      "line_number": 944,
-      "snippet": "3. **Long-Term View**",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "MANDATORY WEB SEARCHES (minimum per analysis) - lists 8 required searches with no timeout/retry limits specified. Instructions state 'NEVER fabricate' but don't handle search failures gracefully.",
+      "remediation": "Add explicit guidance for: (1) Maximum retry attempts per search (e.g., 3 retries), (2) Timeout thresholds (e.g., 30 seconds per search), (3) Graceful degradation when searches fail (allow partial analysis with clear disclosure), (4) Rate limiting to prevent resource exhaustion.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The stock-evaluator-v3 skill is a comprehensive stock analysis tool with MODERATE security concerns. The skill demonstrates good security practices by mandating web searches with cited sources and explicitly prohibiting data fabrication. However, it has transparency issues (missing allowed-tools declaration), potential resource exhaustion risks (unbounded web searches without rate limiting), and package integrity concerns (19 referenced files not found). The skill does NOT exhibit high-risk behaviors like data exfiltration, prompt injection, credential theft, or command injection. The primary concerns are operational robustness and transparency rather than malicious intent. With the recommended remediations (adding allowed-tools, implementing rate limiting, and resolving missing file references), this skill would be suitable for use.",
+        "primary_threats": [
+          "Missing Tool Transparency",
+          "Resource Exhaustion Risk",
+          "Incomplete Package Distribution"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The skill does have a failure path ('STOP and ask for clarification'), but lacks explicit resource limits. This is a robustness concern rather than a malicious resource exhaustion attack. The LLM's natural rate limiting and the user's ability to interrupt provide implicit safeguards.",
+        "meta_exploitability": "LOW - Requires user to repeatedly invoke the skill; LLM has built-in rate limiting",
+        "meta_impact": "LOW - Could cause slow responses or timeouts, but no system damage or data loss"
       }
     }
   ],
-  "scan_duration_seconds": 0.24204516410827637,
-  "duration_ms": 242,
+  "scan_duration_seconds": 25.47290873527527,
+  "duration_ms": 25472,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:50:13.848574"
+  "timestamp": "2026-02-07T20:46:25.762642"
 }

@@ -7,85 +7,6 @@
   "findings_count": 5,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_44466b0747",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import urllib.request",
-      "file_path": "scripts/client.py",
-      "line_number": 6,
-      "snippet": "import urllib.request",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+urllib\\.request",
-        "matched_text": "import urllib.request",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_SENSITIVE_FILES_cb6a4dc87b",
-      "rule_id": "DATA_EXFIL_SENSITIVE_FILES",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Accessing sensitive system or credential files",
-      "description": "Pattern detected: open(filename",
-      "file_path": "scripts/client.py",
-      "line_number": 57,
-      "snippet": "with open(filename, 'rb') as f:",
-      "remediation": "Do not access credential files or sensitive system files",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "open\\s*\\(\\s*filename",
-        "matched_text": "open(filename",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_SENSITIVE_FILES_493880697e",
-      "rule_id": "DATA_EXFIL_SENSITIVE_FILES",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Accessing sensitive system or credential files",
-      "description": "Pattern detected: open(filename",
-      "file_path": "scripts/client.py",
-      "line_number": 70,
-      "snippet": "with open(filename, 'rb') as f:",
-      "remediation": "Do not access credential files or sensitive system files",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "open\\s*\\(\\s*filename",
-        "matched_text": "open(filename",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
       "id": "TOOL_MISMATCH_NETWORK_664796762d",
       "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
       "category": "unauthorized_tool_use",
@@ -98,18 +19,152 @@
       "remediation": "Declare network usage in compatibility field or remove network calls",
       "analyzer": "static",
       "metadata": {
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code inspection confirms network usage and script execution. Missing metadata is factual.",
+        "meta_exploitability": "N/A - This is a transparency/policy issue, not a security vulnerability",
+        "meta_impact": "Low - Informational only, helps users make informed decisions"
+      }
+    },
+    {
+      "id": "llm_finding_voice-agent_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Hardcoded Localhost API Endpoint Without Authentication",
+      "description": "The skill communicates with a localhost API (http://localhost:8000) without any authentication mechanism. While localhost services are typically trusted, this creates a security risk if: (1) the Docker container is compromised, (2) other malicious processes on localhost can intercept/manipulate traffic, or (3) the container is misconfigured to expose ports externally. The skill sends audio files and receives transcriptions without verifying the identity or integrity of the API endpoint.",
+      "file_path": "scripts/client.py",
+      "line_number": 9,
+      "snippet": "API_URL = \"http://localhost:8000\"",
+      "remediation": "Implement authentication tokens or API keys for localhost communication. Add TLS/SSL even for localhost to prevent local interception. Verify the Docker container's identity before sending data. Consider using Unix domain sockets instead of TCP for true local-only communication.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This voice agent skill presents MEDIUM-HIGH security risks primarily related to external service dependencies and credential handling. The skill communicates with a localhost Docker container API without authentication, automatically pulls Docker images without version pinning (supply chain risk), and potentially mounts AWS credentials into containers. While designed for legitimate voice transcription functionality, the lack of authentication, version pinning, and file path validation creates multiple attack vectors. The skill would benefit from stronger isolation, authentication mechanisms, and supply chain security controls. The missing optional metadata fields reduce transparency but are low severity. No direct prompt injection or malicious code was detected in the instruction body.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unauthenticated localhost API)",
+          "Supply Chain Risk (unpinned Docker image auto-pull)",
+          "Credential Exposure (AWS credentials mounted to container)",
+          "Tool Exploitation (unrestricted file path access)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "LLM correctly identified lack of authentication. However, localhost-only services are common practice. Risk is real but requires additional compromise vectors to exploit.",
+        "meta_exploitability": "Low-Medium - Requires port hijacking or container compromise",
+        "meta_impact": "Medium - Could serve malicious transcriptions or capture audio files"
+      }
+    },
+    {
+      "id": "llm_finding_voice-agent_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Docker Container Auto-Pull Without Version Pinning",
+      "description": "The start.sh script automatically pulls the latest Docker image (trevisanricardo/ai-voice-backend) without version pinning. This creates a supply chain risk where a compromised or malicious image update could be automatically downloaded and executed on the user's system. The script uses 'docker pull $IMAGE_NAME || true' which silently fails if the pull encounters issues, potentially running outdated or cached images.",
+      "file_path": "scripts/start.sh",
+      "line_number": null,
+      "snippet": "echo \"\u2601\ufe0f checking for image updates...\"\ndocker pull $IMAGE_NAME || true",
+      "remediation": "Pin the Docker image to a specific version tag (e.g., trevisanricardo/ai-voice-backend:1.0.0). Implement image signature verification using Docker Content Trust. Add explicit error handling for failed pulls instead of silently continuing. Document the expected image hash/digest for verification.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This voice agent skill presents MEDIUM-HIGH security risks primarily related to external service dependencies and credential handling. The skill communicates with a localhost Docker container API without authentication, automatically pulls Docker images without version pinning (supply chain risk), and potentially mounts AWS credentials into containers. While designed for legitimate voice transcription functionality, the lack of authentication, version pinning, and file path validation creates multiple attack vectors. The skill would benefit from stronger isolation, authentication mechanisms, and supply chain security controls. The missing optional metadata fields reduce transparency but are low severity. No direct prompt injection or malicious code was detected in the instruction body.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unauthenticated localhost API)",
+          "Supply Chain Risk (unpinned Docker image auto-pull)",
+          "Credential Exposure (AWS credentials mounted to container)",
+          "Tool Exploitation (unrestricted file path access)"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified supply chain risk. Code inspection confirms unpinned image with auto-pull. This is a real attack vector for malicious container execution.",
+        "meta_exploitability": "Medium - Requires attacker to compromise Docker Hub registry or perform MITM attack, but auto-pull makes exploitation automatic once compromised",
+        "meta_impact": "Critical - Malicious container runs with GPU access, AWS credentials mounted, and network access. Could exfiltrate credentials, mine crypto, or pivot to host system"
+      }
+    },
+    {
+      "id": "llm_finding_voice-agent_2",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Potential Credential Exposure via Docker Volume Mount",
+      "description": "The start.sh script attempts to mount ~/.aws credentials into the Docker container. While the actual mount command is truncated, this pattern indicates the skill may be providing AWS credentials to an external Docker container. If the container or image is compromised, these credentials could be exfiltrated. The comment 'Assuming .env and ~/.aws exist' suggests environment variables and AWS credentials are being shared with the container.",
+      "file_path": "scripts/start.sh",
+      "line_number": null,
+      "snippet": "# Assuming .env and ~/.aws exist in the current directory context or user home\n# We need to resolve absolute paths for volumes usually, but ~ works in shell expansion.",
+      "remediation": "Avoid mounting AWS credentials into containers unless absolutely necessary. Use IAM roles or temporary credentials instead. If credentials must be mounted, use read-only mounts and minimal permission scopes. Document why AWS credentials are needed for a voice transcription service. Implement credential rotation and monitoring.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This voice agent skill presents MEDIUM-HIGH security risks primarily related to external service dependencies and credential handling. The skill communicates with a localhost Docker container API without authentication, automatically pulls Docker images without version pinning (supply chain risk), and potentially mounts AWS credentials into containers. While designed for legitimate voice transcription functionality, the lack of authentication, version pinning, and file path validation creates multiple attack vectors. The skill would benefit from stronger isolation, authentication mechanisms, and supply chain security controls. The missing optional metadata fields reduce transparency but are low severity. No direct prompt injection or malicious code was detected in the instruction body.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unauthenticated localhost API)",
+          "Supply Chain Risk (unpinned Docker image auto-pull)",
+          "Credential Exposure (AWS credentials mounted to container)",
+          "Tool Exploitation (unrestricted file path access)"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Code clearly shows ~/.aws mount to container. Combined with unpinned image, this is a validated credential exposure risk.",
+        "meta_exploitability": "Medium - Requires compromised container image, but auto-pull makes this realistic",
+        "meta_impact": "Critical - Full AWS account compromise if credentials have broad permissions"
+      }
+    },
+    {
+      "id": "llm_finding_voice-agent_3",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Unrestricted File Path Access for Audio Transcription",
+      "description": "The transcribe function accepts arbitrary file paths from user input without validation or sandboxing. While the skill is designed to transcribe audio files, there's no verification that the file is actually an audio file or that it's within an expected directory. A malicious user could potentially point the skill to sensitive files, which would then be uploaded to the localhost API (and potentially logged or processed in unexpected ways).",
+      "file_path": "scripts/client.py",
+      "line_number": null,
+      "snippet": "def transcribe(filename):\n    if not os.path.exists(filename):\n        print(f\"\u274c File not found: {filename}\")\n        return\n    try:\n        print(f\"\ud83d\udce4 Transcribing {filename}...\")",
+      "remediation": "Implement file path validation to restrict access to specific directories. Verify file types using magic bytes, not just extensions. Add file size limits to prevent resource exhaustion. Use a whitelist of allowed directories. Implement path traversal protection (check for ../ sequences).",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "This voice agent skill presents MEDIUM-HIGH security risks primarily related to external service dependencies and credential handling. The skill communicates with a localhost Docker container API without authentication, automatically pulls Docker images without version pinning (supply chain risk), and potentially mounts AWS credentials into containers. While designed for legitimate voice transcription functionality, the lack of authentication, version pinning, and file path validation creates multiple attack vectors. The skill would benefit from stronger isolation, authentication mechanisms, and supply chain security controls. The missing optional metadata fields reduce transparency but are low severity. No direct prompt injection or malicious code was detected in the instruction body.",
+        "primary_threats": [
+          "Data Exfiltration Risk (unauthenticated localhost API)",
+          "Supply Chain Risk (unpinned Docker image auto-pull)",
+          "Credential Exposure (AWS credentials mounted to container)",
+          "Tool Exploitation (unrestricted file path access)"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "LLM correctly identified lack of path validation. However, the agent would need to be tricked into transcribing non-audio files, which requires prompt injection or user error.",
+        "meta_exploitability": "Medium - Requires social engineering or prompt injection to trick agent",
+        "meta_impact": "Medium - Could expose file contents to API endpoint"
       }
     }
   ],
-  "scan_duration_seconds": 0.250091552734375,
-  "duration_ms": 250,
+  "scan_duration_seconds": 35.24568819999695,
+  "duration_ms": 35245,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:52:58.706300"
+  "timestamp": "2026-02-07T21:31:04.461779"
 }

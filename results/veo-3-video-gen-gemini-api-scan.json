@@ -2,113 +2,81 @@
   "skill_name": "veo3-video-gen",
   "skill_path": "/workspace/skills/clawhub-veo3-video-gen",
   "skill_directory": "/workspace/skills/clawhub-veo3-video-gen",
-  "is_safe": false,
-  "max_severity": "CRITICAL",
-  "findings_count": 5,
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
-      "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "COMMAND_INJECTION_OS_SYSTEM_f40e2294ff",
-      "rule_id": "COMMAND_INJECTION_OS_SYSTEM",
-      "category": "command_injection",
-      "severity": "CRITICAL",
-      "title": "Shell command execution with string formatting (potential injection)",
-      "description": "Pattern detected: subprocess.run([\"bash\", \"-lc\", f\"command -v {shlex.quote(name)}",
-      "file_path": "scripts/generate_video.py",
-      "line_number": 49,
-      "snippet": "if subprocess.run([\"bash\", \"-lc\", f\"command -v {shlex.quote(name)}\"], capture_output=True).returncode != 0:",
-      "remediation": "Use subprocess with argument lists, not shell strings. Never use user input in shell commands",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "subprocess\\.(?:call|run|Popen)\\s*\\([^)]*[f\"'].*\\{.*\\}",
-        "matched_text": "subprocess.run([\"bash\", \"-lc\", f\"command -v {shlex.quote(name)}",
-        "aitech": "AITech-9.1",
-        "aitech_name": "Model or Agentic System Manipulation",
-        "scanner_category": "INJECTION ATTACK",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_ENV_VARS_04378e31e1",
-      "rule_id": "DATA_EXFIL_ENV_VARS",
+      "id": "llm_finding_veo3-video-gen_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
       "category": "data_exfiltration",
       "severity": "MEDIUM",
-      "title": "Reading environment variables that may contain secrets",
-      "description": "Pattern detected: os.environ.get(\"GEMINI_API_KEY",
-      "file_path": "scripts/generate_video.py",
-      "line_number": 45,
-      "snippet": "return os.environ.get(\"GEMINI_API_KEY\")",
-      "remediation": "Minimize access to environment variables. Document why needed",
-      "analyzer": "static",
+      "title": "Hardcoded API Key Exposure Risk",
+      "description": "The script accepts API keys via command-line argument (--api-key) which can expose credentials in process listings, shell history, and logs. While environment variable usage (GEMINI_API_KEY) is supported as the primary method, the CLI option creates an unnecessary exposure vector.",
+      "file_path": null,
+      "line_number": null,
+      "snippet": "--api-key KEY parameter in argparse, get_api_key() function accepts provided_key argument",
+      "remediation": "Remove the --api-key command-line option and rely exclusively on the GEMINI_API_KEY environment variable. Document that users must set the environment variable before running the script.",
+      "analyzer": "llm",
       "metadata": {
-        "matched_pattern": "os\\.environ(?:\\.get)?\\s*\\([^)]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)",
-        "matched_text": "os.environ.get(\"GEMINI_API_KEY",
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The veo3-video-gen skill is a legitimate video generation tool with MODERATE security concerns. The skill correctly uses the Google Gemini API for video generation and implements reasonable functionality for multi-segment video creation. Primary concerns include API key handling via command-line arguments (credential exposure risk), shell execution patterns that could enable command injection, and missing manifest metadata. No evidence of malicious intent, data exfiltration, or prompt injection was found. The skill's behavior matches its stated purpose. Recommended actions: remove CLI API key option, replace shell-based binary checks with safer alternatives, and complete manifest metadata.",
+        "primary_threats": [
+          "API Key Exposure via CLI Arguments",
+          "Command Injection Surface via Shell Execution",
+          "Missing Security Metadata"
+        ],
         "aitech": "AITech-8.2",
         "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
         "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "LLM analyzer correctly identified this as a credential exposure risk. Command-line arguments are visible in process listings and logged in shell history, making this a real security concern. The code explicitly accepts API keys via CLI.",
+        "meta_exploitability": "Easy - any user with access to process listings or shell history can extract API keys",
+        "meta_impact": "Medium - exposed API keys could lead to unauthorized API usage and billing charges"
       }
     },
     {
-      "id": "YARA_autonomy_abuse_95e0f64726",
-      "rule_id": "YARA_autonomy_abuse",
-      "category": "autonomy_abuse",
+      "id": "llm_finding_veo3-video-gen_1",
+      "rule_id": "LLM_COMMAND_INJECTION",
+      "category": "command_injection",
       "severity": "MEDIUM",
-      "title": "AUTONOMY ABUSE detected by YARA",
-      "description": "Detects unbounded autonomy patterns that could lead to runaway behavior: keep trying",
+      "title": "Command Injection via Subprocess Shell Execution",
+      "description": "The script uses subprocess.run() with shell=True or bash -lc execution patterns when checking for binaries (ffmpeg). While the immediate usage appears to use shlex.quote() for the binary name, the pattern of shell execution creates potential command injection surfaces if any user-controlled input flows into these calls.",
       "file_path": "scripts/generate_video.py",
-      "line_number": 117,
-      "snippet": "# If polling fails intermittently, keep trying until deadline.",
-      "remediation": "Review and remove autonomy abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "autonomy_abuse",
-        "yara_namespace": "autonomy_abuse",
-        "matched_string": "$keep_trying",
-        "threat_type": "AUTONOMY ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "ENV_VAR_HARVESTING_100b9c658e",
-      "rule_id": "BEHAVIOR_ENV_VAR_HARVESTING",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "Environment variable harvesting detected",
-      "description": "Script iterates through environment variables in skills/clawhub-veo3-video-gen/scripts/generate_video.py",
-      "file_path": "skills/clawhub-veo3-video-gen/scripts/generate_video.py",
       "line_number": null,
-      "snippet": null,
-      "remediation": "Remove environment variable collection unless explicitly required and documented",
-      "analyzer": "behavioral",
+      "snippet": "subprocess.run(['bash', '-lc', f'command -v {shlex.quote(name)}'], capture_output=True) - uses shell execution pattern",
+      "remediation": "Replace shell-based binary checks with direct subprocess calls without shell=True. Use shutil.which() from Python standard library instead of shell command -v checks.",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The veo3-video-gen skill is a legitimate video generation tool with MODERATE security concerns. The skill correctly uses the Google Gemini API for video generation and implements reasonable functionality for multi-segment video creation. Primary concerns include API key handling via command-line arguments (credential exposure risk), shell execution patterns that could enable command injection, and missing manifest metadata. No evidence of malicious intent, data exfiltration, or prompt injection was found. The skill's behavior matches its stated purpose. Recommended actions: remove CLI API key option, replace shell-based binary checks with safer alternatives, and complete manifest metadata.",
+        "primary_threats": [
+          "API Key Exposure via CLI Arguments",
+          "Command Injection Surface via Shell Execution",
+          "Missing Security Metadata"
+        ],
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.4",
+        "aisubtech_name": "Injection Attacks (SQL, Command Execution, XSS)",
+        "scanner_category": "INJECTION ATTACK",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The current code uses shlex.quote() and only passes hardcoded strings ('ffmpeg'), making actual exploitation unlikely. However, the shell execution pattern is unnecessarily risky and should be replaced with safer alternatives.",
+        "meta_exploitability": "Difficult - current implementation is properly sanitized with hardcoded inputs only",
+        "meta_impact": "Low - would require code modification to become exploitable"
       }
     }
   ],
-  "scan_duration_seconds": 1.9884488582611084,
-  "duration_ms": 1988,
+  "scan_duration_seconds": 26.364113092422485,
+  "duration_ms": 26364,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:52:38.849816"
+  "timestamp": "2026-02-07T21:27:03.450857"
 }

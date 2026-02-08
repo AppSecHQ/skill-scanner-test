@@ -2,9 +2,9 @@
   "skill_name": "x402",
   "skill_path": "/workspace/skills/clawhub-x402",
   "skill_directory": "/workspace/skills/clawhub-x402",
-  "is_safe": true,
-  "max_severity": "MEDIUM",
-  "findings_count": 2,
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 8,
   "findings": [
     {
       "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
@@ -41,16 +41,194 @@
         "threat_type": "SKILL DISCOVERY ABUSE",
         "meta_reviewed": true
       }
+    },
+    {
+      "id": "llm_finding_x402_0",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Hardcoded Private Key Requirement in Environment Variable",
+      "description": "The skill requires WALLET_PRIVATE_KEY environment variable containing an Ethereum private key. This creates critical security risks: (1) Private keys stored in environment variables can be exposed through process listings, logs, error messages, or compromised systems. (2) The skill documentation explicitly instructs users to 'export WALLET_PRIVATE_KEY=0x...' which encourages insecure key management practices. (3) Private keys grant full control over cryptocurrency funds - if leaked, all assets can be stolen. (4) No key encryption, hardware wallet support, or secure enclave usage is mentioned. (5) The skill will execute cryptocurrency transactions using this exposed key.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "# Store wallet private key securely\nexport WALLET_PRIVATE_KEY=\"0x...\"\n\nAnd in manifest: 'env': ['WALLET_PRIVATE_KEY']",
+      "remediation": "Implement secure key management: (1) Use hardware wallets (Ledger, Trezor) or secure enclaves instead of raw private keys. (2) Support wallet connection protocols (WalletConnect, MetaMask) that never expose private keys. (3) If environment variables must be used, require encrypted keystores with password prompts. (4) Add prominent security warnings about private key handling. (5) Implement key rotation and access controls. (6) Consider using account abstraction or smart contract wallets with spending limits.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill presents severe security vulnerabilities that could result in complete loss of cryptocurrency funds. The primary issues are: (1) Requiring private keys in environment variables with no secure key management, (2) Automatic execution of cryptocurrency transactions without user confirmation or spending limits, (3) Unrestricted tool access due to missing allowed-tools declaration, and (4) No safeguards against malicious payment APIs. The skill enables an AI agent to autonomously spend cryptocurrency from a user's wallet when encountering 402 responses from any API, with the private key exposed in plaintext. This combination of automatic financial transactions, insecure key storage, and lack of user controls creates an unacceptable risk profile. The skill should NOT be used in production without major security enhancements including hardware wallet support, transaction approval workflows, spending limits, and domain allowlists.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Automatic Financial Transaction Execution",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Inadequate Security Warnings"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_x402_1",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "HIGH",
+      "title": "Automatic Cryptocurrency Transaction Execution Without User Confirmation",
+      "description": "The skill automatically executes cryptocurrency payments when encountering 402 Payment Required responses, without explicit user confirmation for each transaction. The x402Client and wrapFetch functions handle payments transparently in the background. This creates risks: (1) Malicious APIs could drain wallet funds by returning 402 responses with inflated amounts. (2) Users may not be aware transactions are being executed. (3) No spending limits, transaction caps, or approval workflows are mentioned. (4) Compromised or malicious API endpoints could exploit automatic payment behavior. (5) The 'automatic 402 handling' feature removes user control over fund transfers.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "const client = x402Client({\n  privateKey: process.env.WALLET_PRIVATE_KEY,\n  network: 'base',\n});\n\n// Automatic 402 handling\nconst response = await client.fetch('https://api.example.com/paid-endpoint');",
+      "remediation": "Implement transaction safeguards: (1) Require explicit user confirmation before each payment above a threshold. (2) Add spending limits (per-transaction, daily, total). (3) Implement allowlists for trusted payment recipients. (4) Show transaction previews with amount, recipient, and network before execution. (5) Add transaction logging and audit trails. (6) Implement emergency stop/pause functionality. (7) Validate payment amounts against reasonable bounds for the requested resource.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill presents severe security vulnerabilities that could result in complete loss of cryptocurrency funds. The primary issues are: (1) Requiring private keys in environment variables with no secure key management, (2) Automatic execution of cryptocurrency transactions without user confirmation or spending limits, (3) Unrestricted tool access due to missing allowed-tools declaration, and (4) No safeguards against malicious payment APIs. The skill enables an AI agent to autonomously spend cryptocurrency from a user's wallet when encountering 402 responses from any API, with the private key exposed in plaintext. This combination of automatic financial transactions, insecure key storage, and lack of user controls creates an unacceptable risk profile. The skill should NOT be used in production without major security enhancements including hardware wallet support, transaction approval workflows, spending limits, and domain allowlists.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Automatic Financial Transaction Execution",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Inadequate Security Warnings"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_x402_2",
+      "rule_id": "LLM_UNAUTHORIZED_TOOL_USE",
+      "category": "unauthorized_tool_use",
+      "severity": "HIGH",
+      "title": "Missing allowed-tools Declaration Enables Unrestricted Tool Access",
+      "description": "The skill manifest does not declare 'allowed-tools', which means the agent has unrestricted access to all tools (Read, Write, Grep, Glob, Bash, Python). Given that this skill executes cryptocurrency transactions and handles private keys, unrestricted tool access creates significant risks: (1) Bash tool access allows arbitrary command execution including network calls. (2) Write tool access could modify system files or create malicious scripts. (3) Read tool access could exfiltrate sensitive data including the private key itself. (4) The skill's legitimate functionality only requires Bash for executing the check-balance.sh script, but gets full system access.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Manifest shows: 'allowed-tools: Not specified'. The skill includes bash scripts and requires environment variable access, but no tool restrictions are declared.",
+      "remediation": "Add explicit allowed-tools declaration to manifest: (1) Declare only necessary tools: 'allowed-tools: [Bash]' for executing the balance check script. (2) If Read access is needed for configuration, explicitly declare it. (3) Avoid Write, Python, Grep, Glob unless absolutely necessary. (4) Document why each tool is required. (5) Follow principle of least privilege - request minimum tools needed for functionality.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill presents severe security vulnerabilities that could result in complete loss of cryptocurrency funds. The primary issues are: (1) Requiring private keys in environment variables with no secure key management, (2) Automatic execution of cryptocurrency transactions without user confirmation or spending limits, (3) Unrestricted tool access due to missing allowed-tools declaration, and (4) No safeguards against malicious payment APIs. The skill enables an AI agent to autonomously spend cryptocurrency from a user's wallet when encountering 402 responses from any API, with the private key exposed in plaintext. This combination of automatic financial transactions, insecure key storage, and lack of user controls creates an unacceptable risk profile. The skill should NOT be used in production without major security enhancements including hardware wallet support, transaction approval workflows, spending limits, and domain allowlists.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Automatic Financial Transaction Execution",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Inadequate Security Warnings"
+        ],
+        "aitech": "AITech-12.1",
+        "aitech_name": "Tool Exploitation",
+        "aisubtech": "AISubtech-12.1.2",
+        "aisubtech_name": "Tool Poisoning",
+        "scanner_category": "SUSPICIOUS CODE EXECUTION",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_x402_3",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
+      "severity": "MEDIUM",
+      "title": "Unbounded Network Requests to Arbitrary Payment APIs",
+      "description": "The skill allows making HTTP requests to arbitrary URLs that may return 402 Payment Required responses. There are no restrictions on: (1) Which domains can be contacted. (2) Rate limiting or request throttling. (3) Maximum number of payment attempts. (4) Timeout configurations. This could lead to: (1) Resource exhaustion from excessive API calls. (2) Denial of wallet funds through repeated payment requests. (3) Network flooding if malicious endpoints return continuous 402 responses. (4) Infinite retry loops if payment verification fails.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "const response = await client.fetch('https://api.example.com/paid-endpoint');\n\nNo domain allowlists, rate limits, or retry bounds are mentioned in the documentation.",
+      "remediation": "Implement request controls: (1) Add domain allowlists for trusted payment APIs. (2) Implement rate limiting (e.g., max 10 requests/minute). (3) Add maximum retry attempts for failed payments. (4) Set request timeouts. (5) Implement circuit breakers for failing endpoints. (6) Add total spending limits per time period. (7) Log all payment attempts for monitoring.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill presents severe security vulnerabilities that could result in complete loss of cryptocurrency funds. The primary issues are: (1) Requiring private keys in environment variables with no secure key management, (2) Automatic execution of cryptocurrency transactions without user confirmation or spending limits, (3) Unrestricted tool access due to missing allowed-tools declaration, and (4) No safeguards against malicious payment APIs. The skill enables an AI agent to autonomously spend cryptocurrency from a user's wallet when encountering 402 responses from any API, with the private key exposed in plaintext. This combination of automatic financial transactions, insecure key storage, and lack of user controls creates an unacceptable risk profile. The skill should NOT be used in production without major security enhancements including hardware wallet support, transaction approval workflows, spending limits, and domain allowlists.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Automatic Financial Transaction Execution",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Inadequate Security Warnings"
+        ],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_x402_4",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
+      "severity": "MEDIUM",
+      "title": "Insufficient Security Warnings in Skill Description",
+      "description": "The skill description and documentation do not adequately warn users about the critical security implications of cryptocurrency transaction execution. The description 'Use x402 protocol for HTTP-native crypto payments' is matter-of-fact and does not convey: (1) That real cryptocurrency funds will be spent. (2) That private keys must be exposed to the agent. (3) That transactions are irreversible. (4) That malicious APIs could drain funds. (5) The risks of automatic payment execution. Users may enable this skill without understanding they are giving an AI agent control over their cryptocurrency wallet.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "Description: 'Use x402 protocol for HTTP-native crypto payments. Use when Clawdbot needs to pay for APIs, access paid resources, or handle 402 Payment Required responses.'",
+      "remediation": "Add prominent security warnings: (1) Add 'WARNING: This skill executes real cryptocurrency transactions' to description. (2) Include security considerations section explaining risks. (3) Warn about private key exposure risks. (4) Explain transaction irreversibility. (5) Recommend starting with test networks. (6) Suggest using dedicated wallets with limited funds. (7) Add disclaimer about potential fund loss. (8) Include security best practices section.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill presents severe security vulnerabilities that could result in complete loss of cryptocurrency funds. The primary issues are: (1) Requiring private keys in environment variables with no secure key management, (2) Automatic execution of cryptocurrency transactions without user confirmation or spending limits, (3) Unrestricted tool access due to missing allowed-tools declaration, and (4) No safeguards against malicious payment APIs. The skill enables an AI agent to autonomously spend cryptocurrency from a user's wallet when encountering 402 responses from any API, with the private key exposed in plaintext. This combination of automatic financial transactions, insecure key storage, and lack of user controls creates an unacceptable risk profile. The skill should NOT be used in production without major security enhancements including hardware wallet support, transaction approval workflows, spending limits, and domain allowlists.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Automatic Financial Transaction Execution",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Inadequate Security Warnings"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_reviewed": true
+      }
+    },
+    {
+      "id": "llm_finding_x402_5",
+      "rule_id": "LLM_DATA_EXFILTRATION",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Missing License Declaration",
+      "description": "The skill manifest does not specify a license ('license: Not specified'). While not a direct security threat, this creates legal and security ambiguity: (1) Users don't know the terms under which they can use the skill. (2) Liability for financial losses from skill usage is unclear. (3) No warranty disclaimers are present. (4) Redistribution and modification rights are undefined. For a skill handling cryptocurrency transactions, clear licensing and liability terms are important.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": "YAML Manifest Details show: 'license: Not specified'",
+      "remediation": "Add explicit license to manifest: (1) Choose appropriate open source license (MIT, Apache 2.0, etc.). (2) Include LICENSE file in skill package. (3) Add warranty disclaimers for financial operations. (4) Clarify liability limitations. (5) Document any usage restrictions.",
+      "analyzer": "llm",
+      "metadata": {
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "CRITICAL SECURITY RISK - This skill presents severe security vulnerabilities that could result in complete loss of cryptocurrency funds. The primary issues are: (1) Requiring private keys in environment variables with no secure key management, (2) Automatic execution of cryptocurrency transactions without user confirmation or spending limits, (3) Unrestricted tool access due to missing allowed-tools declaration, and (4) No safeguards against malicious payment APIs. The skill enables an AI agent to autonomously spend cryptocurrency from a user's wallet when encountering 402 responses from any API, with the private key exposed in plaintext. This combination of automatic financial transactions, insecure key storage, and lack of user controls creates an unacceptable risk profile. The skill should NOT be used in production without major security enhancements including hardware wallet support, transaction approval workflows, spending limits, and domain allowlists.",
+        "primary_threats": [
+          "Data Exfiltration/Credential Exposure",
+          "Automatic Financial Transaction Execution",
+          "Missing Tool Restrictions",
+          "Resource Exhaustion",
+          "Inadequate Security Warnings"
+        ],
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "scanner_category": "SECURITY VIOLATION",
+        "meta_reviewed": true
+      }
     }
   ],
-  "scan_duration_seconds": 0.20683908462524414,
-  "duration_ms": 206,
+  "scan_duration_seconds": 47.97139072418213,
+  "duration_ms": 47971,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:54:06.795952"
+  "timestamp": "2026-02-07T21:42:42.498216"
 }

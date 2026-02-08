@@ -4,97 +4,79 @@
   "skill_directory": "/workspace/skills/anthropics-skills/skills/canvas-design",
   "is_safe": true,
   "max_severity": "MEDIUM",
-  "findings_count": 4,
+  "findings_count": 2,
   "findings": [
     {
-      "id": "YARA_skill_discovery_abuse_6a9f4b91f9",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
+      "id": "llm_finding_canvas-design_0",
+      "rule_id": "LLM_PROMPT_INJECTION",
+      "category": "prompt_injection",
       "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: perfect",
+      "title": "Transitive Trust Abuse - Instruction Following from User Input",
+      "description": "The skill instructions contain a critical misunderstanding of its role. The phrase 'What is received: Some subtle input or instructions by the user that should be taken into account' followed by 'The next phase involves making the artwork' suggests the skill may follow instructions embedded in user input rather than treating user input as data to be processed. This creates a transitive trust vulnerability where malicious instructions in user requests could be executed as commands rather than treated as content to design around.",
       "file_path": "SKILL.md",
-      "line_number": 100,
-      "snippet": "To create museum or magazine quality work, use the design philosophy as the foundation. Create one single page, highly visual, design-forward PDF or PNG output (unless asked for more pages). Generally use repeating patterns and perfect shapes. Treat the abstract philosophical design as if it were a scientific bible, borrowing the visual language of systematic observation\u2014dense accumulation of marks, repeated elements, or layered patterns that build meaning through patient repetition and reward sustained viewing. Add sparse, clinical typography and systematic reference markers that suggest this could be a diagram from an imaginary discipline, treating the invisible subject with the same reverence typically reserved for documenting observable phenomena. Anchor the piece with simple phrase(s) or details positioned subtly, using a limited color palette that feels intentional and cohesive. Embrace the paradox of using analytical visual language to express ideas about human experience: the result should feel like an artifact that proves something ephemeral can be studied, mapped, and understood through careful attention. This is true art.",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "'What is received: Some subtle input or instructions by the user that should be taken into account, but used as a foundation; it should not constrain creative freedom.' and 'The next phase involves making the artwork' - This framing suggests following user instructions rather than treating them as design requirements.",
+      "remediation": "Reframe instructions to clearly distinguish between: (1) User design requirements (data to process), and (2) Skill operational instructions (commands to follow). Use language like 'User provides design requirements' rather than 'instructions by the user' to avoid confusion about what should be executed vs. what should be designed.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "MODERATE RISK - This skill has a concerning transitive trust pattern where it may follow 'instructions by the user' rather than treating user input as design requirements. The missing manifest fields (allowed-tools, compatibility) reduce transparency about capabilities. The skill appears to be a creative design tool for generating visual art philosophies and artifacts, which is legitimate, but the instruction framing creates ambiguity about whether user input is data or commands. No active malicious code detected (no scripts present), but the instruction design pattern needs improvement. The truncated content and phantom file references suggest incomplete development or packaging issues.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Missing Security Metadata",
+          "Ambiguous Instruction Handling"
+        ],
+        "aitech": "AITech-1.2",
+        "aitech_name": "Indirect Prompt Injection",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "PROMPT INJECTION",
+        "meta_validated": true,
+        "meta_confidence": "MEDIUM",
+        "meta_confidence_reason": "The phrasing is ambiguous but the full context (creating art based on user requests) shows legitimate intent. No actual prompt injection patterns detected. The skill is about creative interpretation, not command execution.",
+        "meta_exploitability": "Low - Would require user to intentionally craft malicious design requests, and the skill's creative interpretation layer provides natural defense",
+        "meta_impact": "Low - Even if exploited, the skill only creates visual design files (.md, .pdf, .png), not system commands"
       }
     },
     {
-      "id": "YARA_skill_discovery_abuse_9bd5f7d891",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
+      "id": "llm_finding_canvas-design_1",
+      "rule_id": "LLM_SOCIAL_ENGINEERING",
+      "category": "social_engineering",
       "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: flawless",
+      "title": "Incomplete Manifest - Missing Critical Security Fields",
+      "description": "The skill manifest is missing critical security-relevant fields: 'compatibility' and 'allowed-tools' are both 'Not specified'. While allowed-tools is optional per spec, its absence prevents users and systems from understanding what capabilities this skill requires. The skill creates .md, .pdf, and .png files, which implies Write tool usage at minimum, but this is not declared. Missing compatibility information prevents users from understanding execution environment requirements.",
       "file_path": "SKILL.md",
-      "line_number": 108,
-      "snippet": "**CRITICAL**: To achieve human-crafted quality (not AI-generated), create work that looks like it took countless hours. Make it appear as though someone at the absolute top of their field labored over every detail with painstaking care. Ensure the composition, spacing, color choices, typography - everything screams expert-level craftsmanship. Double-check that nothing overlaps, formatting is flawless, every detail perfect. Create something that could be shown to people to prove expertise and rank as undeniably impressive.",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
+      "line_number": null,
+      "snippet": "compatibility: Not specified, allowed-tools: Not specified. Instructions state: 'Output only .md files, .pdf files, and .png files' which implies Write tool requirement.",
+      "remediation": "Add 'allowed-tools: [Write]' to manifest to declare file creation capabilities. Add 'compatibility' field specifying supported environments (Claude.ai, Claude Code, API). This improves transparency and allows security validation of tool usage.",
+      "analyzer": "llm",
       "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_9bd5f7d891",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
-      "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: perfect",
-      "file_path": "SKILL.md",
-      "line_number": 108,
-      "snippet": "**CRITICAL**: To achieve human-crafted quality (not AI-generated), create work that looks like it took countless hours. Make it appear as though someone at the absolute top of their field labored over every detail with painstaking care. Ensure the composition, spacing, color choices, typography - everything screams expert-level craftsmanship. Double-check that nothing overlaps, formatting is flawless, every detail perfect. Create something that could be shown to people to prove expertise and rank as undeniably impressive.",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_skill_discovery_abuse_0ad5acb051",
-      "rule_id": "YARA_skill_discovery_abuse",
-      "category": "skill_discovery_abuse",
-      "severity": "MEDIUM",
-      "title": "SKILL DISCOVERY ABUSE detected by YARA",
-      "description": "Detects manipulation of skill discovery to increase unwanted activation: perfect",
-      "file_path": "SKILL.md",
-      "line_number": 116,
-      "snippet": "**IMPORTANT**: The user ALREADY said \"It isn't perfect enough. It must be pristine, a masterpiece if craftsmanship, as if it were about to be displayed in a museum.\"",
-      "remediation": "Review and remove skill discovery abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "skill_discovery_abuse",
-        "yara_namespace": "skill_discovery_abuse",
-        "matched_string": "$overpromising",
-        "threat_type": "SKILL DISCOVERY ABUSE",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "MODERATE RISK - This skill has a concerning transitive trust pattern where it may follow 'instructions by the user' rather than treating user input as design requirements. The missing manifest fields (allowed-tools, compatibility) reduce transparency about capabilities. The skill appears to be a creative design tool for generating visual art philosophies and artifacts, which is legitimate, but the instruction framing creates ambiguity about whether user input is data or commands. No active malicious code detected (no scripts present), but the instruction design pattern needs improvement. The truncated content and phantom file references suggest incomplete development or packaging issues.",
+        "primary_threats": [
+          "Transitive Trust Abuse",
+          "Missing Security Metadata",
+          "Ambiguous Instruction Handling"
+        ],
+        "aitech": "AITech-2.1",
+        "aitech_name": "Social Engineering",
+        "aisubtech": null,
+        "aisubtech_name": null,
+        "scanner_category": "SOCIAL ENGINEERING",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "Manifest fields are objectively missing. This is a documentation/transparency issue, not a security threat.",
+        "meta_exploitability": "None - This is a metadata issue, not an exploitable vulnerability",
+        "meta_impact": "Low - Reduces transparency but doesn't create security risk"
       }
     }
   ],
-  "scan_duration_seconds": 0.23304986953735352,
-  "duration_ms": 233,
+  "scan_duration_seconds": 28.617278814315796,
+  "duration_ms": 28617,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:47:02.627509"
+  "timestamp": "2026-02-07T19:24:31.697202"
 }

@@ -2,183 +2,45 @@
   "skill_name": "reddit",
   "skill_path": "/workspace/skills/clawhub-reddit-scraper",
   "skill_directory": "/workspace/skills/clawhub-reddit-scraper",
-  "is_safe": false,
-  "max_severity": "HIGH",
-  "findings_count": 9,
+  "is_safe": true,
+  "max_severity": "LOW",
+  "findings_count": 1,
   "findings": [
     {
-      "id": "MANIFEST_MISSING_LICENSE_c5ae9be793",
-      "rule_id": "MANIFEST_MISSING_LICENSE",
-      "category": "policy_violation",
+      "id": "llm_finding_reddit_1",
+      "rule_id": "LLM_RESOURCE_ABUSE",
+      "category": "resource_abuse",
       "severity": "LOW",
-      "title": "Skill does not specify a license",
-      "description": "Skill manifest does not include a 'license' field. Specifying a license helps users understand usage terms.",
-      "file_path": "SKILL.md",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Add 'license' field to SKILL.md frontmatter (e.g., MIT, Apache-2.0)",
-      "analyzer": "static",
-      "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "DATA_EXFIL_NETWORK_REQUESTS_b85dd63568",
-      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
-      "category": "data_exfiltration",
-      "severity": "MEDIUM",
-      "title": "HTTP client library imports that enable external communication",
-      "description": "Pattern detected: import requests",
-      "file_path": "scripts/reddit_scraper.py",
-      "line_number": 13,
-      "snippet": "import requests",
-      "remediation": "Ensure network access is necessary and documented. Review all URLs",
-      "analyzer": "static",
-      "metadata": {
-        "matched_pattern": "import\\s+requests",
-        "matched_text": "import requests",
-        "aitech": "AITech-8.2",
-        "aitech_name": "Data Exfiltration / Exposure",
-        "scanner_category": "SECURITY VIOLATION",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "TOOL_MISMATCH_NETWORK_c839833380",
-      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
-      "category": "unauthorized_tool_use",
-      "severity": "MEDIUM",
-      "title": "Undeclared network usage",
-      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "title": "Missing Rate Limiting Implementation",
+      "description": "The script makes HTTP requests to Reddit's JSON API without implementing rate limiting or retry delays. While the TECHNICAL.md documentation mentions Reddit's rate limits (~60 requests per minute), the code does not enforce delays between requests. This could lead to 403 Forbidden errors or temporary blocks from Reddit if users make rapid successive requests.",
       "file_path": null,
       "line_number": null,
-      "snippet": null,
-      "remediation": "Declare network usage in compatibility field or remove network calls",
-      "analyzer": "static",
+      "snippet": "The script uses requests.Session() but does not implement:\n- Request throttling/delays\n- Exponential backoff on errors\n- Rate limit tracking\n\nDocumentation acknowledges: 'Reddit's JSON API has rate limits: ~60 requests per minute (unauthenticated)'",
+      "remediation": "Add rate limiting to prevent API abuse:\n```python\nimport time\n\nclass RedditScraper:\n    def __init__(self):\n        self.last_request_time = 0\n        self.min_request_interval = 1.0  # 1 second between requests\n    \n    def _fetch_json(self, url, params):\n        # Enforce minimum delay between requests\n        elapsed = time.time() - self.last_request_time\n        if elapsed < self.min_request_interval:\n            time.sleep(self.min_request_interval - elapsed)\n        \n        response = self.session.get(url, params=params)\n        self.last_request_time = time.time()\n        return response\n```",
+      "analyzer": "llm",
       "metadata": {
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_fe667c8823",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: Read-only**: Cannot post",
-      "file_path": "SKILL.md",
-      "line_number": 80,
-      "snippet": "- **Read-only**: Cannot post, comment, or vote",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_5065764059",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('kind') == 't3':  # t3 = link/post",
-      "file_path": "scripts/reddit_scraper.py",
-      "line_number": 88,
-      "snippet": "if child.get('kind') == 't3':  # t3 = link/post",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "YARA_tool_chaining_abuse_e309f2b85d",
-      "rule_id": "YARA_tool_chaining_abuse",
-      "category": "tool_chaining_abuse",
-      "severity": "MEDIUM",
-      "title": "TOOL CHAINING ABUSE detected by YARA",
-      "description": "Detects suspicious tool chaining patterns that could lead to data exfiltration: get('score', 0)} ({int(ratio*100)}%) \u2022 \ud83d\udcac {post",
-      "file_path": "scripts/reddit_scraper.py",
-      "line_number": 157,
-      "snippet": "print(f\"   \ud83d\udd3c {post.get('score', 0)} ({int(ratio*100)}%) \u2022 \ud83d\udcac {post.get('num_comments', 0)} \u2022 {created}\")",
-      "remediation": "Review and remove tool chaining abuse pattern",
-      "analyzer": "static",
-      "metadata": {
-        "yara_rule": "tool_chaining_abuse",
-        "yara_namespace": "tool_chaining_abuse",
-        "matched_string": "$read_then_send",
-        "threat_type": "TOOL CHAINING ABUSE",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_1d2e7e61a6",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://redd.it/",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-reddit-scraper/scripts/reddit_scraper.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://redd.it/",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_53b10c8f0a",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://reddit.com",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-reddit-scraper/scripts/reddit_scraper.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://reddit.com",
-        "meta_reviewed": true
-      }
-    },
-    {
-      "id": "SUSPICIOUS_URL_b1080c6b79",
-      "rule_id": "BEHAVIOR_SUSPICIOUS_URL",
-      "category": "data_exfiltration",
-      "severity": "HIGH",
-      "title": "Suspicious URL detected: https://www.reddit.com",
-      "description": "Script contains suspicious URL that may be used for data exfiltration",
-      "file_path": "skills/clawhub-reddit-scraper/scripts/reddit_scraper.py",
-      "line_number": null,
-      "snippet": null,
-      "remediation": "Review URL and ensure it's legitimate and documented",
-      "analyzer": "behavioral",
-      "metadata": {
-        "url": "https://www.reddit.com",
-        "meta_reviewed": true
+        "model": "claude-sonnet-4-5-20250929",
+        "overall_assessment": "The Reddit skill is a READ-ONLY web scraping tool that uses Reddit's public JSON API to fetch posts and search content. Security analysis reveals NO CRITICAL or HIGH severity threats. The skill does not attempt prompt injection, data exfiltration, credential theft, or malicious code execution. It makes legitimate HTTP requests to Reddit's public API with appropriate User-Agent headers. The code is straightforward with no obfuscation, eval/exec usage, or command injection vulnerabilities. Three LOW severity findings were identified: (1) missing optional metadata fields in the manifest, (2) lack of rate limiting implementation that could lead to API throttling, and (3) references to non-existent files in the documentation. The skill operates as described - it provides read-only access to Reddit content without authentication, posting, or commenting capabilities. The implementation is transparent and matches its stated purpose.",
+        "primary_threats": [],
+        "aitech": "AITech-13.3",
+        "aitech_name": "Availability Disruption",
+        "aisubtech": "AISubtech-13.3.2",
+        "aisubtech_name": "Compute Exhaustion",
+        "scanner_category": "RESOURCE ABUSE",
+        "meta_validated": true,
+        "meta_confidence": "HIGH",
+        "meta_confidence_reason": "The code clearly lacks rate limiting implementation, and the documentation explicitly acknowledges Reddit's rate limits. This is a legitimate quality/reliability issue, though not a security threat.",
+        "meta_exploitability": "N/A - Not a security vulnerability",
+        "meta_impact": "Low - May cause temporary API blocks or 403 errors, but no security impact"
       }
     }
   ],
-  "scan_duration_seconds": 0.781318187713623,
-  "duration_ms": 781,
+  "scan_duration_seconds": 22.59351086616516,
+  "duration_ms": 22593,
   "analyzers_used": [
     "static_analyzer",
-    "behavioral_analyzer",
     "llm_analyzer",
-    "trigger_analyzer",
     "meta_analyzer"
   ],
-  "timestamp": "2026-02-06T07:35:33.546428"
+  "timestamp": "2026-02-07T19:50:54.928441"
 }
