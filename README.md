@@ -1,5 +1,10 @@
 # Skill Scanner Test
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Skills Scanned](https://img.shields.io/badge/skills%20scanned-616-orange.svg)](https://skillscan.io)
+[![Website](https://img.shields.io/badge/site-skillscan.io-blue)](https://skillscan.io)
+
 An automated security scanning pipeline for AI agent skills and plugins in public skill directories.
 
 AI agent skills -- installable packages that extend what coding assistants and AI agents can do -- are a growing attack surface. Skills can contain prompt injection, data exfiltration, command injection, and other vulnerabilities, whether introduced intentionally or by accident. This project systematically scans public skills using Cisco's open-source [skill-scanner](https://github.com/cisco-ai-defense/skill-scanner) and publishes the results.
