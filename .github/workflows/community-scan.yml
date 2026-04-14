@@ -1,0 +1,219 @@
+name: Community Scan Request
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  contents: write
+
+concurrency:
+  group: community-scan
+  cancel-in-progress: false
+
+env:
+  AUTHORIZED_APPROVERS: "brianlevine"
+
+jobs:
+  validate-approval:
+    # Only run when: comment contains /approve, issue has scan-request label, issue is open
+    if: >-
+      github.event.issue.state == 'open' &&
+      contains(github.event.comment.body, '/approve') &&
+      contains(toJSON(github.event.issue.labels.*.name), 'scan-request')
+    runs-on: ubuntu-latest
+    outputs:
+      repo_url: ${{ steps.parse.outputs.repo_url }}
+      repo_slug: ${{ steps.parse.outputs.repo_slug }}
+      approved: ${{ steps.check.outputs.approved }}
+    steps:
+      - name: Check approver authorization
+        id: check
+        run: |
+          APPROVER="${{ github.event.comment.user.login }}"
+          IFS=',' read -ra ALLOWED <<< "$AUTHORIZED_APPROVERS"
+          APPROVED="false"
+          for user in "${ALLOWED[@]}"; do
+            if [ "$APPROVER" = "$user" ]; then
+              APPROVED="true"
+              break
+            fi
+          done
+          echo "approved=$APPROVED" >> "$GITHUB_OUTPUT"
+          if [ "$APPROVED" = "false" ]; then
+            echo "::warning::User $APPROVER is not authorized to approve scans"
+          fi
+
+      - name: Reject unauthorized approval
+        if: steps.check.outputs.approved != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `Sorry @${context.payload.comment.user.login}, you are not authorized to approve scan requests.`
+            });
+
+      - name: Parse repo URL from issue body
+        if: steps.check.outputs.approved == 'true'
+        id: parse
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            const urlMatch = body.match(/https:\/\/github\.com\/[\w.-]+\/[\w.-]+/);
+            if (!urlMatch) {
+              core.setFailed('Could not parse a valid GitHub repo URL from the issue body');
+              return;
+            }
+            let url = urlMatch[0];
+            url = url.replace(/\.git$/, '');
+            const parts = url.replace('https://github.com/', '').split('/');
+            if (parts.length < 2) {
+              core.setFailed('Invalid repo URL format');
+              return;
+            }
+            const slug = `${parts[0]}/${parts[1]}`;
+            core.setOutput('repo_url', url);
+            core.setOutput('repo_slug', slug);
+            core.info(`Parsed repo: ${slug}`);
+
+  run-scan:
+    needs: validate-approval
+    if: needs.validate-approval.outputs.approved == 'true'
+    runs-on: ubuntu-latest
+    environment: scan-production
+    timeout-minutes: 15
+    steps:
+      - name: Add scanning label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.issue.number }},
+              labels: ['scanning']
+            });
+
+      - name: Post scan-started comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.issue.number }},
+              body: `Scan approved by @${{ github.event.comment.user.login }}. Scanning \`${{ needs.validate-approval.outputs.repo_slug }}\`...\n\nThis may take a few minutes.`
+            });
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Run community scan
+        id: scan
+        env:
+          SKILL_SCANNER_LLM_API_KEY: ${{ secrets.SKILL_SCANNER_LLM_API_KEY }}
+        run: |
+          cd scripts && python community_scan.py \
+            --repo "${{ needs.validate-approval.outputs.repo_slug }}" \
+            --output-dir ../results \
+            --skills-dir ../skills \
+            --max-repo-size-mb 500
+        timeout-minutes: 12
+
+      - name: Post scan results comment
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('/tmp/scan-comment.md')) {
+              const comment = fs.readFileSync('/tmp/scan-comment.md', 'utf8');
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: ${{ github.event.issue.number }},
+                body: comment.substring(0, 65000)
+              });
+            }
+
+      - name: Post failure comment
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body;
+            if (fs.existsSync('/tmp/scan-comment.md')) {
+              body = fs.readFileSync('/tmp/scan-comment.md', 'utf8');
+            } else {
+              body = `Scan of \`${{ needs.validate-approval.outputs.repo_slug }}\` failed. Check the [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for details.`;
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.issue.number }},
+              body: body.substring(0, 65000)
+            });
+
+      - name: Regenerate reports and update site
+        if: success()
+        working-directory: scripts
+        run: |
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from pathlib import Path
+          from generate_report import aggregate_results, generate_markdown_report, generate_json_summary, update_readme
+          results_dir = Path('../results')
+          findings = aggregate_results(results_dir)
+          generate_markdown_report(findings, results_dir / 'summary-report.md')
+          generate_json_summary(findings, results_dir / 'summary-report.json')
+          update_readme(findings, Path('../README.md'))
+          "
+          bash build-site.sh
+
+      - name: Commit and push results
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add results/ docs/data/ README.md
+          git diff --cached --quiet || git commit -m "Add scan results for ${{ needs.validate-approval.outputs.repo_slug }}"
+          git push
+
+      - name: Close issue on success
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = ${{ github.event.issue.number }};
+            const { owner, repo } = context.repo;
+            try {
+              await github.rest.issues.removeLabel({ owner, repo, issue_number: issue, name: 'scanning' });
+            } catch (e) { /* label may not exist */ }
+            await github.rest.issues.addLabels({ owner, repo, issue_number: issue, labels: ['scan-completed'] });
+            await github.rest.issues.update({ owner, repo, issue_number: issue, state: 'closed' });
+
+      - name: Label failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = ${{ github.event.issue.number }};
+            const { owner, repo } = context.repo;
+            try {
+              await github.rest.issues.removeLabel({ owner, repo, issue_number: issue, name: 'scanning' });
+            } catch (e) {}
+            await github.rest.issues.addLabels({ owner, repo, issue_number: issue, labels: ['scan-failed'] });
