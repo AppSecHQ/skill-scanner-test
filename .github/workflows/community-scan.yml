@@ -30,8 +30,9 @@ jobs:
     steps:
       - name: Check approver authorization
         id: check
+        env:
+          APPROVER: ${{ github.event.comment.user.login }}
         run: |
-          APPROVER="${{ github.event.comment.user.login }}"
           IFS=',' read -ra ALLOWED <<< "$AUTHORIZED_APPROVERS"
           APPROVED="false"
           for user in "${ALLOWED[@]}"; do
@@ -124,10 +125,10 @@ jobs:
       - name: Run community scan
         id: scan
         env:
-          SKILL_SCANNER_LLM_API_KEY: ${{ secrets.SKILL_SCANNER_LLM_API_KEY }}
+          REPO_SLUG: ${{ needs.validate-approval.outputs.repo_slug }}
         run: |
           cd scripts && python community_scan.py \
-            --repo "${{ needs.validate-approval.outputs.repo_slug }}" \
+            --repo "$REPO_SLUG" \
             --output-dir ../results \
             --skills-dir ../skills \
             --max-repo-size-mb 500
@@ -186,11 +187,13 @@ jobs:
 
       - name: Commit and push results
         if: success()
+        env:
+          REPO_SLUG: ${{ needs.validate-approval.outputs.repo_slug }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/ docs/data/ README.md
-          git diff --cached --quiet || git commit -m "Add scan results for ${{ needs.validate-approval.outputs.repo_slug }}"
+          git diff --cached --quiet || git commit -m "Add scan results for $REPO_SLUG"
           git push
 
       - name: Close issue on success

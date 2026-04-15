@@ -296,22 +296,19 @@ def main():
     # 3. Check repo size
     check_repo_size(metadata, args.max_repo_size_mb, repo_slug)
 
-    # 4. Determine analysis mode
-    use_llm = bool(os.environ.get("SKILL_SCANNER_LLM_API_KEY"))
-    enable_meta = use_llm  # Meta-analysis requires LLM
-
-    if use_llm:
-        logger.info("LLM analysis enabled (API key found)")
-    else:
-        logger.info("Static analysis only (no LLM API key)")
+    # 4. Community scans always use static analysis only.
+    # LLM analysis is disabled to prevent secret exfiltration via crafted
+    # SKILL.md prompt injection — a malicious skill could trick the LLM
+    # into leaking the API key in scan output posted to a public issue.
+    logger.info("Static analysis only (LLM disabled for community scans)")
 
     # 5. Run the scan
     results = run_community_scan(
         repo_slug=repo_slug,
         skills_dir=args.skills_dir,
         output_dir=args.output_dir,
-        use_llm=use_llm,
-        enable_meta=enable_meta,
+        use_llm=False,
+        enable_meta=False,
     )
 
     # 6. Format and write comment
