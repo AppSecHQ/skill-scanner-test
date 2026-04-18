@@ -7,6 +7,7 @@ on:
 permissions:
   issues: write
   contents: write
+  pull-requests: write
 
 concurrency:
   group: community-scan
@@ -185,18 +186,31 @@ jobs:
           "
           bash build-site.sh
 
-      - name: Commit and push results
+      - name: Create branch, commit, and open PR
         if: success()
         env:
           REPO_SLUG: ${{ needs.validate-approval.outputs.repo_slug }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add results/ docs/data/ README.md
-          git diff --cached --quiet || git commit -m "Add scan results for $REPO_SLUG"
-          git push
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          BRANCH="scan/issue-${ISSUE_NUMBER}"
+          git checkout -b "$BRANCH"
+          git commit -m "Add scan results for $REPO_SLUG"
+          git push -u origin "$BRANCH"
+          gh pr create \
+            --title "Add scan results for $REPO_SLUG" \
+            --body "Scan results from community request #${ISSUE_NUMBER}. Merge to publish to the dashboard." \
+            --base main \
+            --head "$BRANCH"
 
-      - name: Close issue on success
+      - name: Update issue on success
         if: success()
         uses: actions/github-script@v7
         with:
@@ -207,7 +221,6 @@ jobs:
               await github.rest.issues.removeLabel({ owner, repo, issue_number: issue, name: 'scanning' });
             } catch (e) { /* label may not exist */ }
             await github.rest.issues.addLabels({ owner, repo, issue_number: issue, labels: ['scan-completed'] });
-            await github.rest.issues.update({ owner, repo, issue_number: issue, state: 'closed' });
 
       - name: Label failure
         if: failure()

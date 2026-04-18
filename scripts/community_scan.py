@@ -245,7 +245,7 @@ def format_results_comment(repo_slug: str, results: list[dict]) -> str:
             lines.append("")
 
     lines.append("---")
-    lines.append("*Results have been published to the [dashboard](https://skillscan.io).*")
+    lines.append("*A PR has been opened to publish these results to the [dashboard](https://skillscan.io).*")
 
     comment = "\n".join(lines)
 
