@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
-**Skill:** cloudflare
-**Directory:** /home/runner/work/skill-scanner-test/skill-scanner-test/scripts/../skills/hoodini-ai-agents-skills/skills/cloudflare
+**Skill:** fal-ai
+**Directory:** /home/runner/work/skill-scanner-test/skill-scanner-test/scripts/../skills/hoodini-ai-agents-skills/skills/fal-ai
 **Status:** [OK] SAFE
 **Max Severity:** INFO
-**Scan Duration:** 0.26s
-**Timestamp:** 2026-04-18T19:20:02.638057+00:00
+**Scan Duration:** 0.25s
+**Timestamp:** 2026-04-18T19:21:23.688261+00:00
 
 ## Summary
 

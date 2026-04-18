@@ -25,35 +25,35 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 
 | Metric | Count |
 |--------|-------|
-| Total Skills Scanned | 616 |
-| Safe Skills | 485 (79%) |
-| Skills with Issues | 131 (21%) |
-| Total Findings | 1588 |
+| Total Skills Scanned | 649 |
+| Safe Skills | 508 (78%) |
+| Skills with Issues | 141 (22%) |
+| Total Findings | 1368 |
 
 | Severity | Count |
 |----------|-------|
-| CRITICAL | 356 |
-| HIGH | 188 |
-| MEDIUM | 625 |
-| LOW | 419 |
+| CRITICAL | 204 |
+| HIGH | 251 |
+| MEDIUM | 707 |
+| LOW | 180 |
 
 | Category | Count |
 |----------|-------|
-| policy_violation | 394 |
-| data_exfiltration | 335 |
-| command_injection | 324 |
-| transitive_trust_abuse | 169 |
-| unauthorized_tool_use | 91 |
-| tool_chaining_abuse | 85 |
-| hardcoded_secrets | 71 |
-| social_engineering | 35 |
-| skill_discovery_abuse | 35 |
-| prompt_injection | 24 |
-| resource_abuse | 13 |
-| autonomy_abuse | 7 |
-| obfuscation | 5 |
+| data_exfiltration | 413 |
+| command_injection | 211 |
+| social_engineering | 168 |
+| transitive_trust_abuse | 151 |
+| unauthorized_tool_use | 132 |
+| policy_violation | 90 |
+| resource_abuse | 88 |
+| prompt_injection | 52 |
+| tool_chaining_abuse | 30 |
+| hardcoded_secrets | 23 |
+| skill_discovery_abuse | 6 |
+| obfuscation | 3 |
+| autonomy_abuse | 1 |
 
-- These results are visualized at [skillscan.io](https://skillscan.io/). See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
+- These results are visualized at [skillscan.appsechq.com](https://skillscan.appsechq.com/). See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 <!-- END SCAN RESULTS -->
 
 ## Getting Started

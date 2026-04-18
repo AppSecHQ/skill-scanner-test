@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
-**Skill:** cloudflare
-**Directory:** /home/runner/work/skill-scanner-test/skill-scanner-test/scripts/../skills/hoodini-ai-agents-skills/skills/cloudflare
+**Skill:** aws-account-management
+**Directory:** /home/runner/work/skill-scanner-test/skill-scanner-test/scripts/../skills/hoodini-ai-agents-skills/skills/aws-account-management
 **Status:** [OK] SAFE
 **Max Severity:** INFO
 **Scan Duration:** 0.26s
-**Timestamp:** 2026-04-18T19:20:02.638057+00:00
+**Timestamp:** 2026-04-18T19:20:31.777372+00:00
 
 ## Summary
 

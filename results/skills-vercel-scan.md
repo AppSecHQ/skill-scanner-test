@@ -1,11 +1,11 @@
 # Agent Skill Security Scan Report
 
-**Skill:** cloudflare
-**Directory:** /home/runner/work/skill-scanner-test/skill-scanner-test/scripts/../skills/hoodini-ai-agents-skills/skills/cloudflare
+**Skill:** vercel
+**Directory:** /home/runner/work/skill-scanner-test/skill-scanner-test/scripts/../skills/hoodini-ai-agents-skills/skills/vercel
 **Status:** [OK] SAFE
 **Max Severity:** INFO
-**Scan Duration:** 0.26s
-**Timestamp:** 2026-04-18T19:20:02.638057+00:00
+**Scan Duration:** 0.27s
+**Timestamp:** 2026-04-18T19:19:39.279027+00:00
 
 ## Summary
 
