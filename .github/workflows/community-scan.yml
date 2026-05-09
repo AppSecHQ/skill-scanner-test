@@ -88,7 +88,7 @@ jobs:
     if: needs.validate-approval.outputs.approved == 'true'
     runs-on: ubuntu-latest
     environment: scan-production
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
       - name: Add scanning label
         uses: actions/github-script@v7
@@ -114,6 +114,8 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.SCAN_BOT_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -133,7 +135,7 @@ jobs:
             --output-dir ../results \
             --skills-dir ../skills \
             --max-repo-size-mb 500
-        timeout-minutes: 12
+        timeout-minutes: 30
 
       - name: Post scan results comment
         if: success()
@@ -191,7 +193,7 @@ jobs:
         env:
           REPO_SLUG: ${{ needs.validate-approval.outputs.repo_slug }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.SCAN_BOT_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
