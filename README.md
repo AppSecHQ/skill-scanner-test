@@ -25,28 +25,28 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 
 | Metric | Count |
 |--------|-------|
-| Total Skills Scanned | 649 |
+| Total Skills Scanned | 650 |
 | Safe Skills | 508 (78%) |
-| Skills with Issues | 141 (22%) |
-| Total Findings | 1368 |
+| Skills with Issues | 142 (22%) |
+| Total Findings | 1381 |
 
 | Severity | Count |
 |----------|-------|
-| CRITICAL | 204 |
+| CRITICAL | 209 |
 | HIGH | 251 |
-| MEDIUM | 707 |
+| MEDIUM | 714 |
 | LOW | 180 |
 
 | Category | Count |
 |----------|-------|
-| data_exfiltration | 413 |
+| data_exfiltration | 423 |
 | command_injection | 211 |
 | social_engineering | 168 |
 | transitive_trust_abuse | 151 |
-| unauthorized_tool_use | 132 |
-| policy_violation | 90 |
+| unauthorized_tool_use | 133 |
+| policy_violation | 91 |
 | resource_abuse | 88 |
-| prompt_injection | 52 |
+| prompt_injection | 53 |
 | tool_chaining_abuse | 30 |
 | hardcoded_secrets | 23 |
 | skill_discovery_abuse | 6 |

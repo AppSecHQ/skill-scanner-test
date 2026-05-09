@@ -4,8 +4,8 @@
 **Directory:** /home/runner/work/skill-scanner-test/skill-scanner-test/scripts/../skills/hoodini-ai-agents-skills/skills/shabbat-times
 **Status:** [OK] SAFE
 **Max Severity:** INFO
-**Scan Duration:** 0.25s
-**Timestamp:** 2026-04-18T19:19:51.042688+00:00
+**Scan Duration:** 0.30s
+**Timestamp:** 2026-05-09T01:41:57.775974+00:00
 
 ## Summary
 
