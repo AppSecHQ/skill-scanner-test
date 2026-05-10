@@ -742,7 +742,7 @@ function renderDetailFindings(scan) {
 function renderNotesList() {
   const container = document.getElementById('notes-container');
   if (!appData.notes || appData.notes.length === 0) {
-    container.innerHTML = '<p class="muted">No notes yet.</p>';
+    container.innerHTML = '<p class="muted">No posts yet.</p>';
     return;
   }
 
@@ -781,7 +781,7 @@ function renderNoteDetail(id) {
 
   if (!note) {
     breadcrumb.textContent = 'Not Found';
-    content.innerHTML = '<p class="muted">Note not found.</p>';
+    content.innerHTML = '<p class="muted">Post not found.</p>';
     return;
   }
 
