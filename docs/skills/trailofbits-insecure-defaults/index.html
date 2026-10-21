@@ -18,13 +18,26 @@
   <meta name="twitter:title" content="insecure-defaults security scan: safe, no findings | skillscan.io">
   <meta name="twitter:description" content="insecure-defaults (trailofbits): No security findings. Scanned 1 time, most recently 2026-02-06.">
   <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
-  <link rel="stylesheet" href="/style.css">
-  <link rel="stylesheet" href="/site.css">
+  <script>
+  // Apply saved or URL-requested theme before first paint to avoid a flash.
+  (function () {
+    try {
+      var q = new URLSearchParams(location.search).get('theme');
+      var t = (q === 'dark' || q === 'light') ? q : localStorage.getItem('theme');
+      if (q === 'dark' || q === 'light') localStorage.setItem('theme', q);
+      if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="/theme.css">
 <script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/skills/", "name": "Skills", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/skills/trailofbits-insecure-defaults/", "name": "insecure-defaults", "position": 3}]}, {"@context": "https://schema.org", "@type": "SoftwareApplication", "applicationCategory": "AI agent skill", "name": "insecure-defaults", "review": {"@type": "Review", "author": {"@type": "Organization", "name": "skillscan.io", "url": "https://skillscan.io/"}, "datePublished": "2026-02-06", "name": "insecure-defaults security scan", "reviewBody": "No security findings. Scanned 1 time, most recently 2026-02-06.", "url": "https://skillscan.io/skills/trailofbits-insecure-defaults/"}, "url": "https://github.com/trailofbits/skills"}]</script></head>
 <body>
-  <nav>
+  <nav class="topbar" aria-label="Site">
     <div class="nav-inner">
-      <a class="nav-brand" href="/">skillscan.io</a>
+      <a class="nav-brand" href="/">skillscan.io <small>registry scan results</small></a>
       <div class="nav-links">
         <a href="/skills/" class="active">Skills</a>
         <a href="/categories/">Categories</a>
@@ -32,6 +45,7 @@
         <a href="/research/">Research</a>
         <a href="/methodology/">Methodology</a>
         <a href="/about/">About</a>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle light and dark theme"><span class="dot" aria-hidden="true"></span><span class="theme-toggle-label">Theme</span></button>
       </div>
     </div>
   </nav>
@@ -99,5 +113,20 @@
       <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
     </div>
   </footer>
+  <script>
+  (function () {
+    var btn = document.getElementById('theme-toggle'); if (!btn) return;
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    function current() { return document.documentElement.getAttribute('data-theme') || (mq.matches ? 'dark' : 'light'); }
+    function label() { btn.querySelector('.theme-toggle-label').textContent = current() === 'dark' ? 'Dark' : 'Light'; }
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      label();
+    });
+    label();
+  })();
+  </script>
 </body>
 </html>

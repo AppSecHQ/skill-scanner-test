@@ -116,7 +116,7 @@ def site_root(tmp_path: Path) -> Path:
         (content / section / "index.md").write_text(f"---\ntitle: {section}\ndescription: The {section} page, described at sufficient length.\n---\ntext\n")
     static = tmp_path / "docs-src" / "static"
     static.mkdir()
-    for name in ("style.css", "site.css", "site.js", "og-default.png"):
+    for name in ("theme.css", "site.js", "og-default.png"):
         (static / name).write_text("/* static */")
     return tmp_path
 
