@@ -1,0 +1,629 @@
+{
+  "skill_name": "ontology-term-resolution",
+  "skill_path": "/home/runner/work/skill-scanner-test/skill-scanner-test/scripts/../skills/K-Dense-AI-scientific-agent-skills/skills/ontology-term-resolution",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 8,
+  "findings": [
+    {
+      "id": "ALLOWED_TOOLS_NETWORK_USAGE_b2527b7606",
+      "rule_id": "ALLOWED_TOOLS_NETWORK_USAGE",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Code makes network requests",
+      "description": "Skill code makes network requests. While not controlled by allowed-tools, network access should be documented and justified in the skill description.",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Document network usage in skill description or remove network operations if not needed",
+      "analyzer": "static",
+      "metadata": {
+        "semantic_facts": {
+          "evidence_kind": "capability_mismatch",
+          "context_kind": "manifest",
+          "signals": [
+            {
+              "rule_id": "ALLOWED_TOOLS_NETWORK_USAGE",
+              "kind": "undocumented_network",
+              "file_path": "SKILL.md",
+              "value_class": "external_network"
+            }
+          ],
+          "candidate_flow": {
+            "source_class": "skill_code",
+            "sink_class": "external_network",
+            "transforms": [],
+            "cross_file": false,
+            "source_path": "scripts/zooma_client.py",
+            "sink_path": "scripts/zooma_client.py"
+          },
+          "flows": [
+            {
+              "source_class": "skill_code",
+              "sink_class": "external_network",
+              "transforms": [],
+              "cross_file": false,
+              "source_path": "scripts/zooma_client.py",
+              "sink_path": "scripts/zooma_client.py"
+            }
+          ]
+        },
+        "cel": {
+          "decision": "would_suppress",
+          "reason": "shadow_or_rule_rollout",
+          "fact_schema": "v1",
+          "expression_hash": "0b8ef9fa27b8e3797a476f560bb6e6af6243c9e03a7d09a3fd0756d96b57affe",
+          "pack": "core",
+          "rollout": "shadow"
+        },
+        "aitech": "AITech-2.1",
+        "aitech_name": "Excessive Agency",
+        "aisubtech": "AISubtech-2.1.2",
+        "aisubtech_name": "Capability and Permission Overreach",
+        "aitech_mappings": [
+          "OWASP: LLM03:2026: Excessive Agency",
+          "OWASP: ASI10: Rogue Agents",
+          "MITRE ATLAS: N/A",
+          "NIST AML: N/A"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM03:2026: Excessive Agency",
+          "OWASP: ASI10: Rogue Agents",
+          "MITRE ATLAS: N/A",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM03:2026: Excessive Agency",
+          "OWASP: ASI10: Rogue Agents",
+          "MITRE ATLAS: N/A",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "ALLOWED_TOOLS_GREP_VIOLATION_00e648a188",
+      "rule_id": "ALLOWED_TOOLS_GREP_VIOLATION",
+      "category": "unauthorized_tool_use",
+      "severity": "LOW",
+      "title": "Code uses search/grep patterns but Grep tool not in allowed-tools",
+      "description": "Skill restricts tools to ['Read', 'Write', 'Edit', 'Bash'] but code uses regex search patterns",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Add 'Grep' to allowed-tools or remove regex search operations",
+      "analyzer": "static",
+      "metadata": {
+        "semantic_facts": {
+          "evidence_kind": "capability_mismatch",
+          "context_kind": "manifest",
+          "signals": [
+            {
+              "rule_id": "ALLOWED_TOOLS_GREP_VIOLATION",
+              "kind": "undeclared_tool",
+              "file_path": "SKILL.md",
+              "value_class": "grep"
+            }
+          ],
+          "candidate_command": {
+            "executable": "Grep",
+            "argument_classes": [],
+            "downloads": false,
+            "executes": false,
+            "destructive": false,
+            "privilege_change": false,
+            "source_class": "skill_code",
+            "sink_class": "content_search",
+            "file_path": ""
+          },
+          "commands": [
+            {
+              "executable": "Grep",
+              "argument_classes": [],
+              "downloads": false,
+              "executes": false,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "skill_code",
+              "sink_class": "content_search",
+              "file_path": ""
+            }
+          ]
+        },
+        "aitech": "AITech-2.1",
+        "aitech_name": "Excessive Agency",
+        "aisubtech": "AISubtech-2.1.2",
+        "aisubtech_name": "Capability and Permission Overreach",
+        "aitech_mappings": [
+          "OWASP: LLM03:2026: Excessive Agency",
+          "OWASP: ASI10: Rogue Agents",
+          "MITRE ATLAS: N/A",
+          "NIST AML: N/A"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM03:2026: Excessive Agency",
+          "OWASP: ASI10: Rogue Agents",
+          "MITRE ATLAS: N/A",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM03:2026: Excessive Agency",
+          "OWASP: ASI10: Rogue Agents",
+          "MITRE ATLAS: N/A",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_001498ba95",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Outbound network request primitives that can transmit data externally",
+      "description": "Pattern detected: urllib.request.Request(",
+      "file_path": "scripts/id_client.py",
+      "line_number": 68,
+      "snippet": "request = urllib.request.Request(url, headers={\"User-Agent\": USER_AGENT, \"Accept\": \"application/json\"})",
+      "remediation": "Ensure network operations are necessary and document allowed destinations",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "urllib\\.request\\.(?:urlopen|Request)\\s*\\(",
+        "matched_text": "urllib.request.Request(",
+        "signature_pattern_index": 3,
+        "signature_match_start": 10,
+        "signature_match_end": 33,
+        "signature_pattern_sha256": "bd8faff6b46ce7415a5dcfbd13f1e9926fe504882c96ed53605bd9f403cf4964",
+        "scanner_category": "SECURITY VIOLATION",
+        "signature_context": "code",
+        "signature_polarity": "active",
+        "source_category": "data_exfiltration",
+        "category_normalization": "native",
+        "semantic_facts": {
+          "evidence_kind": "signature_pattern",
+          "context_kind": "code",
+          "signals": [
+            {
+              "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+              "kind": "signature_polarity",
+              "file_path": "scripts/id_client.py",
+              "value_class": "active"
+            }
+          ]
+        },
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_5ffe371d9e",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Outbound network request primitives that can transmit data externally",
+      "description": "Pattern detected: urllib.request.urlopen(",
+      "file_path": "scripts/id_client.py",
+      "line_number": 72,
+      "snippet": "with urllib.request.urlopen(request, timeout=TIMEOUT) as response:",
+      "remediation": "Ensure network operations are necessary and document allowed destinations",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "urllib\\.request\\.(?:urlopen|Request)\\s*\\(",
+        "matched_text": "urllib.request.urlopen(",
+        "signature_pattern_index": 3,
+        "signature_match_start": 5,
+        "signature_match_end": 28,
+        "signature_pattern_sha256": "bd8faff6b46ce7415a5dcfbd13f1e9926fe504882c96ed53605bd9f403cf4964",
+        "scanner_category": "SECURITY VIOLATION",
+        "signature_context": "code",
+        "signature_polarity": "active",
+        "source_category": "data_exfiltration",
+        "category_normalization": "native",
+        "semantic_facts": {
+          "evidence_kind": "signature_pattern",
+          "context_kind": "code",
+          "signals": [
+            {
+              "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+              "kind": "signature_polarity",
+              "file_path": "scripts/id_client.py",
+              "value_class": "active"
+            }
+          ]
+        },
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_8c91b93854",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Outbound network request primitives that can transmit data externally",
+      "description": "Pattern detected: urllib.request.Request(",
+      "file_path": "scripts/ols_client.py",
+      "line_number": 79,
+      "snippet": "request = urllib.request.Request(",
+      "remediation": "Ensure network operations are necessary and document allowed destinations",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "urllib\\.request\\.(?:urlopen|Request)\\s*\\(",
+        "matched_text": "urllib.request.Request(",
+        "signature_pattern_index": 3,
+        "signature_match_start": 10,
+        "signature_match_end": 33,
+        "signature_pattern_sha256": "bd8faff6b46ce7415a5dcfbd13f1e9926fe504882c96ed53605bd9f403cf4964",
+        "scanner_category": "SECURITY VIOLATION",
+        "signature_context": "code",
+        "signature_polarity": "active",
+        "source_category": "data_exfiltration",
+        "category_normalization": "native",
+        "semantic_facts": {
+          "evidence_kind": "signature_pattern",
+          "context_kind": "code",
+          "signals": [
+            {
+              "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+              "kind": "signature_polarity",
+              "file_path": "scripts/ols_client.py",
+              "value_class": "active"
+            }
+          ]
+        },
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_a8aecaf77e",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Outbound network request primitives that can transmit data externally",
+      "description": "Pattern detected: urllib.request.urlopen(",
+      "file_path": "scripts/ols_client.py",
+      "line_number": 86,
+      "snippet": "with urllib.request.urlopen(request, timeout=TIMEOUT) as response:",
+      "remediation": "Ensure network operations are necessary and document allowed destinations",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "urllib\\.request\\.(?:urlopen|Request)\\s*\\(",
+        "matched_text": "urllib.request.urlopen(",
+        "signature_pattern_index": 3,
+        "signature_match_start": 5,
+        "signature_match_end": 28,
+        "signature_pattern_sha256": "bd8faff6b46ce7415a5dcfbd13f1e9926fe504882c96ed53605bd9f403cf4964",
+        "scanner_category": "SECURITY VIOLATION",
+        "signature_context": "code",
+        "signature_polarity": "active",
+        "source_category": "data_exfiltration",
+        "category_normalization": "native",
+        "semantic_facts": {
+          "evidence_kind": "signature_pattern",
+          "context_kind": "code",
+          "signals": [
+            {
+              "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+              "kind": "signature_polarity",
+              "file_path": "scripts/ols_client.py",
+              "value_class": "active"
+            }
+          ]
+        },
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_ed522d7c88",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Outbound network request primitives that can transmit data externally",
+      "description": "Pattern detected: urllib.request.Request(",
+      "file_path": "scripts/zooma_client.py",
+      "line_number": 78,
+      "snippet": "request = urllib.request.Request(url, headers={\"User-Agent\": USER_AGENT, \"Accept\": \"application/json\"})",
+      "remediation": "Ensure network operations are necessary and document allowed destinations",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "urllib\\.request\\.(?:urlopen|Request)\\s*\\(",
+        "matched_text": "urllib.request.Request(",
+        "signature_pattern_index": 3,
+        "signature_match_start": 10,
+        "signature_match_end": 33,
+        "signature_pattern_sha256": "bd8faff6b46ce7415a5dcfbd13f1e9926fe504882c96ed53605bd9f403cf4964",
+        "scanner_category": "SECURITY VIOLATION",
+        "signature_context": "code",
+        "signature_polarity": "active",
+        "source_category": "data_exfiltration",
+        "category_normalization": "native",
+        "semantic_facts": {
+          "evidence_kind": "signature_pattern",
+          "context_kind": "code",
+          "signals": [
+            {
+              "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+              "kind": "signature_polarity",
+              "file_path": "scripts/zooma_client.py",
+              "value_class": "active"
+            }
+          ]
+        },
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "DATA_EXFIL_NETWORK_REQUESTS_d144f099f1",
+      "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Outbound network request primitives that can transmit data externally",
+      "description": "Pattern detected: urllib.request.urlopen(",
+      "file_path": "scripts/zooma_client.py",
+      "line_number": 83,
+      "snippet": "with urllib.request.urlopen(request, timeout=TIMEOUT) as response:",
+      "remediation": "Ensure network operations are necessary and document allowed destinations",
+      "analyzer": "static",
+      "metadata": {
+        "matched_pattern": "urllib\\.request\\.(?:urlopen|Request)\\s*\\(",
+        "matched_text": "urllib.request.urlopen(",
+        "signature_pattern_index": 3,
+        "signature_match_start": 5,
+        "signature_match_end": 28,
+        "signature_pattern_sha256": "bd8faff6b46ce7415a5dcfbd13f1e9926fe504882c96ed53605bd9f403cf4964",
+        "scanner_category": "SECURITY VIOLATION",
+        "signature_context": "code",
+        "signature_polarity": "active",
+        "source_category": "data_exfiltration",
+        "category_normalization": "native",
+        "semantic_facts": {
+          "evidence_kind": "signature_pattern",
+          "context_kind": "code",
+          "signals": [
+            {
+              "rule_id": "DATA_EXFIL_NETWORK_REQUESTS",
+              "kind": "signature_polarity",
+              "file_path": "scripts/zooma_client.py",
+              "value_class": "active"
+            }
+          ]
+        },
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.7863948345184326,
+  "duration_ms": 786,
+  "analyzers_used": [
+    "static_analyzer",
+    "bytecode",
+    "pipeline",
+    "correlation",
+    "behavioral_analyzer",
+    "trigger_analyzer"
+  ],
+  "timestamp": "2026-10-21T21:37:42.359139+00:00",
+  "scan_metadata": {
+    "policy_name": "default",
+    "policy_version": "1.0",
+    "policy_preset_base": "balanced",
+    "policy_fingerprint_sha256": "3f48e661bfbc54597f97bbf3dcf2c1cbae2f596ddc79c0b44784efea326b3d1d",
+    "cel": {
+      "mode": "shadow",
+      "runtime": "cel-go",
+      "runtime_version": "v0.32.0;helper=2.3.1",
+      "fact_schema": "v1",
+      "expression_set_hash": "f26459b8f4a46a974d7ab0aaae34127b5b6a40d693e266e12fca03a69a6d26aa",
+      "evaluated": 1,
+      "retained": 8,
+      "would_suppress": 1,
+      "suppressed": 0,
+      "fallbacks": 0,
+      "projection_incomplete": 0,
+      "elapsed_ms": 1.284,
+      "projection_ms": 0.463,
+      "evaluation_ms": 0.676,
+      "errors": [],
+      "per_rule": {
+        "ALLOWED_TOOLS_NETWORK_USAGE": {
+          "keep": 0,
+          "would_suppress": 1,
+          "fallback": 0,
+          "suppressed": 0,
+          "expression_hash": "0b8ef9fa27b8e3797a476f560bb6e6af6243c9e03a7d09a3fd0756d96b57affe",
+          "pack": "core",
+          "rollout": "shadow"
+        }
+      },
+      "suppressed_candidates": []
+    },
+    "rule_contract": {
+      "status": "passed",
+      "schema_version": 2,
+      "checked": 2,
+      "invalid_findings": 0,
+      "errors": []
+    },
+    "taxonomy": {
+      "source": "builtin",
+      "version": "2.0.0",
+      "name": "Cisco AI Security and Safety Taxonomy",
+      "revision": "655a343ac943a51b6f61f86e47156e7752c15dc6",
+      "snapshot_sha256": "413e8ce9081e6d91b78aaa0d0b1c06cdc15d0406ad319e23e9f9f4f80735c441",
+      "findings": {
+        "mapped": 8,
+        "not_applicable": 0,
+        "unmapped": 0
+      }
+    }
+  },
+  "scanner_version": "2.3.1"
+}

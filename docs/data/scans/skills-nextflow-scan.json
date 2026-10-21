@@ -1,0 +1,497 @@
+{
+  "skill_name": "nextflow",
+  "skill_path": "/home/runner/work/skill-scanner-test/skill-scanner-test/scripts/../skills/K-Dense-AI-scientific-agent-skills/skills/nextflow",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 3,
+  "findings": [
+    {
+      "id": "COMPOUND_FETCH_EXECUTE_17e74919db",
+      "rule_id": "COMPOUND_FETCH_EXECUTE",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "Remote fetch followed by execution",
+      "description": "Content is downloaded from the network and subsequently executed. This is a classic remote code execution attack pattern.",
+      "file_path": "SKILL.md",
+      "line_number": 31,
+      "snippet": "# Install Nextflow (self-installing launcher)\nexport NXF_VER=26.04.6\ncurl -fsSL https://get.nextflow.io -o install-nextflow.sh\n# Review the installer before executing it.\nbash < install-nextflow.sh\nmkdir -p \"$HOME/.local/bin\"\nmv nextflow \"$HOME/.local/bin/\"\nexport PATH=\"$HOME/.local/bin:$PATH\"\nnextf",
+      "remediation": "Review the command sequence for potential multi-step attacks. Ensure all steps are necessary and safe.",
+      "analyzer": "pipeline",
+      "metadata": {
+        "pattern": "COMPOUND_FETCH_EXECUTE",
+        "matched_lines": [
+          2,
+          4
+        ],
+        "in_documentation": false,
+        "semantic_facts": {
+          "evidence_kind": "command_sequence",
+          "context_kind": "instruction",
+          "signal_kind": "compound_flow",
+          "commands": [
+            {
+              "executable": "curl",
+              "argument_classes": [
+                "output_path",
+                "script_path",
+                "url"
+              ],
+              "downloads": true,
+              "executes": false,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "network",
+              "sink_class": "",
+              "file_path": "SKILL.md"
+            },
+            {
+              "executable": "bash",
+              "argument_classes": [
+                "script_path"
+              ],
+              "downloads": false,
+              "executes": true,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "",
+              "sink_class": "execution",
+              "file_path": "SKILL.md"
+            }
+          ],
+          "urls": [
+            {
+              "scheme": "https",
+              "host": "get.nextflow.io",
+              "domain_class": "public",
+              "trusted_installer": false,
+              "method": "GET",
+              "direction": "inbound",
+              "file_path": "SKILL.md"
+            }
+          ],
+          "flows": [
+            {
+              "source_class": "network",
+              "sink_class": "execution",
+              "transforms": [],
+              "cross_file": false,
+              "source_path": "SKILL.md",
+              "sink_path": "SKILL.md"
+            }
+          ],
+          "candidate_flow": {
+            "source_class": "network",
+            "sink_class": "execution",
+            "transforms": [],
+            "cross_file": false,
+            "source_path": "SKILL.md",
+            "sink_path": "SKILL.md"
+          },
+          "evidence_value_class": "untrusted_fetch_execute",
+          "evidence_count": 2,
+          "candidate_command": {
+            "executable": "bash",
+            "argument_classes": [
+              "script_path"
+            ],
+            "downloads": false,
+            "executes": true,
+            "destructive": false,
+            "privilege_change": false,
+            "source_class": "",
+            "sink_class": "execution",
+            "file_path": "SKILL.md"
+          },
+          "candidate_url": {
+            "scheme": "https",
+            "host": "get.nextflow.io",
+            "domain_class": "public",
+            "trusted_installer": false,
+            "method": "GET",
+            "direction": "inbound",
+            "file_path": "SKILL.md"
+          }
+        },
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.1",
+        "aisubtech_name": "Code Execution",
+        "aitech_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning",
+          "Cisco AI MDL Code: MDL-006",
+          "Cisco AI MDL Code: MDL-007",
+          "Cisco AI MDL Code: MDL-005",
+          "Cisco AI MDL Code: MDL-010",
+          "Cisco AI MDL Code: MDL-012",
+          "Cisco AI MDL Code: MDL-014",
+          "Cisco AI MDL Code: MDL-015",
+          "Cisco AI MDL Code: MDL-019"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "COMPOUND_FETCH_EXECUTE_6e7ed421f0",
+      "rule_id": "COMPOUND_FETCH_EXECUTE",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "Remote fetch followed by execution",
+      "description": "Content is downloaded from the network and subsequently executed. This is a classic remote code execution attack pattern.",
+      "file_path": "SKILL.md",
+      "line_number": 43,
+      "snippet": "# Install Nextflow (self-installing launcher)\nexport NXF_VER=26.04.6\ncurl -fsSL https://get.nextflow.io -o install-nextflow.sh\n# Review the installer before executing it.\nbash < install-nextflow.sh\nmkdir -p \"$HOME/.local/bin\"\nmv nextflow \"$HOME/.local/bin/\"\nexport PATH=\"$HOME/.local/bin:$PATH\"\nnextf",
+      "remediation": "Review the command sequence for potential multi-step attacks. Ensure all steps are necessary and safe.",
+      "analyzer": "pipeline",
+      "metadata": {
+        "pattern": "COMPOUND_FETCH_EXECUTE",
+        "matched_lines": [
+          2,
+          4
+        ],
+        "in_documentation": false,
+        "semantic_facts": {
+          "evidence_kind": "command_sequence",
+          "context_kind": "instruction",
+          "signal_kind": "compound_flow",
+          "commands": [
+            {
+              "executable": "curl",
+              "argument_classes": [
+                "output_path",
+                "script_path",
+                "url"
+              ],
+              "downloads": true,
+              "executes": false,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "network",
+              "sink_class": "",
+              "file_path": "SKILL.md"
+            },
+            {
+              "executable": "bash",
+              "argument_classes": [
+                "script_path"
+              ],
+              "downloads": false,
+              "executes": true,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "",
+              "sink_class": "execution",
+              "file_path": "SKILL.md"
+            }
+          ],
+          "urls": [
+            {
+              "scheme": "https",
+              "host": "get.nextflow.io",
+              "domain_class": "public",
+              "trusted_installer": false,
+              "method": "GET",
+              "direction": "inbound",
+              "file_path": "SKILL.md"
+            }
+          ],
+          "flows": [
+            {
+              "source_class": "network",
+              "sink_class": "execution",
+              "transforms": [],
+              "cross_file": false,
+              "source_path": "SKILL.md",
+              "sink_path": "SKILL.md"
+            }
+          ],
+          "candidate_flow": {
+            "source_class": "network",
+            "sink_class": "execution",
+            "transforms": [],
+            "cross_file": false,
+            "source_path": "SKILL.md",
+            "sink_path": "SKILL.md"
+          },
+          "evidence_value_class": "untrusted_fetch_execute",
+          "evidence_count": 2,
+          "candidate_command": {
+            "executable": "bash",
+            "argument_classes": [
+              "script_path"
+            ],
+            "downloads": false,
+            "executes": true,
+            "destructive": false,
+            "privilege_change": false,
+            "source_class": "",
+            "sink_class": "execution",
+            "file_path": "SKILL.md"
+          },
+          "candidate_url": {
+            "scheme": "https",
+            "host": "get.nextflow.io",
+            "domain_class": "public",
+            "trusted_installer": false,
+            "method": "GET",
+            "direction": "inbound",
+            "file_path": "SKILL.md"
+          }
+        },
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.1",
+        "aisubtech_name": "Code Execution",
+        "aitech_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning",
+          "Cisco AI MDL Code: MDL-006",
+          "Cisco AI MDL Code: MDL-007",
+          "Cisco AI MDL Code: MDL-005",
+          "Cisco AI MDL Code: MDL-010",
+          "Cisco AI MDL Code: MDL-012",
+          "Cisco AI MDL Code: MDL-014",
+          "Cisco AI MDL Code: MDL-015",
+          "Cisco AI MDL Code: MDL-019"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "COMPOUND_FETCH_EXECUTE_1e05db1f69",
+      "rule_id": "COMPOUND_FETCH_EXECUTE",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Remote fetch followed by execution",
+      "description": "Content is downloaded from the network and subsequently executed. This is a classic remote code execution attack pattern. (found in documentation \u2014 may be instructional)",
+      "file_path": "references/testing.md",
+      "line_number": 26,
+      "snippet": "# Option 1: Conda\nconda install -c conda-forge -c bioconda nf-test=0.9.5\n\n# Option 2: upstream installer\ncurl -fsSL https://get.nf-test.com -o install-nf-test.sh\n# Review the installer before executing it.\nbash install-nf-test.sh 0.9.5\nmkdir -p \"$HOME/.local/bin\"\nmv nf-test \"$HOME/.local/bin/\"\nexpor",
+      "remediation": "Review the command sequence for potential multi-step attacks. Ensure all steps are necessary and safe.",
+      "analyzer": "pipeline",
+      "metadata": {
+        "pattern": "COMPOUND_FETCH_EXECUTE",
+        "matched_lines": [
+          4,
+          6
+        ],
+        "in_documentation": true,
+        "semantic_facts": {
+          "evidence_kind": "command_sequence",
+          "context_kind": "documentation",
+          "signal_kind": "compound_flow",
+          "commands": [
+            {
+              "executable": "curl",
+              "argument_classes": [
+                "output_path",
+                "script_path",
+                "url"
+              ],
+              "downloads": true,
+              "executes": false,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "network",
+              "sink_class": "",
+              "file_path": "references/testing.md"
+            },
+            {
+              "executable": "bash",
+              "argument_classes": [
+                "script_path"
+              ],
+              "downloads": false,
+              "executes": true,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "",
+              "sink_class": "execution",
+              "file_path": "references/testing.md"
+            }
+          ],
+          "urls": [
+            {
+              "scheme": "https",
+              "host": "get.nf-test.com",
+              "domain_class": "public",
+              "trusted_installer": false,
+              "method": "GET",
+              "direction": "inbound",
+              "file_path": "references/testing.md"
+            }
+          ],
+          "flows": [
+            {
+              "source_class": "network",
+              "sink_class": "execution",
+              "transforms": [],
+              "cross_file": false,
+              "source_path": "references/testing.md",
+              "sink_path": "references/testing.md"
+            }
+          ],
+          "candidate_flow": {
+            "source_class": "network",
+            "sink_class": "execution",
+            "transforms": [],
+            "cross_file": false,
+            "source_path": "references/testing.md",
+            "sink_path": "references/testing.md"
+          },
+          "evidence_value_class": "untrusted_fetch_execute",
+          "evidence_count": 2,
+          "candidate_command": {
+            "executable": "bash",
+            "argument_classes": [
+              "script_path"
+            ],
+            "downloads": false,
+            "executes": true,
+            "destructive": false,
+            "privilege_change": false,
+            "source_class": "",
+            "sink_class": "execution",
+            "file_path": "references/testing.md"
+          },
+          "candidate_url": {
+            "scheme": "https",
+            "host": "get.nf-test.com",
+            "domain_class": "public",
+            "trusted_installer": false,
+            "method": "GET",
+            "direction": "inbound",
+            "file_path": "references/testing.md"
+          }
+        },
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.1",
+        "aisubtech_name": "Code Execution",
+        "aitech_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning",
+          "Cisco AI MDL Code: MDL-006",
+          "Cisco AI MDL Code: MDL-007",
+          "Cisco AI MDL Code: MDL-005",
+          "Cisco AI MDL Code: MDL-010",
+          "Cisco AI MDL Code: MDL-012",
+          "Cisco AI MDL Code: MDL-014",
+          "Cisco AI MDL Code: MDL-015",
+          "Cisco AI MDL Code: MDL-019"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.1767880916595459,
+  "duration_ms": 176,
+  "analyzers_used": [
+    "static_analyzer",
+    "bytecode",
+    "pipeline",
+    "correlation",
+    "behavioral_analyzer",
+    "trigger_analyzer"
+  ],
+  "timestamp": "2026-10-21T21:37:31.546924+00:00",
+  "scan_metadata": {
+    "policy_name": "default",
+    "policy_version": "1.0",
+    "policy_preset_base": "balanced",
+    "policy_fingerprint_sha256": "3f48e661bfbc54597f97bbf3dcf2c1cbae2f596ddc79c0b44784efea326b3d1d",
+    "cel": {
+      "mode": "shadow",
+      "runtime": "cel-go",
+      "runtime_version": "v0.32.0;helper=2.3.1",
+      "fact_schema": "v1",
+      "expression_set_hash": "f26459b8f4a46a974d7ab0aaae34127b5b6a40d693e266e12fca03a69a6d26aa",
+      "evaluated": 0,
+      "retained": 3,
+      "would_suppress": 0,
+      "suppressed": 0,
+      "fallbacks": 0,
+      "projection_incomplete": 0,
+      "elapsed_ms": 0.0,
+      "projection_ms": 0.0,
+      "evaluation_ms": 0.0,
+      "errors": [],
+      "per_rule": {},
+      "suppressed_candidates": []
+    },
+    "rule_contract": {
+      "status": "passed",
+      "schema_version": 2,
+      "checked": 3,
+      "invalid_findings": 0,
+      "errors": []
+    },
+    "taxonomy": {
+      "source": "builtin",
+      "version": "2.0.0",
+      "name": "Cisco AI Security and Safety Taxonomy",
+      "revision": "655a343ac943a51b6f61f86e47156e7752c15dc6",
+      "snapshot_sha256": "413e8ce9081e6d91b78aaa0d0b1c06cdc15d0406ad319e23e9f9f4f80735c441",
+      "findings": {
+        "mapped": 3,
+        "not_applicable": 0,
+        "unmapped": 0
+      }
+    }
+  },
+  "scanner_version": "2.3.1"
+}
