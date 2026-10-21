@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Static-Only vs LLM-Enhanced Scanning | skillscan.io</title>
+  <meta name="description" content="Comparing what static analysis catches versus what Claude Sonnet 4.5 finds -- and why the difference matters for AI agent security.">
+  <link rel="canonical" href="https://skillscan.io/research/2026/static-vs-llm-scanning/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="Static-Only vs LLM-Enhanced Scanning | skillscan.io">
+  <meta property="og:description" content="Comparing what static analysis catches versus what Claude Sonnet 4.5 finds -- and why the difference matters for AI agent security.">
+  <meta property="og:url" content="https://skillscan.io/research/2026/static-vs-llm-scanning/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Static-Only vs LLM-Enhanced Scanning | skillscan.io">
+  <meta name="twitter:description" content="Comparing what static analysis catches versus what Claude Sonnet 4.5 finds -- and why the difference matters for AI agent security.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/research/", "name": "Research", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/research/2026/static-vs-llm-scanning/", "name": "Static-Only vs LLM-Enhanced Scanning", "position": 3}]}, {"@context": "https://schema.org", "@type": "Article", "author": {"@type": "Organization", "name": "skillscan.io"}, "dateModified": "2026-02-01", "datePublished": "2026-02-01", "headline": "Static-Only vs LLM-Enhanced Scanning", "url": "https://skillscan.io/research/2026/static-vs-llm-scanning/"}]</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/" class="active">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><a href="/research/">Research</a><span class="separator">/</span><span>Static-Only vs LLM-Enhanced Scanning</span>    </nav>
+<article>
+  <header class="note-detail-header">
+    <h1>Static-Only vs LLM-Enhanced Scanning</h1>
+    <div class="note-detail-meta">
+      <time class="note-date" datetime="2026-02-01">2026-02-01</time>
+      <div class="note-tags"><span class="tag-pill">methodology</span><span class="tag-pill">comparison</span><span class="tag-pill">llm</span></div>
+    </div>
+  </header>
+  <div class="note-body"><p>Not all 22 skills ran through the same analysis pipeline. 15 skills were scanned with static + behavioral + trigger analyzers only, while 7 skills also received LLM analysis (Claude Sonnet 4.5) plus meta-validation. Comparing the two groups reveals distinct detection profiles.</p><h3>Static Analysis: Pattern Matching at Scale</h3><p>Static analysis excels at catching concrete, deterministic patterns: hardcoded credentials (YARA rules), suspicious URLs, environment variable harvesting, missing manifest fields, and known dangerous code patterns like <code>while True:</code> loops or unsanitized user input in shell commands.</p><p>The two highest-finding skills -- <strong>clickup</strong> (14 findings) and <strong>agent-browser</strong> (8 findings) -- were scanned with static analysis only. Static analysis caught everything from YARA-detected credential harvesting to behavioral cross-file exfiltration patterns. These are the kinds of findings that don't require understanding <em>intent</em> -- the patterns are either present or they aren't.</p><p>Static-only scans completed in under 1 second (clickup: 0.8s, agent-browser: 18ms). The speed makes them suitable for CI/CD integration.</p><h3>LLM Analysis: Understanding Context</h3><p>LLM-enhanced scans took 23-31 seconds per skill (average: ~26s) -- roughly 30x slower than static analysis. But they detect a fundamentally different class of issues.</p><p>The LLM analyzer found credential management anti-patterns that static analysis missed: skills instructing users to store API keys in <code>~/.zshenv</code> without security guidance, incomplete trust model disclosures, and third-party data transmission risks. These are <em>architectural</em> and <em>documentation-level</em> issues, not code-level patterns.</p><p>For example, the <strong>subtitles</strong> skill was flagged for instructing users to export <code>TRANSCRIPT_API_KEY</code> in their shell config -- a common but risky pattern that could expose the key if the user commits their dotfiles to a public repo. Static analysis can't catch this because the instruction appears in natural language, not code.</p><h3>The Overlap Gap</h3><p>Interestingly, the two most dangerous skills (clickup and agent-browser) did <em>not</em> receive LLM analysis in this scan run. This means the current results may undercount the full risk profile of those skills -- LLM analysis might surface additional contextual findings on top of the static detections. A follow-up scan with full analyzer coverage on all 22 skills would be valuable.</p><h3>Cost-Benefit</h3><p>For a CI/CD gate or quick triage, static-only scanning covers the high-signal patterns in under a second. For a thorough security review -- especially of skills that handle credentials or make API calls -- the 25-second investment in LLM analysis pays off by catching design-level issues that no regex can find.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

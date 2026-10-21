@@ -103,7 +103,7 @@ function router() {
    ============================================================ */
 async function loadData() {
   try {
-    const summaryRes = await fetch('data/summary.json');
+    const summaryRes = await fetch('/data/summary.json');
     appData.summary = await summaryRes.json();
 
     // Load individual scan files listed in summary
@@ -113,7 +113,7 @@ async function loadData() {
         const slug = skill.scan_file.replace('-scan.md', '');
         skill.slug = slug;
         try {
-          const res = await fetch(`data/scans/${slug}-scan.json`);
+          const res = await fetch(`/data/scans/${slug}-scan.json`);
           if (res.ok) {
             appData.scans[slug] = await res.json();
           } else {
@@ -145,7 +145,7 @@ async function loadData() {
 
     // Load notes
     try {
-      const notesRes = await fetch('notes.json');
+      const notesRes = await fetch('/notes.json');
       if (notesRes.ok) {
         appData.notes = await notesRes.json();
       }

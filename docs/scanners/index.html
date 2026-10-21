@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent skill scanners compared | skillscan.io</title>
+  <meta name="description" content="A neutral comparison of AI agent skill security scanners, including Cisco skill-scanner, Snyk Agent Scan, SkillSpector, and registry-integrated checks, with observations from running one at scale.">
+  <link rel="canonical" href="https://skillscan.io/scanners/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="Agent skill scanners compared | skillscan.io">
+  <meta property="og:description" content="A neutral comparison of AI agent skill security scanners, including Cisco skill-scanner, Snyk Agent Scan, SkillSpector, and registry-integrated checks, with observations from running one at scale.">
+  <meta property="og:url" content="https://skillscan.io/scanners/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Agent skill scanners compared | skillscan.io">
+  <meta name="twitter:description" content="A neutral comparison of AI agent skill security scanners, including Cisco skill-scanner, Snyk Agent Scan, SkillSpector, and registry-integrated checks, with observations from running one at scale.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/scanners/", "name": "Agent skill scanners compared", "position": 2}]}</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><span>Agent skill scanners compared</span>    </nav>
+<article class="content-page">
+  <h1>Agent skill scanners compared</h1>
+<p class="muted">Updated 2026-10-21</p>  <div class="note-body"><p>This page lists the scanners we know of, what each does, and what we have observed. We run Cisco's scanner for this site. We are not affiliated with any vendor. For measured detection rates, use the independent benchmark at <a href="https://skillscan.sh/">skillscan.sh</a>; this page is about scope and behaviour, not scores.</p>
+<table>
+<thead>
+<tr>
+<th>Scanner</th>
+<th>Type</th>
+<th>Open source</th>
+<th>Runs locally</th>
+<th>LLM layer</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/cisco-ai-defense/skill-scanner">Cisco AI Defense skill-scanner</a></td>
+<td>Static + behavioral + bytecode + trigger + LLM + meta</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Optional</td>
+<td>What this site runs. Full pipeline, high signature false-positive rate, meta layer helps.</td>
+</tr>
+<tr>
+<td><a href="https://snyk.io/">Snyk Agent Scan</a> (formerly Invariant mcp-scan)</td>
+<td>Environment inventory + LLM</td>
+<td>Partly</td>
+<td>CLI</td>
+<td>Yes, cloud</td>
+<td>Scans installed skills and MCP servers together. Highest recall on skillscan.sh's benchmark among tools tested.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NVIDIA/skillspector">SkillSpector</a> (NVIDIA)</td>
+<td>Static + optional LLM</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Optional</td>
+<td>Documents its own scope limits: non-English, images, runtime.</td>
+</tr>
+<tr>
+<td>Gen Agent Trust Hub</td>
+<td>Cloud</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+<td>One of three auditors on skills.sh.</td>
+</tr>
+<tr>
+<td>Socket</td>
+<td>Supply chain</td>
+<td>No</td>
+<td>No</td>
+<td>Partial</td>
+<td>One of three auditors on skills.sh. Flags unpinned remote installs aggressively.</td>
+</tr>
+<tr>
+<td>VirusTotal Code Insight</td>
+<td>Cloud</td>
+<td>No</td>
+<td>No</td>
+<td>Yes</td>
+<td>Used by ClawHub for new publications after ClawHavoc.</td>
+</tr>
+<tr>
+<td>Enkrypt Skill Scanner, JFrog, Superagent</td>
+<td>Commercial</td>
+<td>No</td>
+<td>Varies</td>
+<td>Yes</td>
+<td>API or platform products; no public corpus.</td>
+</tr>
+<tr>
+<td><code>skillscan</code> (PyPI)</td>
+<td>Static CLI</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>No</td>
+<td>Unrelated to this site.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-we-have-observed-running-ciscos-scanner-on-618-skills">What we have observed running Cisco's scanner on 618 skills</h2>
+<ul>
+<li>Signature rules produce most CRITICAL findings and most false positives. The worst cases are security tools and test corpora that contain attack strings as data.</li>
+<li>The LLM layer produces fewer, better findings, with readable remediation text. Its meta-validation confirmed about 60 percent at high confidence and downgraded most of the rest for context.</li>
+<li>Running without the LLM layer, as community scans do, roughly halves the useful findings and leaves only signature hits.</li>
+<li>Scanner version matters. We pin it and record it per run, because rule updates change results on unchanged skills.</li>
+</ul>
+<h2 id="known-bypasses">Known bypasses</h2>
+<p>Trail of Bits (June 2026) bypassed every scanner on this list that they tested, including the one we run, using whitespace padding, bytecode, archive indirection, and persuasive framing. The Cloud Security Alliance's follow-up notes document further evasions of ClawHub's VirusTotal integration between February and May 2026. No scanner here should be treated as a gate. See <a href="/learn/what-scanners-catch-and-miss/">what scanners catch and miss</a>.</p>
+<h2 id="adding-scanners-to-this-corpus">Adding scanners to this corpus</h2>
+<p>Running a second scanner over the same 618 skills, with results side by side on each skill page, is on the roadmap. It would be the first public cross-scanner dataset on real registry content. If you maintain a scanner and want it included, open an issue.</p>
+<p>Vendor comparisons we reviewed while preparing this page were mostly written by competing vendors. We have tried to limit this page to scope and observed behaviour and to leave scoring to the benchmark.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

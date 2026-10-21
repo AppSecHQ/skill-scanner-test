@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What skill scanners catch, and what they miss | skillscan.io</title>
+  <meta name="description" content="An honest account of automated agent skill scanning: detection rates, the Trail of Bits bypasses, false positives, and how to use scanner output without trusting it.">
+  <link rel="canonical" href="https://skillscan.io/learn/what-scanners-catch-and-miss/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="What skill scanners catch, and what they miss | skillscan.io">
+  <meta property="og:description" content="An honest account of automated agent skill scanning: detection rates, the Trail of Bits bypasses, false positives, and how to use scanner output without trusting it.">
+  <meta property="og:url" content="https://skillscan.io/learn/what-scanners-catch-and-miss/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="What skill scanners catch, and what they miss | skillscan.io">
+  <meta name="twitter:description" content="An honest account of automated agent skill scanning: detection rates, the Trail of Bits bypasses, false positives, and how to use scanner output without trusting it.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/learn/", "name": "Learn", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/learn/what-scanners-catch-and-miss/", "name": "What skill scanners catch, and what they miss", "position": 3}]}</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><a href="/learn/">Learn</a><span class="separator">/</span><span>What skill scanners catch, and what they miss</span>    </nav>
+<article class="content-page">
+  <h1>What skill scanners catch, and what they miss</h1>
+<p class="muted">Updated 2026-10-21</p>  <nav class="section-nav" aria-label="learn pages">
+    <ol><li><a href="/learn/what-are-agent-skills-security/">What are agent skills, and why are they a security problem</a></li><li><a href="/learn/how-to-audit-an-agent-skill/">How to audit an agent skill before installing it</a></li><li><strong>What skill scanners catch, and what they miss</strong></li><li><a href="/learn/reading-a-skillscan-report/">Reading a skillscan.io report</a></li><li><a href="/learn/for-researchers/">For researchers: using the skillscan.io dataset</a></li></ol>
+  </nav>
+  <div class="note-body"><p>We run a scanner at scale and publish its output. That makes us the wrong people to oversell scanners, and the right people to say precisely where they fail.</p>
+<h2 id="what-they-catch-well">What they catch well</h2>
+<ul>
+<li><strong>Known attack strings.</strong> Reverse shells, <code>rm -rf /</code>, credential file paths, <code>curl | sh</code>. Signature rules find these reliably, which is why ClawHavoc-style campaigns that reuse a payload across hundreds of skills get caught. Our scanner <a href="/research/2026/clawhavoc-validation/">found the ClawHavoc campaign independently</a> and matched Koi's C2 address.</li>
+<li><strong>Obvious exfiltration in scripts.</strong> Data-flow analysis that follows an environment variable into a network call works when the code is plain Python or shell.</li>
+<li><strong>Clumsy prompt injection.</strong> "Ignore previous instructions" and its relatives.</li>
+<li><strong>Hardcoded secrets.</strong> Key-shaped strings are easy.</li>
+</ul>
+<h2 id="what-they-miss">What they miss</h2>
+<p>In June 2026 Trail of Bits published bypasses for Cisco skill-scanner, ClawHub's detector, and the Gen, Socket, and Snyk scanners on skills.sh. The techniques were not sophisticated:</p>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>Why it works</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Whitespace inflation (100k+ newlines)</td>
+<td>Pushes the payload past the scanner's context or truncation limit</td>
+</tr>
+<tr>
+<td>Precompiled bytecode</td>
+<td>Signature rules read source, not <code>.pyc</code></td>
+</tr>
+<tr>
+<td>Archive or document indirection</td>
+<td>Scanners do not expand nested containers</td>
+</tr>
+<tr>
+<td>Persuasive framing</td>
+<td>The LLM judge is a language model and can be talked into "low severity"</td>
+</tr>
+<tr>
+<td>Images and non-English text</td>
+<td>Outside the rules entirely</td>
+</tr>
+</tbody>
+</table>
+<p>The independent benchmark at <a href="https://skillscan.sh/">skillscan.sh</a> reports that static scanners catch roughly 13 to 32 percent of attacks on an 84-case novel set and the best frontier models about 81 percent. The Cloud Security Alliance's research notes reach the same conclusion: no single scanner reliably detects all known classes. Academic work (CompoSkill, ColluSkill) adds a structural miss: skills that are individually clean and jointly harmful.</p>
+<p>Our <a href="/methodology/">methodology page</a> states which of these classes our pipeline mitigates. Most it does not.</p>
+<h2 id="the-other-failure-false-positives">The other failure: false positives</h2>
+<p>Scanners also flag things that are fine, and at a high rate. The highest-scoring skill in our corpus by CRITICAL count is a security tool whose detection signatures ("rm -rf /", "ignore your instructions") were matched as if they were attacks. The same happens to YARA rule authoring guides, exploit-testing frameworks, and our own scanner's skill. A list of these, with reasoning, is in the <a href="/research/2026/false-positive-register/">false-positive register</a>.</p>
+<p>A second-pass LLM validator reduces this. In our runs, about 60 percent of LLM findings were confirmed at high confidence and 40 percent at medium, with the medium ones usually downgraded for context the first pass missed. It does not help with signature-rule false positives, which have no second pass.</p>
+<h2 id="how-to-use-scanner-output">How to use scanner output</h2>
+<ul>
+<li>Treat a clean result as "nothing obvious", never as "safe".</li>
+<li>Treat a CRITICAL as "read this now", never as "malicious". Read the snippet. It takes thirty seconds.</li>
+<li>Weight findings from the LLM and behavioral layers over bare signature hits.</li>
+<li>Look at history. A skill that was clean and now has findings, or whose files grew tenfold, is the interesting case.</li>
+<li>Combine. Scanner, then the <a href="/learn/how-to-audit-an-agent-skill/">manual checklist</a>, then a sandbox.</li>
+</ul>
+<p>The value of a scanner at scale is not the verdict on any one skill. It is consistency across thousands of skills and across time, which is what makes campaigns visible.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

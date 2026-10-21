@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Methodology and limitations | skillscan.io</title>
+  <meta name="description" content="How skillscan.io scans AI agent skills, which analyzers run, how often, what the pipeline cannot see, and which known scanner bypasses apply to it.">
+  <link rel="canonical" href="https://skillscan.io/methodology/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="Methodology and limitations | skillscan.io">
+  <meta property="og:description" content="How skillscan.io scans AI agent skills, which analyzers run, how often, what the pipeline cannot see, and which known scanner bypasses apply to it.">
+  <meta property="og:url" content="https://skillscan.io/methodology/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Methodology and limitations | skillscan.io">
+  <meta name="twitter:description" content="How skillscan.io scans AI agent skills, which analyzers run, how often, what the pipeline cannot see, and which known scanner bypasses apply to it.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/methodology/", "name": "Methodology and limitations", "position": 2}]}</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/">Research</a>
+        <a href="/methodology/" class="active">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><span>Methodology and limitations</span>    </nav>
+<article class="content-page">
+  <h1>Methodology and limitations</h1>
+<p class="muted">Updated 2026-10-21</p>  <div class="note-body"><p>This page describes exactly what produces the results on this site, so you can decide how much weight to give them. Short version: every result here is the output of one open-source scanner run in its fullest configuration, published as-is, with a second-pass validation layer, and with the gaps listed below.</p>
+<h2 id="what-we-scan">What we scan</h2>
+<p>Skills are cloned from public registries and repositories and scanned from the local checkout. Current coverage, as of the scan run dated 2026-05-09:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Skills</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clawhub.ai (OpenClaw registry)</td>
+<td>315</td>
+</tr>
+<tr>
+<td>Microsoft skills repo</td>
+<td>107</td>
+</tr>
+<tr>
+<td>skills.sh (Vercel registry, top installs)</td>
+<td>74</td>
+</tr>
+<tr>
+<td>Trail of Bits skills</td>
+<td>49</td>
+</tr>
+<tr>
+<td>hoodini/ai-agents-skills</td>
+<td>27</td>
+</tr>
+<tr>
+<td>Anthropic skills</td>
+<td>17</td>
+</tr>
+<tr>
+<td>Hugging Face skills</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Other individual repos</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+<p>That is 618 distinct skills across 650 scan records; thirty skills were scanned more than once with different analyzer sets, and each skill's page shows every run.</p>
+<p>Selection is not random. skills.sh skills were chosen by install count. ClawHub skills were taken in bulk. Organisation repos were added because they are widely installed. Treat cross-registry comparisons as indicative, not as a controlled sample.</p>
+<h2 id="what-runs">What runs</h2>
+<p>The scanner is Cisco AI Defense <a href="https://github.com/cisco-ai-defense/skill-scanner">skill-scanner</a>, pinned to a specific version recorded in each scan result. All analyzers are enabled:</p>
+<table>
+<thead>
+<tr>
+<th>Analyzer</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>static</td>
+<td>YAML and YARA signatures over all files: known attack strings, suspicious commands, credential shapes, encoding</td>
+</tr>
+<tr>
+<td>behavioral</td>
+<td>Data-flow tracing through bundled scripts, looking for source-to-sink paths such as env var to network</td>
+</tr>
+<tr>
+<td>bytecode</td>
+<td>Inspects compiled Python artifacts rather than skipping them</td>
+</tr>
+<tr>
+<td>trigger</td>
+<td>Checks the skill's name and description for discovery hijacking and over-broad triggers</td>
+</tr>
+<tr>
+<td>llm</td>
+<td>An LLM reads the whole skill and writes findings with description, snippet, and remediation</td>
+</tr>
+<tr>
+<td>meta</td>
+<td>A second LLM call re-validates each LLM finding against the source and assigns confidence, exploitability, and impact</td>
+</tr>
+<tr>
+<td>pipeline</td>
+<td>Orchestration; records which analyzers ran</td>
+</tr>
+</tbody>
+</table>
+<p>The LLM and meta layers use the model named in each finding's metadata. Community-requested scans run without the LLM layers for cost and secret-handling reasons, and their pages say so.</p>
+<h2 id="how-often">How often</h2>
+<p>Scans run on demand from this repository's workflow and whenever a community scan request is approved. Each run writes a dated result. Skill pages keep every run, so you can see whether a verdict changed between scans. The site does not yet re-scan the full corpus on a fixed schedule; the per-skill "last scanned" date is the thing to check.</p>
+<h2 id="what-a-verdict-means">What a verdict means</h2>
+<p>A skill is marked <strong>SAFE</strong> when the scanner reports <code>is_safe: true</code>. That flag is set by the scanner's own severity threshold, which is why a skill can be SAFE and still carry MEDIUM findings. <strong>ISSUES FOUND</strong> means at least one finding crossed the threshold. Neither label is a judgement by a human. We do not remove findings we believe are wrong; we list them in the <a href="/research/2026/false-positive-register/">false-positive register</a> and leave the record intact.</p>
+<h2 id="what-we-cannot-see">What we cannot see</h2>
+<p>Be specific about this, because it determines what the site is good for.</p>
+<ul>
+<li><strong>Runtime behaviour.</strong> We never execute a skill. Anything that only misbehaves when run, or when a particular tool is present, is invisible to us.</li>
+<li><strong>Content fetched at runtime.</strong> If a skill tells the agent to read a URL, we scan the instruction, not the URL. The remote content can change after our scan. This is OWASP AST05 and AST07 territory and it is the single largest blind spot.</li>
+<li><strong>Non-English and image-borne text.</strong> The static rules are English-centric. The LLM layer handles other languages inconsistently. Text in images is not read at all.</li>
+<li><strong>Dependencies installed by the skill.</strong> A <code>pip install</code> or <code>npm install</code> in a skill's instructions pulls code we did not scan.</li>
+<li><strong>Composition.</strong> Each skill is scored alone. Two skills that are individually benign and jointly harmful will both show as SAFE. The CompoSkill and ColluSkill papers describe this class.</li>
+<li><strong>Registry metadata.</strong> Author reputation, publish history, download counts, and signing status are not inputs to the verdict.</li>
+</ul>
+<h2 id="known-bypasses-that-apply-to-this-pipeline">Known bypasses that apply to this pipeline</h2>
+<p>In June 2026 Trail of Bits published bypasses for Cisco skill-scanner, ClawHub's detector, and the three scanners integrated into skills.sh. The Cloud Security Alliance summarised the classes. Our position on each:</p>
+<table>
+<thead>
+<tr>
+<th>Bypass class</th>
+<th>Status here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Whitespace inflation past scanner context limits</td>
+<td>Partially mitigated: file size and whitespace ratio are visible on the skill page, but the LLM layer still truncates. Flagged under <code>obfuscation</code> only when the static rules catch it.</td>
+</tr>
+<tr>
+<td>Precompiled Python bytecode</td>
+<td>Mitigated by the bytecode analyzer, within its signature coverage.</td>
+</tr>
+<tr>
+<td>Archive and document indirection</td>
+<td>Not mitigated. Archives inside a skill are not expanded.</td>
+</tr>
+<tr>
+<td>Social engineering of the LLM judge</td>
+<td>Not mitigated. A persuasively framed skill can get its severity downgraded. The meta layer reduces but does not remove this.</td>
+</tr>
+<tr>
+<td>Multimodal hidden instructions</td>
+<td>Not mitigated.</td>
+</tr>
+</tbody>
+</table>
+<p>We do not claim these results are a safety guarantee. They are a lower bound on what is wrong with a skill, produced consistently across a large corpus, with the history kept.</p>
+<h2 id="reproducing-a-result">Reproducing a result</h2>
+<p>Every skill page links to its raw JSON. The scanner version, analyzers, and model are in that file. The pipeline scripts are in the <a href="https://github.com/AppSecHQ/skill-scanner-test">repository</a>. See <a href="/learn/for-researchers/">For researchers</a> for the dataset and citation.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

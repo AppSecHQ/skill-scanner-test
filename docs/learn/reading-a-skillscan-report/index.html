@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading a skillscan.io report | skillscan.io</title>
+  <meta name="description" content="How to interpret a skill page on skillscan.io: the verdict, severity levels, finding categories, analyzer sources, confidence, and scan history.">
+  <link rel="canonical" href="https://skillscan.io/learn/reading-a-skillscan-report/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="Reading a skillscan.io report | skillscan.io">
+  <meta property="og:description" content="How to interpret a skill page on skillscan.io: the verdict, severity levels, finding categories, analyzer sources, confidence, and scan history.">
+  <meta property="og:url" content="https://skillscan.io/learn/reading-a-skillscan-report/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Reading a skillscan.io report | skillscan.io">
+  <meta name="twitter:description" content="How to interpret a skill page on skillscan.io: the verdict, severity levels, finding categories, analyzer sources, confidence, and scan history.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/learn/", "name": "Learn", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/learn/reading-a-skillscan-report/", "name": "Reading a skillscan.io report", "position": 3}]}</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><a href="/learn/">Learn</a><span class="separator">/</span><span>Reading a skillscan.io report</span>    </nav>
+<article class="content-page">
+  <h1>Reading a skillscan.io report</h1>
+<p class="muted">Updated 2026-10-21</p>  <nav class="section-nav" aria-label="learn pages">
+    <ol><li><a href="/learn/what-are-agent-skills-security/">What are agent skills, and why are they a security problem</a></li><li><a href="/learn/how-to-audit-an-agent-skill/">How to audit an agent skill before installing it</a></li><li><a href="/learn/what-scanners-catch-and-miss/">What skill scanners catch, and what they miss</a></li><li><strong>Reading a skillscan.io report</strong></li><li><a href="/learn/for-researchers/">For researchers: using the skillscan.io dataset</a></li></ol>
+  </nav>
+  <div class="note-body"><p>Every skill page has the same layout. This page explains each part.</p>
+<h2 id="verdict-strip">Verdict strip</h2>
+<p><strong>SAFE</strong> or <strong>ISSUES FOUND</strong>, the maximum severity, the source registry, the date of the last scan, and the number of scans. SAFE is the scanner's own threshold decision and a SAFE skill can still have MEDIUM or LOW findings worth reading. The verdict is not a human judgement.</p>
+<h2 id="summary">Summary</h2>
+<p>When the LLM analyzer ran, its overall assessment of the skill is shown as a paragraph. This is the fastest way to understand what the skill does and what concerned the analyzer. Community-requested scans run without the LLM layer and have no summary.</p>
+<h2 id="severity">Severity</h2>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CRITICAL</td>
+<td>A pattern that, if real, gives an attacker code execution, credentials, or data. Read the snippet.</td>
+</tr>
+<tr>
+<td>HIGH</td>
+<td>Serious and likely exploitable in normal use.</td>
+</tr>
+<tr>
+<td>MEDIUM</td>
+<td>Risky design or disclosure problem; often legitimate functionality with a real cost.</td>
+</tr>
+<tr>
+<td>LOW</td>
+<td>Hygiene: missing license, unpinned version, loose wording.</td>
+</tr>
+<tr>
+<td>INFO</td>
+<td>Observations with no direct risk.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="findings">Findings</h2>
+<p>Each finding shows its category (linked to the <a href="/categories/">category page</a>), the rule or analyzer that produced it, the file and line, a snippet, a description, and remediation text. Two fields matter most:</p>
+<ul>
+<li><strong>Analyzer.</strong> <code>static</code> findings are signature matches and have the highest false-positive rate. <code>llm</code> and <code>behavioral</code> findings reflect a reading of the whole file. <code>meta</code> fields on an LLM finding show whether a second pass confirmed it.</li>
+<li><strong>Confidence and exploitability</strong> (LLM findings only). A finding marked validated with low exploitability is usually a documentation or disclosure issue, not an attack.</li>
+</ul>
+<h2 id="what-we-checked-and-did-not-check">What we checked and did not check</h2>
+<p>Lists the analyzers that ran and the standing blind spots: no execution, no runtime-fetched content, no archive expansion, no image text. See <a href="/methodology/">methodology</a>.</p>
+<h2 id="scan-history">Scan history</h2>
+<p>Every scan of this skill, with finding count and max severity. A change between scans means the skill changed, the scanner changed, or both. The scanner version is recorded on each run so you can tell which.</p>
+<h2 id="links">Links</h2>
+<p>The registry page, the source repository at the scanned commit, and the raw JSON for this skill. The JSON is the authoritative record; the page is a rendering of it.</p>
+<h2 id="disputing-a-finding">Disputing a finding</h2>
+<p>Open an issue in the <a href="https://github.com/AppSecHQ/skill-scanner-test/issues">repository</a> with the skill name and finding ID. We do not delete findings. Confirmed false positives are listed in the <a href="/research/2026/false-positive-register/">register</a> and annotated on the skill page.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

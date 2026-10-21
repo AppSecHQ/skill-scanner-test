@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>False-positive register | skillscan.io</title>
+  <meta name="description" content="A maintained list of scanner findings on skillscan.io that we believe are wrong, with the reason, so CRITICAL counts can be read with the right discount.">
+  <link rel="canonical" href="https://skillscan.io/research/2026/false-positive-register/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="False-positive register | skillscan.io">
+  <meta property="og:description" content="A maintained list of scanner findings on skillscan.io that we believe are wrong, with the reason, so CRITICAL counts can be read with the right discount.">
+  <meta property="og:url" content="https://skillscan.io/research/2026/false-positive-register/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="False-positive register | skillscan.io">
+  <meta name="twitter:description" content="A maintained list of scanner findings on skillscan.io that we believe are wrong, with the reason, so CRITICAL counts can be read with the right discount.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/research/", "name": "Research", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/research/2026/false-positive-register/", "name": "False-positive register", "position": 3}]}, {"@context": "https://schema.org", "@type": "Article", "author": {"@type": "Organization", "name": "skillscan.io"}, "dateModified": "2026-10-21", "datePublished": "2026-10-21", "headline": "False-positive register", "url": "https://skillscan.io/research/2026/false-positive-register/"}]</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/" class="active">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><a href="/research/">Research</a><span class="separator">/</span><span>False-positive register</span>    </nav>
+<article>
+  <header class="note-detail-header">
+    <h1>False-positive register</h1>
+    <div class="note-detail-meta">
+      <time class="note-date" datetime="2026-10-21">2026-10-21</time>
+      <div class="note-tags"><span class="tag-pill">false-positives</span><span class="tag-pill">methodology</span><span class="tag-pill">scanner-evaluation</span></div>
+    </div>
+  </header>
+  <div class="note-body"><p>We do not delete findings. We record the ones we believe are wrong here, with reasoning, and annotate the skill page. This page is updated as the corpus grows and is hand-labelled, which makes it the only part of the dataset with human ground truth.</p>
+<p>Status values: <strong>confirmed FP</strong> (we read the source and the finding is wrong), <strong>likely FP</strong> (pattern strongly suggests it; not fully reviewed), <strong>disputed</strong> (reported by a third party, under review).</p>
+<h2 id="pattern-1-detection-signatures-matched-as-attacks">Pattern 1: detection signatures matched as attacks</h2>
+<p>The scanner's YARA and regex rules match strings regardless of context. A security tool that <em>looks for</em> <code>rm -rf /</code> is flagged as if it <em>runs</em> it.</p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Source</th>
+<th>Findings affected</th>
+<th>Status</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ClawDefender</td>
+<td>clawhub.ai</td>
+<td>37 (22 CRITICAL)</td>
+<td>confirmed FP</td>
+<td>Pattern arrays in <code>clawdefender.sh</code> are quoted detection strings. ANSI color codes flagged as script injection. LLM and meta layers produced zero findings. <a href="/research/2026/clawdefender-false-positives/">Full write-up</a>.</td>
+</tr>
+<tr>
+<td>yara-rule-authoring</td>
+<td>organisation repo</td>
+<td>15 CRITICAL</td>
+<td>likely FP</td>
+<td>A guide to writing YARA rules necessarily contains the patterns YARA rules detect.</td>
+</tr>
+<tr>
+<td>skill-scanner</td>
+<td>cisco</td>
+<td>7 CRITICAL</td>
+<td>likely FP</td>
+<td>The scanner's own skill documents the signatures it uses.</td>
+</tr>
+<tr>
+<td>qa-test-planner</td>
+<td>organisation repo</td>
+<td>14 CRITICAL</td>
+<td>likely FP</td>
+<td>Test-planning examples include SQL injection and command injection test strings.</td>
+</tr>
+<tr>
+<td>azure-eventhub-java</td>
+<td>microsoft</td>
+<td>1 CRITICAL (<code>YARA_sql_injection</code>)</td>
+<td>likely FP</td>
+<td>SQL keyword patterns in documentation for a messaging SDK.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pattern-2-security-research-tooling">Pattern 2: security research tooling</h2>
+<p>Fuzzers, exploit harnesses, and cryptographic test suites contain attack-shaped code by design.</p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Source</th>
+<th>Findings affected</th>
+<th>Status</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>constant-time-testing</td>
+<td>trailofbits</td>
+<td>8 CRITICAL</td>
+<td>likely FP</td>
+<td>Timing-attack test harness; code reads like an attack because it tests resistance to one.</td>
+</tr>
+<tr>
+<td>libafl</td>
+<td>trailofbits</td>
+<td>4 CRITICAL</td>
+<td>likely FP</td>
+<td>Fuzzing framework integration.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pattern-3-example-data-mistaken-for-payloads">Pattern 3: example data mistaken for payloads</h2>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Source</th>
+<th>Findings affected</th>
+<th>Status</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hugging-face-datasets</td>
+<td>huggingface</td>
+<td>27 CRITICAL</td>
+<td>likely FP</td>
+<td>Example dataset-loading code and shell snippets in documentation; needs full review, the count is high enough that some may be real.</td>
+</tr>
+<tr>
+<td>hugging-face-tool-builder</td>
+<td>huggingface</td>
+<td>5 CRITICAL</td>
+<td>likely FP</td>
+<td>Same pattern.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pattern-4-disclosed-behaviour-flagged-as-hidden">Pattern 4: disclosed behaviour flagged as hidden</h2>
+<p>The LLM layer sometimes flags a behaviour that is documented in the skill. The meta layer usually downgrades these but keeps the severity label.</p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Source</th>
+<th>Finding</th>
+<th>Status</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1inch</td>
+<td>clawhub.ai</td>
+<td>Hardcoded referral wallet (MEDIUM)</td>
+<td>not FP, context</td>
+<td>Fee is disclosed in docs. We keep it: users may not see the disclosure at activation. Listed here so readers know the dispute.</td>
+</tr>
+<tr>
+<td>agent-wallet</td>
+<td>clawhub.ai</td>
+<td>Missing <code>wallet.py</code> as tool shadowing</td>
+<td>confirmed FP</td>
+<td>Meta layer: documentation error, low exploitability.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="running-tally">Running tally</h2>
+<p>As of 2026-10-21, findings labelled confirmed or likely FP: roughly 120 of 209 CRITICALs in the corpus, concentrated in ten skills. This is why the <a href="/research/2026/618-skills-full-scan/">results post</a> says to read the CRITICAL count with a discount of about half. The remaining CRITICALs, mostly on ClawHub, we have not found reason to doubt.</p>
+<h2 id="what-would-fix-it">What would fix it</h2>
+<ul>
+<li>Context-aware signature rules that distinguish string literals in detection arrays from executed commands. We will file this upstream with examples.</li>
+<li>Weighting: a signature hit with no corroborating LLM or behavioral finding should not be CRITICAL on its own. We may apply this as a displayed "adjusted severity" without altering the raw data.</li>
+<li>Allow-listing by skill purpose is tempting and wrong; a malicious skill could claim to be a security tool. Hand review stays.</li>
+</ul>
+<h2 id="disputing-or-adding-an-entry">Disputing or adding an entry</h2>
+<p>Open an issue with the skill name, finding ID, and reasoning. Entries that are confirmed by reading source get <strong>confirmed FP</strong>; we would rather have more <strong>likely</strong> entries reviewed than fewer entries.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

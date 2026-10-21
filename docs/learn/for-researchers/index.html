@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For researchers: using the skillscan.io dataset | skillscan.io</title>
+  <meta name="description" content="How to download, cite, and reproduce the skillscan.io dataset of AI agent skill security scan results, including schema, history, and known caveats.">
+  <link rel="canonical" href="https://skillscan.io/learn/for-researchers/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="For researchers: using the skillscan.io dataset | skillscan.io">
+  <meta property="og:description" content="How to download, cite, and reproduce the skillscan.io dataset of AI agent skill security scan results, including schema, history, and known caveats.">
+  <meta property="og:url" content="https://skillscan.io/learn/for-researchers/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="For researchers: using the skillscan.io dataset | skillscan.io">
+  <meta name="twitter:description" content="How to download, cite, and reproduce the skillscan.io dataset of AI agent skill security scan results, including schema, history, and known caveats.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/learn/", "name": "Learn", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/learn/for-researchers/", "name": "For researchers: using the skillscan.io dataset", "position": 3}]}</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><a href="/learn/">Learn</a><span class="separator">/</span><span>For researchers: using the skillscan.io dataset</span>    </nav>
+<article class="content-page">
+  <h1>For researchers: using the skillscan.io dataset</h1>
+<p class="muted">Updated 2026-10-21</p>  <nav class="section-nav" aria-label="learn pages">
+    <ol><li><a href="/learn/what-are-agent-skills-security/">What are agent skills, and why are they a security problem</a></li><li><a href="/learn/how-to-audit-an-agent-skill/">How to audit an agent skill before installing it</a></li><li><a href="/learn/what-scanners-catch-and-miss/">What skill scanners catch, and what they miss</a></li><li><a href="/learn/reading-a-skillscan-report/">Reading a skillscan.io report</a></li><li><strong>For researchers: using the skillscan.io dataset</strong></li></ol>
+  </nav>
+  <div class="note-body"><p>The dataset behind this site is public, versioned by scan run, and intended to be cited. This page is the short guide; the <a href="/data/">data page</a> has the download and license.</p>
+<h2 id="what-is-in-it">What is in it</h2>
+<ul>
+<li>One JSON record per skill per scan run, with every finding: rule ID, category, severity, file, line, snippet, description, remediation, analyzer, and for LLM findings the model, overall assessment, and meta-validation fields.</li>
+<li>A summary per run: counts by severity, by category, by source, and the top risks.</li>
+<li>The category taxonomy with its mapping to OWASP AST10.</li>
+<li>Scan history per skill across runs, including scanner version.</li>
+<li>The original skill sources are not redistributed. Each record links to the repository and commit that was scanned.</li>
+</ul>
+<h2 id="what-it-is-good-for">What it is good for</h2>
+<ul>
+<li>Studying the distribution of finding types across registries and over time.</li>
+<li>Measuring drift: skills whose findings changed between scans, including those that went from clean to flagged after an update.</li>
+<li>Evaluating scanner behaviour on real registry content rather than synthetic test cases. The <a href="/research/2026/false-positive-register/">false-positive register</a> is hand-labelled.</li>
+<li>Cross-referencing with published incident reports. The ClawHavoc campaign is a worked example.</li>
+</ul>
+<h2 id="what-it-is-not-good-for">What it is not good for</h2>
+<ul>
+<li>Ground truth. The labels are scanner output. Only the false-positive register has human labels.</li>
+<li>A random sample. See the selection notes in <a href="/methodology/">methodology</a>.</li>
+<li>Runtime behaviour. Nothing was executed.</li>
+</ul>
+<h2 id="reproducing">Reproducing</h2>
+<p>The pipeline is Python and lives in the <a href="https://github.com/AppSecHQ/skill-scanner-test">repository</a>. Each record names the scanner version and, for LLM findings, the model. Re-running the static, behavioral, bytecode, and trigger analyzers on the linked commit should reproduce those findings exactly. LLM findings will vary between runs.</p>
+<h2 id="citing">Citing</h2>
+<p>A <code>CITATION.cff</code> is in the repository root. Cite the dataset with the scan run date you used, since the corpus changes between runs.</p>
+<h2 id="contributing">Contributing</h2>
+<p>Corrections to the false-positive register, additional registries, and additional scanners run over the same corpus are the most useful contributions. Open an issue first.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

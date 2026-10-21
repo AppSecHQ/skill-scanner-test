@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>When the Scanner Scans the Scanner: ClawDefender and the False Positive Problem | skillscan.io</title>
+  <meta name="description" content="ClawDefender, a security skill for OpenClaw agents, was flagged with 37 findings and 22 CRITICAL severity -- making it the highest-finding-count skill in our dataset. Every single finding was a false positive.">
+  <link rel="canonical" href="https://skillscan.io/research/2026/clawdefender-false-positives/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="When the Scanner Scans the Scanner: ClawDefender and the False Positive Problem | skillscan.io">
+  <meta property="og:description" content="ClawDefender, a security skill for OpenClaw agents, was flagged with 37 findings and 22 CRITICAL severity -- making it the highest-finding-count skill in our dataset. Every single finding was a false positive.">
+  <meta property="og:url" content="https://skillscan.io/research/2026/clawdefender-false-positives/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="When the Scanner Scans the Scanner: ClawDefender and the False Positive Problem | skillscan.io">
+  <meta name="twitter:description" content="ClawDefender, a security skill for OpenClaw agents, was flagged with 37 findings and 22 CRITICAL severity -- making it the highest-finding-count skill in our dataset. Every single finding was a false positive.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/research/", "name": "Research", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/research/2026/clawdefender-false-positives/", "name": "When the Scanner Scans the Scanner: ClawDefender and the False Positive Problem", "position": 3}]}, {"@context": "https://schema.org", "@type": "Article", "author": {"@type": "Organization", "name": "skillscan.io"}, "dateModified": "2026-02-05", "datePublished": "2026-02-05", "headline": "When the Scanner Scans the Scanner: ClawDefender and the False Positive Problem", "url": "https://skillscan.io/research/2026/clawdefender-false-positives/"}]</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/" class="active">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><a href="/research/">Research</a><span class="separator">/</span><span>When the Scanner Scans the Scanner: ClawDefender and the False Positive Problem</span>    </nav>
+<article>
+  <header class="note-detail-header">
+    <h1>When the Scanner Scans the Scanner: ClawDefender and the False Positive Problem</h1>
+    <div class="note-detail-meta">
+      <time class="note-date" datetime="2026-02-05">2026-02-05</time>
+      <div class="note-tags"><span class="tag-pill">false-positives</span><span class="tag-pill">meta-analyzer</span><span class="tag-pill">security-tools</span><span class="tag-pill">case-study</span></div>
+    </div>
+  </header>
+  <div class="note-body"><p>ClawDefender is a security skill for OpenClaw agents. Its job is to detect and block prompt injection, rogue skills, and malicious patterns. Our scanner flagged it with <strong>37 findings and 22 CRITICAL severity</strong> — making it the highest-finding-count skill in our entire dataset.</p><p>Every single finding is a false positive.</p><h3>What Happened</h3><p>ClawDefender includes a bash script (<code>clawdefender.sh</code>) that pattern-matches against known attack strings. It contains arrays of malicious patterns it detects and blocks:</p><pre><code>'rm -rf /'
+'chmod 777'
+'/etc/passwd'
+'nc -e'
+'bash -i &gt;&amp; /dev/tcp'
+'ignore your instructions'
+'forget your instructions'
+'forget everything above'</code></pre><p>These are <strong>detection signatures</strong>, not attack payloads. They appear inside single-quoted string literals in a pattern-matching function. The skill's documentation (<code>SKILL.md</code>) also describes the attack categories it defends against, including examples of fork bombs, SSRF patterns, and file destruction commands.</p><p>Cisco's skill-scanner uses YARA rules and regex patterns that match these exact strings — regardless of context. The scanner doesn't distinguish between "this skill executes <code>rm -rf /</code>" and "this skill checks whether input contains <code>rm -rf /</code>."</p><h3>The Breakdown: 37 Findings, 0 Real Threats</h3><table><thead><tr><th>Category</th><th>Findings</th><th>What Actually Triggered It</th></tr></thead><tbody><tr><td>ANSI color codes ("script injection")</td><td>10</td><td>Standard terminal colors in bash scripts</td></tr><tr><td>System manipulation</td><td>10</td><td>Quoted strings in pattern arrays</td></tr><tr><td>Prompt injection</td><td>8</td><td>Test strings for prompt injection detection</td></tr><tr><td>Command injection</td><td>4</td><td>YARA matches on <code>nc -e</code>, <code>bash -i</code></td></tr><tr><td>Credential harvesting</td><td>2</td><td>Path strings in detection patterns</td></tr><tr><td>Other</td><td>3</td><td>Documentation examples and missing license</td></tr></tbody></table><p>22 of the 37 findings are CRITICAL severity. The skill ran through all five analyzers (static, behavioral, LLM, trigger, meta) — yet the LLM and meta analyzers produced zero findings. All 37 came from static analysis and YARA rules, which have no concept of whether a matched string is executed, referenced defensively, or quoted as documentation.</p><h3>Update: Meta-Analyzer Confirms All 37 Are False Positives</h3><p>When we originally wrote this analysis, we assumed the meta-analyzer had correctly identified the false positives but simply hadn't filtered them from the output. We were wrong — the meta-analyzer never actually ran.</p><p>As we discovered in <a href="#/note/silent-api-failure-discovery">a separate investigation</a>, our API credits ran out mid-scan batch. The scanner silently fell back to static-only analysis while still reporting <code>meta_analyzer</code> in the analyzers list. ClawDefender was one of 540 skills that never received real LLM or meta-analysis.</p><p>After re-scanning with fresh API credits, the results speak for themselves:</p><pre><code>Meta-analysis complete: 37 false positives filtered, 0 new threats detected</code></pre><p><strong>ClawDefender now shows 0 findings.</strong> The meta-analyzer examined all 37 static findings, understood the defensive context, and correctly classified every single one as a false positive. The skill's status changed from "most dangerous in the dataset" to "clean."</p><p>This validates both our original analysis (the findings were false positives) and the value of the meta-analyzer (it correctly identifies defensive security tooling when it actually runs).</p><h3>Why This Matters</h3><p>This case highlights a fundamental limitation of pattern-based security scanning: <strong>detection signatures and attack payloads are lexically identical</strong>. Any tool that scans by matching strings like <code>rm -rf</code> or <code>ignore your instructions</code> will flag both the attacker and the defender.</p><p>This isn't unique to Cisco's scanner. Antivirus software has the same problem — security research tools, penetration testing frameworks, and even YARA rule collections themselves trigger signature-based detection. The industry term is "meta-detection": the detector detecting itself.</p><p>For agent skill ecosystems, this creates a practical problem: <strong>security skills will always rank as the most dangerous skills in any automated scan</strong>. Without manual review or context-aware analysis, a registry could reject the very tools designed to protect it.</p><h3>What Could Help</h3><p>Several approaches could reduce false positives on defensive tooling:</p><ul><li><strong>Context-aware YARA rules</strong>: Distinguish between patterns in executable code vs. quoted strings, comments, and documentation.</li><li><strong>LLM-based intent classification</strong>: The meta-analyzer correctly understood ClawDefender's defensive intent when it actually ran. Elevating LLM assessments over static matches when they disagree could reduce false positives.</li><li><strong>Allowlisting for known security tools</strong>: Registries could maintain a list of known security/defense skills that are expected to contain attack signatures.</li><li><strong>Finding deduplication</strong>: 10 of the 37 findings are the same YARA rule matching ANSI color codes in different files. Deduplicating by rule+pattern would reduce the count significantly.</li></ul><p><em>ClawDefender scan results are available in the <a href="https://github.com/AppSecHQ/skill-scanner-test/blob/main/results/clawdefender-openclaw-security-prompt-injection%2C-rogue-skills-etc-scan.json">full dataset</a>.</em></p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

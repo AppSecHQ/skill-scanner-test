@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meta-Analyzer Validation: Reducing False Positives | skillscan.io</title>
+  <meta name="description" content="How the meta-analyzer reviews LLM findings for legitimacy, downgrades false alarms, and adds exploitability context.">
+  <link rel="canonical" href="https://skillscan.io/research/2026/meta-analyzer-validation/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="Meta-Analyzer Validation: Reducing False Positives | skillscan.io">
+  <meta property="og:description" content="How the meta-analyzer reviews LLM findings for legitimacy, downgrades false alarms, and adds exploitability context.">
+  <meta property="og:url" content="https://skillscan.io/research/2026/meta-analyzer-validation/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Meta-Analyzer Validation: Reducing False Positives | skillscan.io">
+  <meta name="twitter:description" content="How the meta-analyzer reviews LLM findings for legitimacy, downgrades false alarms, and adds exploitability context.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/research/", "name": "Research", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/research/2026/meta-analyzer-validation/", "name": "Meta-Analyzer Validation: Reducing False Positives", "position": 3}]}, {"@context": "https://schema.org", "@type": "Article", "author": {"@type": "Organization", "name": "skillscan.io"}, "dateModified": "2026-02-01", "datePublished": "2026-02-01", "headline": "Meta-Analyzer Validation: Reducing False Positives", "url": "https://skillscan.io/research/2026/meta-analyzer-validation/"}]</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/" class="active">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><a href="/research/">Research</a><span class="separator">/</span><span>Meta-Analyzer Validation: Reducing False Positives</span>    </nav>
+<article>
+  <header class="note-detail-header">
+    <h1>Meta-Analyzer Validation: Reducing False Positives</h1>
+    <div class="note-detail-meta">
+      <time class="note-date" datetime="2026-02-01">2026-02-01</time>
+      <div class="note-tags"><span class="tag-pill">methodology</span><span class="tag-pill">meta-analyzer</span><span class="tag-pill">false-positives</span></div>
+    </div>
+  </header>
+  <div class="note-body"><p>The meta-analyzer runs as a second-pass review of LLM findings, using a separate LLM call to validate each finding against the original skill source. Every LLM finding in our scan was meta-validated -- here's what that process reveals.</p><h3>What Meta-Validation Does</h3><p>For each LLM finding, the meta-analyzer produces:</p><ul><li><strong>Validated</strong> (boolean): whether the finding is confirmed</li><li><strong>Confidence</strong>: HIGH, MEDIUM, or LOW</li><li><strong>Confidence Reason</strong>: explanation of the assessment</li><li><strong>Exploitability</strong>: how easily the issue could be exploited</li><li><strong>Impact</strong>: what happens if it is exploited</li></ul><h3>Confidence Distribution</h3><p>Across our scan, meta-confidence scores broke down as:</p><ul><li><strong>HIGH confidence</strong>: ~60% of validated findings. These are well-known anti-patterns the meta-analyzer confirms without hesitation, like API key exposure in setup instructions.</li><li><strong>MEDIUM confidence</strong>: ~40% of validated findings. These represent findings where the meta-analyzer recognizes legitimate functionality behind the flagged pattern.</li></ul><p>No findings were given LOW confidence, suggesting the LLM analyzer's initial detection quality is reasonably high -- it isn't generating findings the meta-analyzer outright rejects.</p><h3>The Downgrade Pattern</h3><p>The most valuable meta-analyzer behavior is <em>contextual downgrading</em>. Consider the <strong>Agent Wallet</strong> skill: the LLM flagged a missing <code>wallet.py</code> file as an unauthorized tool use risk (potential tool shadowing). The meta-analyzer validated the finding but assessed exploitability as <strong>Low</strong>, reasoning it was likely a "documentation error rather than security threat." Without meta-validation, this finding might be triaged as a High-severity security issue requiring immediate action. With it, the team knows it's a documentation cleanup task.</p><p>Similarly, the Agent Wallet's social engineering finding -- about incomplete trust model disclosure regarding API key access -- was downgraded with the note: "Clarity issue rather than deception." The meta-analyzer distinguishes between <em>malicious intent</em> and <em>poor documentation</em>, which is exactly the kind of nuance automated scanners traditionally lack.</p><h3>Exploitability Assessments</h3><p>The exploitability ratings add practical triage value:</p><ul><li><strong>"Easy -- automatic on skill use"</strong> (video-transcript data exfiltration): The API call happens as part of normal operation. This is expected behavior, not a bug.</li><li><strong>"Medium -- Requires user to follow insecure instructions"</strong> (youtube-playlist API key setup): The risk depends on user behavior, not a code flaw.</li><li><strong>"Low -- Would require attacker to inject a malicious wallet.py file"</strong> (agent-wallet tool shadowing): Exploitation requires a separate attack vector.</li></ul><h3>Limitations</h3><p>The meta-analyzer validated 100% of LLM findings in our scan -- it never fully rejected a finding. This could mean the LLM analyzer has high precision, or that the meta-analyzer has a bias toward confirmation. A larger sample with deliberately benign patterns would help calibrate the false-positive rate. Also, meta-validation adds a second LLM call per finding, roughly doubling the cost and latency of LLM-enhanced scanning.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

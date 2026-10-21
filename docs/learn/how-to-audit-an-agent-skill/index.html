@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to audit an agent skill before installing it | skillscan.io</title>
+  <meta name="description" content="A practical checklist for reviewing a SKILL.md and its bundled scripts for prompt injection, exfiltration, over-privilege, and supply chain risk, mapped to OWASP AST10.">
+  <link rel="canonical" href="https://skillscan.io/learn/how-to-audit-an-agent-skill/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="How to audit an agent skill before installing it | skillscan.io">
+  <meta property="og:description" content="A practical checklist for reviewing a SKILL.md and its bundled scripts for prompt injection, exfiltration, over-privilege, and supply chain risk, mapped to OWASP AST10.">
+  <meta property="og:url" content="https://skillscan.io/learn/how-to-audit-an-agent-skill/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to audit an agent skill before installing it | skillscan.io">
+  <meta name="twitter:description" content="A practical checklist for reviewing a SKILL.md and its bundled scripts for prompt injection, exfiltration, over-privilege, and supply chain risk, mapped to OWASP AST10.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/learn/", "name": "Learn", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/learn/how-to-audit-an-agent-skill/", "name": "How to audit an agent skill before installing it", "position": 3}]}</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><a href="/learn/">Learn</a><span class="separator">/</span><span>How to audit an agent skill before installing it</span>    </nav>
+<article class="content-page">
+  <h1>How to audit an agent skill before installing it</h1>
+<p class="muted">Updated 2026-10-21</p>  <nav class="section-nav" aria-label="learn pages">
+    <ol><li><a href="/learn/what-are-agent-skills-security/">What are agent skills, and why are they a security problem</a></li><li><strong>How to audit an agent skill before installing it</strong></li><li><a href="/learn/what-scanners-catch-and-miss/">What skill scanners catch, and what they miss</a></li><li><a href="/learn/reading-a-skillscan-report/">Reading a skillscan.io report</a></li><li><a href="/learn/for-researchers/">For researchers: using the skillscan.io dataset</a></li></ol>
+  </nav>
+  <div class="note-body"><p>This takes ten minutes for a typical skill and catches most of what our scanner catches. It will not catch everything; neither does the scanner. Do both.</p>
+<h2 id="0-look-it-up-first">0. Look it up first</h2>
+<p>Search the skill name on skillscan.io. If it has a page, read the verdict, the findings, and the scan history. A skill whose findings changed between scans deserves more attention than one that has been stable. If it is not here, <a href="/request-a-scan/">request a scan</a> and continue with the manual review.</p>
+<h2 id="1-frontmatter-does-the-description-match-the-body">1. Frontmatter: does the description match the body?</h2>
+<p>Open <code>SKILL.md</code>. The <code>name</code> and <code>description</code> are what the agent uses to decide when to load this skill.</p>
+<ul>
+<li>Is the description specific, or stuffed with unrelated keywords so it triggers on everything? (AST04, <a href="/categories/skill-discovery-abuse/">skill discovery abuse</a>)</li>
+<li>Does it claim to be official, verified, or from a vendor? Check the publisher against that vendor's actual repo.</li>
+<li>Does any declared tool or permission list exceed what the description needs? (AST03, <a href="/categories/unauthorized-tool-use/">unauthorized tool use</a>)</li>
+</ul>
+<h2 id="2-body-read-it-as-instructions-to-a-very-obedient-assistant">2. Body: read it as instructions to a very obedient assistant</h2>
+<p>Read every line of the Markdown body. You are looking for sentences, not code.</p>
+<ul>
+<li>Instructions to skip confirmation, act silently, or not show the user something. (<a href="/categories/policy-violation/">Policy violation</a>)</li>
+<li>Instructions to ignore prior rules, change role, or treat this file as higher authority. (<a href="/categories/prompt-injection/">Prompt injection</a>)</li>
+<li>Urgency, authority claims, or "this is required by corporate policy" framing. (<a href="/categories/social-engineering/">Social engineering</a>)</li>
+<li>Instructions to read any file outside the project, especially <code>~/.ssh</code>, <code>~/.aws</code>, <code>.env</code>, browser profiles, or wallets. (<a href="/categories/data-exfiltration/">Data exfiltration</a>)</li>
+<li>Instructions to fetch a URL and follow what it says. That URL is now part of the skill and can change tomorrow. (AST05, <a href="/categories/transitive-trust-abuse/">transitive trust abuse</a>)</li>
+</ul>
+<p>Render the raw file, not the preview. Look for HTML comments, zero-width characters, white-on-white text, and long runs of whitespace that push content off screen. (<a href="/categories/obfuscation/">Obfuscation</a>)</p>
+<h2 id="3-scripts-every-command-every-destination">3. Scripts: every command, every destination</h2>
+<p>List every command the skill tells the agent to run and every script in <code>scripts/</code>.</p>
+<ul>
+<li>Anything that downloads and executes: <code>curl | sh</code>, <code>pip install</code> from a git URL, <code>npx</code> of an unpinned package. (<a href="/categories/command-injection/">Command injection</a>)</li>
+<li>Every outbound network destination. Is each one required by the stated purpose? Is any a bare IP, a URL shortener, or a webhook?</li>
+<li>Any encoding of local data: base64, hex, compression before a network call.</li>
+<li>Hardcoded keys, tokens, wallet addresses, referral codes. (<a href="/categories/hardcoded-secrets/">Hardcoded secrets</a>, <a href="/categories/resource-abuse/">resource abuse</a>)</li>
+<li>Files you cannot read: <code>.pyc</code>, archives, binaries, images with text. If you cannot read it, you cannot review it.</li>
+</ul>
+<h2 id="4-sequence-what-does-it-do-end-to-end">4. Sequence: what does it do end to end?</h2>
+<p>Trace one full run. Read a secret, write it to a temp file, commit, push is harmful even though each step is routine. (<a href="/categories/tool-chaining-abuse/">Tool chaining abuse</a>)</p>
+<h2 id="5-persistence-and-autonomy">5. Persistence and autonomy</h2>
+<p>Does the skill install other skills, schedule itself, modify agent configuration, or write to memory so it persists across sessions? (<a href="/categories/autonomy-abuse/">Autonomy abuse</a>)</p>
+<h2 id="6-provenance">6. Provenance</h2>
+<p>Who published it? How many other skills do they have, and when did they appear? Is the repository the one the registry links to? Pin a commit, not a branch. (AST02, AST07)</p>
+<h2 id="decision">Decision</h2>
+<ul>
+<li>Any instruction to hide actions, override rules, or exfiltrate: do not install, and report it to the registry.</li>
+<li>Remote fetch-and-execute from an unpinned source: do not install until pinned, or vendor the script.</li>
+<li>Over-broad permissions with a plausible reason: install in a sandbox with the permissions reduced.</li>
+<li>Clean: install, pin, and re-check when it updates.</li>
+</ul>
+<p>For the longer form of this list, see the <a href="https://owasp.org/www-project-agentic-skills-top-10/">OWASP Agentic Skills Top 10</a> checklist.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request a scan | skillscan.io</title>
+  <meta name="description" content="How to ask skillscan.io to scan a public GitHub repository of AI agent skills, what the pipeline runs, what it skips, and where the results end up.">
+  <link rel="canonical" href="https://skillscan.io/request-a-scan/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="Request a scan | skillscan.io">
+  <meta property="og:description" content="How to ask skillscan.io to scan a public GitHub repository of AI agent skills, what the pipeline runs, what it skips, and where the results end up.">
+  <meta property="og:url" content="https://skillscan.io/request-a-scan/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Request a scan | skillscan.io">
+  <meta name="twitter:description" content="How to ask skillscan.io to scan a public GitHub repository of AI agent skills, what the pipeline runs, what it skips, and where the results end up.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/request-a-scan/", "name": "Request a scan", "position": 2}]}</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><span>Request a scan</span>    </nav>
+<article class="content-page">
+  <h1>Request a scan</h1>
+<p class="muted">Updated 2026-10-21</p>  <div class="note-body"><p>Anyone can request a scan of a public GitHub repository that contains one or more <code>SKILL.md</code> files. Requests go through a GitHub Issue so there is a public record of who asked, who approved, and what the scanner returned.</p>
+<h2 id="how-to-request">How to request</h2>
+<ol>
+<li>Open a new issue using the <strong>Scan Request</strong> template: <a href="https://github.com/AppSecHQ/skill-scanner-test/issues/new/choose">github.com/AppSecHQ/skill-scanner-test/issues/new/choose</a>.</li>
+<li>Fill in the repository URL and a one-line reason, and tick the acknowledgement box. The template applies the <code>scan-request</code> label.</li>
+<li>Wait for a maintainer to comment <code>/approve</code>. Only listed maintainers can approve; anyone else's <code>/approve</code> is rejected with a comment and nothing runs.</li>
+<li>The scan runs in GitHub Actions. Results are posted as a comment on the issue, the issue is closed with the <code>scan-completed</code> label, and a pull request adds the results to the dataset. Once merged, the skills appear on this site.</li>
+</ol>
+<p>If the scan fails, the issue gets the <code>scan-failed</code> label and a comment linking to the workflow run. Common reasons: the repository is private, has no <code>SKILL.md</code>, exceeds the size limit, or the scan exceeded the time limit.</p>
+<h2 id="what-the-community-scan-runs">What the community scan runs</h2>
+<ul>
+<li>Static, behavioral, and trigger analyzers from cisco-ai-skill-scanner.</li>
+<li>A shallow clone only, after checking the repository's reported size against a 500 MB limit.</li>
+<li>One scan at a time, gated by a protected environment that requires a maintainer to approve the job in the GitHub UI as well as on the issue.</li>
+</ul>
+<h2 id="what-it-does-not-run">What it does not run</h2>
+<p>The LLM and meta analyzers are <strong>disabled</strong> for community-requested scans. The scanner feeds <code>SKILL.md</code> content to a model, and a crafted skill could use that path to try to extract the API key. Operator-run scans from the command line use the full pipeline, which is why some skills on this site show <code>llm</code> and <code>meta</code> in their analyzer list and community-scanned ones do not. The skill page lists exactly which analyzers ran.</p>
+<h2 id="rate-limits-and-duplicates">Rate limits and duplicates</h2>
+<p>There is no per-user quota yet. Each request consumes Actions minutes, so duplicate or frivolous requests are closed without a scan. Re-scans of a skill already in the dataset are welcome when the upstream repository has changed; the new result is added to that skill's scan history rather than replacing it.</p>
+<h2 id="reporting-a-wrong-finding">Reporting a wrong finding</h2>
+<p>If a finding on a skill page is wrong, open an issue with the skill name, the finding title, and why it is a false positive. Confirmed cases are added to the <a href="/research/2026/false-positive-register/">false-positive register</a>.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>

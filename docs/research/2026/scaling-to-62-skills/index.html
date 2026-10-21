@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scaling to top 50 Skills: New Finding Categories Emerge | skillscan.io</title>
+  <meta name="description" content="Expanding from 22 to 62 (the top 50 from skills.sh plus our prior scans), skills revealed two new threat categories -- prompt injection and tool chaining abuse -- and surfaced browser-use as a high-risk skill class.">
+  <link rel="canonical" href="https://skillscan.io/research/2026/scaling-to-62-skills/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="Scaling to top 50 Skills: New Finding Categories Emerge | skillscan.io">
+  <meta property="og:description" content="Expanding from 22 to 62 (the top 50 from skills.sh plus our prior scans), skills revealed two new threat categories -- prompt injection and tool chaining abuse -- and surfaced browser-use as a high-risk skill class.">
+  <meta property="og:url" content="https://skillscan.io/research/2026/scaling-to-62-skills/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Scaling to top 50 Skills: New Finding Categories Emerge | skillscan.io">
+  <meta name="twitter:description" content="Expanding from 22 to 62 (the top 50 from skills.sh plus our prior scans), skills revealed two new threat categories -- prompt injection and tool chaining abuse -- and surfaced browser-use as a high-risk skill class.">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/research/", "name": "Research", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/research/2026/scaling-to-62-skills/", "name": "Scaling to top 50 Skills: New Finding Categories Emerge", "position": 3}]}, {"@context": "https://schema.org", "@type": "Article", "author": {"@type": "Organization", "name": "skillscan.io"}, "dateModified": "2026-02-01", "datePublished": "2026-02-01", "headline": "Scaling to top 50 Skills: New Finding Categories Emerge", "url": "https://skillscan.io/research/2026/scaling-to-62-skills/"}]</script></head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io</a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/" class="active">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><a href="/research/">Research</a><span class="separator">/</span><span>Scaling to top 50 Skills: New Finding Categories Emerge</span>    </nav>
+<article>
+  <header class="note-detail-header">
+    <h1>Scaling to top 50 Skills: New Finding Categories Emerge</h1>
+    <div class="note-detail-meta">
+      <time class="note-date" datetime="2026-02-01">2026-02-01</time>
+      <div class="note-tags"><span class="tag-pill">results</span><span class="tag-pill">skills.sh</span><span class="tag-pill">prompt-injection</span><span class="tag-pill">browser-use</span></div>
+    </div>
+  </header>
+  <div class="note-body"><p>We expanded our scan coverage from 22 skills to <strong>62</strong>, adding the top 50 skills from <strong>skills.sh</strong> alongside the original clawhub.ai skills. The results: 62 total findings across 5 unsafe skills, with two entirely new threat categories that didn't appear in the initial scan.</p><h3>The Numbers</h3><ul><li><strong>62</strong> skills scanned (up from 22)</li><li><strong>62</strong> total findings (up from 39)</li><li><strong>5</strong> unsafe skills (up from 3): clickup, agent-browser, <strong>browser-use</strong> (new), <strong>expo-api-routes</strong> (new), Agent Wallet</li><li><strong>57</strong> clean or advisory-only skills (92% safe rate)</li></ul><p>The safe rate held steady at 92% even as we tripled coverage, suggesting the initial 22-skill sample was representative.</p><h3>New Threat Categories</h3><p>Two categories appeared for the first time in this expanded scan:</p><p><strong>Prompt injection (4 findings)</strong> -- The LLM analyzer identified indirect prompt injection patterns where skills instruct the agent to fetch and act on external content without validation. The <strong>doc-coauthoring</strong> skill tells the agent to "use the appropriate integration to fetch" shared documents -- creating a transitive trust vector where malicious content in an external document could hijack the agent's behavior. The <strong>canvas-design</strong> skill uses a two-stage pattern where the agent generates a "design philosophy" and then follows it without re-validation, a subtler form of self-prompt-injection. These are classified under AITech-1.2 (Indirect Prompt Injection).</p><p><strong>Tool chaining abuse (2 findings)</strong> -- YARA rules detected patterns where skills reference both read and write HTTP methods (<code>GET, POST, PUT, DELETE</code>) in ways that suggest read-then-exfiltrate chains. Both findings came from <strong>expo-api-routes</strong>, though the meta-analyzer assessed the skill as fundamentally safe -- it's a documentation-only skill with no executable code. This is a case where static pattern matching over-triggers on educational content.</p><h3>browser-use: The Standout Risk</h3><p><strong>browser-use</strong> emerged as the most architecturally concerning skill in the expanded dataset, with 8 findings including HIGH-severity command injection and data exfiltration.</p><p>The core issue: browser-use provides an agent with full control over the user's Chrome browser -- including cookies, active sessions, and extensions -- via <code>shell=True</code> execution of browser automation commands. The LLM analyzer flagged this as a credential/session exposure risk (AITech-8.2.3: Data Exfiltration via Agent Tooling), noting that an attacker could craft instructions to navigate to malicious sites, extract session cookies, or exfiltrate authentication tokens.</p><p>The skill also has a transitive trust problem: it interacts with arbitrary web pages whose content the agent processes, creating an indirect prompt injection surface. A malicious page could contain instructions that manipulate the agent's behavior.</p><p>This is a fundamentally different risk profile from the clickup skill (which has bad credential hygiene but limited scope). browser-use grants the agent <em>ambient authority</em> over the user's entire browser session.</p><h3>expo-api-routes: False Alarm Study</h3><p><strong>expo-api-routes</strong> was flagged as CRITICAL due to a YARA rule matching <code>curl http://localhost:8081/api/hello</code> as command injection. But the meta-analyzer's overall assessment was "SAFE -- purely educational markdown with no executable code." This is a documentation skill that teaches Expo API route patterns. The CRITICAL finding is a clear false positive from static pattern matching -- the <code>curl</code> command appears in a code example, not in executable code.</p><p>This case validates the meta-analyzer's value: without it, a CRITICAL finding would demand immediate triage. With it, the team can see the context and deprioritize accordingly.</p><h3>Category Breakdown at Scale</h3><p>At 62 findings, the category distribution is:</p><ul><li><strong>Data exfiltration: 24 (39%)</strong> -- still dominant, but dropped from 51% in the 22-skill scan as new categories diluted the share</li><li><strong>Policy violation: 11 (18%)</strong> -- mostly missing license fields and undeclared tool usage</li><li><strong>Command injection: 9 (15%)</strong> -- includes browser-use CLI injection and webapp-testing's <code>shell=True</code> subprocess</li><li><strong>Unauthorized tool use: 6 (10%)</strong> -- tool restriction mismatches and undefined integration references</li><li><strong>Prompt injection: 4 (6%)</strong> -- new category, all from LLM analyzer</li><li><strong>Social engineering: 3 (5%)</strong> -- including canvas-design's instruction to overstate craftsmanship quality</li><li><strong>Tool chaining abuse: 2 (3%)</strong> -- new category, YARA-based detection</li><li><strong>Resource abuse: 2 (3%)</strong> -- infinite loops and missing referenced files</li><li><strong>Hardcoded secrets: 1 (2%)</strong> -- clickup's exported API token</li></ul><h3>What's Next</h3><p>The prompt injection findings are the most interesting signal from this expansion. They represent a threat class that's unique to AI agent skills -- traditional software doesn't have the concept of an LLM following instructions embedded in external content. As skill ecosystems grow, transitive trust and indirect prompt injection will likely become the dominant attack surface. We plan to expand coverage to additional registries and track how these patterns evolve.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-21</span>
+      <span class="footer-item">795 skills, 827 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+</body>
+</html>
