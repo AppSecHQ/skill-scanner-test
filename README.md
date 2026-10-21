@@ -54,7 +54,7 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 | autonomy_abuse | 1 |
 | supply_chain_attack | 1 |
 
-- These results are visualized at [skillscan.appsechq.com](https://skillscan.appsechq.com/). See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
+- These results are visualized at [skillscan.io](https://skillscan.io/). See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 <!-- END SCAN RESULTS -->
 
 ## Getting Started
