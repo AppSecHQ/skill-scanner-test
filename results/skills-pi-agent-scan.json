@@ -1,0 +1,250 @@
+{
+  "skill_name": "pi-agent",
+  "skill_path": "/home/runner/work/skill-scanner-test/skill-scanner-test/scripts/../skills/K-Dense-AI-scientific-agent-skills/skills/pi-agent",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "PIPELINE_TAINT_1dbbd86cf8",
+      "rule_id": "PIPELINE_TAINT_FLOW",
+      "category": "data_exfiltration",
+      "severity": "LOW",
+      "title": "Dangerous data flow in command pipeline",
+      "description": "Pipeline downloads data from the network and executes it: `curl -fsSL https://pi.dev/install.sh | sh`. This is a remote code execution pattern. (Note: found in documentation file - may be instructional rather than executable.)",
+      "file_path": "references/overview.md",
+      "line_number": 1,
+      "snippet": "curl -fsSL https://pi.dev/install.sh | sh",
+      "remediation": "Review the command pipeline. Avoid piping sensitive data to network commands or shell execution.",
+      "analyzer": "pipeline",
+      "metadata": {
+        "pipeline": "curl -fsSL https://pi.dev/install.sh | sh",
+        "source_taints": [
+          "NETWORK_DATA"
+        ],
+        "sink_command": "sh",
+        "chain_length": 2,
+        "in_documentation": true,
+        "behavior_category": "command_injection",
+        "semantic_facts": {
+          "evidence_kind": "command_pipeline",
+          "evidence_value_class": "untrusted_fetch_execute",
+          "evidence_count": 2,
+          "context_kind": "documentation",
+          "signal_kind": "taint_flow",
+          "commands": [
+            {
+              "executable": "curl",
+              "argument_classes": [
+                "script_path",
+                "url"
+              ],
+              "downloads": true,
+              "executes": false,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "network",
+              "sink_class": "",
+              "file_path": "references/overview.md"
+            },
+            {
+              "executable": "sh",
+              "argument_classes": [],
+              "downloads": false,
+              "executes": true,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "",
+              "sink_class": "execution",
+              "file_path": "references/overview.md"
+            }
+          ],
+          "urls": [
+            {
+              "scheme": "https",
+              "host": "pi.dev",
+              "domain_class": "public",
+              "trusted_installer": false,
+              "method": "GET",
+              "direction": "inbound",
+              "file_path": "references/overview.md"
+            }
+          ],
+          "flows": [
+            {
+              "source_class": "network",
+              "sink_class": "execution",
+              "transforms": [],
+              "cross_file": false,
+              "source_path": "references/overview.md",
+              "sink_path": "references/overview.md"
+            }
+          ],
+          "candidate_command": {
+            "executable": "sh",
+            "argument_classes": [],
+            "downloads": false,
+            "executes": true,
+            "destructive": false,
+            "privilege_change": false,
+            "source_class": "",
+            "sink_class": "execution",
+            "file_path": "references/overview.md"
+          },
+          "candidate_flow": {
+            "source_class": "network",
+            "sink_class": "execution",
+            "transforms": [],
+            "cross_file": false,
+            "source_path": "references/overview.md",
+            "sink_path": "references/overview.md"
+          },
+          "candidate_url": {
+            "scheme": "https",
+            "host": "pi.dev",
+            "domain_class": "public",
+            "trusted_installer": false,
+            "method": "GET",
+            "direction": "inbound",
+            "file_path": "references/overview.md"
+          }
+        },
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "YARA_prompt_injection_generic_96ab4094a4",
+      "rule_id": "YARA_prompt_injection_generic",
+      "category": "prompt_injection",
+      "severity": "CRITICAL",
+      "title": "PROMPT INJECTION detected by YARA",
+      "description": "Generic prompt injection patterns: systemPromptOverride",
+      "file_path": "references/sdk.md",
+      "line_number": 138,
+      "snippet": "`DefaultResourceLoader` discovers extensions, skills, prompts, themes, and context files. Options: `cwd`, `agentDir`, `additionalExtensionPaths`, `extensionFactories` (bare functions or `InlineExtension { name, factory }` so the startup list shows `<inline:my-provider>` instead of `<inline:1>`), `settingsManager`, `systemPromptOverride`, `skillsOverride`, `promptsOverride`, `agentsFilesOverride`, `eventBus` (from `createEventBus()`). Call `await loader.reload()`, then read `getExtensions()`, `getSkills()`, `getPrompts()`, `getThemes()`, `getAgentsFiles().agentsFiles`.",
+      "remediation": "Review and remove prompt injection pattern",
+      "analyzer": "static",
+      "metadata": {
+        "yara_rule": "prompt_injection_generic",
+        "yara_namespace": "prompt_injection_generic",
+        "matched_string": "$advanced_overrides",
+        "threat_type": "PROMPT INJECTION",
+        "semantic_facts": {},
+        "aitech": "AITech-1.1",
+        "aitech_name": "Direct Prompt Injection and Jailbreak (Prompt-based Manipulation)",
+        "aisubtech": "AISubtech-1.1.1",
+        "aisubtech_name": "Instruction Manipulation",
+        "aitech_mappings": [
+          "OWASP: LLM01:2026: Prompt Injection",
+          "OWASP: ASI01: Agent Goal Hijack",
+          "MITRE ATLAS: AML.T0051: LLM Prompt Injection",
+          "MITRE ATLAS: AML.T0054: LLM Jailbreak",
+          "MITRE ATLAS: AML.T0093: Prompt Infiltration via Public-Facing Application",
+          "NIST AML: NISTAML.018: Prompt Injection"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM01:2026: Prompt Injection",
+          "OWASP: ASI01: Agent Goal Hijack",
+          "MITRE ATLAS: AML.T0051: LLM Prompt Injection",
+          "MITRE ATLAS: AML.T0054: LLM Jailbreak",
+          "MITRE ATLAS: AML.T0093: Prompt Infiltration via Public-Facing Application",
+          "NIST AML: NISTAML.018: Prompt Injection"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM01:2026: Prompt Injection",
+          "OWASP: ASI01: Agent Goal Hijack",
+          "MITRE ATLAS: AML.T0051: LLM Prompt Injection",
+          "MITRE ATLAS: AML.T0054: LLM Jailbreak",
+          "MITRE ATLAS: AML.T0093: Prompt Infiltration via Public-Facing Application",
+          "NIST AML: NISTAML.018: Prompt Injection"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.548346757888794,
+  "duration_ms": 548,
+  "analyzers_used": [
+    "static_analyzer",
+    "bytecode",
+    "pipeline",
+    "correlation",
+    "behavioral_analyzer",
+    "trigger_analyzer"
+  ],
+  "timestamp": "2026-10-21T21:37:52.056175+00:00",
+  "scan_metadata": {
+    "policy_name": "default",
+    "policy_version": "1.0",
+    "policy_preset_base": "balanced",
+    "policy_fingerprint_sha256": "3f48e661bfbc54597f97bbf3dcf2c1cbae2f596ddc79c0b44784efea326b3d1d",
+    "cel": {
+      "mode": "shadow",
+      "runtime": "cel-go",
+      "runtime_version": "v0.32.0;helper=2.3.1",
+      "fact_schema": "v1",
+      "expression_set_hash": "f26459b8f4a46a974d7ab0aaae34127b5b6a40d693e266e12fca03a69a6d26aa",
+      "evaluated": 0,
+      "retained": 2,
+      "would_suppress": 0,
+      "suppressed": 0,
+      "fallbacks": 0,
+      "projection_incomplete": 0,
+      "elapsed_ms": 0.0,
+      "projection_ms": 0.0,
+      "evaluation_ms": 0.0,
+      "errors": [],
+      "per_rule": {},
+      "suppressed_candidates": []
+    },
+    "rule_contract": {
+      "status": "passed",
+      "schema_version": 2,
+      "checked": 1,
+      "invalid_findings": 0,
+      "errors": []
+    },
+    "taxonomy": {
+      "source": "builtin",
+      "version": "2.0.0",
+      "name": "Cisco AI Security and Safety Taxonomy",
+      "revision": "655a343ac943a51b6f61f86e47156e7752c15dc6",
+      "snapshot_sha256": "413e8ce9081e6d91b78aaa0d0b1c06cdc15d0406ad319e23e9f9f4f80735c441",
+      "findings": {
+        "mapped": 2,
+        "not_applicable": 0,
+        "unmapped": 0
+      }
+    }
+  },
+  "scanner_version": "2.3.1"
+}
