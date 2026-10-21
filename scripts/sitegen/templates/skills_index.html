@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "macros.html" import skills_table %}
+{% block content %}
+<h1>Agent skill security scan results</h1>
+<p class="lead">{{ skills | length }} skills across {{ registries | length }} registries, as of {{ site.scan_date }}. Sort any column, filter by registry, or search by name. Each name links to the full report.</p>
+<div class="table-controls">
+  <input type="search" id="skill-search" class="search-input" placeholder="Search skills…" aria-label="Search skills" autocomplete="off">
+  <select id="source-filter" class="filter-dropdown" aria-label="Filter by registry">
+    <option value="">All registries</option>
+    {% for r in registries %}<option value="{{ r.key }}">{{ r.key }} ({{ r.skill_count }})</option>{% endfor %}
+  </select>
+  <select id="verdict-filter" class="filter-dropdown" aria-label="Filter by verdict">
+    <option value="">All verdicts</option>
+    <option value="issues">Issues found</option>
+    <option value="safe">Safe</option>
+  </select>
+</div>
+{{ skills_table(skills) }}
+{% endblock %}
+{% block scripts %}<script src="/site.js"></script>{% endblock %}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title }}</title>
+  <meta name="description" content="{{ page.description }}">
+  <link rel="canonical" href="{{ site.base_url }}{{ page.url }}">
+  <meta property="og:type" content="{{ page.og_type | default('website') }}">
+  <meta property="og:site_name" content="{{ site.name }}">
+  <meta property="og:title" content="{{ page.title }}">
+  <meta property="og:description" content="{{ page.description }}">
+  <meta property="og:url" content="{{ site.base_url }}{{ page.url }}">
+  <meta property="og:image" content="{{ site.base_url }}{{ page.og_image | default('/og-default.png') }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title }}">
+  <meta name="twitter:description" content="{{ page.description }}">
+  <link rel="alternate" type="application/atom+xml" title="{{ site.name }} research" href="/feed.xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/site.css">
+  {% if page.jsonld %}<script type="application/ld+json">{{ page.jsonld | tojson }}</script>{% endif %}
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">{{ site.name }}</a>
+      <div class="nav-links">
+        <a href="/skills/"{% if page.section == 'skills' %} class="active"{% endif %}>Skills</a>
+        <a href="/categories/"{% if page.section == 'categories' %} class="active"{% endif %}>Categories</a>
+        <a href="/registries/"{% if page.section == 'registries' %} class="active"{% endif %}>Registries</a>
+        <a href="/research/"{% if page.section == 'research' %} class="active"{% endif %}>Research</a>
+        <a href="/methodology/"{% if page.section == 'methodology' %} class="active"{% endif %}>Methodology</a>
+        <a href="/about/"{% if page.section == 'about' %} class="active"{% endif %}>About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    {% if page.breadcrumbs %}
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      {% for crumb in page.breadcrumbs %}
+        {% if not loop.last %}<a href="{{ crumb.url }}">{{ crumb.name }}</a><span class="separator">/</span>{% else %}<span>{{ crumb.name }}</span>{% endif %}
+      {% endfor %}
+    </nav>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: {{ site.scan_date }}</span>
+      <span class="footer-item">{{ site.skill_count }} skills, {{ site.scan_count }} scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner{% if site.scanner_versions %} {{ site.scanner_versions | join(', ') }}{% endif %}</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

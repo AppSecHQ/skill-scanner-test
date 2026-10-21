@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% from "macros.html" import severity_stats, category_bars, post_card, sev_badge %}
+{% block content %}
+<section class="hero">
+  <h1>Security scan results for AI agent skills</h1>
+  <p class="lead">{{ site.skill_count }} skills from {{ registries | length }} registries, scanned with Cisco skill-scanner's static, behavioral, LLM and meta analyzers. Every skill gets its own page with findings, what was checked, and what was not. Last scan {{ site.scan_date }}.</p>
+  <form class="hero-search" action="/skills/" method="get" role="search">
+    <input type="search" name="q" class="search-input" placeholder="Check a skill by name…" aria-label="Search skills" autocomplete="off">
+  </form>
+</section>
+
+<div class="stats-bar">
+  <div class="stat-card stat-card-primary"><span class="stat-value">{{ site.skill_count }}</span><span class="stat-label">Skills Scanned</span></div>
+  <div class="stat-card stat-card-primary"><span class="stat-value">{{ summary.total_findings }}</span><span class="stat-label">Total Findings</span></div>
+  <div class="stat-card stat-card-primary"><span class="stat-value">{{ summary.unsafe_skills }}</span><span class="stat-label">With Issues</span></div>
+</div>
+{{ severity_stats(summary.severity_counts) }}
+
+<div class="dashboard-grid">
+  <div class="panel">
+    <h2>Findings by category</h2>
+    <div class="panel-body">{{ category_bars(categories, summary.total_findings) }}</div>
+  </div>
+  <div class="panel">
+    <h2>Most recent critical findings</h2>
+    <div class="panel-body top-risks">
+      {% for s in recent_critical %}
+      <a class="risk-card sev-border-critical" href="{{ s.url }}">
+        <div class="risk-card-header">{{ sev_badge('CRITICAL') }} <span class="risk-card-skill">{{ s.name }}</span> <span class="muted">{{ s.source }}</span></div>
+        <p class="risk-card-description">{{ s.severity_counts.CRITICAL }} critical, {{ s.findings_count }} findings. Scanned {{ s.timestamp | date }}.</p>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<section>
+  <h2>Latest research</h2>
+  {% for n in latest_posts %}{{ post_card(n) }}{% endfor %}
+  <p><a href="/research/">All research posts</a></p>
+</section>
+
+<section class="about-blurb">
+  <h2>What this site is</h2>
+  <p>skillscan.io publishes what an automated scanner finds in the skills people actually install from <a href="/registries/skills-sh/">skills.sh</a>, <a href="/registries/clawhub-ai/">ClawHub</a> and other sources, plus a scan history per skill so drift is visible. It is not a benchmark of scanners (that is <a href="https://skillscan.sh" rel="noopener">skillscan.sh</a>) and it is unrelated to the SkillScan career assessment. Read the <a href="/methodology/">methodology and limitations</a> before treating any verdict as final, and <a href="/data/">download the dataset</a> if you want to check our work.</p>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+// Legacy hash routes from the old single-page app.
+(function () {
+  var h = location.hash;
+  if (!h || h.length < 3) return;
+  if (h === '#/dashboard') { location.replace('/'); return; }
+  if (h === '#/notes') { location.replace('/research/'); return; }
+  var m = h.match(/^#\/(skill|note)\/(.+)$/);
+  if (!m) { location.replace('/skills/'); return; }
+  var kind = m[1], key = decodeURIComponent(m[2]);
+  fetch('/data/redirects.json').then(function (r) { return r.json(); }).then(function (map) {
+    var target = kind === 'skill' ? map.skills[key] : map.notes[key];
+    location.replace(target || (kind === 'skill' ? '/skills/?q=' + encodeURIComponent(key) : '/research/'));
+  }).catch(function () { location.replace('/skills/'); });
+})();
+</script>
+{% endblock %}

@@ -42,3 +42,8 @@ if has_url < total:
 "
 
 echo "Copied summary + $(ls "$SCANS_DIR"/*.json | wc -l | tr -d ' ') scan files to $DATA_DIR"
+
+# Generate static HTML pages (skills, categories, registries, research, sitemap, badges)
+PYTHON="${PYTHON:-python3}"
+if [ -x "${PROJECT_ROOT}/.venv/bin/python" ]; then PYTHON="${PROJECT_ROOT}/.venv/bin/python"; fi
+"$PYTHON" "${SCRIPT_DIR}/build_site.py" --root "$PROJECT_ROOT"

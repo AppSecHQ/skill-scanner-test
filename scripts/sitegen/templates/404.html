@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Page not found</h1>
+<p class="lead">That URL does not exist on skillscan.io. If you followed an old link of the form <code>#/skill/name</code>, the <a href="/">home page</a> will redirect it. Otherwise try the <a href="/skills/">skills index</a> and search by name.</p>
+{% endblock %}
+{% block scripts %}
+<script>
+// Old SPA links of the form /#/skill/X land on / and are handled there; links that
+// were copied as /skill/X (no hash) land here. Send them to the search box.
+(function () {
+  var m = location.pathname.match(/^\/skills?\/([^\/]+)\/?$/);
+  if (m) location.replace('/skills/?q=' + encodeURIComponent(decodeURIComponent(m[1])));
+})();
+</script>
+{% endblock %}

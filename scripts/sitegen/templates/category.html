@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% from "macros.html" import skills_table, finding_card, sev_badge %}
+{% block content %}
+<h1>{{ category.name }}</h1>
+<div class="verdict-strip">
+  <span class="scan-count">{{ category.count }} findings</span>
+  <span class="scan-count">{{ affected | length }} skills affected</span>
+  {% if category.ast10_id %}<a class="badge badge-category" href="https://owasp.org/www-project-agentic-skills-top-10/" rel="noopener">OWASP {{ category.ast10_id }}{% if category.ast10_title %}: {{ category.ast10_title }}{% endif %}</a>{% endif %}
+  {% for s in category.secondary_ast10 or [] %}<span class="badge badge-category">also {{ s }}</span>{% endfor %}
+</div>
+{% if category.definition %}<p class="lead">{{ category.definition }}</p>{% else %}<p class="lead">Findings the scanner classifies as {{ category.name | lower }}.</p>{% endif %}
+
+<div class="dashboard-grid">
+  <div class="panel">
+    <h2>By severity</h2>
+    <div class="panel-body">
+      <ul class="plain">{% for sev, n in severity_counts.items() %}<li>{{ sev_badge(sev) }} {{ n }}</li>{% endfor %}</ul>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>By registry</h2>
+    <div class="panel-body">
+      <table><thead><tr><th>Registry</th><th>Findings</th><th>Skills affected</th></tr></thead><tbody>
+      {% for r in by_registry %}<tr><td><a href="{{ r.url }}">{{ r.key }}</a></td><td>{{ r.findings }}</td><td>{{ r.skills }}</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+{% if examples %}
+<section>
+  <h2>How it shows up in a skill</h2>
+  <p class="muted">Real findings from the corpus. Each links to the skill's full report.</p>
+  {% for ex in examples %}
+  <div class="example">
+    <p><a href="{{ ex.skill.url }}">{{ ex.skill.name }}</a> <span class="muted">{{ ex.skill.source }}</span></p>
+    {{ finding_card(ex.finding, cat_by_key) }}
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% if category.check_yourself %}
+<section>
+  <h2>How to check your own skill for this</h2>
+  <p>{{ category.check_yourself }}</p>
+</section>
+{% endif %}
+
+<section>
+  <h2>Affected skills</h2>
+  {{ skills_table(affected, id='affected-skills') }}
+</section>
+{% endblock %}
+{% block scripts %}<script src="/site.js"></script>{% endblock %}

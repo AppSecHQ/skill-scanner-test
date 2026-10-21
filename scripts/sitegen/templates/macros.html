@@ -1,0 +1,91 @@
+{% macro sev_badge(sev) -%}
+{% set s = (sev or 'NONE') | upper %}
+{% if s == 'SAFE' or s == 'NONE' %}<span class="badge badge-safe">SAFE</span>{% else %}<span class="badge badge-{{ s | lower }}">{{ s }}</span>{% endif %}
+{%- endmacro %}
+
+{% macro verdict_badge(skill) -%}
+{% if skill.is_safe %}<span class="badge badge-safe">SAFE</span>{% elif skill.is_safe is sameas false %}<span class="badge badge-{{ (skill.max_severity or 'medium') | lower }}">ISSUES FOUND</span>{% else %}<span class="badge badge-low">SCAN ERROR</span>{% endif %}
+{%- endmacro %}
+
+{% macro skills_table(skills, show_source=True, id='skills-list') -%}
+<div class="table-wrap">
+  <table id="{{ id }}" class="sortable">
+    <thead>
+      <tr>
+        <th data-sort="name">Name</th>
+        {% if show_source %}<th data-sort="source">Registry</th>{% endif %}
+        <th data-sort="verdict">Verdict</th>
+        <th data-sort="findings" data-type="num">Findings</th>
+        <th data-sort="critical" data-type="num">Critical</th>
+        <th data-sort="high" data-type="num">High</th>
+        <th data-sort="medium" data-type="num">Medium</th>
+        <th data-sort="low" data-type="num">Low</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in skills %}{% set c = s.severity_counts %}
+      <tr data-source="{{ s.source }}" data-name="{{ s.name | lower }}">
+        <td><a href="{{ s.url }}">{{ s.name }}</a></td>
+        {% if show_source %}<td><a href="/registries/{{ s.source | slug }}/">{{ s.source }}</a></td>{% endif %}
+        <td>{{ verdict_badge(s) }}</td>
+        <td>{{ s.findings_count }}</td>
+        <td class="{% if c.CRITICAL %}stat-critical{% endif %}">{{ c.CRITICAL }}</td>
+        <td class="{% if c.HIGH %}stat-high{% endif %}">{{ c.HIGH }}</td>
+        <td class="{% if c.MEDIUM %}stat-medium{% endif %}">{{ c.MEDIUM }}</td>
+        <td class="{% if c.LOW %}stat-low{% endif %}">{{ c.LOW }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{%- endmacro %}
+
+{% macro severity_stats(counts) -%}
+<div class="stats-bar stats-bar-severity">
+  <div class="stat-card stat-card-severity sev-critical"><span class="stat-value stat-critical">{{ counts.CRITICAL | default(0) }}</span><span class="stat-label">Critical</span></div>
+  <div class="stat-card stat-card-severity sev-high"><span class="stat-value stat-high">{{ counts.HIGH | default(0) }}</span><span class="stat-label">High</span></div>
+  <div class="stat-card stat-card-severity sev-medium"><span class="stat-value stat-medium">{{ counts.MEDIUM | default(0) }}</span><span class="stat-label">Medium</span></div>
+  <div class="stat-card stat-card-severity sev-low"><span class="stat-value stat-low">{{ counts.LOW | default(0) }}</span><span class="stat-label">Low</span></div>
+</div>
+{%- endmacro %}
+
+{% macro category_bars(cats, total) -%}
+<div class="category-bars">
+  {% for c in cats %}
+  <div class="category-bar-row">
+    <a class="category-bar-label" href="{{ c.url }}">{{ c.name }}</a>
+    <div class="category-bar-track"><div class="category-bar-fill" style="width:{{ (100 * c.count / (total or 1)) | round(1) }}%"></div></div>
+    <span class="category-bar-count">{{ c.count }}</span>
+  </div>
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+{% macro finding_card(f, cat_by_key) -%}
+{% set sev = (f.severity or 'INFO') | upper %}
+<details class="finding-card sev-border-{{ sev | lower }}">
+  <summary class="finding-header">
+    {{ sev_badge(sev) }}
+    <span class="finding-title">{{ f.title }}</span>
+    {% if f.category %}{% set c = cat_by_key.get(f.category) %}<a class="badge badge-category" href="{{ c.url if c else '/categories/' }}">{{ c.name if c else f.category }}</a>{% endif %}
+    {% if f.analyzer %}<span class="analyzer-pill">{{ f.analyzer }}</span>{% endif %}
+  </summary>
+  <div class="finding-body">
+    {% if f.description %}<p class="finding-description">{{ f.description }}</p>{% endif %}
+    {% if f.file_path %}<p class="finding-file">{{ f.file_path }}{% if f.line_number %}:{{ f.line_number }}{% endif %}</p>{% endif %}
+    {% if f.snippet %}<div class="finding-snippet"><pre><code>{{ f.snippet }}</code></pre></div>{% endif %}
+    {% if f.remediation %}<div class="finding-remediation"><strong>Remediation:</strong> {{ f.remediation }}</div>{% endif %}
+  </div>
+</details>
+{%- endmacro %}
+
+{% macro post_card(n) -%}
+<a href="{{ n.url }}" class="note-card">
+  <div class="note-card-header">
+    <span class="note-date">{{ n.date }}</span>
+    <div class="note-tags">{% for t in n.tags %}<span class="tag-pill">{{ t }}</span>{% endfor %}</div>
+  </div>
+  <h3 class="note-title">{{ n.title }}</h3>
+  <p class="note-excerpt">{{ n.excerpt }}</p>
+</a>
+{%- endmacro %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "macros.html" import skills_table, severity_stats, category_bars, verdict_badge %}
+{% block content %}
+<h1>{{ registry.key }} security scan results</h1>
+<p class="lead">{{ registry.skill_count }} skills from {{ registry.key }} scanned, {{ registry.flagged }} with at least one finding, as of {{ site.scan_date }}.{% if registry.repo_url %} Source: <a href="{{ registry.repo_url }}" rel="noopener nofollow">{{ registry.repo_url }}</a>.{% endif %}</p>
+
+<div class="stats-bar">
+  <div class="stat-card stat-card-primary"><span class="stat-value">{{ registry.skill_count }}</span><span class="stat-label">Skills</span></div>
+  <div class="stat-card stat-card-primary"><span class="stat-value">{{ registry.flagged }}</span><span class="stat-label">With Issues</span></div>
+  <div class="stat-card stat-card-primary"><span class="stat-value">{{ registry.total_findings }}</span><span class="stat-label">Findings</span></div>
+</div>
+{{ severity_stats(registry.severity_counts) }}
+
+<div class="dashboard-grid">
+  <div class="panel">
+    <h2>Findings by category</h2>
+    <div class="panel-body">{{ category_bars(registry.categories, registry.total_findings) }}</div>
+  </div>
+  <div class="panel">
+    <h2>Highest-risk skills</h2>
+    <div class="panel-body">
+      <ol class="plain">{% for s in registry.top %}<li><a href="{{ s.url }}">{{ s.name }}</a> {{ verdict_badge(s) }} <span class="muted">{{ s.findings_count }} findings</span></li>{% endfor %}</ol>
+    </div>
+  </div>
+</div>
+
+<section>
+  <h2>All {{ registry.key }} skills</h2>
+  <div class="table-controls">
+    <input type="search" id="skill-search" class="search-input" placeholder="Search…" aria-label="Search skills" autocomplete="off">
+  </div>
+  {{ skills_table(registry.skills, show_source=False) }}
+</section>
+{% endblock %}
+{% block scripts %}<script src="/site.js"></script>{% endblock %}

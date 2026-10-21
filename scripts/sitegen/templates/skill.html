@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% from "macros.html" import sev_badge, verdict_badge, finding_card %}
+{% block content %}
+<header class="skill-header">
+  <h1>{{ skill.name }}</h1>
+  <div class="verdict-strip">
+    {{ verdict_badge(skill) }}
+    {% if skill.max_severity %}<span class="muted">max severity</span> {{ sev_badge(skill.max_severity) }}{% endif %}
+    <span class="muted">registry</span> <a href="/registries/{{ skill.source | slug }}/">{{ skill.source }}</a>
+    <span class="muted">last scanned</span> <time datetime="{{ skill.timestamp }}">{{ skill.timestamp | date }}</time>
+    <span class="scan-count">{{ skill.scan_count }} scan{{ 's' if skill.scan_count != 1 }}</span>
+  </div>
+  <p class="lead">{{ summary_sentence }}</p>
+  {% if skill.summary_text %}<blockquote class="assessment"><p>{{ skill.summary_text }}</p><cite>Scanner's overall assessment (LLM analyzer)</cite></blockquote>{% endif %}
+</header>
+
+<div class="metadata-grid">
+  <div class="metadata-item"><span class="metadata-label">Findings</span><span class="metadata-value">{{ skill.findings_count }}</span></div>
+  {% for sev, n in skill.severity_counts.items() %}<div class="metadata-item"><span class="metadata-label">{{ sev | capitalize }}</span><span class="metadata-value stat-{{ sev | lower }}">{{ n }}</span></div>{% endfor %}
+  <div class="metadata-item"><span class="metadata-label">Analyzers</span><span class="metadata-value">{% for a in skill.scan.analyzers_used or skill.analyzers %}<span class="analyzer-pill">{{ a | replace('_analyzer', '') }}</span> {% endfor %}</span></div>
+  {% if skill.scanner_version %}<div class="metadata-item"><span class="metadata-label">Scanner version</span><span class="metadata-value">{{ skill.scanner_version }}</span></div>{% endif %}
+</div>
+
+<section class="detail-findings">
+  <h2>Findings</h2>
+  {% if skill.findings %}
+  <div class="findings-list">
+    {% for f in skill.findings | sort(attribute='severity_rank', reverse=True) %}{{ finding_card(f, cat_by_key) }}{% endfor %}
+  </div>
+  {% else %}
+  <p class="no-findings">No findings. {{ sev_badge('SAFE') }}</p>
+  {% endif %}
+</section>
+
+<section class="checked">
+  <h2>What we checked</h2>
+  <ul>
+    {% for a in skill.scan.analyzers_used or skill.analyzers %}<li><strong>{{ a | replace('_analyzer', '') | capitalize }} analyzer.</strong> {{ analyzer_blurbs.get(a, '') }}</li>{% endfor %}
+  </ul>
+  <h2>What we did not check</h2>
+  <ul>
+    <li>Runtime behaviour. The skill was not executed; findings come from reading its files.</li>
+    <li>Anything fetched at install or run time, including remote scripts, package dependencies, and URLs the skill tells the agent to open.</li>
+    <li>Content the analyzers cannot read: images, binaries, and some non-English text.</li>
+    <li>Known scanner bypass classes. See the <a href="/methodology/">methodology and limitations</a> page.</li>
+  </ul>
+</section>
+
+{% if skill.history | length > 1 %}
+<section class="scan-history-section">
+  <h2>Scan history</h2>
+  <table>
+    <thead><tr><th>Date</th><th>Verdict</th><th>Findings</th><th>Change</th><th>Analyzers</th><th>Raw</th></tr></thead>
+    <tbody>
+    {% for h in skill.history %}{% set prev = skill.history[loop.index] if not loop.last else none %}
+      <tr>
+        <td><time datetime="{{ h.timestamp }}">{{ h.timestamp | date }}</time></td>
+        <td>{% if h.is_safe %}{{ sev_badge('SAFE') }}{% else %}{{ sev_badge(h.max_severity) }}{% endif %}</td>
+        <td>{{ h.findings_count }}</td>
+        <td>{% if prev %}{% set d = h.findings_count - prev.findings_count %}{% if d > 0 %}<span class="scan-delta scan-delta-regress">+{{ d }}</span>{% elif d < 0 %}<span class="scan-delta scan-delta-improve">{{ d }}</span>{% else %}<span class="scan-delta scan-delta-same">=</span>{% endif %}{% else %}<span class="muted">first scan</span>{% endif %}</td>
+        <td>{% for a in h.analyzers_used %}<span class="analyzer-pill">{{ a | replace('_analyzer', '') }}</span> {% endfor %}</td>
+        <td><a href="/data/scans/{{ h._scan_file }}">JSON</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+
+<section class="sources">
+  <h2>Sources</h2>
+  <ul>
+    {% if skill.repo_url %}<li>Repository: <a href="{{ skill.repo_url }}" rel="noopener nofollow">{{ skill.repo_url }}</a></li>{% endif %}
+    {% if skill.scan_file %}<li>Raw scan result: <a href="/data/scans/{{ skill.scan_file }}">{{ skill.scan_file }}</a></li>{% endif %}
+    <li>Badge for your README: <code>![skillscan.io]({{ site.base_url }}/badge/{{ skill.slug }}.svg)</code> <img src="/badge/{{ skill.slug }}.svg" alt="skillscan.io badge for {{ skill.name }}"></li>
+    <li><a href="/request-a-scan/">Request a re-scan</a></li>
+  </ul>
+</section>
+
+{% if related %}
+<section class="related">
+  <h2>Related skills</h2>
+  <ul class="related-list">
+    {% for r in related %}<li><a href="{{ r.url }}">{{ r.name }}</a> <span class="muted">{{ r.source }}</span> {{ verdict_badge(r) }}</li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}
