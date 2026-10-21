@@ -313,7 +313,7 @@ class SiteBuilder:
             ctx = category_context(c, self.skills, self.registries)
             crumbs = self.breadcrumbs(("Categories", "/categories/"), (c["name"], c["url"]))
             self.render("category.html", c["url"], {
-                "title": f"{c['name']} in AI agent skills: {c['count']} findings across {len(ctx['affected'])} skills | skillscan.io",
+                "title": f"{c['name']} in AI agent skills: {c['count']} finding{'' if c['count'] == 1 else 's'} across {len(ctx['affected'])} skill{'' if len(ctx['affected']) == 1 else 's'} | skillscan.io",
                 "description": (c.get("definition") or f"Findings classified as {c['name']} in scanned AI agent skills.")[:300],
                 "section": "categories", "breadcrumbs": crumbs, "jsonld": self.jsonld_breadcrumbs(crumbs),
             }, category=c, **ctx)

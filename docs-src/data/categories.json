@@ -11,7 +11,9 @@
       "name": "Data Exfiltration",
       "ast10_id": "AST01",
       "ast10_title": "Malicious Skills",
-      "secondary_ast10": ["AST03"],
+      "secondary_ast10": [
+        "AST03"
+      ],
       "definition": "The skill reads, collects, or transmits data the user did not intend to share: environment variables, credentials, files, conversation context, or wallet and API details sent to third-party endpoints, hardcoded addresses, or encoded into URLs. This is the single largest category in our corpus and the direct signature of the ClawHavoc-style campaigns.",
       "check_yourself": "Grep SKILL.md and bundled scripts for outbound URLs, curl/wget/fetch calls, base64 or hex encoding of local data, and any hardcoded wallet, webhook, or IP address. Ask whether each destination is necessary for the stated purpose."
     },
@@ -20,7 +22,10 @@
       "name": "Command Injection",
       "ast10_id": "AST01",
       "ast10_title": "Malicious Skills",
-      "secondary_ast10": ["AST03", "AST06"],
+      "secondary_ast10": [
+        "AST03",
+        "AST06"
+      ],
       "definition": "The skill instructs the agent to run shell commands, downloads and executes remote code, pipes untrusted input into a shell, or includes install steps such as 'curl | sh' from unpinned sources. Even when intentional, these give an attacker who controls the remote resource code execution on the user's machine.",
       "check_yourself": "List every command the skill tells the agent to run. Flag any that fetch and execute remote content, use unpinned versions, build commands from user or web input, or need sudo."
     },
@@ -29,7 +34,9 @@
       "name": "Social Engineering",
       "ast10_id": "AST01",
       "ast10_title": "Malicious Skills",
-      "secondary_ast10": ["AST08"],
+      "secondary_ast10": [
+        "AST08"
+      ],
       "definition": "The skill text manipulates the user or the agent through persuasion rather than code: false claims of official status or vendor approval, urgency, instructions to skip confirmation, or framing a dangerous action as a routine requirement. Trail of Bits showed this class also defeats LLM-based scanners, which are persuadable by the same language.",
       "check_yourself": "Read the skill as if it were an email from a stranger. Claims of authority, pressure to act, or requests to bypass normal review are the signals."
     },
@@ -38,7 +45,10 @@
       "name": "Transitive Trust Abuse",
       "ast10_id": "AST02",
       "ast10_title": "Supply Chain Compromise",
-      "secondary_ast10": ["AST05", "AST07"],
+      "secondary_ast10": [
+        "AST05",
+        "AST07"
+      ],
       "definition": "The skill extends trust to something outside itself: it pulls other skills, packages, scripts, or instructions from remote locations at runtime, so that what was reviewed is not what runs. The reviewed SKILL.md may be clean while the resource it loads is not, or changes later.",
       "check_yourself": "Identify every external dependency the skill loads. Pin versions, check who controls the host, and ask whether content fetched at runtime could change after your review."
     },
@@ -47,7 +57,9 @@
       "name": "Unauthorized Tool Use",
       "ast10_id": "AST03",
       "ast10_title": "Over-Privileged Skills",
-      "secondary_ast10": ["AST01"],
+      "secondary_ast10": [
+        "AST01"
+      ],
       "definition": "The skill directs the agent to use tools, files, network access, or permissions beyond what its stated purpose requires, such as a formatting skill that reads SSH keys or a documentation skill that opens network connections.",
       "check_yourself": "Compare the frontmatter description against the actions in the body. Every tool, path, and network destination should be explainable by the description."
     },
@@ -56,7 +68,9 @@
       "name": "Policy Violation",
       "ast10_id": "AST01",
       "ast10_title": "Malicious Skills",
-      "secondary_ast10": ["AST09"],
+      "secondary_ast10": [
+        "AST09"
+      ],
       "definition": "The skill instructs the agent to ignore its operator or platform rules, disable safety behaviour, hide actions from the user, or act outside the user's stated intent. Many are benign-looking 'always do X without asking' directives; the risk is removal of the human checkpoint.",
       "check_yourself": "Search for phrases that override confirmation, suppress output, or tell the agent to keep something from the user."
     },
@@ -65,7 +79,9 @@
       "name": "Resource Abuse",
       "ast10_id": "AST03",
       "ast10_title": "Over-Privileged Skills",
-      "secondary_ast10": ["AST06"],
+      "secondary_ast10": [
+        "AST06"
+      ],
       "definition": "The skill consumes compute, network, tokens, or paid API credits disproportionately: crypto mining, loops without termination, mass requests, or quietly routing fees or referrals to a third party. Often disclosed in fine print but not at activation time.",
       "check_yourself": "Look for unbounded loops, background processes, and any fee, referral, or affiliate configuration the user cannot change."
     },
@@ -74,7 +90,10 @@
       "name": "Prompt Injection",
       "ast10_id": "AST05",
       "ast10_title": "Untrusted External Instructions",
-      "secondary_ast10": ["AST08", "AST01"],
+      "secondary_ast10": [
+        "AST08",
+        "AST01"
+      ],
       "definition": "Instructions embedded in the skill, or in content the skill tells the agent to read, that hijack the agent's behaviour: hidden text, role-override directives, instructions addressed to the model rather than the user, or payloads in comments, HTML, or non-English text. Skills are a first-class injection channel because the agent treats SKILL.md as trusted instructions.",
       "check_yourself": "Render the raw file. Look for hidden or zero-width text, HTML comments, directives like 'ignore previous instructions', and any instruction to fetch and follow external content."
     },
@@ -83,7 +102,10 @@
       "name": "Tool Chaining Abuse",
       "ast10_id": "AST03",
       "ast10_title": "Over-Privileged Skills",
-      "secondary_ast10": ["AST06", "AST01"],
+      "secondary_ast10": [
+        "AST06",
+        "AST01"
+      ],
       "definition": "Individually acceptable tool calls combined into a harmful sequence: read a secret, then write it to a file, then commit and push. Each step passes review in isolation. The CompoSkill and ColluSkill research shows this also evades scanners that score skills one at a time.",
       "check_yourself": "Trace the full sequence of actions the skill produces, not each action alone. Ask where data flows from the first step to the last."
     },
@@ -92,7 +114,9 @@
       "name": "Hardcoded Secrets",
       "ast10_id": "AST04",
       "ast10_title": "Insecure Metadata",
-      "secondary_ast10": ["AST02"],
+      "secondary_ast10": [
+        "AST02"
+      ],
       "definition": "API keys, tokens, passwords, or private endpoints embedded in the skill files. Sometimes an author's leaked credential, sometimes a shared key that lets the skill phone home or lets any user act as the author.",
       "check_yourself": "Scan for key-shaped strings, bearer tokens, and credentials in config files, scripts, and examples. Treat any shared secret as compromised."
     },
@@ -101,7 +125,9 @@
       "name": "Skill Discovery Abuse",
       "ast10_id": "AST04",
       "ast10_title": "Insecure Metadata",
-      "secondary_ast10": ["AST02"],
+      "secondary_ast10": [
+        "AST02"
+      ],
       "definition": "Manipulation of the name, description, or trigger metadata so the skill is selected when it should not be: keyword stuffing to hijack unrelated tasks, impersonating a well-known skill or vendor, or typosquatting a popular name.",
       "check_yourself": "Compare the description to what the skill does. Check the author and name against the official source the skill claims to represent."
     },
@@ -110,7 +136,9 @@
       "name": "Obfuscation",
       "ast10_id": "AST08",
       "ast10_title": "Poor Scanning",
-      "secondary_ast10": ["AST01"],
+      "secondary_ast10": [
+        "AST01"
+      ],
       "definition": "Techniques that hide intent from reviewers and scanners: encoded payloads, compiled bytecode, whitespace padding that pushes content past scanner context limits, archive indirection, or multilingual and image-based text. These are the exact classes Trail of Bits and CSA documented as scanner bypasses.",
       "check_yourself": "Be suspicious of anything you cannot read in plain text: base64 blobs, .pyc files, zips, images containing text, and files with abnormal size or whitespace."
     },
@@ -119,9 +147,24 @@
       "name": "Autonomy Abuse",
       "ast10_id": "AST09",
       "ast10_title": "No Governance",
-      "secondary_ast10": ["AST03", "AST07"],
+      "secondary_ast10": [
+        "AST03",
+        "AST07"
+      ],
       "definition": "The skill expands the agent's independence beyond what the user authorised: self-modification, installing further skills, persisting instructions across sessions, scheduling itself, or acting without a human in the loop. Rare in our corpus so far but the highest-leverage class once present.",
       "check_yourself": "Look for instructions that persist, schedule, self-update, or install additional capabilities without an explicit user step."
+    },
+    {
+      "slug": "supply_chain_attack",
+      "name": "Supply Chain Attack",
+      "ast10_id": "AST02",
+      "ast10_title": "Supply Chain Compromise",
+      "secondary_ast10": [
+        "AST01",
+        "AST07"
+      ],
+      "definition": "The skill's installation or setup path is itself the attack surface: fetching an archive or package and executing its contents, installing from an unpinned or unverified source, or depending on a third-party distribution channel an attacker could poison. Distinct from transitive trust abuse in that the risk is in how the skill is delivered and installed, not in what it loads afterwards.",
+      "check_yourself": "Follow the install steps literally. Anything that downloads then extracts or executes, installs from a mutable tag or branch, or pulls from a registry without an integrity check is the finding. Pin to a commit or checksum and vendor the script where possible."
     }
   ]
 }
