@@ -46,6 +46,7 @@ def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict
         "skills": [],
         "findings_by_category": {},
         "top_risks": [],
+        "scanner_versions": set(),  # Track all versions seen
     }
 
     # Build lookups from inventory files
@@ -70,6 +71,10 @@ def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict
             continue
 
         findings["total_skills"] += 1
+
+        # Track scanner version
+        if version := result.get("scanner_version"):
+            findings["scanner_versions"].add(version)
 
         is_safe = result.get("is_safe")
         if is_safe is True:
@@ -133,6 +138,9 @@ def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict
         all_analyzers.update(skill.get("analyzers", []))
     findings["analyzers_used"] = sorted(all_analyzers)
 
+    # Convert scanner_versions set to sorted list for JSON serialization
+    findings["scanner_versions"] = sorted(findings["scanner_versions"])
+
     return findings
 
 
@@ -147,10 +155,12 @@ def generate_markdown_report(findings: dict, output_path: Path) -> None:
     analyzers_list = ", ".join(
         a.replace("_analyzer", "") for a in findings.get("analyzers_used", [])
     ) or "static"
+    versions = findings.get("scanner_versions", [])
+    version_str = ", ".join(versions) if versions else "unknown"
     report = f"""# AI Agent Skills Security Scan Report
 
 **Generated:** {findings['scan_date']}
-**Scanner:** cisco-ai-skill-scanner
+**Scanner:** cisco-ai-skill-scanner {version_str}
 **Analyzers:** {analyzers_list}
 
 ---
@@ -253,12 +263,14 @@ The following skills were flagged by the scanner but have been manually reviewed
 
     # Footer
     analyzers_full = ", ".join(findings.get("analyzers_used", []))
+    versions = findings.get("scanner_versions", [])
+    version_str = ", ".join(versions) if versions else "unknown"
     report += f"""
 ---
 
 ## Methodology
 
-- **Scanner:** cisco-ai-skill-scanner
+- **Scanner:** cisco-ai-skill-scanner {version_str}
 - **Analyzers:** {analyzers_full}
 - **Scan Date:** {findings['scan_date']}
 

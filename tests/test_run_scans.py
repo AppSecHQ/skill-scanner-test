@@ -275,7 +275,11 @@ class TestRunScan:
 
         mock_run.side_effect = self._mock_subprocess(json_path, scan_data)
         result = run_scan(skill_path, output_dir, "test")
-        assert result == scan_data
+        # Result includes original scan_data plus scanner_version
+        assert result["skill_name"] == scan_data["skill_name"]
+        assert result["is_safe"] == scan_data["is_safe"]
+        assert result["findings_count"] == scan_data["findings_count"]
+        assert "scanner_version" in result  # Version is added by run_scan
         assert mock_run.call_count == 2  # JSON + Markdown
 
     @patch("run_scans.subprocess.run")

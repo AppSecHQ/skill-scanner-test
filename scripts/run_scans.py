@@ -9,11 +9,20 @@ import logging
 import re
 import subprocess
 import zipfile
+from importlib.metadata import version as pkg_version, PackageNotFoundError
 from pathlib import Path
 
 import requests
 
 from pipeline_utils import get_session, shorten_path, LOG_FORMAT, LOG_DATE_FORMAT
+
+
+def get_scanner_version() -> str:
+    """Get the installed cisco-ai-skill-scanner version."""
+    try:
+        return pkg_version("cisco-ai-skill-scanner")
+    except PackageNotFoundError:
+        return "unknown"
 
 logger = logging.getLogger(__name__)
 
@@ -359,6 +368,14 @@ def run_scan(
     except (json.JSONDecodeError, FileNotFoundError) as e:
         logger.error("Failed to read scan results: %s", e)
         return None
+
+    # Add scanner version to results
+    scanner_version = get_scanner_version()
+    scan_result["scanner_version"] = scanner_version
+
+    # Write updated JSON with version
+    with open(json_output, "w") as f:
+        json.dump(scan_result, f, indent=2)
 
     # Check analysis quality
     if use_llm or enable_meta:
