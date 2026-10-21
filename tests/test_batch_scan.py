@@ -138,3 +138,44 @@ class TestCommunityScanUsesBatch:
         results = run_community_scan("owner/repo", skills_dir, tmp_path / "out")
         mock_scan.assert_not_called()
         assert [r.get("is_safe") for r in results] == [True, None]
+
+
+class TestOriginStamping:
+    def test_batch_scan_records_origin(self, tmp_path):
+        repo = tmp_path / "repo"
+        a = repo / "a"
+        a.mkdir(parents=True)
+        origin = {"source": "K-Dense-AI", "repo_url": "https://github.com/K-Dense-AI/scientific-agent-skills"}
+        with patch("run_scans.subprocess.run", side_effect=_fake_scan_all([_result(a, "a")])), \
+             patch("run_scans.get_scanner_version", return_value="2.3.1"):
+            got = run_batch_scan(repo, tmp_path / "out", {a: "a"}, origin=origin)
+        saved = json.loads((tmp_path / "out" / "a-scan.json").read_text())
+        assert got["a"]["source"] == "K-Dense-AI"
+        assert saved["repo_url"] == origin["repo_url"]
+
+    @patch("community_scan.run_batch_scan")
+    @patch("community_scan.clone_repo", return_value=True)
+    def test_community_scan_passes_owner_as_origin(self, _clone, mock_batch, tmp_path):
+        skills_dir = tmp_path / "skills"
+        d = skills_dir / "K-Dense-AI-scientific-agent-skills" / "skills" / "x"
+        d.mkdir(parents=True)
+        (d / "SKILL.md").write_text("x")
+        mock_batch.return_value = {"skills-x": _result(d, "x")}
+        run_community_scan("K-Dense-AI/scientific-agent-skills", skills_dir, tmp_path / "out")
+        origin = mock_batch.call_args.kwargs["origin"]
+        assert origin == {"source": "K-Dense-AI", "repo_url": "https://github.com/K-Dense-AI/scientific-agent-skills"}
+
+    def test_report_prefers_recorded_origin_over_path_heuristic(self, tmp_path):
+        from generate_report import aggregate_results
+        results = tmp_path / "results"
+        results.mkdir()
+        base = {"skill_name": "x", "is_safe": True, "max_severity": "SAFE", "findings_count": 0, "findings": [],
+                "analyzers_used": [], "timestamp": "2026-10-21T00:00:00",
+                "skill_path": "/workspace/skills/K-Dense-AI-scientific-agent-skills/skills/x"}
+        (results / "guessed-scan.json").write_text(json.dumps(base))
+        (results / "recorded-scan.json").write_text(json.dumps({**base, "skill_name": "y", "source": "K-Dense-AI",
+                                                                 "repo_url": "https://github.com/K-Dense-AI/scientific-agent-skills"}))
+        skills = {s["name"]: s for s in aggregate_results(results)["skills"]}
+        assert skills["x"]["source"] == "K"  # the heuristic, kept for old results
+        assert skills["y"]["source"] == "K-Dense-AI"
+        assert skills["y"]["repo_url"].endswith("K-Dense-AI/scientific-agent-skills")

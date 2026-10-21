@@ -114,8 +114,10 @@ def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict
         raw_path = result.get("skill_path") or ""
         short_path = shorten_path(raw_path) if raw_path else ""
         skill_name = result.get("skill_name", "")
-        source = _detect_source(short_path, skill_name, source_lookup)
-        repo_url = _derive_repo_url(short_path, skill_name, source, url_lookup)
+        # Scans made by the community workflow record their origin explicitly;
+        # older results fall back to inventory lookups and path heuristics.
+        source = result.get("source") or _detect_source(short_path, skill_name, source_lookup)
+        repo_url = result.get("repo_url") or _derive_repo_url(short_path, skill_name, source, url_lookup)
         scan_md = json_file.with_suffix("").name.lstrip(".") + ".md"  # e.g. "clickup-skill-scan.md"
         findings["skills"].append({
             "name": skill_name,

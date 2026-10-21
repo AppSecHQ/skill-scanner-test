@@ -282,6 +282,7 @@ def run_scan(
     use_trigger: bool = True,
     use_llm: bool = False,
     enable_meta: bool = False,
+    origin: dict | None = None,
 ) -> dict | None:
     """
     Run skill-scanner on a skill directory.
@@ -372,6 +373,8 @@ def run_scan(
     # Add scanner version to results
     scanner_version = get_scanner_version()
     scan_result["scanner_version"] = scanner_version
+    if origin:
+        scan_result.update({k: v for k, v in origin.items() if v})
 
     # Write updated JSON with version
     with open(json_output, "w") as f:
@@ -740,6 +743,7 @@ def run_batch_scan(
     scanner_path: str = "skill-scanner",
     use_behavioral: bool = True,
     use_trigger: bool = True,
+    origin: dict | None = None,
 ) -> dict[str, dict] | None:
     """Scan every skill under repo_dir in ONE scanner process via `scan-all`.
 
@@ -752,6 +756,8 @@ def run_batch_scan(
         output_dir: Where <name>-scan.json and <name>-scan.md are written.
         names: Mapping of resolved skill directory -> output file stem.
         scanner_path: skill-scanner executable.
+        origin: Optional {"source": ..., "repo_url": ...} recorded in every
+            result so the report never has to guess the owner from a path.
 
     Returns:
         {name: result} for every skill the scanner reported, or None if the
@@ -798,6 +804,8 @@ def run_batch_scan(
             logger.warning("Batch result for unexpected path %s; skipping", skill_path)
             continue
         result["scanner_version"] = scanner_version
+        if origin:
+            result.update({k: v for k, v in origin.items() if v})
         json_output = output_dir / f"{name}-scan.json"
         with open(json_output, "w") as f:
             json.dump(result, f, indent=2)

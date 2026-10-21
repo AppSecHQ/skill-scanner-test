@@ -142,7 +142,9 @@ def run_community_scan(
 
     # One scanner process for the whole repo. Per-skill processes cost ~4s of
     # startup each, which pushed a 177-skill repo past the CI time limit.
-    batch = run_batch_scan(repo_dir=repo_dir, output_dir=output_dir, names=names)
+    owner = repo_slug.split("/")[0]
+    origin = {"source": owner, "repo_url": f"https://github.com/{repo_slug}"}
+    batch = run_batch_scan(repo_dir=repo_dir, output_dir=output_dir, names=names, origin=origin)
 
     results = []
     for skill_path, safe_name in names.items():
@@ -157,6 +159,7 @@ def run_community_scan(
                 skill_name=safe_name,
                 use_llm=use_llm,
                 enable_meta=enable_meta,
+                origin=origin,
             )
             if result:
                 results.append(result)
