@@ -698,3 +698,119 @@ if __name__ == "__main__":
 
     safe = sum(1 for r in results if r.get("is_safe") is True)
     logger.info("Done: %d/%d skills safe", safe, len(results))
+
+
+BATCH_SCAN_TIMEOUT_SECONDS = 1500  # 25 minutes for a whole repository
+
+
+def write_markdown_summary(result: dict, md_output: Path) -> None:
+    """Write a compact Markdown report for one skill from its JSON result.
+
+    scan-all produces a single combined report, so per-skill Markdown is
+    derived here to keep the `<name>-scan.md` deliverable.
+    """
+    lines = [
+        f"# Scan: {result.get('skill_name', 'unknown')}",
+        "",
+        f"- **Verdict:** {'SAFE' if result.get('is_safe') else 'ISSUES FOUND'}",
+        f"- **Max severity:** {result.get('max_severity') or 'NONE'}",
+        f"- **Findings:** {result.get('findings_count', 0)}",
+        f"- **Analyzers:** {', '.join(result.get('analyzers_used', []))}",
+        f"- **Scanner version:** {result.get('scanner_version', 'unknown')}",
+        f"- **Timestamp:** {result.get('timestamp', '')}",
+        "",
+    ]
+    findings = result.get("findings") or []
+    if findings:
+        lines += ["## Findings", "", "| Severity | Category | Title | File |", "|---|---|---|---|"]
+        for f in findings:
+            loc = f.get("file_path") or ""
+            if f.get("line_number"):
+                loc += f":{f['line_number']}"
+            title = (f.get("title") or "").replace("|", "\\|")
+            lines.append(f"| {f.get('severity', '')} | {f.get('category', '')} | {title} | {loc} |")
+        lines.append("")
+    md_output.write_text("\n".join(lines))
+
+
+def run_batch_scan(
+    repo_dir: Path,
+    output_dir: Path,
+    names: dict[Path, str],
+    scanner_path: str = "skill-scanner",
+    use_behavioral: bool = True,
+    use_trigger: bool = True,
+) -> dict[str, dict] | None:
+    """Scan every skill under repo_dir in ONE scanner process via `scan-all`.
+
+    Each scanner process costs several seconds of startup, so per-skill
+    invocation of large repositories (100+ skills) exceeds CI time limits.
+    scan-all amortises that cost; 177 skills take about two minutes.
+
+    Args:
+        repo_dir: Root to search recursively for skills.
+        output_dir: Where <name>-scan.json and <name>-scan.md are written.
+        names: Mapping of resolved skill directory -> output file stem.
+        scanner_path: skill-scanner executable.
+
+    Returns:
+        {name: result} for every skill the scanner reported, or None if the
+        batch run failed entirely (caller may fall back to per-skill scans).
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    combined = output_dir / ".scan-all-combined.json"
+    cmd = [scanner_path, "scan-all", str(repo_dir), "--recursive", "--format", "json", "-o", str(combined)]
+    if use_behavioral:
+        cmd.append("--use-behavioral")
+    if use_trigger:
+        cmd.append("--use-trigger")
+
+    logger.info("Batch scanning %d skill(s) under %s", len(names), shorten_path(str(repo_dir)))
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=BATCH_SCAN_TIMEOUT_SECONDS)
+    except subprocess.TimeoutExpired:
+        logger.error("Batch scan timed out after %ds", BATCH_SCAN_TIMEOUT_SECONDS)
+        return None
+    except FileNotFoundError:
+        logger.error("Scanner not found: %s", scanner_path)
+        return None
+    if proc.returncode != 0 or not combined.exists():
+        logger.error("Batch scan failed (rc=%s): %s", proc.returncode, (proc.stderr or proc.stdout)[-500:])
+        return None
+
+    try:
+        with open(combined) as f:
+            data = json.load(f)
+    except (json.JSONDecodeError, OSError) as e:
+        logger.error("Failed to read batch results: %s", e)
+        return None
+    finally:
+        combined.unlink(missing_ok=True)
+
+    scanner_version = get_scanner_version()
+    by_path = {p.resolve(): n for p, n in names.items()}
+    results: dict[str, dict] = {}
+    entries = data.get("results", []) if isinstance(data, dict) else data
+    for i, result in enumerate(entries, 1):
+        skill_path = Path(result.get("skill_path", "")).resolve()
+        name = by_path.get(skill_path)
+        if name is None:
+            logger.warning("Batch result for unexpected path %s; skipping", skill_path)
+            continue
+        result["scanner_version"] = scanner_version
+        json_output = output_dir / f"{name}-scan.json"
+        with open(json_output, "w") as f:
+            json.dump(result, f, indent=2)
+        write_markdown_summary(result, output_dir / f"{name}-scan.md")
+        results[name] = result
+        logger.info(
+            "[%d/%d] %s: %s, %d finding(s)",
+            i, len(entries), name,
+            "safe" if result.get("is_safe") else (result.get("max_severity") or "issues"),
+            result.get("findings_count", 0),
+        )
+
+    missing = set(names.values()) - set(results)
+    if missing:
+        logger.warning("Scanner returned no result for %d skill(s): %s", len(missing), sorted(missing)[:10])
+    return results

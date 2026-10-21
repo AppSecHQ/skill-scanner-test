@@ -18,6 +18,7 @@ import requests
 
 from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT
 from run_scans import (
+    run_batch_scan,
     clone_repo,
     parse_repo_arg,
     repo_to_dirname,
@@ -120,7 +121,7 @@ def run_community_scan(
         sys.exit(1)
 
     # Find all SKILL.md files
-    skill_files = list(repo_dir.rglob("SKILL.md"))
+    skill_files = sorted(repo_dir.rglob("SKILL.md"))
 
     if not skill_files:
         _write_error_comment(repo_slug, "No SKILL.md files found in the repository.")
@@ -128,36 +129,45 @@ def run_community_scan(
 
     logger.info("Found %d skill(s) in %s", len(skill_files), repo_slug)
 
-    results = []
+    # Output file stem for each skill directory.
+    names: dict[Path, str] = {}
     for skill_md in skill_files:
         skill_path = skill_md.parent
         rel_path = skill_path.relative_to(repo_dir)
-
         if rel_path == Path("."):
             skill_name = repo_to_dirname(repo_slug)
         else:
             skill_name = str(rel_path).replace("/", "-").lstrip(".")
+        names[skill_path] = sanitize_filename(skill_name)
 
-        safe_name = sanitize_filename(skill_name)
+    # One scanner process for the whole repo. Per-skill processes cost ~4s of
+    # startup each, which pushed a 177-skill repo past the CI time limit.
+    batch = run_batch_scan(repo_dir=repo_dir, output_dir=output_dir, names=names)
 
-        result = run_scan(
-            skill_path=skill_path,
-            output_dir=output_dir,
-            skill_name=safe_name,
-            use_llm=use_llm,
-            enable_meta=enable_meta,
-        )
-
-        if result:
-            results.append(result)
-        else:
-            results.append({
-                "skill_name": safe_name,
-                "is_safe": None,
-                "error": "Scan failed",
-                "findings_count": 0,
-                "max_severity": "ERROR",
-            })
+    results = []
+    for skill_path, safe_name in names.items():
+        if batch is not None and safe_name in batch:
+            results.append(batch[safe_name])
+            continue
+        if batch is None:
+            # Whole batch failed: fall back to the slower per-skill path.
+            result = run_scan(
+                skill_path=skill_path,
+                output_dir=output_dir,
+                skill_name=safe_name,
+                use_llm=use_llm,
+                enable_meta=enable_meta,
+            )
+            if result:
+                results.append(result)
+                continue
+        results.append({
+            "skill_name": safe_name,
+            "is_safe": None,
+            "error": "Scan failed",
+            "findings_count": 0,
+            "max_severity": "ERROR",
+        })
 
     return results
 

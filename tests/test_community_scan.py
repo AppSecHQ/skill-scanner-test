@@ -175,9 +175,10 @@ class TestFormatResultsComment:
 class TestRunCommunityScan:
     """Tests for the scan runner."""
 
+    @patch("community_scan.run_batch_scan", return_value=None)  # force per-skill fallback path
     @patch("community_scan.run_scan")
     @patch("community_scan.clone_repo")
-    def test_scan_with_skill_found(self, mock_clone, mock_scan, tmp_path):
+    def test_scan_with_skill_found(self, mock_clone, mock_scan, mock_batch, tmp_path):
         # Set up a fake repo with SKILL.md
         repo_dir = tmp_path / "skills" / "owner-repo"
         repo_dir.mkdir(parents=True)
@@ -230,9 +231,10 @@ class TestRunCommunityScan:
                 output_dir=tmp_path / "results",
             )
 
+    @patch("community_scan.run_batch_scan", return_value=None)  # force per-skill fallback path
     @patch("community_scan.run_scan")
     @patch("community_scan.clone_repo")
-    def test_monorepo_multiple_skills(self, mock_clone, mock_scan, tmp_path):
+    def test_monorepo_multiple_skills(self, mock_clone, mock_scan, mock_batch, tmp_path):
         repo_dir = tmp_path / "skills" / "owner-repo"
         (repo_dir / "skills" / "alpha").mkdir(parents=True)
         (repo_dir / "skills" / "beta").mkdir(parents=True)
