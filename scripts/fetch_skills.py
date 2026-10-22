@@ -15,55 +15,46 @@ logger = logging.getLogger(__name__)
 VALID_SOURCES = ["skills.sh", "clawhub"]
 
 
+BEST_SKILLS_BASE = "https://raw.githubusercontent.com/LinklyAI/best-skills/main/data/latest"
+
+
 def _fetch_skillssh(n: int, offset: int, reverse: bool) -> list[dict]:
     """
-    Fetch skills from skills.sh API.
+    Fetch skills.sh rankings.
 
-    The API only supports `limit` and `offset` params and always returns
-    skills sorted by installs descending. To get least-installed skills
-    (--reverse), we fetch all skills and take from the end.
+    skills.sh removed its public JSON API (``/api/skills`` returns 404 as of
+    2026-10-21). The daily LinklyAI/best-skills dataset mirrors the skills.sh
+    all-time leaderboard as CSV with columns
+    ``view,rank,source,name,installs,is_official,...`` where ``source`` is
+    ``owner/repo``. Rows are ordered by installs descending.
 
     Args:
         n: Number of skills to fetch
         offset: Number of skills to skip from the start
-        reverse: If True, fetch lowest-installed skills instead of top
+        reverse: If True, take the least-installed rows instead of the top
 
     Returns:
         List of normalized skill dictionaries
     """
-    base_url = "https://skills.sh/api/skills"
+    import csv
+    import io
+
     session = get_session()
+    response = session.get(f"{BEST_SKILLS_BASE}/raw/skills-sh.csv", timeout=60)
+    response.raise_for_status()
+    rows = [r for r in csv.DictReader(io.StringIO(response.text)) if r.get("view", "all-time") == "all-time"]
+    rows.sort(key=lambda r: int(r.get("installs") or 0), reverse=not reverse)
 
-    if reverse:
-        # API has no sort param, so fetch all and reverse in memory
-        response = session.get(base_url, params={"limit": 50000}, timeout=60)
-        response.raise_for_status()
-        all_skills = response.json().get("skills", [])
-        all_skills.reverse()
-    else:
-        # Fetch only what we need using server-side offset/limit
-        response = session.get(
-            base_url, params={"limit": n, "offset": offset}, timeout=30
-        )
-        response.raise_for_status()
-        all_skills = response.json().get("skills", [])
-        offset = 0  # Already applied server-side
-
-    # Apply offset and limit
-    skills = all_skills[offset:offset + n]
-
-    # Normalize to common schema
     result = []
-    for i, skill in enumerate(skills, offset + 1):
+    for i, row in enumerate(rows[offset:offset + n], offset + 1):
         result.append({
             "rank": i,
-            "name": skill["name"],
-            "id": skill["id"],
-            "repo": skill["topSource"],
-            "installs": skill["installs"],
+            "name": row["name"],
+            "id": f"{row['source']}/{row['name']}",
+            "repo": row["source"],
+            "installs": int(row.get("installs") or 0),
             "source": "skills.sh",
         })
-
     return result
 
 
