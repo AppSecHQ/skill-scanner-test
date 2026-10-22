@@ -31,6 +31,13 @@ def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict
 
     Args:
         results_dir: Directory containing *-scan.json files
+        skills_dir: Optional directory of ``skill-inventory-*.json`` files to
+            consult for skills whose results carry no ``source``/``repo_url``
+            stamp. Off by default: the committed attribution in
+            ``docs/data/summary.json`` was produced without it, and the
+            gitignored local inventories are stale and can rename live skill
+            URLs. The recorded stamp always wins; path heuristics are the
+            fallback.
 
     Returns:
         Aggregated findings dictionary
@@ -49,11 +56,9 @@ def aggregate_results(results_dir: Path, skills_dir: Path | None = None) -> dict
         "scanner_versions": set(),  # Track all versions seen
     }
 
-    # Build lookups from inventory files
-    if skills_dir is None:
-        skills_dir = results_dir.parent / "skills"
-    source_lookup = _build_source_lookup(skills_dir)
-    url_lookup = _build_url_lookup(skills_dir)
+    # Inventory lookups are opt-in (see docstring).
+    source_lookup = _build_source_lookup(skills_dir) if skills_dir else {}
+    url_lookup = _build_url_lookup(skills_dir) if skills_dir else {}
 
     # Process each scan result (including dotfiles)
     scan_files = set(results_dir.glob("*-scan.json")) | set(results_dir.glob(".*-scan.json"))

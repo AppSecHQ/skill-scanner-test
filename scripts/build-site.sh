@@ -39,6 +39,14 @@ if [ -d "$RESULTS_DIR/profiles" ]; then
     done
 fi
 
+# Per-skill SkillSpector verdicts (written by compare_scanners.py)
+if [ -f "$RESULTS_DIR/skillspector-summary.json" ]; then
+    cp "$RESULTS_DIR/skillspector-summary.json" "$DATA_DIR/skillspector.json"
+fi
+if [ -f "$RESULTS_DIR/scanner-comparison.json" ]; then
+    cp "$RESULTS_DIR/scanner-comparison.json" "$DATA_DIR/scanner-comparison.json"
+fi
+
 # Verify repo_url coverage (populated upstream by generate_report.py)
 python3 -c "
 import json

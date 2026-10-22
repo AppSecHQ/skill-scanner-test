@@ -44,6 +44,40 @@ def _source_index(results: Path) -> dict[str, str]:
     return out
 
 
+def published_stem(stem: str) -> str:
+    """The site publishes dot-prefixed scans (``.github-skills-*``) without the dot."""
+    return stem.lstrip(".")
+
+
+def skill_summary(results: Path) -> dict[str, dict]:
+    """One compact SkillSpector verdict per scan stem, for the site.
+
+    Keys match the published scan name (``docs/data/scans/<stem>-scan.json``),
+    so dot-prefixed stems lose their dot. Includes every SkillSpector result,
+    paired or not.
+    """
+    out = {}
+    for ss_file in sorted((results / "skillspector").glob("*-skillspector.json")):
+        stem = published_stem(ss_file.name[: -len("-skillspector.json")])
+        ss = json.loads(ss_file.read_text())
+        ra = ss.get("risk_assessment") or {}
+        if not ra.get("recommendation"):
+            continue  # scan errored
+        issues = ss.get("issues") or []
+        cats = Counter(i.get("category", "unknown") for i in issues)
+        out[stem] = {
+            "recommendation": ra.get("recommendation"),
+            "score": ra.get("score"),
+            "severity": ra.get("severity"),
+            "issue_count": len(issues),
+            "top_categories": [c for c, _ in cats.most_common(3)],
+            "version": (ss.get("metadata") or {}).get("skillspector_version"),
+            "mode": (ss.get("_meta") or {}).get("mode", "static"),
+            "scanned_at": (ss.get("_meta") or {}).get("scanned_at"),
+        }
+    return out
+
+
 def load_pairs(results: Path) -> list[dict]:
     pairs = []
     sources = _source_index(results)
@@ -61,7 +95,7 @@ def load_pairs(results: Path) -> list[dict]:
         pairs.append({
             "name": stem,
             "skill_name": cisco.get("skill_name"),
-            "source": cisco.get("source") or sources.get(stem),
+            "source": cisco.get("source") or sources.get(published_stem(stem)),
             "cisco": {
                 "flagged": not cisco["is_safe"],
                 "flagged_strict": SEVERITY_ORDER.index(cisco.get("max_severity", "SAFE")) >= SEVERITY_ORDER.index("HIGH")
@@ -182,6 +216,10 @@ def main() -> int:
     out_md = args.md or args.results / "scanner-comparison.md"
     out_json.write_text(json.dumps({"summary": summary, "summary_strict": strict, "skills": pairs}, indent=1))
     out_md.write_text(render_markdown(summary, strict, pairs))
+    per_skill = skill_summary(args.results)
+    out_skills = args.results / "skillspector-summary.json"
+    out_skills.write_text(json.dumps(per_skill, indent=1, sort_keys=True))
+    print(f"wrote {out_skills} ({len(per_skill)} skills)")
     print(f"{summary['skills_compared']} skills; agreement {summary['agreement_rate']:.1%}, kappa {summary['cohens_kappa']:.2f}; "
           f"both {summary['flagged_by_both']}, cisco-only {summary['cisco_only']}, skillspector-only {summary['skillspector_only']}, neither {summary['flagged_by_neither']}")
     print(f"strict: agreement {strict['agreement_rate']:.1%}, kappa {strict['cohens_kappa']:.2f}; "

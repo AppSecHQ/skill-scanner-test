@@ -160,3 +160,29 @@ class TestCompare:
         assert len(pairs) == 1 and pairs[0]["source"] == "obra"
         assert pairs[0]["cisco"]["flagged_strict"] and pairs[0]["skillspector"]["flagged_strict"]
         assert pairs[0]["skillspector"]["categories"] == ["Tool Misuse"]
+
+
+class TestSiteSummary:
+    def test_dot_stems_resolve_to_published_source(self, tmp_path):
+        results = tmp_path / "results"
+        (results / "skillspector").mkdir(parents=True)
+        (tmp_path / "docs" / "data").mkdir(parents=True)
+        (tmp_path / "docs" / "data" / "summary.json").write_text(json.dumps([{"scan_file": "github-skills-x-scan.md", "source": "microsoft"}]))
+        (results / ".github-skills-x-scan.json").write_text(json.dumps({"skill_name": "x", "is_safe": True, "max_severity": "SAFE", "findings_count": 0, "findings": []}))
+        (results / "skillspector" / ".github-skills-x-skillspector.json").write_text(json.dumps({"risk_assessment": {"score": 0, "recommendation": "SAFE", "severity": "LOW"}, "issues": [], "metadata": {}}))
+        pairs = compare_scanners.load_pairs(results)
+        assert len(pairs) == 1 and pairs[0]["source"] == "microsoft"
+
+    def test_skill_summary_keys_match_published_names(self, tmp_path):
+        results = tmp_path / "results"
+        (results / "skillspector").mkdir(parents=True)
+        (results / "skillspector" / ".github-skills-x-skillspector.json").write_text(json.dumps({
+            "risk_assessment": {"score": 51, "recommendation": "DO_NOT_INSTALL", "severity": "HIGH"},
+            "issues": [{"category": "Tool Misuse"}, {"category": "Tool Misuse"}, {"category": "Privilege Escalation"}],
+            "metadata": {"skillspector_version": "2.12.0"}, "_meta": {"mode": "static", "scanned_at": "2026-10-22T00:00:00Z"}}))
+        (results / "skillspector" / "broken-skillspector.json").write_text(json.dumps({"risk_assessment": {}, "issues": [], "_meta": {"error": "timeout"}}))
+        got = compare_scanners.skill_summary(results)
+        assert set(got) == {"github-skills-x"}
+        row = got["github-skills-x"]
+        assert row["recommendation"] == "DO_NOT_INSTALL" and row["issue_count"] == 3
+        assert row["top_categories"] == ["Tool Misuse", "Privilege Escalation"] and row["version"] == "2.12.0"

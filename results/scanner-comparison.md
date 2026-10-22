@@ -25,9 +25,8 @@ Agreement 79.7%, Cohen's kappa 0.26
 | Source | Skills | Both | Cisco only | SkillSpector only | Neither |
 |---|---|---|---|---|---|
 | clawhub.ai | 325 | 103 | 19 | 140 | 63 |
+| microsoft | 200 | 15 | 0 | 169 | 16 |
 | K-Dense-AI | 177 | 25 | 0 | 152 | 0 |
-| unknown | 107 | 2 | 0 | 89 | 16 |
-| microsoft | 93 | 13 | 0 | 80 | 0 |
 | 101-skills | 86 | 6 | 0 | 28 | 52 |
 | magentosh | 86 | 6 | 0 | 28 | 52 |
 | qu-skills | 86 | 6 | 0 | 28 | 52 |
@@ -123,7 +122,7 @@ Skills one scanner rates most severely while the other calls safe.
 | querit-search | clawhub.ai | MEDIUM (2) | DO_NOT_INSTALL 99 (14) |
 | azure-cloud-migrate | microsoft | MEDIUM (8) | DO_NOT_INSTALL 95 (11) |
 | azure-cloud-migrate | microsoft | MEDIUM (8) | DO_NOT_INSTALL 95 (11) |
-| azure-ai-evaluation-py | None | MEDIUM (2) | DO_NOT_INSTALL 92 (6) |
+| azure-ai-evaluation-py | microsoft | MEDIUM (2) | DO_NOT_INSTALL 92 (6) |
 | codex | skills.sh | MEDIUM (2) | DO_NOT_INSTALL 90 (6) |
 | azure-validate | microsoft | MEDIUM (5) | DO_NOT_INSTALL 89 (22) |
 | azure-validate | microsoft | MEDIUM (5) | DO_NOT_INSTALL 89 (22) |
