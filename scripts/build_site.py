@@ -58,6 +58,14 @@ def fmt_bytes(n) -> str:
     return f"{n:.1f} MB"
 
 
+def clip(text: str, limit: int = 155) -> str:
+    """Cut on a word boundary for <meta name=description>."""
+    text = " ".join((text or "").split())
+    if len(text) <= limit:
+        return text
+    return text[: limit - 1].rsplit(" ", 1)[0].rstrip(",.;:") + "…"
+
+
 def meta_description(skill: Skill, limit: int = 155) -> str:
     """Author's description first, scan verdict second, cut on a word boundary."""
     lead = f"{skill.name} ({skill.source})"
@@ -111,6 +119,26 @@ def severity_breakdown(skill: Skill) -> str:
     counts = Counter((f.get("severity") or "INFO").upper() for f in skill.findings)
     order = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
     return ", ".join(f"{counts[k]} {k.lower()}" for k in order if counts.get(k))
+
+
+def skill_title_tail(skill: Skill) -> str:
+    """Short verdict for <title>: the count and the worst severity, never the full
+    breakdown (that lives in the description and on the page). "safe" is the
+    scanner's verdict and can coexist with low-severity findings, so the title
+    never says "no findings" unless the count really is zero."""
+    n = skill.findings_count
+    plural = "s" if n != 1 else ""
+    if n == 0:
+        return "no findings"
+    counts = Counter((f.get("severity") or "INFO").upper() for f in skill.findings)
+    worst = next((k for k in ("CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO") if counts.get(k)), None)
+    if skill.is_safe:
+        if worst and counts[worst] == n:
+            return f"safe, {n} {worst.lower()} finding{plural}"
+        return f"safe, {n} finding{plural}"
+    if worst and counts[worst] == n:
+        return f"{n} {worst.lower()} finding{plural}"
+    return f"{n} finding{plural}, {counts[worst]} {worst.lower()}" if worst else f"{n} finding{plural}"
 
 
 def summary_sentence(skill: Skill) -> str:
@@ -295,18 +323,15 @@ class SiteBuilder:
             "description": f"Sortable security scan results for {len(self.skills)} AI agent skills across {len(self.registries)} registries: verdict, severity counts and findings per skill.",
             "section": "skills", "breadcrumbs": crumbs, "jsonld": self.jsonld_breadcrumbs(crumbs),
         }, skills=self.skills)
+        # Same-named skills exist in several registries; only those carry the
+        # registry in <title>, so the common case stays short.
+        name_sources = defaultdict(set)
+        for s in self.skills:
+            name_sources[s.name].add(s.source)
         for s in self.skills:
             crumbs = self.breadcrumbs(("Skills", "/skills/"), (s.name, s.url))
-            sev_bits = severity_breakdown(s)
-            plural = "s" if s.findings_count != 1 else ""
-            # "safe" is the scanner's verdict; it can coexist with low-severity findings,
-            # so the title must never say "no findings" unless the count really is zero.
-            if s.findings_count == 0:
-                title_tail = f"{s.verdict.lower()}, no findings"
-            elif s.is_safe:
-                title_tail = f"safe, {sev_bits or s.findings_count} finding{plural}"
-            else:
-                title_tail = f"{s.verdict.lower()}, {s.findings_count} finding{plural}{' (' + sev_bits + ')' if sev_bits else ''}"
+            title_tail = skill_title_tail(s)
+            title_name = f"{s.name} ({s.source})" if len(name_sources[s.name]) > 1 else s.name
             desc = (s.summary_text or summary_sentence(s)).strip()
             if len(desc) > 300:
                 desc = desc[:297].rsplit(" ", 1)[0] + "…"
@@ -333,7 +358,7 @@ class SiteBuilder:
                 },
             ]
             self.render("skill.html", s.url, {
-                "title": f"{s.name} security scan: {title_tail} | skillscan.io",
+                "title": f"{title_name} security scan: {title_tail} | skillscan.io",
                 "description": meta_description(s),
                 "section": "skills", "breadcrumbs": crumbs, "jsonld": jsonld, "og_type": "article",
                 "lastmod": fmt_date(s.timestamp),
@@ -346,7 +371,7 @@ class SiteBuilder:
         crumbs = self.breadcrumbs(("Categories", "/categories/"))
         self.render("categories_index.html", "/categories/", {
             "title": "Agent skill finding categories mapped to OWASP AST10 | skillscan.io",
-            "description": "The 13 security finding categories in the skillscan.io dataset, each mapped to the OWASP Agentic Skills Top 10 with examples and affected skills.",
+            "description": f"The {len(self.categories)} security finding categories in the skillscan.io dataset, each mapped to the OWASP Agentic Skills Top 10 with examples and affected skills.",
             "section": "categories", "breadcrumbs": crumbs, "jsonld": self.jsonld_breadcrumbs(crumbs),
         })
         for c in self.categories:
@@ -354,7 +379,7 @@ class SiteBuilder:
             crumbs = self.breadcrumbs(("Categories", "/categories/"), (c["name"], c["url"]))
             self.render("category.html", c["url"], {
                 "title": f"{c['name']} in AI agent skills: {c['count']} finding{'' if c['count'] == 1 else 's'} across {len(ctx['affected'])} skill{'' if len(ctx['affected']) == 1 else 's'} | skillscan.io",
-                "description": (c.get("definition") or f"Findings classified as {c['name']} in scanned AI agent skills.")[:300],
+                "description": clip(c.get("definition") or f"Findings classified as {c['name']} in scanned AI agent skills."),
                 "section": "categories", "breadcrumbs": crumbs, "jsonld": self.jsonld_breadcrumbs(crumbs),
             }, category=c, **ctx)
 
@@ -395,10 +420,13 @@ class SiteBuilder:
             crumbs = self.breadcrumbs(("Research", "/research/"), (p["title"], p["url"]))
             self.render("post.html", p["url"], {
                 "title": f"{p['title']} | skillscan.io",
-                "description": (p.get("description") or p.get("excerpt") or p["title"])[:300],
+                "description": clip(p.get("description") or p.get("excerpt") or p["title"]),
                 "section": "research", "breadcrumbs": crumbs, "og_type": "article", "lastmod": str(p.get("updated") or p.get("date"))[:10],
                 "jsonld": [self.jsonld_breadcrumbs(crumbs), {
                     "@context": "https://schema.org", "@type": "Article", "headline": p["title"],
+                    "image": [self.base_url + "/og-default.png"],
+                    "publisher": {"@type": "Organization", "name": SITE_NAME, "url": self.base_url + "/",
+                                  "logo": {"@type": "ImageObject", "url": self.base_url + "/icon-512.png"}},
                     "datePublished": str(p.get("date"))[:10], "dateModified": str(p.get("updated") or p.get("date"))[:10],
                     "url": self.base_url + p["url"], "author": {"@type": "Organization", "name": SITE_NAME},
                 }],
@@ -418,7 +446,7 @@ class SiteBuilder:
                 crumbs = self.breadcrumbs((p["title"], p["url"])) if p["url"] == f"/{section}/" else self.breadcrumbs((section.capitalize(), f"/{section}/"), (p["title"], p["url"]))
                 self.render("page.html", p["url"], {
                     "title": f"{p['title']} | skillscan.io",
-                    "description": (p.get("description") or p["title"])[:300],
+                    "description": clip(p.get("description") or p["title"]),
                     "section": section, "breadcrumbs": crumbs, "jsonld": self.jsonld_breadcrumbs(crumbs),
                     "lastmod": str(p.get("updated") or p.get("date") or self.site["scan_date"])[:10],
                 }, content=p, siblings=pages if len(pages) > 1 else None)

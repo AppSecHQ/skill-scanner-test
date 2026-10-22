@@ -77,6 +77,8 @@ def site_root(tmp_path: Path) -> Path:
     (scans / "delta-scan.json").write_text(json.dumps(_scan("delta", [_finding("INFO", "policy_violation", "Note")], "2026-02-06T10:00:00", is_safe=True)))
     (scans / "beta-scan.json").write_text(json.dumps(_scan("beta", [], "2026-02-05T10:00:00", analyzers=("static_analyzer", "llm_analyzer"))))
     (scans / "腾讯地图-scan.json").write_text(json.dumps(_scan("tencent-map", [f_med], "2026-02-06T10:00:00")))
+    (scans / "twin-scan.json").write_text(json.dumps(_scan("twin", [], "2026-02-06T10:00:00")))
+    (scans / "twin-2-scan.json").write_text(json.dumps(_scan("twin", [], "2026-02-06T10:00:00")))
     summary = {
         "scan_date": "2026-02-07",
         "total_skills": 4, "safe_skills": 1, "unsafe_skills": 3, "error_skills": 0,
@@ -91,6 +93,8 @@ def site_root(tmp_path: Path) -> Path:
             {"name": "delta", "source": "skills.sh", "repo_url": None, "scan_file": "delta-scan.md", "is_safe": True, "findings_count": 1, "max_severity": "INFO", "analyzers": ["static_analyzer"]},
             {"name": "beta", "source": "skills.sh", "repo_url": "https://example.com/b", "scan_file": "beta-scan.md", "is_safe": True, "findings_count": 0, "max_severity": None, "analyzers": ["static_analyzer", "llm_analyzer"]},
             {"name": "tencent-map", "source": "clawhub.ai", "repo_url": None, "scan_file": "腾讯地图-scan.md", "is_safe": False, "findings_count": 1, "max_severity": "MEDIUM", "analyzers": ["static_analyzer"]},
+            {"name": "twin", "source": "clawhub.ai", "repo_url": None, "scan_file": "twin-scan.md", "is_safe": True, "findings_count": 0, "max_severity": None, "analyzers": ["static_analyzer"]},
+            {"name": "twin", "source": "skills.sh", "repo_url": None, "scan_file": "twin-2-scan.md", "is_safe": True, "findings_count": 0, "max_severity": None, "analyzers": ["static_analyzer"]},
         ],
     }
     (docs / "data" / "summary.json").write_text(json.dumps(summary))
@@ -128,7 +132,7 @@ def site_root(tmp_path: Path) -> Path:
         (content / section / "index.md").write_text(f"---\ntitle: {section}\ndescription: The {section} page, described at sufficient length.\n---\ntext\n")
     static = tmp_path / "docs-src" / "static"
     static.mkdir()
-    for name in ("theme.css", "site.js", "og-default.png"):
+    for name in ("theme.css", "site.js", "og-default.png", "favicon.svg", "favicon.ico", "apple-touch-icon.png", "icon-512.png"):
         (static / name).write_text("/* static */")
     return tmp_path
 
@@ -137,7 +141,7 @@ def site_root(tmp_path: Path) -> Path:
 class TestLoaders:
     def test_groups_duplicate_scans_into_history(self, site_root):
         _, skills, slug_map = load_skills(site_root / "docs" / "data")
-        assert len(skills) == 5
+        assert len(skills) == 7
         alpha = next(s for s in skills if s.name == "alpha")
         assert alpha.scan_count == 2
         assert alpha.timestamp == "2026-02-07T10:00:00"  # newest first
@@ -178,7 +182,7 @@ class TestBuild:
 
     def test_every_skill_gets_a_page_and_badge(self, built):
         docs, stats = built
-        assert stats["skills"] == 5
+        assert stats["skills"] == 7
         for slug in ("clawhub-ai-alpha", "skills-sh-beta", "clawhub-ai-tencent-map"):
             assert (docs / "skills" / slug / "index.html").exists()
             assert (docs / "badge" / f"{slug}.svg").exists()
@@ -227,18 +231,37 @@ class TestBuild:
         assert "What this skill does" not in alpha
         assert re.search(r'name="description" content="alpha \(clawhub.ai\): 2 findings', alpha)
 
+    def test_head_tags_noindex_favicon_article(self, built):
+        docs, _ = built
+        assert '<meta name="robots" content="noindex">' in (docs / "404.html").read_text()
+        home = (docs / "index.html").read_text()
+        assert 'name="robots"' not in home and 'rel="icon" href="/favicon.svg"' in home and 'apple-touch-icon' in home
+        assert "/404.html" not in (docs / "sitemap.xml").read_text()
+        post = (docs / "research" / "2026" / "post" / "index.html").read_text()
+        assert '/og-default.png' in post and '"publisher"' in post and '"logo"' in post
+        cats = (docs / "categories" / "index.html").read_text()
+        assert "The 2 security finding categories" in cats  # 1 taxonomy entry + 1 seen only in scans
+        for page in docs.rglob("index.html"):
+            if str(page).startswith(str(docs / "app")):
+                continue
+            d = re.search(r'name="description" content="([^"]*)"', page.read_text()).group(1)
+            assert len(d) <= 160, (page, len(d))
+
     def test_titles_never_contradict_finding_counts(self, built):
         docs, _ = built
         def title(slug):
             return re.search(r"<title>(.*?)</title>", (docs / "skills" / slug / "index.html").read_text()).group(1)
-        assert title("skills-sh-beta") == "beta security scan: safe, no findings | skillscan.io"
+        assert title("skills-sh-beta") == "beta security scan: no findings | skillscan.io"
         assert title("skills-sh-gamma") == "gamma security scan: safe, 1 medium finding | skillscan.io"
         assert title("skills-sh-delta") == "delta security scan: safe, 1 info finding | skillscan.io"
-        assert title("clawhub-ai-alpha") == "alpha security scan: issues found, 2 findings (1 critical, 1 medium) | skillscan.io"
+        assert title("clawhub-ai-alpha") == "alpha security scan: 2 findings, 1 critical | skillscan.io"
+        # The registry appears only when the same name exists in more than one registry.
+        assert title("clawhub-ai-twin") == "twin (clawhub.ai) security scan: no findings | skillscan.io"
+        assert title("skills-sh-twin") == "twin (skills.sh) security scan: no findings | skillscan.io"
         for page in (docs / "skills").rglob("index.html"):
             html = page.read_text()
             t = re.search(r"<title>(.*?)</title>", html).group(1)
-            assert not ("no findings" in t and "(" in t), t
+            assert not ("no findings" in t and re.search(r"\(\d", t)), t
             assert "1 findings" not in t, t
             assert 'property="og:image" content="https://example.test/og-default.png"' in html
 
