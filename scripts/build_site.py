@@ -232,6 +232,36 @@ def related_skills(skill: Skill, skills: list[Skill], limit: int = 6) -> list[Sk
     return (same_cat[: limit // 2] + same_src)[:limit]
 
 
+def link_identical_copies(skills: list[Skill]) -> int:
+    """Group skills whose package profiles are byte-identical across registries.
+
+    Re-uploads and forks of a skill repository produce the same SKILL.md and the
+    same file list under several registry names. Each group keeps one canonical
+    page (earliest first scan, then registry, then slug, so rebuilds never flip
+    it); the others point their rel=canonical at it and stay out of the sitemap.
+    Returns the number of non-canonical copies.
+    """
+    groups: dict[tuple, list[Skill]] = defaultdict(list)
+    for s in skills:
+        p = s.profile
+        if not p or not p.get("files"):
+            continue
+        key = (s.name, p.get("description") or "", tuple((f.get("path"), f.get("bytes")) for f in p["files"]))
+        groups[key].append(s)
+    copies = 0
+    for members in groups.values():
+        if len({m.source for m in members}) < 2:
+            continue
+        members.sort(key=lambda m: (m.first_scanned or "", m.source, m.slug))
+        canonical = members[0]
+        for m in members:
+            m.copies = [o for o in members if o is not m]
+            if m is not canonical:
+                m.canonical_of = canonical
+                copies += 1
+    return copies
+
+
 # --------------------------------------------------------------------------- build
 class SiteBuilder:
     def __init__(self, root: Path, base_url: str = DEFAULT_BASE_URL) -> None:
@@ -253,6 +283,7 @@ class SiteBuilder:
 
     def load(self) -> None:
         self.summary, self.skills, self.slug_map = load_skills(self.data)
+        self.duplicate_copies = link_identical_copies(self.skills)
         self.categories = load_categories(self.data, self.summary)
         self.cat_by_key = {c["key"]: c for c in self.categories}
         self.notes = load_notes(self.docs)
@@ -283,7 +314,8 @@ class SiteBuilder:
         if out_path.endswith("/"):
             target = target / "index.html"
         write(target, html_out)
-        if not page.get("noindex"):
+        # Pages that canonicalise elsewhere are rendered but kept out of the sitemap.
+        if not page.get("noindex") and not page.get("canonical"):
             self.pages.append({"url": page["url"], "lastmod": page.get("lastmod") or self.site["scan_date"]})
 
     def breadcrumbs(self, *crumbs: tuple[str, str]) -> list[dict]:
@@ -357,12 +389,18 @@ class SiteBuilder:
                     },
                 },
             ]
-            self.render("skill.html", s.url, {
-                "title": f"{title_name} security scan: {title_tail} | skillscan.io",
+            # No site-name suffix here: search engines show the site name on
+            # their own line from the WebSite structured data, and the 15
+            # characters it costs would push the verdict past the display cut.
+            page = {
+                "title": f"{title_name} security scan: {title_tail}",
                 "description": meta_description(s),
                 "section": "skills", "breadcrumbs": crumbs, "jsonld": jsonld, "og_type": "article",
                 "lastmod": fmt_date(s.timestamp),
-            }, skill=s, summary_sentence=summary_sentence(s), related=related_skills(s, self.skills))
+            }
+            if s.canonical_of:
+                page["canonical"] = s.canonical_of.url
+            self.render("skill.html", s.url, page, skill=s, summary_sentence=summary_sentence(s), related=related_skills(s, self.skills))
             color = SEVERITY_COLORS.get(s.max_severity or "SAFE", SEVERITY_COLORS["SAFE"]) if not s.is_safe else SEVERITY_COLORS["SAFE"]
             label = "safe" if s.is_safe else f"{s.findings_count} findings, {(s.max_severity or 'issues').lower()}"
             write(self.docs / "badge" / f"{s.slug}.svg", badge_svg("skillscan.io", label, color))
@@ -554,7 +592,8 @@ class SiteBuilder:
         self.write_sitemap()
         self.write_maps()
         return {"pages": len(self.pages), "skills": len(self.skills), "categories": len(self.categories),
-                "registries": len(self.registries), "posts": len(self.posts), "content": len(self.content)}
+                "registries": len(self.registries), "posts": len(self.posts), "content": len(self.content),
+                "duplicate_copies": self.duplicate_copies}
 
 
 def main(argv: list[str] | None = None) -> int:

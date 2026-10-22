@@ -28,6 +28,11 @@ class Skill:
     scan: dict = field(default_factory=dict)
     history: list[dict] = field(default_factory=list)  # all scans, newest first
     profile: dict | None = None  # package description from skill_profile.py, newest scan
+    # Byte-identical copies of the same skill published in other registries
+    # (see build_site.link_identical_copies). canonical_of is None on the
+    # copy that owns the canonical URL.
+    copies: list["Skill"] = field(default_factory=list, repr=False, compare=False)
+    canonical_of: "Skill | None" = field(default=None, repr=False, compare=False)
 
     @property
     def findings(self) -> list[dict]:

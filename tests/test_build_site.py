@@ -110,6 +110,16 @@ def site_root(tmp_path: Path) -> Path:
         "files_truncated": 0, "domains": ["api.invoices.example.io"], "env_vars": ["INVOICE_API_KEY"],
         "git_commit": "abc123def456", "profiled_at": "2026-10-22T01:00:00Z",
     }))
+    # The two twins are a byte-identical re-upload: same description, same files.
+    twin_profile = {
+        "schema": 1, "name": "twin", "description": "Pairs things.", "license": None, "compatibility": None,
+        "version": None, "homepage": None, "allowed_tools": [], "requires": {}, "frontmatter_keys": ["name", "description"],
+        "skill_md": {"present": True, "bytes": 300, "words": 40, "headings": []}, "file_count": 1, "total_bytes": 300,
+        "kinds": {"doc": 1}, "languages": {}, "files": [{"path": "SKILL.md", "bytes": 300, "kind": "doc"}],
+        "files_truncated": 0, "domains": [], "env_vars": [], "git_commit": "feedfacefeed", "profiled_at": "2026-10-22T01:00:00Z",
+    }
+    (profiles / "twin-profile.json").write_text(json.dumps(twin_profile))
+    (profiles / "twin-2-profile.json").write_text(json.dumps(twin_profile))
     (docs / "data" / "categories.json").write_text(json.dumps({
         "_meta": {}, "categories": [
             {"slug": "data_exfiltration", "name": "Data Exfiltration", "ast10_id": "AST01", "ast10_title": "Malicious Skills", "secondary_ast10": ["AST03"], "definition": "Sends data out of the skill to somewhere the user did not ask for.", "check_yourself": "Grep for URLs."},
@@ -251,19 +261,40 @@ class TestBuild:
         docs, _ = built
         def title(slug):
             return re.search(r"<title>(.*?)</title>", (docs / "skills" / slug / "index.html").read_text()).group(1)
-        assert title("skills-sh-beta") == "beta security scan: no findings | skillscan.io"
-        assert title("skills-sh-gamma") == "gamma security scan: safe, 1 medium finding | skillscan.io"
-        assert title("skills-sh-delta") == "delta security scan: safe, 1 info finding | skillscan.io"
-        assert title("clawhub-ai-alpha") == "alpha security scan: 2 findings, 1 critical | skillscan.io"
+        # Skill titles carry no " | skillscan.io" suffix; the site name comes from WebSite JSON-LD.
+        assert title("skills-sh-beta") == "beta security scan: no findings"
+        assert title("skills-sh-gamma") == "gamma security scan: safe, 1 medium finding"
+        assert title("skills-sh-delta") == "delta security scan: safe, 1 info finding"
+        assert title("clawhub-ai-alpha") == "alpha security scan: 2 findings, 1 critical"
         # The registry appears only when the same name exists in more than one registry.
-        assert title("clawhub-ai-twin") == "twin (clawhub.ai) security scan: no findings | skillscan.io"
-        assert title("skills-sh-twin") == "twin (skills.sh) security scan: no findings | skillscan.io"
+        assert title("clawhub-ai-twin") == "twin (clawhub.ai) security scan: no findings"
+        assert title("skills-sh-twin") == "twin (skills.sh) security scan: no findings"
+        assert "| skillscan.io" in re.search(r"<title>(.*?)</title>", (docs / "skills" / "index.html").read_text()).group(1)
         for page in (docs / "skills").rglob("index.html"):
             html = page.read_text()
             t = re.search(r"<title>(.*?)</title>", html).group(1)
             assert not ("no findings" in t and re.search(r"\(\d", t)), t
             assert "1 findings" not in t, t
             assert 'property="og:image" content="https://example.test/og-default.png"' in html
+
+    def test_identical_copies_share_one_canonical(self, built):
+        docs, stats = built
+        assert stats["duplicate_copies"] == 1
+        # Same first-scan timestamp, so the registry name breaks the tie: clawhub.ai < skills.sh.
+        primary = (docs / "skills" / "clawhub-ai-twin" / "index.html").read_text()
+        copy = (docs / "skills" / "skills-sh-twin" / "index.html").read_text()
+        assert 'rel="canonical" href="https://example.test/skills/clawhub-ai-twin/"' in primary
+        assert 'rel="canonical" href="https://example.test/skills/clawhub-ai-twin/"' in copy
+        assert 'property="og:url" content="https://example.test/skills/clawhub-ai-twin/"' in copy
+        assert 'name="robots"' not in copy  # indexable, canonicalised, not noindexed
+        assert "Byte-identical copies of this skill are also published by" in primary and 'href="/skills/skills-sh-twin/"' in primary
+        assert "byte-identical copy of" in copy and 'href="/skills/clawhub-ai-twin/"' in copy
+        locs = re.findall(r"<loc>(.*?)</loc>", (docs / "sitemap.xml").read_text())
+        assert "https://example.test/skills/clawhub-ai-twin/" in locs
+        assert "https://example.test/skills/skills-sh-twin/" not in locs
+        # Skills with a profile but no identical twin elsewhere are untouched.
+        beta = (docs / "skills" / "skills-sh-beta" / "index.html").read_text()
+        assert "copies-note" not in beta and 'rel="canonical" href="https://example.test/skills/skills-sh-beta/"' in beta
 
     def test_category_page_uses_taxonomy_and_lists_affected(self, built):
         docs, _ = built
