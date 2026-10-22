@@ -7,6 +7,14 @@
 {% if skill.is_safe %}<span class="badge badge-safe">SAFE</span>{% elif skill.is_safe is sameas false %}<span class="badge badge-{{ (skill.max_severity or 'medium') | lower }}">ISSUES FOUND</span>{% else %}<span class="badge badge-low">SCAN ERROR</span>{% endif %}
 {%- endmacro %}
 
+{% macro ss_badge(ss) -%}
+{% if not ss %}<span class="muted" title="No SkillSpector result for this scan">&mdash;</span>
+{%- elif ss.recommendation == 'DO_NOT_INSTALL' %}<span class="badge badge-{{ 'critical' if (ss.score or 0) >= 81 else 'high' }}" title="NVIDIA SkillSpector {{ ss.version }}, static mode: score {{ ss.score }}/100, {{ ss.issue_count }} issue{{ 's' if ss.issue_count != 1 }}">Do not install {{ ss.score }}</span>
+{%- elif ss.recommendation == 'CAUTION' and (ss.score or 0) == 0 %}<span class="badge badge-info" title="NVIDIA SkillSpector {{ ss.version }}, static mode: score 0 and no issues. CAUTION here means the scanner could not fully inspect the package (usually SKILL.md references a file that is not present) and failed closed rather than saying SAFE. It is not a finding.">Caution 0</span>
+{%- elif ss.recommendation == 'CAUTION' %}<span class="badge badge-medium" title="NVIDIA SkillSpector {{ ss.version }}, static mode: score {{ ss.score }}/100, {{ ss.issue_count }} issue{{ 's' if ss.issue_count != 1 }}">Caution {{ ss.score }}</span>
+{%- else %}<span class="badge badge-safe" title="NVIDIA SkillSpector {{ ss.version }}, static mode: score {{ ss.score }}/100, no issues">Safe {{ ss.score }}</span>{% endif %}
+{%- endmacro %}
+
 {% macro skills_table(skills, show_source=True, id='skills-list') -%}
 <div class="table-wrap">
   <table id="{{ id }}" class="sortable">
@@ -15,6 +23,7 @@
         <th data-sort="name">Name</th>
         {% if show_source %}<th data-sort="source">Registry</th>{% endif %}
         <th data-sort="verdict">Verdict</th>
+        <th data-sort="skillspector" title="Second scanner: NVIDIA SkillSpector, static mode">SkillSpector</th>
         <th data-sort="findings" data-type="num">Findings</th>
         <th data-sort="critical" data-type="num">Critical</th>
         <th data-sort="high" data-type="num">High</th>
@@ -27,7 +36,8 @@
       <tr data-source="{{ s.source }}" data-name="{{ s.name | lower }}">
         <td><a href="{{ s.url }}">{{ s.name }}</a></td>
         {% if show_source %}<td><a href="/registries/{{ s.source | slug }}/">{{ s.source }}</a></td>{% endif %}
-        <td>{{ verdict_badge(s) }}</td>
+        <td class="verdict">{{ verdict_badge(s) }}</td>
+        <td class="second-verdict">{{ ss_badge(s.skillspector) }}</td>
         <td>{{ s.findings_count }}</td>
         <td class="{% if c.CRITICAL %}stat-critical{% endif %}">{{ c.CRITICAL }}</td>
         <td class="{% if c.HIGH %}stat-high{% endif %}">{{ c.HIGH }}</td>

@@ -120,6 +120,14 @@ def site_root(tmp_path: Path) -> Path:
     }
     (profiles / "twin-profile.json").write_text(json.dumps(twin_profile))
     (profiles / "twin-2-profile.json").write_text(json.dumps(twin_profile))
+    (docs / "data" / "skillspector.json").write_text(json.dumps({
+        "alpha": {"recommendation": "DO_NOT_INSTALL", "score": 100, "severity": "CRITICAL", "issue_count": 7,
+                  "top_categories": ["Data Exfiltration", "Tool Misuse"], "version": "2.12.0", "mode": "static", "scanned_at": "2026-10-22T00:00:00Z"},
+        "beta": {"recommendation": "CAUTION", "score": 0, "severity": "LOW", "issue_count": 0,
+                 "top_categories": [], "version": "2.12.0", "mode": "static", "scanned_at": "2026-10-22T00:00:00Z"},
+        "gamma": {"recommendation": "SAFE", "score": 0, "severity": "LOW", "issue_count": 0,
+                  "top_categories": [], "version": "2.12.0", "mode": "static", "scanned_at": "2026-10-22T00:00:00Z"},
+    }))
     (docs / "data" / "categories.json").write_text(json.dumps({
         "_meta": {}, "categories": [
             {"slug": "data_exfiltration", "name": "Data Exfiltration", "ast10_id": "AST01", "ast10_title": "Malicious Skills", "secondary_ast10": ["AST03"], "definition": "Sends data out of the skill to somewhere the user did not ask for.", "check_yourself": "Grep for URLs."},
@@ -135,6 +143,8 @@ def site_root(tmp_path: Path) -> Path:
     (content / "learn" / "a.md").write_text("---\ntitle: A\ndescription: First learn page description long enough.\norder: 1\n---\na\n")
     (content / "research").mkdir()
     (content / "research" / "2026-10-21-post.md").write_text("---\ntitle: Post\ndescription: A research post description long enough.\ndate: 2026-10-21\ntags: [a, b]\n---\n\n| h | i |\n|---|---|\n| 1 | 2 |\n")
+    (content / "research" / "2026-10-22-two-scanners-one-corpus.md").write_text("---\ntitle: Two scanners\ndescription: The comparison post the skill template links to, described.\ndate: 2026-10-22\ntags: [a]\n---\n\ntext\n")
+    (content / "research" / "2026-10-21-false-positive-register.md").write_text("---\ntitle: Register\ndescription: The false-positive register the skill template links to, described.\ndate: 2026-10-21\ntags: [a]\n---\n\ntext\n")
     (content / "README.md").write_text("# not a page\n")
     # Pages the base template links to from the nav and footer.
     for section in ("about", "data", "request-a-scan"):
@@ -224,6 +234,22 @@ class TestBuild:
         assert "/data/scans/alpha-old-scan.json" in html
         safe = (docs / "skills" / "skills-sh-beta" / "index.html").read_text()
         assert "SAFE" in safe and "Scan history" not in safe
+
+    def test_second_scanner_verdicts_render(self, built):
+        docs, _ = built
+        alpha = (docs / "skills" / "clawhub-ai-alpha" / "index.html").read_text()
+        assert "Second scanner: NVIDIA SkillSpector" in alpha
+        assert "Do not install 100" in alpha and "Data Exfiltration" in alpha
+        beta = (docs / "skills" / "skills-sh-beta" / "index.html").read_text()
+        assert "Caution 0" in beta and "fails closed" in beta
+        assert 'class="badge badge-info"' in beta  # not a severity colour
+        # No result: the page simply omits the section, and the index shows a dash.
+        delta = (docs / "skills" / "skills-sh-delta" / "index.html").read_text()
+        assert "Second scanner" not in delta
+        index = (docs / "skills" / "index.html").read_text()
+        assert "<th data-sort=\"skillspector\"" in index
+        assert index.count('<td class="second-verdict">') == 7
+        assert "Safe 0" in index and "&mdash;" in index
 
     def test_skill_page_uses_package_profile(self, built):
         docs, _ = built

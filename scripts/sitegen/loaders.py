@@ -28,6 +28,7 @@ class Skill:
     scan: dict = field(default_factory=dict)
     history: list[dict] = field(default_factory=list)  # all scans, newest first
     profile: dict | None = None  # package description from skill_profile.py, newest scan
+    skillspector: dict | None = None  # second-scanner verdict from docs/data/skillspector.json, newest scan
     # Byte-identical copies of the same skill published in other registries
     # (see build_site.link_identical_copies). canonical_of is None on the
     # copy that owns the canonical URL.
@@ -124,10 +125,29 @@ def _load_profile(profiles_dir: Path, json_name: str) -> dict | None:
     return prof if isinstance(prof, dict) else None
 
 
+def _load_skillspector(data_dir: Path) -> dict[str, dict]:
+    """docs/data/skillspector.json: {published stem: verdict}, written by compare_scanners.py."""
+    path = data_dir / "skillspector.json"
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text())
+    except json.JSONDecodeError as e:
+        logger.warning("Bad JSON in %s: %s", path, e)
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def _published_stem(json_name: str) -> str:
+    stem = json_name.lstrip(".")
+    return stem[: -len("-scan.json")] if stem.endswith("-scan.json") else stem
+
+
 def load_skills(data_dir: Path) -> tuple[dict, list[Skill], dict[str, dict]]:
     summary = json.loads((data_dir / "summary.json").read_text())
     scans_dir = data_dir / "scans"
     profiles_dir = data_dir / "profiles"
+    skillspector = _load_skillspector(data_dir)
     registry = SlugRegistry()
     groups: dict[tuple[str, str], list[tuple[dict, dict, str]]] = {}
     for entry in summary.get("skills", []):
@@ -148,6 +168,7 @@ def load_skills(data_dir: Path) -> tuple[dict, list[Skill], dict[str, dict]]:
             logger.warning("No scan JSON for %s (tried %s)", name, json_name)
         scan.setdefault("_scan_file", json_name.lstrip("."))
         scan.setdefault("_profile", _load_profile(profiles_dir, json_name))
+        scan.setdefault("_skillspector", skillspector.get(_published_stem(json_name)))
         groups.setdefault((source, name), []).append((entry, scan, json_name))
 
     skills: list[Skill] = []
@@ -169,6 +190,7 @@ def load_skills(data_dir: Path) -> tuple[dict, list[Skill], dict[str, dict]]:
                 scan=scan,
                 history=[s for _, s, _ in scans],
                 profile=next((s.get("_profile") for _, s, _ in scans if s.get("_profile")), None),
+                skillspector=next((s.get("_skillspector") for _, s, _ in scans if s.get("_skillspector")), None),
             )
         )
     skills.sort(key=lambda s: (-SEVERITY_ORDER.get(s.max_severity, -1), -s.findings_count, s.name))

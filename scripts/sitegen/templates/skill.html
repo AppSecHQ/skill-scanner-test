@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% from "macros.html" import sev_badge, verdict_badge, finding_card %}
+{% from "macros.html" import sev_badge, verdict_badge, finding_card, ss_badge %}
 {% block content %}
 <header class="skill-header">
   <h1>{{ skill.name }}</h1>
   <div class="verdict-strip">
     {{ verdict_badge(skill) }}
     {% if skill.max_severity %}<span class="muted">max severity</span> {{ sev_badge(skill.max_severity) }}{% endif %}
+    {% if skill.skillspector %}<span class="muted">SkillSpector</span> {{ ss_badge(skill.skillspector) }}{% endif %}
     <span class="muted">registry</span> <a href="/registries/{{ skill.source | slug }}/">{{ skill.source }}</a>
     <span class="muted">last scanned</span> <time datetime="{{ skill.timestamp }}">{{ skill.timestamp | date }}</time>
     <span class="scan-count">{{ skill.scan_count }} scan{{ 's' if skill.scan_count != 1 }}</span>
@@ -21,6 +22,26 @@
   <div class="metadata-item"><span class="metadata-label">Analyzers</span><span class="metadata-value">{% for a in skill.scan.analyzers_used or skill.analyzers %}<span class="analyzer-pill">{{ a | replace('_analyzer', '') }}</span> {% endfor %}</span></div>
   {% if skill.scanner_version %}<div class="metadata-item"><span class="metadata-label">Scanner version</span><span class="metadata-value">{{ skill.scanner_version }}</span></div>{% endif %}
 </div>
+
+{% if skill.skillspector %}{% set ss = skill.skillspector %}
+<section class="second-scanner">
+  <h2>Second scanner: NVIDIA SkillSpector</h2>
+  <div class="metadata-grid">
+    <div class="metadata-item"><span class="metadata-label">Verdict</span><span class="metadata-value">{{ ss_badge(ss) }}</span></div>
+    <div class="metadata-item"><span class="metadata-label">Score</span><span class="metadata-value">{{ ss.score }} / 100</span></div>
+    <div class="metadata-item"><span class="metadata-label">Issues</span><span class="metadata-value">{{ ss.issue_count }}</span></div>
+    {% if ss.top_categories %}<div class="metadata-item"><span class="metadata-label">Categories</span><span class="metadata-value">{% for c in ss.top_categories %}<span class="analyzer-pill">{{ c }}</span> {% endfor %}</span></div>{% endif %}
+    <div class="metadata-item"><span class="metadata-label">Version</span><span class="metadata-value">{{ ss.version }} ({{ ss.mode }})</span></div>
+  </div>
+  <p class="muted small">
+    {% if ss.recommendation == 'CAUTION' and (ss.score or 0) == 0 %}SkillSpector found no issues but could not fully inspect the package, usually because SKILL.md refers to a file that is not present, so it fails closed to CAUTION instead of SAFE. Read it as "not fully checked", not as a finding.
+    {% elif ss.recommendation == 'DO_NOT_INSTALL' and skill.is_safe %}The two scanners disagree: Cisco found nothing and SkillSpector says do not install. One of them has a blind spot here; read the skill before trusting either.
+    {% elif ss.recommendation == 'SAFE' and skill.max_severity in ('HIGH', 'CRITICAL') %}The two scanners disagree: Cisco rates this {{ skill.max_severity }} and SkillSpector found nothing. Check the <a href="/research/2026/false-positive-register/">false-positive register</a>; signature matches on documentation are the usual cause.
+    {% else %}Independent static run, no language model, over the same files as the Cisco scan above.{% endif %}
+    How the two scanners compare across the whole corpus: <a href="/research/2026/two-scanners-one-corpus/">Two scanners, one corpus</a>.
+  </p>
+</section>
+{% endif %}
 
 {% if skill.profile %}{% set p = skill.profile %}
 <section class="package">
