@@ -1,0 +1,459 @@
+{
+  "skill_name": "azure-deploy",
+  "skill_path": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/microsoft-azure-skills/.github/plugins/azure-skills/skills/azure-deploy",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 6,
+  "findings": [
+    {
+      "id": "COMPOUND_FIND_EXEC_1e2a4749d3",
+      "rule_id": "COMPOUND_FIND_EXEC",
+      "category": "command_injection",
+      "severity": "MEDIUM",
+      "title": "Discovery and execution chain (find -exec)",
+      "description": "The find command with -exec executes commands on discovered files. An attacker can use this to find and execute hidden malicious scripts. (found in documentation \u2014 may be instructional)",
+      "file_path": "references/recipes/azd/ef-migrations.md",
+      "line_number": 10,
+      "snippet": "find . -type d -name \"Migrations\" 2>/dev/null\nfind . -name \"*.csproj\" -exec grep -l \"Microsoft.EntityFrameworkCore\" {} \\;\n",
+      "remediation": "Review the command sequence for potential multi-step attacks. Ensure all steps are necessary and safe.",
+      "analyzer": "pipeline",
+      "metadata": {
+        "pattern": "COMPOUND_FIND_EXEC",
+        "matched_lines": [
+          1
+        ],
+        "in_documentation": true,
+        "semantic_facts": {
+          "evidence_kind": "command_sequence",
+          "context_kind": "documentation",
+          "signal_kind": "compound_flow",
+          "commands": [
+            {
+              "executable": "find",
+              "argument_classes": [
+                "exec_action",
+                "wildcard"
+              ],
+              "downloads": false,
+              "executes": true,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "filesystem",
+              "sink_class": "execution",
+              "file_path": "references/recipes/azd/ef-migrations.md"
+            }
+          ],
+          "urls": [],
+          "flows": [
+            {
+              "source_class": "filesystem",
+              "sink_class": "execution",
+              "transforms": [],
+              "cross_file": false,
+              "source_path": "references/recipes/azd/ef-migrations.md",
+              "sink_path": "references/recipes/azd/ef-migrations.md"
+            }
+          ],
+          "candidate_flow": {
+            "source_class": "filesystem",
+            "sink_class": "execution",
+            "transforms": [],
+            "cross_file": false,
+            "source_path": "references/recipes/azd/ef-migrations.md",
+            "sink_path": "references/recipes/azd/ef-migrations.md"
+          },
+          "candidate_command": {
+            "executable": "find",
+            "argument_classes": [
+              "exec_action",
+              "wildcard"
+            ],
+            "downloads": false,
+            "executes": true,
+            "destructive": false,
+            "privilege_change": false,
+            "source_class": "filesystem",
+            "sink_class": "execution",
+            "file_path": "references/recipes/azd/ef-migrations.md"
+          }
+        },
+        "cel": {
+          "decision": "would_suppress",
+          "reason": "shadow_or_rule_rollout",
+          "fact_schema": "v1",
+          "expression_hash": "7141b8f3c69d2eaeb8ad3d3cae9838c57b4144ebc1ab34f63721dd997bee3603",
+          "pack": "core",
+          "rollout": "shadow"
+        },
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.1",
+        "aisubtech_name": "Code Execution",
+        "aitech_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning",
+          "Cisco AI MDL Code: MDL-006",
+          "Cisco AI MDL Code: MDL-007",
+          "Cisco AI MDL Code: MDL-005",
+          "Cisco AI MDL Code: MDL-010",
+          "Cisco AI MDL Code: MDL-012",
+          "Cisco AI MDL Code: MDL-014",
+          "Cisco AI MDL Code: MDL-015",
+          "Cisco AI MDL Code: MDL-019"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "BASH_TAINT_a93f1e936e",
+      "rule_id": "BEHAVIOR_BASH_TAINT_FLOW",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Bash: tainted data flows to dangerous sink",
+      "description": "Variable $ENDPOINT (line 2) flows to `curl` at line 5.",
+      "file_path": "references/recipes/azd/post-deployment.md",
+      "line_number": 79,
+      "snippet": "curl -f \"$ENDPOINT/health\" || echo \"Health check failed\"",
+      "remediation": "Review the data flow from source to sink. Avoid sending sensitive or untrusted data to network or execution commands.",
+      "analyzer": "behavioral",
+      "metadata": {
+        "source_var": "ENDPOINT",
+        "source_line": 2,
+        "sink_command": "curl",
+        "taints": [
+          "COMMAND_OUTPUT"
+        ],
+        "behavior_category": "command_injection",
+        "from_code_block": true,
+        "block_language": "bash",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "BASH_TAINT_e8b1a97e44",
+      "rule_id": "BEHAVIOR_BASH_TAINT_FLOW",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Bash: tainted data flows to dangerous sink",
+      "description": "Variable $ENDPOINT (line 2) flows to `curl` at line 8.",
+      "file_path": "references/recipes/azd/post-deployment.md",
+      "line_number": 82,
+      "snippet": "curl -f \"$ENDPOINT/api/test-db\" || echo \"Database connection failed\"",
+      "remediation": "Review the data flow from source to sink. Avoid sending sensitive or untrusted data to network or execution commands.",
+      "analyzer": "behavioral",
+      "metadata": {
+        "source_var": "ENDPOINT",
+        "source_line": 2,
+        "sink_command": "curl",
+        "taints": [
+          "COMMAND_OUTPUT"
+        ],
+        "behavior_category": "command_injection",
+        "from_code_block": true,
+        "block_language": "bash",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "BASH_TAINT_23d20fb26b",
+      "rule_id": "BEHAVIOR_BASH_TAINT_FLOW",
+      "category": "data_exfiltration",
+      "severity": "CRITICAL",
+      "title": "Bash: sensitive data exfiltration via network",
+      "description": "Variable $ENDPOINT (tainted at line 2: `ENDPOINT=$(azd env get-values | grep -E \"SERVICE_.*_URI|.*_ENDPOINT\" | head -1 | cut -d'=' -f2)`) flows to network sink `curl` at line 5. This sends sensitive data over the network.",
+      "file_path": "references/recipes/azd/verify.md",
+      "line_number": 26,
+      "snippet": "curl -f \"$ENDPOINT/health\" || curl -f \"$ENDPOINT\"",
+      "remediation": "Review the data flow from source to sink. Avoid sending sensitive or untrusted data to network or execution commands.",
+      "analyzer": "behavioral",
+      "metadata": {
+        "source_var": "ENDPOINT",
+        "source_line": 2,
+        "sink_command": "curl",
+        "taints": [
+          "SENSITIVE_FILE"
+        ],
+        "behavior_category": "data_exfiltration",
+        "from_code_block": true,
+        "block_language": "bash",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "BASH_TAINT_49ed8d37e1",
+      "rule_id": "BEHAVIOR_BASH_TAINT_FLOW",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Bash: tainted data flows to dangerous sink",
+      "description": "Variable $RG_NAME (line 4) flows to `source` at line 12.",
+      "file_path": "references/recipes/terraform/README.md",
+      "line_number": 82,
+      "snippet": "--resource-group $RG_NAME \\",
+      "remediation": "Review the data flow from source to sink. Avoid sending sensitive or untrusted data to network or execution commands.",
+      "analyzer": "behavioral",
+      "metadata": {
+        "source_var": "RG_NAME",
+        "source_line": 4,
+        "sink_command": "source",
+        "taints": [
+          "COMMAND_OUTPUT"
+        ],
+        "behavior_category": "command_injection",
+        "from_code_block": true,
+        "block_language": "bash",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "BASH_TAINT_4a7b83da46",
+      "rule_id": "BEHAVIOR_BASH_TAINT_FLOW",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Bash: tainted data flows to dangerous sink",
+      "description": "Variable $RG_NAME (line 4) flows to `source` at line 19.",
+      "file_path": "references/recipes/terraform/README.md",
+      "line_number": 89,
+      "snippet": "--resource-group $RG_NAME \\",
+      "remediation": "Review the data flow from source to sink. Avoid sending sensitive or untrusted data to network or execution commands.",
+      "analyzer": "behavioral",
+      "metadata": {
+        "source_var": "RG_NAME",
+        "source_line": 4,
+        "sink_command": "source",
+        "taints": [
+          "COMMAND_OUTPUT"
+        ],
+        "behavior_category": "command_injection",
+        "from_code_block": true,
+        "block_language": "bash",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.1681370735168457,
+  "duration_ms": 168,
+  "analyzers_used": [
+    "static_analyzer",
+    "bytecode",
+    "pipeline",
+    "correlation",
+    "behavioral_analyzer",
+    "trigger_analyzer"
+  ],
+  "timestamp": "2026-10-22T04:35:57.619709+00:00",
+  "scan_metadata": {
+    "policy_name": "default",
+    "policy_version": "1.0",
+    "policy_preset_base": "balanced",
+    "policy_fingerprint_sha256": "3f48e661bfbc54597f97bbf3dcf2c1cbae2f596ddc79c0b44784efea326b3d1d",
+    "cel": {
+      "mode": "shadow",
+      "runtime": "cel-go",
+      "runtime_version": "v0.32.0;helper=2.3.1",
+      "fact_schema": "v1",
+      "expression_set_hash": "f26459b8f4a46a974d7ab0aaae34127b5b6a40d693e266e12fca03a69a6d26aa",
+      "evaluated": 1,
+      "retained": 6,
+      "would_suppress": 1,
+      "suppressed": 0,
+      "fallbacks": 0,
+      "projection_incomplete": 0,
+      "elapsed_ms": 3.529,
+      "projection_ms": 0.327,
+      "evaluation_ms": 3.13,
+      "errors": [],
+      "per_rule": {
+        "COMPOUND_FIND_EXEC": {
+          "keep": 0,
+          "would_suppress": 1,
+          "fallback": 0,
+          "suppressed": 0,
+          "expression_hash": "7141b8f3c69d2eaeb8ad3d3cae9838c57b4144ebc1ab34f63721dd997bee3603",
+          "pack": "core",
+          "rollout": "shadow"
+        }
+      },
+      "suppressed_candidates": []
+    },
+    "rule_contract": {
+      "status": "passed",
+      "schema_version": 2,
+      "checked": 6,
+      "invalid_findings": 0,
+      "errors": []
+    },
+    "taxonomy": {
+      "source": "builtin",
+      "version": "2.0.0",
+      "name": "Cisco AI Security and Safety Taxonomy",
+      "revision": "655a343ac943a51b6f61f86e47156e7752c15dc6",
+      "snapshot_sha256": "413e8ce9081e6d91b78aaa0d0b1c06cdc15d0406ad319e23e9f9f4f80735c441",
+      "findings": {
+        "mapped": 6,
+        "not_applicable": 0,
+        "unmapped": 0
+      }
+    }
+  },
+  "scanner_version": "2.3.1",
+  "source": "microsoft",
+  "repo_url": "https://github.com/microsoft/azure-skills"
+}
