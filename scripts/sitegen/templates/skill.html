@@ -21,6 +21,25 @@
   {% if skill.scanner_version %}<div class="metadata-item"><span class="metadata-label">Scanner version</span><span class="metadata-value">{{ skill.scanner_version }}</span></div>{% endif %}
 </div>
 
+{% if skill.profile %}{% set p = skill.profile %}
+<section class="package">
+  <h2>What this skill does</h2>
+  {% if p.description %}<p class="package-description">{{ p.description }}</p>{% else %}<p class="muted">The skill's SKILL.md has no description field.</p>{% endif %}
+  <dl class="facts">
+    <div><dt>Package</dt><dd>{{ p.file_count }} file{{ 's' if p.file_count != 1 }}, {{ p.total_bytes | bytes }}{% if p.files_truncated %} ({{ p.files_truncated }} not listed){% endif %}</dd></div>
+    <div><dt>SKILL.md</dt><dd>{{ p.skill_md.words }} words{% if p.skill_md.headings %}, {{ p.skill_md.headings | length }}{{ '+' if p.skill_md.headings | length >= 12 }} sections{% endif %}</dd></div>
+    {% if p.languages %}<div><dt>Code</dt><dd>{% for lang, n in p.languages.items() %}{{ lang }} ({{ n }}){{ ', ' if not loop.last }}{% endfor %}</dd></div>{% else %}<div><dt>Code</dt><dd>None. Instructions only.</dd></div>{% endif %}
+    {% if p.allowed_tools %}<div><dt>Allowed tools</dt><dd>{% for t in p.allowed_tools %}<code>{{ t }}</code>{{ ' ' if not loop.last }}{% endfor %}</dd></div>{% endif %}
+    {% if p.requires %}<div><dt>Requires</dt><dd>{% for k, v in p.requires.items() %}{{ k }}: {% for x in v %}<code>{{ x }}</code>{{ ' ' if not loop.last }}{% endfor %}{{ '; ' if not loop.last }}{% endfor %}</dd></div>{% endif %}
+    {% if p.license %}<div><dt>License</dt><dd>{{ p.license }}</dd></div>{% endif %}
+    {% if p.version %}<div><dt>Version</dt><dd>{{ p.version }}</dd></div>{% endif %}
+    {% if p.compatibility %}<div{% if p.compatibility | length > 60 %} class="wide"{% endif %}><dt>Compatibility</dt><dd>{{ p.compatibility }}</dd></div>{% endif %}
+    {% if p.homepage %}<div><dt>Homepage</dt><dd><a href="{{ p.homepage }}" rel="noopener nofollow">{{ p.homepage }}</a></dd></div>{% endif %}
+  </dl>
+  {% if p.skill_md.headings %}<p class="package-outline"><span class="muted">SKILL.md covers:</span> {{ p.skill_md.headings | join(' · ') }}</p>{% endif %}
+</section>
+{% endif %}
+
 <section class="detail-findings">
   <h2>Findings</h2>
   {% if skill.findings %}
@@ -31,6 +50,31 @@
   <p class="no-findings">No findings. {{ sev_badge('SAFE') }}</p>
   {% endif %}
 </section>
+
+{% if skill.profile %}{% set p = skill.profile %}
+<section class="package-contents">
+  <h2>What is in the package</h2>
+  {% if p.files %}
+  {% set many = p.files | length > 20 %}
+  {% if many %}<details class="file-list"><summary>{{ p.files | length }} files, {{ p.total_bytes | bytes }}. Show the list.</summary>{% endif %}
+  <table class="files">
+    <thead><tr><th>File</th><th>Kind</th><th class="num">Size</th></tr></thead>
+    <tbody>{% for f in p.files %}<tr><td><code>{{ f.path }}</code></td><td>{{ f.kind }}</td><td class="num">{{ f.bytes | bytes }}</td></tr>{% endfor %}</tbody>
+  </table>
+  {% if many %}</details>{% endif %}
+  {% endif %}
+  {% if p.domains %}
+  <h3>External hosts referenced</h3>
+  <p class="host-list">{% for d in p.domains %}<code>{{ d }}</code>{{ ' ' if not loop.last }}{% endfor %}</p>
+  <p class="muted small">Hostnames that appear in the skill's files. Referencing a host is not a finding; compare against the findings above and the skill's stated purpose.</p>
+  {% endif %}
+  {% if p.env_vars %}
+  <h3>Environment variables referenced</h3>
+  <p class="host-list">{% for v in p.env_vars %}<code>{{ v }}</code>{{ ' ' if not loop.last }}{% endfor %}</p>
+  {% endif %}
+  <p class="muted small">Package contents recorded {{ p.profiled_at[:10] }}{% if p.git_commit %} at commit <code>{{ p.git_commit }}</code>{% endif %}. The scan above ran against the version current at scan time; the two can differ if the skill has since been updated.</p>
+</section>
+{% endif %}
 
 <section class="checked">
   <h2>What we checked</h2>

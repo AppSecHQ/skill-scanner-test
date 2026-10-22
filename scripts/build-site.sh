@@ -28,6 +28,17 @@ for f in "$RESULTS_DIR"/.*-scan.json; do
     cp "$f" "$SCANS_DIR/$newname"
 done
 
+# Copy package profiles (written by skill_profile.py at scan time)
+if [ -d "$RESULTS_DIR/profiles" ]; then
+    mkdir -p "$DATA_DIR/profiles"
+    cp "$RESULTS_DIR"/profiles/*-profile.json "$DATA_DIR/profiles/" 2>/dev/null || true
+    for f in "$RESULTS_DIR"/profiles/.*-profile.json; do
+        [ -f "$f" ] || continue
+        base=$(basename "$f")
+        cp "$f" "$DATA_DIR/profiles/${base#.}"
+    done
+fi
+
 # Verify repo_url coverage (populated upstream by generate_report.py)
 python3 -c "
 import json

@@ -15,6 +15,7 @@ from pathlib import Path
 import requests
 
 from pipeline_utils import get_session, shorten_path, LOG_FORMAT, LOG_DATE_FORMAT
+from skill_profile import write_profile
 
 
 def get_scanner_version() -> str:
@@ -379,6 +380,8 @@ def run_scan(
     # Write updated JSON with version
     with open(json_output, "w") as f:
         json.dump(scan_result, f, indent=2)
+    # Describe the package itself (files, SKILL.md metadata) for the site.
+    write_profile(skill_path, output_dir, skill_name)
 
     # Check analysis quality
     if use_llm or enable_meta:
@@ -810,6 +813,7 @@ def run_batch_scan(
         with open(json_output, "w") as f:
             json.dump(result, f, indent=2)
         write_markdown_summary(result, output_dir / f"{name}-scan.md")
+        write_profile(skill_path, output_dir, name)
         results[name] = result
         logger.info(
             "[%d/%d] %s: %s, %d finding(s)",

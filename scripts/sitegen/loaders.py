@@ -27,6 +27,7 @@ class Skill:
     analyzers: list[str]
     scan: dict = field(default_factory=dict)
     history: list[dict] = field(default_factory=list)  # all scans, newest first
+    profile: dict | None = None  # package description from skill_profile.py, newest scan
 
     @property
     def findings(self) -> list[dict]:
@@ -84,6 +85,13 @@ class Skill:
         return None
 
     @property
+    def description(self) -> str | None:
+        """The author's own one-paragraph description from SKILL.md frontmatter."""
+        if self.profile and self.profile.get("description"):
+            return self.profile["description"]
+        return None
+
+    @property
     def url(self) -> str:
         return f"/skills/{self.slug}/"
 
@@ -95,9 +103,26 @@ def _scan_json_name(scan_file: str | None, name: str) -> str:
     return f"{name}-scan.json"
 
 
+def _load_profile(profiles_dir: Path, json_name: str) -> dict | None:
+    """results/profiles/<stem>-profile.json, where <stem>-scan.json is the scan."""
+    stem = json_name.lstrip(".")
+    if stem.endswith("-scan.json"):
+        stem = stem[: -len("-scan.json")]
+    path = profiles_dir / f"{stem}-profile.json"
+    if not path.exists():
+        return None
+    try:
+        prof = json.loads(path.read_text())
+    except json.JSONDecodeError as e:
+        logger.warning("Bad JSON in %s: %s", path, e)
+        return None
+    return prof if isinstance(prof, dict) else None
+
+
 def load_skills(data_dir: Path) -> tuple[dict, list[Skill], dict[str, dict]]:
     summary = json.loads((data_dir / "summary.json").read_text())
     scans_dir = data_dir / "scans"
+    profiles_dir = data_dir / "profiles"
     registry = SlugRegistry()
     groups: dict[tuple[str, str], list[tuple[dict, dict, str]]] = {}
     for entry in summary.get("skills", []):
@@ -117,6 +142,7 @@ def load_skills(data_dir: Path) -> tuple[dict, list[Skill], dict[str, dict]]:
         else:
             logger.warning("No scan JSON for %s (tried %s)", name, json_name)
         scan.setdefault("_scan_file", json_name.lstrip("."))
+        scan.setdefault("_profile", _load_profile(profiles_dir, json_name))
         groups.setdefault((source, name), []).append((entry, scan, json_name))
 
     skills: list[Skill] = []
@@ -137,6 +163,7 @@ def load_skills(data_dir: Path) -> tuple[dict, list[Skill], dict[str, dict]]:
                 analyzers=entry.get("analyzers", []),
                 scan=scan,
                 history=[s for _, s, _ in scans],
+                profile=next((s.get("_profile") for _, s, _ in scans if s.get("_profile")), None),
             )
         )
     skills.sort(key=lambda s: (-SEVERITY_ORDER.get(s.max_severity, -1), -s.findings_count, s.name))

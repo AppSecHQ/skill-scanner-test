@@ -94,6 +94,18 @@ def site_root(tmp_path: Path) -> Path:
         ],
     }
     (docs / "data" / "summary.json").write_text(json.dumps(summary))
+    profiles = docs / "data" / "profiles"
+    profiles.mkdir()
+    (profiles / "beta-profile.json").write_text(json.dumps({
+        "schema": 1, "name": "beta", "description": "Formats invoices as PDF for small shops.", "license": "MIT",
+        "compatibility": None, "version": "1.2.0", "homepage": None, "allowed_tools": ["Bash", "Read"],
+        "requires": {"bins": ["pandoc"]}, "frontmatter_keys": ["name", "description"],
+        "skill_md": {"present": True, "bytes": 900, "words": 140, "headings": ["Setup", "Usage"]},
+        "file_count": 2, "total_bytes": 2048, "kinds": {"doc": 1, "script": 1}, "languages": {"Python": 1},
+        "files": [{"path": "SKILL.md", "bytes": 900, "kind": "doc"}, {"path": "scripts/run.py", "bytes": 1148, "kind": "script"}],
+        "files_truncated": 0, "domains": ["api.invoices.example.io"], "env_vars": ["INVOICE_API_KEY"],
+        "git_commit": "abc123def456", "profiled_at": "2026-10-22T01:00:00Z",
+    }))
     (docs / "data" / "categories.json").write_text(json.dumps({
         "_meta": {}, "categories": [
             {"slug": "data_exfiltration", "name": "Data Exfiltration", "ast10_id": "AST01", "ast10_title": "Malicious Skills", "secondary_ast10": ["AST03"], "definition": "Sends data out of the skill to somewhere the user did not ask for.", "check_yourself": "Grep for URLs."},
@@ -198,6 +210,22 @@ class TestBuild:
         assert "/data/scans/alpha-old-scan.json" in html
         safe = (docs / "skills" / "skills-sh-beta" / "index.html").read_text()
         assert "SAFE" in safe and "Scan history" not in safe
+
+    def test_skill_page_uses_package_profile(self, built):
+        docs, _ = built
+        beta = (docs / "skills" / "skills-sh-beta" / "index.html").read_text()
+        assert "What this skill does" in beta and "Formats invoices as PDF for small shops." in beta
+        assert "scripts/run.py" in beta and "api.invoices.example.io" in beta and "INVOICE_API_KEY" in beta
+        assert "Python (1)" in beta and "<code>pandoc</code>" in beta and "abc123def456" in beta
+        # Author description leads the meta description, verdict follows, never over 160 chars.
+        m = re.search(r'name="description" content="([^"]*)"', beta)
+        assert m.group(1).startswith("beta (skills.sh): Formats invoices as PDF for small shops. No security findings")
+        assert len(m.group(1)) <= 160
+        assert '"license": "MIT"' in beta and '"softwareVersion": "1.2.0"' in beta
+        # Skills without a profile render the old way, with the templated description.
+        alpha = (docs / "skills" / "clawhub-ai-alpha" / "index.html").read_text()
+        assert "What this skill does" not in alpha
+        assert re.search(r'name="description" content="alpha \(clawhub.ai\): 2 findings', alpha)
 
     def test_titles_never_contradict_finding_counts(self, built):
         docs, _ = built

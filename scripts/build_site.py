@@ -46,6 +46,35 @@ ANALYZER_BLURBS = {
 
 
 # --------------------------------------------------------------------------- helpers
+def fmt_bytes(n) -> str:
+    try:
+        n = int(n or 0)
+    except (TypeError, ValueError):
+        return "0 B"
+    for unit in ("B", "KB", "MB"):
+        if n < 1024 or unit == "MB":
+            return f"{n} {unit}" if unit == "B" else f"{n:.0f} {unit}" if n >= 10 else f"{n:.1f} {unit}"
+        n /= 1024
+    return f"{n:.1f} MB"
+
+
+def meta_description(skill: Skill, limit: int = 155) -> str:
+    """Author's description first, scan verdict second, cut on a word boundary."""
+    lead = f"{skill.name} ({skill.source})"
+    verdict = summary_sentence(skill).split(". ")[0].rstrip(".")
+    if skill.description:
+        about = skill.description.strip()
+        if about[-1] not in ".!?…":
+            about += "."
+        text = f"{lead}: {about} {verdict}."
+    else:
+        text = f"{lead}: {summary_sentence(skill)}"
+    text = " ".join(text.split())
+    if len(text) > limit:
+        text = text[: limit - 1].rsplit(" ", 1)[0].rstrip(",.;:") + "…"
+    return text
+
+
 def fmt_date(value) -> str:
     if not value:
         return "unknown"
@@ -191,6 +220,7 @@ class SiteBuilder:
         )
         self.env.filters["date"] = fmt_date
         self.env.filters["slug"] = ascii_slug
+        self.env.filters["bytes"] = fmt_bytes
         self.pages: list[dict] = []  # for sitemap: url, lastmod
 
     def load(self) -> None:
@@ -280,11 +310,21 @@ class SiteBuilder:
             desc = (s.summary_text or summary_sentence(s)).strip()
             if len(desc) > 300:
                 desc = desc[:297].rsplit(" ", 1)[0] + "…"
+            app = {
+                "@context": "https://schema.org", "@type": "SoftwareApplication", "name": s.name,
+                "applicationCategory": "AI agent skill", "url": s.repo_url or self.base_url + s.url,
+            }
+            if s.description:
+                app["description"] = s.description
+            if s.profile:
+                if s.profile.get("license"):
+                    app["license"] = s.profile["license"]
+                if s.profile.get("version"):
+                    app["softwareVersion"] = s.profile["version"]
             jsonld = [
                 self.jsonld_breadcrumbs(crumbs),
                 {
-                    "@context": "https://schema.org", "@type": "SoftwareApplication", "name": s.name,
-                    "applicationCategory": "AI agent skill", "url": s.repo_url or self.base_url + s.url,
+                    **app,
                     "review": {
                         "@type": "Review", "name": f"{s.name} security scan", "url": self.base_url + s.url,
                         "datePublished": fmt_date(s.timestamp), "reviewBody": desc,
@@ -294,7 +334,7 @@ class SiteBuilder:
             ]
             self.render("skill.html", s.url, {
                 "title": f"{s.name} security scan: {title_tail} | skillscan.io",
-                "description": f"{s.name} ({s.source}): {desc}",
+                "description": meta_description(s),
                 "section": "skills", "breadcrumbs": crumbs, "jsonld": jsonld, "og_type": "article",
                 "lastmod": fmt_date(s.timestamp),
             }, skill=s, summary_sentence=summary_sentence(s), related=related_skills(s, self.skills))
