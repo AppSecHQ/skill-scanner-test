@@ -1,0 +1,1052 @@
+{
+  "skill": {
+    "name": "open-notebook",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/K-Dense-AI-scientific-agent-skills/skills/open-notebook",
+    "scanned_at": "2026-10-22T04:37:03.390960+00:00"
+  },
+  "risk_assessment": {
+    "score": 51,
+    "severity": "HIGH",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "HIGH"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 212,
+      "executable": false,
+      "size_bytes": 11357,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/api_reference.md",
+      "type": "markdown",
+      "lines": 291,
+      "executable": false,
+      "size_bytes": 19312,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/architecture.md",
+      "type": "markdown",
+      "lines": 89,
+      "executable": false,
+      "size_bytes": 5046,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/configuration.md",
+      "type": "markdown",
+      "lines": 180,
+      "executable": false,
+      "size_bytes": 9439,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/examples.md",
+      "type": "markdown",
+      "lines": 182,
+      "executable": false,
+      "size_bytes": 8426,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/_common.py",
+      "type": "python",
+      "lines": 45,
+      "executable": true,
+      "size_bytes": 1536,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/chat_interaction.py",
+      "type": "python",
+      "lines": 93,
+      "executable": true,
+      "size_bytes": 3596,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/notebook_management.py",
+      "type": "python",
+      "lines": 72,
+      "executable": true,
+      "size_bytes": 2691,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/source_ingestion.py",
+      "type": "python",
+      "lines": 144,
+      "executable": true,
+      "size_bytes": 6148,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "TM1",
+      "finding_id": "finding-0f05e1074c654732a5230e87eea60ff1",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/api_reference.md",
+        "start_line": 40,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "DELETE /api/notebooks/{notebook_id}`",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "| `GET /api/notebooks/{notebook_id}` | Returns notebook; also records its last-viewed timestamp. |\n| `PUT /api/notebooks/{notebook_id}` | JSON optional `name`, `description`, `archived`; returns notebook. |\n| `GET /api/notebooks/{notebook_id}/delete-preview` | Returns `notebook_id`, `notebook_name`, `note_count`, `exclusive_source_count`, `shared_source_count`. |\n| `DELETE /api/notebooks/{notebook_id}` | Query `delete_exclusive_sources=false`. Always removes associated notes/chat sessions, unlinks shared sources, optionally deletes exclusive sources. Returns `message`, `deleted_notes`, `deleted_sources`, `unlinked_sources`, `deleted_chat_sessions`. |\n| `POST /api/notebooks/{notebook_id}/sources/{source_id}` | No body; links source and returns `message`. Verify membership before repeated calls; do not depend on duplicate-link prevention. |\n| `DELETE /api/notebooks/{notebook_id}/sources/{source_id}` | No body; removes association, returns `message`. Does not delete the source. |\n",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5d4d2748c344d35c9e0c400c5c4b09a126df66de148b9d3823cef024437deb49",
+      "occurrences": [
+        {
+          "file": "references/api_reference.md",
+          "start_line": 40,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-833bd94623d544c0a8a9607a24c5d3a0",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/api_reference.md",
+        "start_line": 42,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "DELETE /api/notebooks/{notebook_id}/sources/{source_id}`",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "| `GET /api/notebooks/{notebook_id}/delete-preview` | Returns `notebook_id`, `notebook_name`, `note_count`, `exclusive_source_count`, `shared_source_count`. |\n| `DELETE /api/notebooks/{notebook_id}` | Query `delete_exclusive_sources=false`. Always removes associated notes/chat sessions, unlinks shared sources, optionally deletes exclusive sources. Returns `message`, `deleted_notes`, `deleted_sources`, `unlinked_sources`, `deleted_chat_sessions`. |\n| `POST /api/notebooks/{notebook_id}/sources/{source_id}` | No body; links source and returns `message`. Verify membership before repeated calls; do not depend on duplicate-link prevention. |\n| `DELETE /api/notebooks/{notebook_id}/sources/{source_id}` | No body; removes association, returns `message`. Does not delete the source. |\n\nNotebook objects have `id`, `name`, `description`, `archived`, `created`, `updated`,\n`source_count`, and `note_count`. There is no `updated_at` sort field or",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "e1777e478af944ba12b9e1cebaa52954f17271cb00824de8d716feb2c98b0f5f",
+      "occurrences": [
+        {
+          "file": "references/api_reference.md",
+          "start_line": 42,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-77b64dcafe39422da4ddf3d01efe7f96",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/api_reference.md",
+        "start_line": 59,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "DELETE /api/sources/{source_id}`",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "| `POST /api/sources/json` | JSON `SourceCreate` with equivalent native booleans/lists; legacy supported JSON route. Server `file_path` is allowed only within its uploads directory; local client paths do not upload files. |\n| `GET /api/sources/{source_id}` | Full source including `full_text`, notebook associations and processing fields; records a view. |\n| `PUT /api/sources/{source_id}` | JSON optional `title`, `topics` (list of strings, plural); returns source. |\n| `DELETE /api/sources/{source_id}` | Deletes source; returns `message`. |\n| `GET /api/sources/{source_id}/status` | Returns nullable `status`, `message`, nullable `processing_info`, nullable `command_id`. |\n| `GET /api/sources/{source_id}/download` | Binary original uploaded file; 404 if missing, 403 if outside allowed storage. |\n| `HEAD /api/sources/{source_id}/download` | 200 without body if file is available; same access/existence checks. |",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "071ae25a1fe154cdebe556819be72d2cad8af9cb68b367dbb8127f27642212e6",
+      "occurrences": [
+        {
+          "file": "references/api_reference.md",
+          "start_line": 59,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-c212c01739924c658a755b6d0daf3be6",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/api_reference.md",
+        "start_line": 104,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "DELETE /api/notes/{note_id}`",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "| `POST /api/notes` | JSON required `content`; optional `title`, `note_type` default `human`, `notebook_id`. Returns note. |\n| `GET /api/notes/{note_id}` | Returns note. |\n| `PUT /api/notes/{note_id}` | JSON optional `title`, `content`, `note_type`; returns note. |\n| `DELETE /api/notes/{note_id}` | Deletes note; returns `message`. |\n\nUse `human` or `ai` for `note_type`. An AI note with content and no title invokes a\nmodel to generate the title. Responses have `id`, nullable `title`, `content`,",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "691d4581832064266cf3c73259bf004541423609af85564dd735fecda10752c6",
+      "occurrences": [
+        {
+          "file": "references/api_reference.md",
+          "start_line": 104,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-a646bef861544a57baaefe10481a0ec1",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/api_reference.md",
+        "start_line": 118,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "DELETE /api/chat/sessions/{session_id}`",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "| `POST /api/chat/sessions` | JSON required `notebook_id`, optional `title`, `model_override`; returns session. |\n| `GET /api/chat/sessions/{session_id}` | Session plus `messages[]`. |\n| `PUT /api/chat/sessions/{session_id}` | JSON optional `title`, `model_override`; returns session. |\n| `DELETE /api/chat/sessions/{session_id}` | Returns `{success, message}`. |\n| `POST /api/chat/context` | Required JSON `notebook_id`, `context_config`; returns `{context, token_count, char_count}`. |\n| `POST /api/chat/execute` | Required JSON `session_id`, `message`, `context`; optional `model_override`; returns `{session_id, messages}` JSON. |\n",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "063d0d41b10de3e7c98ffaf195aebf4748e6cd7f96b1b81b8c788fcd6ddb1b52",
+      "occurrences": [
+        {
+          "file": "references/api_reference.md",
+          "start_line": 118,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-f03d19e5c77a463bb2352555076c81cc",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/api_reference.md",
+        "start_line": 196,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "DELETE /api/podcasts/episodes/{episode_id}`",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "| `GET /api/podcasts/episodes/{episode_id}` | Episode including `id`, `name`, profile snapshots, `briefing`, optional audio/transcript/outline, `job_status`, `error_message`. |\n| `GET /api/podcasts/episodes/{episode_id}/audio` | Binary `audio/mpeg`; 404 if audio missing. |\n| `POST /api/podcasts/episodes/{episode_id}/retry` | Only failed/error episodes; deletes failed episode/audio and submits a new job. Returns `{job_id, message}`; prior episode ID is not retained. |\n| `DELETE /api/podcasts/episodes/{episode_id}` | Deletes episode and audio; returns `{message, episode_id}`. |\n\n```json\n{",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "83086e1f26fbe43e1b59f00d14a996a857157fc198a395f5fd2134757012e2ba",
+      "occurrences": [
+        {
+          "file": "references/api_reference.md",
+          "start_line": 196,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-a17cac3f09424865ad9f668873f4362d",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/api_reference.md",
+        "start_line": 222,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "DELETE /api/transformations/{transformation_id}`",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "| `POST /api/transformations` | Required `name`, `title`, `description`, `prompt`; optional `apply_default=false`, `model_id`; returns transformation. |\n| `GET /api/transformations/{transformation_id}` | Transformation object. |\n| `PUT /api/transformations/{transformation_id}` | Same fields, all optional; returns transformation. |\n| `DELETE /api/transformations/{transformation_id}` | Returns `message`. |\n| `POST /api/transformations/execute` | Required `transformation_id`, `input_text`; optional `model_id`; returns `output`, `transformation_id`, nullable `model_id`. |\n| `GET /api/transformations/default-prompt` | Returns `{transformation_instructions}`. |\n| `PUT /api/transformations/default-prompt` | Required JSON `transformation_instructions`; returns same shape. |",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "49b7d619f2c82eb677b9104d0d59cb7f1d6d86e6609e468545f89768662aba2b",
+      "occurrences": [
+        {
+          "file": "references/api_reference.md",
+          "start_line": 222,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-63fffc90114f4eb3956f2a0b636a7a52",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/api_reference.md",
+        "start_line": 237,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "DELETE /api/models/{model_id}`",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "| --- | --- |\n| `GET /api/models` | Optional query `type`: `language`, `embedding`, `speech_to_text`, `text_to_speech`; array. |\n| `POST /api/models` | JSON required `name`, `provider`, `type`; optional credential record ID in `credential`. Returns model; duplicates fail. |\n| `DELETE /api/models/{model_id}` | Returns `message`. |\n| `POST /api/models/{model_id}/test` | No body; returns `success`, `message`, nullable `details`; can contact the provider. |\n| `GET /api/models/defaults` | Default slot object below. |\n| `PUT /api/models/defaults` | Partial object of slots; omitted fields unchanged, explicit null clears optional slots. Chat/embedding cannot be cleared. |",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "b3438afefa5cfb8e6bea5ca10ac100ccf1777693d89e4e7fbbf81d779d780e57",
+      "occurrences": [
+        {
+          "file": "references/api_reference.md",
+          "start_line": 237,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-0b1c14629b5e4ed8964a0707528d09fd",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/api_reference.md",
+        "start_line": 268,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "DELETE /api/credentials/{credential_id}`",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "| `POST /api/credentials` | Required JSON `name`, `provider`; provider-specific settings below. 201 credential record. |\n| `GET /api/credentials/{credential_id}` | Safe credential record. |\n| `PUT /api/credentials/{credential_id}` | Optional mutable settings; provider cannot be changed. Returns safe record. |\n| `DELETE /api/credentials/{credential_id}` | Optional query `migrate_to` credential ID; otherwise **cascade-deletes linked models**. Returns `{message, deleted_models}`. |\n| `POST /api/credentials/{credential_id}/test` | `{provider, success, message}`; check success, not just HTTP status. Some provider tests only validate key format. |\n| `POST /api/credentials/{credential_id}/discover` | `{credential_id, provider, discovered: [{name, provider, model_type, description}]}`; model_type can be null. |\n| `POST /api/credentials/{credential_id}/register-models` | JSON `{models: [{name, provider, model_type}]}`; returns `{created, existing}` counts. |",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "4c6be3b37d6ec9304aca5eb4e308621f58d0fa24dc1449bdb085cb3f8a66d47d",
+      "occurrences": [
+        {
+          "file": "references/api_reference.md",
+          "start_line": 268,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "LP3",
+      "finding_id": "finding-c380407cc3be42b1b9b5fdcf69ead577",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, network.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, network.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-feab3d36469d4a3db0b4e6a6d180738c",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 46,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl --fail --location --output docker-compose.yml \\\n  https://raw.githubusercontent.com/lfnovo/open-notebook/v1.14.0/docker-compose.yml\n```\n\nBefore starting, edit the downloaded Compose file: replace",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "`./notebook_data` at `/app/data` and `./surreal_data` at `/mydata`.\n\n```bash\ncurl --fail --location --output docker-compose.yml \\\n  https://raw.githubusercontent.com/lfnovo/open-notebook/v1.14.0/docker-compose.yml\n```\n",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "c0e3581a3027e345e503ecb5472c0a3fb4f3c6d99c17c278204d43973009609c",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 46,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-6e923939f675422fa699ed08c8ad9dd3",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/configuration.md",
+        "start_line": 18,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl --fail --location --output docker-compose.yml \\\n  https://raw.githubusercontent.com/lfnovo/open-notebook/v1.14.0/docker-compose.yml\n```\n\nThe downloaded file contains a **literal** encryption-key ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "these tags can change. Do not replace the database with an arbitrary `latest` major.\n\n```bash\ncurl --fail --location --output docker-compose.yml \\\n  https://raw.githubusercontent.com/lfnovo/open-notebook/v1.14.0/docker-compose.yml\n```\n",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "4fd9bb87340fb405cdf8b03079454e8f3ecc3ea75729c2f414d9d87aafd1a04f",
+      "occurrences": [
+        {
+          "file": "references/configuration.md",
+          "start_line": 18,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 9,
+    "scanned_components": 9,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 9,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 7,
+        "end_line": 7,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 10,
+        "end_line": 10,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 43,
+        "end_line": 43,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 5,
+        "completed": 5,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 7,
+        "column": 13,
+        "evidence": "version: \"1.5\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 10,
+        "column": 22,
+        "evidence": "upstream-version: \"1.14.0\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 31,
+        "column": 11,
+        "evidence": "[v1.14.0](https://github.com/lfnovo/open-notebook/releases/tag/v1.14.0).",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 43,
+        "column": 2,
+        "evidence": "`./notebook_data` at `/app/data` and `./surreal_data` at `/mydata`.",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 43,
+        "column": 39,
+        "evidence": "`./notebook_data` at `/app/data` and `./surreal_data` at `/mydata`.",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 69,
+        "column": 21,
+        "evidence": "See [configuration](references/configuration.md) for persistence and provider setup.",
+        "target_path": "references/configuration.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 83,
+        "column": 25,
+        "evidence": "See the [API reference](references/api_reference.md) and",
+        "target_path": "references/api_reference.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 84,
+        "column": 22,
+        "evidence": "[credential example](references/configuration.md).",
+        "target_path": "references/configuration.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 180,
+        "column": 19,
+        "evidence": "[worked examples](references/examples.md).",
+        "target_path": "references/examples.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 189,
+        "column": 20,
+        "evidence": "See [architecture](references/architecture.md).",
+        "target_path": "references/architecture.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 12,
+    "findings_after_filtering": 12
+  },
+  "_meta": {
+    "cisco_result": "skills-open-notebook-scan.json",
+    "skill_dir": "skills/K-Dense-AI-scientific-agent-skills/skills/open-notebook",
+    "scanned_at": "2026-10-22T04:37:03.715728+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

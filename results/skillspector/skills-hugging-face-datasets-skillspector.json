@@ -1,0 +1,1412 @@
+{
+  "skill": {
+    "name": "hugging-face-datasets",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/huggingface-skills/skills/hugging-face-datasets",
+    "scanned_at": "2026-10-22T04:35:48.541673+00:00"
+  },
+  "risk_assessment": {
+    "score": 78,
+    "severity": "HIGH",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "HIGH"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 542,
+      "executable": false,
+      "size_bytes": 16374,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/diverse_training_examples.json",
+      "type": "json",
+      "lines": 239,
+      "executable": false,
+      "size_bytes": 17797,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/system_prompt_template.txt",
+      "type": "text",
+      "lines": 196,
+      "executable": false,
+      "size_bytes": 5451,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/training_examples.json",
+      "type": "json",
+      "lines": 176,
+      "executable": false,
+      "size_bytes": 6812,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/dataset_manager.py",
+      "type": "python",
+      "lines": 522,
+      "executable": true,
+      "size_bytes": 18436,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/sql_manager.py",
+      "type": "python",
+      "lines": 844,
+      "executable": true,
+      "size_bytes": 28645,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "templates/chat.json",
+      "type": "json",
+      "lines": 55,
+      "executable": false,
+      "size_bytes": 2290,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "templates/classification.json",
+      "type": "json",
+      "lines": 62,
+      "executable": false,
+      "size_bytes": 1923,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "templates/completion.json",
+      "type": "json",
+      "lines": 51,
+      "executable": false,
+      "size_bytes": 2664,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "templates/custom.json",
+      "type": "json",
+      "lines": 75,
+      "executable": false,
+      "size_bytes": 2412,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "templates/qa.json",
+      "type": "json",
+      "lines": 54,
+      "executable": false,
+      "size_bytes": 2673,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "templates/tabular.json",
+      "type": "json",
+      "lines": 81,
+      "executable": false,
+      "size_bytes": 2546,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "PE3",
+      "finding_id": "finding-bfe2ccf69ebe4889ae7f333b06c419de",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 66,
+        "end_line": null,
+        "start_column": 59
+      },
+      "finding": "access token",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n### Prerequisites\n- `uv` package manager installed\n- `HF_TOKEN` environment variable must be set with a Write-access token\n\n---\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "903a9f18e7222d4c1e39fcf76dec31bef3fd46b6332f4bc5bc823999d287548b",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 66,
+          "end_line": null,
+          "start_column": 59
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-b9f93adf0fd64378b0f048b0f5e9c146",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.85,
+      "location": {
+        "file": "scripts/dataset_manager.py",
+        "start_line": 283,
+        "end_line": null,
+        "start_column": 40
+      },
+      "finding": "--no-validate",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "\n    # Validate training data structure\n    if validate and not validate_training_data(rows, template):\n        print(\"\u274c Validation failed. Use --no-validate to skip validation.\")\n        return\n\n    # Create a newline-delimited JSON string",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8101da2842c74aa0e1dda23f34b661cae05feb567953710318ee1aaa5950b43e",
+      "occurrences": [
+        {
+          "file": "scripts/dataset_manager.py",
+          "start_line": 283,
+          "end_line": null,
+          "start_column": 40
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-b8a9c29320154b529971ef16e9f8cf57",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.85,
+      "location": {
+        "file": "scripts/dataset_manager.py",
+        "start_line": 462,
+        "end_line": null,
+        "start_column": 9
+      },
+      "finding": "--no-validate",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "        help=\"JSON string containing a list of rows\",\n    )\n    add_parser.add_argument(\n        \"--no-validate\",\n        dest=\"validate\",\n        action=\"store_false\",\n        help=\"Skip data validation\",",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8101da2842c74aa0e1dda23f34b661cae05feb567953710318ee1aaa5950b43e",
+      "occurrences": [
+        {
+          "file": "scripts/dataset_manager.py",
+          "start_line": 462,
+          "end_line": null,
+          "start_column": 9
+        }
+      ]
+    },
+    {
+      "id": "LP3",
+      "finding_id": "finding-8f939a742f7c416f94c0a10215148de6",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, file_read, file_write.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, file_read, file_write.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-ce672e8bbeef43c8a03720b46815dfb7",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "scripts/dataset_manager.py",
+        "start_line": 63,
+        "end_line": null,
+        "start_column": 11
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "This dataset was created using the Claude Dataset Skill.\n\"\"\"\n    try:\n        api.upload_file(\n            path_or_fileobj=readme_content.encode(\"utf-8\"),\n            path_in_repo=\"README.md\",\n            repo_id=repo_id,",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "scripts/dataset_manager.py",
+          "start_line": 63,
+          "end_line": null,
+          "start_column": 11
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-a154b9e6f3a642a4a04667dc0c807e10",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "scripts/dataset_manager.py",
+        "start_line": 87,
+        "end_line": null,
+        "start_column": 7
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "        config_data[\"system_prompt\"] = system_prompt\n\n    # Upload config.json\n    api.upload_file(\n        path_or_fileobj=json.dumps(config_data, indent=2).encode(\"utf-8\"),\n        path_in_repo=\"config.json\",\n        repo_id=repo_id,",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "scripts/dataset_manager.py",
+          "start_line": 87,
+          "end_line": null,
+          "start_column": 7
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-8852f3bed8944f8eb7a3e0386fc4e703",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "scripts/dataset_manager.py",
+        "start_line": 294,
+        "end_line": null,
+        "start_column": 11
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "    filename = f\"data/{split}-{timestamp}.jsonl\"\n\n    try:\n        api.upload_file(\n            path_or_fileobj=jsonl_content.encode(\"utf-8\"),\n            path_in_repo=filename,\n            repo_id=repo_id,",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "scripts/dataset_manager.py",
+          "start_line": 294,
+          "end_line": null,
+          "start_column": 11
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 12,
+    "scanned_components": 12,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 12,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 18,
+        "end_line": 18,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 59,
+        "end_line": 59,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 170,
+        "end_line": 170,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 177,
+        "end_line": 177,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 254,
+        "end_line": 254,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 513,
+        "end_line": 513,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 531,
+        "end_line": 531,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 18,
+        "column": 59,
+        "evidence": "# Scripts auto-install requirements when run with: uv run scripts/script_name.py",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 31,
+        "column": 54,
+        "evidence": "Query any Hugging Face dataset using DuckDB SQL via `scripts/sql_manager.py`:",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 59,
+        "column": 33,
+        "evidence": "> Scripts are run with: `uv run scripts/script_name.py [arguments]`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 61,
+        "column": 4,
+        "evidence": "- `scripts/dataset_manager.py` - Dataset creation and management",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 62,
+        "column": 4,
+        "evidence": "- `scripts/sql_manager.py` - SQL-based dataset querying and transformation",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 78,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py query \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 83,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py describe --dataset \"cais/mmlu\"",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 86,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py sample --dataset \"cais/mmlu\" --n 5",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 89,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py count --dataset \"cais/mmlu\" --where \"subject='nutrition'\"",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 121,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py describe --dataset \"cais/mmlu\"",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 124,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py unique --dataset \"cais/mmlu\" --column \"subject\"",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 127,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py histogram --dataset \"cais/mmlu\" --column \"subject\" --bins 20",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 133,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py query \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 138,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py transform \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 149,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py query \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 156,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py transform \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 167,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py export \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 170,
+        "column": 13,
+        "evidence": "--output \"nutrition.parquet\" \\",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 174,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py export \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 177,
+        "column": 13,
+        "evidence": "--output \"sample.jsonl\" \\",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 184,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py query \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 190,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py query \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 196,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py query \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 205,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py raw --sql \"",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 254,
+        "column": 37,
+        "evidence": "sql.export_to_parquet(\"cais/mmlu\", \"output.parquet\", sql=\"SELECT * FROM data LIMIT 100\")",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 314,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py init --repo_id \"your-username/dataset-name\" [--private]",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 317,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py config --repo_id \"your-username/dataset-name\" --system_prompt \"$(cat system_prompt.txt)\"",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 323,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py quick_setup \\",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 328,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py add_rows \\",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 418,
+        "column": 4,
+        "evidence": "- `training_examples.json` - MCP tool usage examples (debugging, project setup, database analysis)",
+        "target_path": "examples/training_examples.json",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 419,
+        "column": 4,
+        "evidence": "- `diverse_training_examples.json` - Broader scenarios including:",
+        "target_path": "examples/diverse_training_examples.json",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 430,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py add_rows --repo_id \"your-username/dataset-name\" \\",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 431,
+        "column": 22,
+        "evidence": "--rows_json \"$(cat examples/training_examples.json)\"",
+        "target_path": "examples/training_examples.json",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 434,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py add_rows --repo_id \"your-username/dataset-name\" \\",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 435,
+        "column": 22,
+        "evidence": "--rows_json \"$(cat examples/diverse_training_examples.json)\"",
+        "target_path": "examples/diverse_training_examples.json",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 438,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py add_rows --repo_id \"your-username/dataset-name\" \\",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 439,
+        "column": 38,
+        "evidence": "--rows_json \"$(jq -s '.[0] + .[1]' examples/training_examples.json examples/diverse_training_examples.json)\"",
+        "target_path": "examples/training_examples.json",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 439,
+        "column": 70,
+        "evidence": "--rows_json \"$(jq -s '.[0] + .[1]' examples/training_examples.json examples/diverse_training_examples.json)\"",
+        "target_path": "examples/diverse_training_examples.json",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 446,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py list_templates",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 451,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py quick_setup --repo_id \"your-username/dataset-name\" --template classification",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 457,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py init --repo_id \"your-username/dataset-name\" [--private]",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 460,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py config --repo_id \"your-username/dataset-name\" --system_prompt \"Your prompt here\"",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 463,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py add_rows \\",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 471,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py stats --repo_id \"your-username/dataset-name\"",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 487,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py describe --dataset \"cais/mmlu\"",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 488,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py histogram --dataset \"cais/mmlu\" --column \"subject\"",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 491,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py query \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 501,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py query \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 510,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py export \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 513,
+        "column": 13,
+        "evidence": "--output \"mmlu_all.parquet\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 519,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py query \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 528,
+        "column": 8,
+        "evidence": "uv run scripts/sql_manager.py export \\",
+        "target_path": "scripts/sql_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 531,
+        "column": 13,
+        "evidence": "--output \"nutrition_source.jsonl\" \\",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 537,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py init --repo_id \"username/nutrition-training\"",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 538,
+        "column": 8,
+        "evidence": "uv run scripts/dataset_manager.py add_rows \\",
+        "target_path": "scripts/dataset_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 7,
+    "findings_after_filtering": 7
+  },
+  "_meta": {
+    "cisco_result": "skills-hugging-face-datasets-scan.json",
+    "skill_dir": "skills/huggingface-skills/skills/hugging-face-datasets",
+    "scanned_at": "2026-10-22T04:35:48.822708+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

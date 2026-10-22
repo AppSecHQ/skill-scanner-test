@@ -1,0 +1,2254 @@
+{
+  "skill": {
+    "name": "hugging-face-evaluation",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/huggingface-skills/skills/hugging-face-evaluation",
+    "scanned_at": "2026-10-22T04:35:53.569818+00:00"
+  },
+  "risk_assessment": {
+    "score": 100,
+    "severity": "CRITICAL",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "CRITICAL"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 651,
+      "executable": false,
+      "size_bytes": 22599,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/.env.example",
+      "type": "other",
+      "lines": 7,
+      "executable": false,
+      "size_bytes": 311,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/USAGE_EXAMPLES.md",
+      "type": "markdown",
+      "lines": 382,
+      "executable": false,
+      "size_bytes": 9496,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/artificial_analysis_to_hub.py",
+      "type": "python",
+      "lines": 141,
+      "executable": true,
+      "size_bytes": 3953,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/example_readme_tables.md",
+      "type": "markdown",
+      "lines": 135,
+      "executable": false,
+      "size_bytes": 3118,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/metric_mapping.json",
+      "type": "json",
+      "lines": 50,
+      "executable": false,
+      "size_bytes": 924,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "requirements.txt",
+      "type": "text",
+      "lines": 20,
+      "executable": false,
+      "size_bytes": 465,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/evaluation_manager.py",
+      "type": "python",
+      "lines": 1374,
+      "executable": true,
+      "size_bytes": 48691,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/inspect_eval_uv.py",
+      "type": "python",
+      "lines": 104,
+      "executable": true,
+      "size_bytes": 2984,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/inspect_vllm_uv.py",
+      "type": "python",
+      "lines": 317,
+      "executable": true,
+      "size_bytes": 9442,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/lighteval_vllm_uv.py",
+      "type": "python",
+      "lines": 303,
+      "executable": true,
+      "size_bytes": 9400,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/run_eval_job.py",
+      "type": "python",
+      "lines": 98,
+      "executable": true,
+      "size_bytes": 2500,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/run_vllm_eval_job.py",
+      "type": "python",
+      "lines": 331,
+      "executable": true,
+      "size_bytes": 9506,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/test_extraction.py",
+      "type": "python",
+      "lines": 206,
+      "executable": true,
+      "size_bytes": 5619,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "TT3",
+      "finding_id": "finding-16ff5c06607047628f018789d5efbed9",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'HEADERS' from os.getenv (line 45, credential/environment) \u2192 requests.get (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "examples/artificial_analysis_to_hub.py",
+        "start_line": 54,
+        "end_line": 54,
+        "start_column": 15,
+        "end_column": 49
+      },
+      "finding": "requests.get(URL, headers=HEADERS)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "\n\ndef get_model_evaluations_data(creator_slug, model_name):\n    response = requests.get(URL, headers=HEADERS)\n    response_data = response.json()[\"data\"]\n    for model in response_data:\n        if (",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "7fc76776ee152c85a682114efd2e0444d12892efa59fc0ec78b2369035fd694d",
+      "occurrences": [
+        {
+          "file": "examples/artificial_analysis_to_hub.py",
+          "start_line": 54,
+          "end_line": 54,
+          "start_column": 15,
+          "end_column": 49
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-3d722c5e8aae4a5dbc8979860fdeeb59",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 148,
+        "end_line": null,
+        "start_column": 49
+      },
+      "finding": "access token",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "### Prerequisites\n- Preferred: use `uv run` (PEP 723 header auto-installs deps)\n- Or install manually: `pip install huggingface-hub markdown-it-py python-dotenv pyyaml requests`\n- Set `HF_TOKEN` environment variable with Write-access token\n- For Artificial Analysis: Set `AA_API_KEY` environment variable\n- `.env` is loaded automatically if `python-dotenv` is installed\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "903a9f18e7222d4c1e39fcf76dec31bef3fd46b6332f4bc5bc823999d287548b",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 148,
+          "end_line": null,
+          "start_column": 49
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-d385bceefac84edf9aca64e7d0f132bc",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 197,
+        "end_line": null,
+        "start_column": 9
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n**With Environment File:**\n```bash\n# Create .env file\necho \"AA_API_KEY=your-api-key\" >> .env\necho \"HF_TOKEN=your-hf-token\" >> .env\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 197,
+          "end_line": null,
+          "start_column": 9
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-62aa2e73b6a44799b2d345543555160d",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 198,
+        "end_line": null,
+        "start_column": 34
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "**With Environment File:**\n```bash\n# Create .env file\necho \"AA_API_KEY=your-api-key\" >> .env\necho \"HF_TOKEN=your-hf-token\" >> .env\n\n# Run import",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 198,
+          "end_line": null,
+          "start_column": 34
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-13de3212f022488d9423bd339b7f97c6",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 199,
+        "end_line": null,
+        "start_column": 33
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "```bash\n# Create .env file\necho \"AA_API_KEY=your-api-key\" >> .env\necho \"HF_TOKEN=your-hf-token\" >> .env\n\n# Run import\nuv run scripts/evaluation_manager.py import-aa \\",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 199,
+          "end_line": null,
+          "start_column": 33
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-f78ad75b01124d4eafcd4b5d86398eb1",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 608,
+        "end_line": null,
+        "start_column": 51
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "- **Example**: `--model-name-override \"**Olmo 3-32B**\"`\n\n**Issue**: \"AA_API_KEY not set\"\n- **Solution**: Set environment variable or add to .env file\n\n**Issue**: \"Token does not have write access\"\n- **Solution**: Ensure HF_TOKEN has write permissions for the repository",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 608,
+          "end_line": null,
+          "start_column": 51
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-62ff17ab1ba24971a5bead93fb16e3e1",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "examples/USAGE_EXAMPLES.md",
+        "start_line": 24,
+        "end_line": null,
+        "start_column": 25
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "uv add huggingface_hub python-dotenv pyyaml requests\n\n# Configure environment variables\ncp examples/.env.example .env\n# Edit .env with your tokens\n```\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "examples/USAGE_EXAMPLES.md",
+          "start_line": 24,
+          "end_line": null,
+          "start_column": 25
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-fec4fdc7dcbf4f62bb938fac0129b022",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "examples/USAGE_EXAMPLES.md",
+        "start_line": 25,
+        "end_line": null,
+        "start_column": 7
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n# Configure environment variables\ncp examples/.env.example .env\n# Edit .env with your tokens\n```\n\nYour `.env` file should contain:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "examples/USAGE_EXAMPLES.md",
+          "start_line": 25,
+          "end_line": null,
+          "start_column": 7
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-e3d479e4d7b14b7fb601d806e187ad5a",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/evaluation_manager.py",
+        "start_line": 30,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n\ndef load_env() -> None:\n    \"\"\"Load .env if python-dotenv is available; keep help usable without it.\"\"\"\n    try:\n        import dotenv  # type: ignore\n    except ModuleNotFoundError:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/evaluation_manager.py",
+          "start_line": 30,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-0c08e5d341d5422fbc2144ed79536a5c",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/evaluation_manager.py",
+        "start_line": 1175,
+        "end_line": null,
+        "start_column": 61
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n            Tips:\n              - YAML is printed by default; use --apply or --create-pr to write changes.\n              - Set HF_TOKEN (and AA_API_KEY for import-aa); .env is loaded automatically if python-dotenv is installed.\n              - When multiple tables exist, run inspect-tables then select with --table N.\n              - To apply changes (push or PR), rerun extract-readme with --apply or --create-pr.\n            \"\"\"",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/evaluation_manager.py",
+          "start_line": 1175,
+          "end_line": null,
+          "start_column": 61
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-0779ba38c4774c019a3c75c728686e42",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/evaluation_manager.py",
+        "start_line": 1231,
+        "end_line": null,
+        "start_column": 44
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "              AA_API_KEY=... uv run scripts/evaluation_manager.py import-aa --creator-slug anthropic --model-name claude-sonnet-4 --repo-id username/model\n              uv run scripts/evaluation_manager.py import-aa --creator-slug openai --model-name gpt-4o --repo-id username/model --create-pr\n\n            Requires: AA_API_KEY in env (or .env if python-dotenv installed).\n            \"\"\"\n        ),\n    )",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/evaluation_manager.py",
+          "start_line": 1231,
+          "end_line": null,
+          "start_column": 44
+        }
+      ]
+    },
+    {
+      "id": "LP3",
+      "finding_id": "finding-ca608cb4517048ad92df454db047b668",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, network, shell.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, network, shell.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-04f4ac496d884c9a942e57d79282b5e2",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/inspect_eval_uv.py",
+        "start_line": 94,
+        "end_line": 94,
+        "start_column": 8,
+        "end_column": 55
+      },
+      "finding": "subprocess.run(cmd, check=True, cwd=tasks_root)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "        cmd.extend([\"--limit\", str(args.limit)])\n\n    try:\n        subprocess.run(cmd, check=True, cwd=tasks_root)\n        print(\"Evaluation complete.\")\n    except subprocess.CalledProcessError as exc:\n        location = f\" (cwd={tasks_root})\" if tasks_root else \"\"",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "84691ce8988f32e55f7072f4a6fb107f0221a6d09b0db0add8dcc7e9ea88949f",
+      "occurrences": [
+        {
+          "file": "scripts/inspect_eval_uv.py",
+          "start_line": 94,
+          "end_line": 94,
+          "start_column": 8,
+          "end_column": 55
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-b0c84549ca434caa80d9b54c65bdb8af",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/inspect_vllm_uv.py",
+        "start_line": 111,
+        "end_line": 111,
+        "start_column": 8,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd, check=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    print(f\"Running: {' '.join(cmd)}\")\n\n    try:\n        subprocess.run(cmd, check=True)\n        print(\"Evaluation complete.\")\n    except subprocess.CalledProcessError as exc:\n        print(f\"Evaluation failed with exit code {exc.returncode}\", file=sys.stderr)",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "34ee05cb31334ea579fc580bcbd59b7cc08ea32b6ddb001713b6095abe0e3728",
+      "occurrences": [
+        {
+          "file": "scripts/inspect_vllm_uv.py",
+          "start_line": 111,
+          "end_line": 111,
+          "start_column": 8,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-4f147464ba914bb191ece3f4af24d7ba",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/inspect_vllm_uv.py",
+        "start_line": 176,
+        "end_line": 176,
+        "start_column": 8,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd, check=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    print(f\"Running: {' '.join(cmd)}\")\n\n    try:\n        subprocess.run(cmd, check=True)\n        print(\"Evaluation complete.\")\n    except subprocess.CalledProcessError as exc:\n        print(f\"Evaluation failed with exit code {exc.returncode}\", file=sys.stderr)",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "34ee05cb31334ea579fc580bcbd59b7cc08ea32b6ddb001713b6095abe0e3728",
+      "occurrences": [
+        {
+          "file": "scripts/inspect_vllm_uv.py",
+          "start_line": 176,
+          "end_line": 176,
+          "start_column": 8,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-26983846d2d8452eaad777a4e537034d",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/lighteval_vllm_uv.py",
+        "start_line": 106,
+        "end_line": 106,
+        "start_column": 8,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd, check=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    print(f\"Running: {' '.join(cmd)}\")\n\n    try:\n        subprocess.run(cmd, check=True)\n        print(\"Evaluation complete.\")\n    except subprocess.CalledProcessError as exc:\n        print(f\"Evaluation failed with exit code {exc.returncode}\", file=sys.stderr)",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "34ee05cb31334ea579fc580bcbd59b7cc08ea32b6ddb001713b6095abe0e3728",
+      "occurrences": [
+        {
+          "file": "scripts/lighteval_vllm_uv.py",
+          "start_line": 106,
+          "end_line": 106,
+          "start_column": 8,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-fcad4d5e23804582832f5ec6e039bb28",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/lighteval_vllm_uv.py",
+        "start_line": 170,
+        "end_line": 170,
+        "start_column": 8,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd, check=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    print(f\"Running: {' '.join(cmd)}\")\n\n    try:\n        subprocess.run(cmd, check=True)\n        print(\"Evaluation complete.\")\n    except subprocess.CalledProcessError as exc:\n        print(f\"Evaluation failed with exit code {exc.returncode}\", file=sys.stderr)",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "34ee05cb31334ea579fc580bcbd59b7cc08ea32b6ddb001713b6095abe0e3728",
+      "occurrences": [
+        {
+          "file": "scripts/lighteval_vllm_uv.py",
+          "start_line": 170,
+          "end_line": 170,
+          "start_column": 8,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-fa1effd351e24586b4dfeb563f350223",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_eval_job.py",
+        "start_line": 74,
+        "end_line": 74,
+        "start_column": 8,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd, check=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    print(\"Executing:\", \" \".join(cmd))\n\n    try:\n        subprocess.run(cmd, check=True)\n    except subprocess.CalledProcessError as exc:\n        print(\"hf jobs command failed\", file=sys.stderr)\n        raise",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "34ee05cb31334ea579fc580bcbd59b7cc08ea32b6ddb001713b6095abe0e3728",
+      "occurrences": [
+        {
+          "file": "scripts/run_eval_job.py",
+          "start_line": 74,
+          "end_line": 74,
+          "start_column": 8,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-993bc6e30caa4a3190bc285c57095c76",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_vllm_eval_job.py",
+        "start_line": 128,
+        "end_line": 128,
+        "start_column": 8,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd, check=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    print(f\"\\nExecuting: {' '.join(cmd)}\")\n\n    try:\n        subprocess.run(cmd, check=True)\n    except subprocess.CalledProcessError as exc:\n        print(\"hf jobs command failed\", file=sys.stderr)\n        raise",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "34ee05cb31334ea579fc580bcbd59b7cc08ea32b6ddb001713b6095abe0e3728",
+      "occurrences": [
+        {
+          "file": "scripts/run_vllm_eval_job.py",
+          "start_line": 128,
+          "end_line": 128,
+          "start_column": 8,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-961b0c5026374a9b88fa6de937f26157",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_vllm_eval_job.py",
+        "start_line": 180,
+        "end_line": 180,
+        "start_column": 8,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd, check=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    print(f\"\\nExecuting: {' '.join(cmd)}\")\n\n    try:\n        subprocess.run(cmd, check=True)\n    except subprocess.CalledProcessError as exc:\n        print(\"hf jobs command failed\", file=sys.stderr)\n        raise",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "34ee05cb31334ea579fc580bcbd59b7cc08ea32b6ddb001713b6095abe0e3728",
+      "occurrences": [
+        {
+          "file": "scripts/run_vllm_eval_job.py",
+          "start_line": 180,
+          "end_line": 180,
+          "start_column": 8,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "TT2",
+      "finding_id": "finding-ee580236b03b4828a823a63231bd4a16",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'cmd' from os.getenv (line 51, credential/environment) \u2192 subprocess.run (code execution)",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "scripts/run_eval_job.py",
+        "start_line": 74,
+        "end_line": 74,
+        "start_column": 8,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd, check=True)",
+      "explanation": "Data from a source is assigned to a variable that is later passed to a sink, creating a variable-mediated taint flow.",
+      "remediation": "Validate tainted variables before passing them to sinks. Use allowlists, type checks, or sanitization functions on data from external sources.",
+      "code_snippet": "    print(\"Executing:\", \" \".join(cmd))\n\n    try:\n        subprocess.run(cmd, check=True)\n    except subprocess.CalledProcessError as exc:\n        print(\"hf jobs command failed\", file=sys.stderr)\n        raise",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "239e6848c46d6835ad06ff4027e5b0e22b5286ea3e10b2837e39c3cd32eb1973",
+      "occurrences": [
+        {
+          "file": "scripts/run_eval_job.py",
+          "start_line": 74,
+          "end_line": 74,
+          "start_column": 8,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "TT2",
+      "finding_id": "finding-7a76bba928574c79b0925daf72f7580e",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'cmd' from os.getenv (line 103, credential/environment) \u2192 subprocess.run (code execution)",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "scripts/run_vllm_eval_job.py",
+        "start_line": 128,
+        "end_line": 128,
+        "start_column": 8,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd, check=True)",
+      "explanation": "Data from a source is assigned to a variable that is later passed to a sink, creating a variable-mediated taint flow.",
+      "remediation": "Validate tainted variables before passing them to sinks. Use allowlists, type checks, or sanitization functions on data from external sources.",
+      "code_snippet": "    print(f\"\\nExecuting: {' '.join(cmd)}\")\n\n    try:\n        subprocess.run(cmd, check=True)\n    except subprocess.CalledProcessError as exc:\n        print(\"hf jobs command failed\", file=sys.stderr)\n        raise",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "239e6848c46d6835ad06ff4027e5b0e22b5286ea3e10b2837e39c3cd32eb1973",
+      "occurrences": [
+        {
+          "file": "scripts/run_vllm_eval_job.py",
+          "start_line": 128,
+          "end_line": 128,
+          "start_column": 8,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "TT2",
+      "finding_id": "finding-a5e56d27cf7a4bd5985ccf7115c23a32",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'cmd' from os.getenv (line 159, credential/environment) \u2192 subprocess.run (code execution)",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "scripts/run_vllm_eval_job.py",
+        "start_line": 180,
+        "end_line": 180,
+        "start_column": 8,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd, check=True)",
+      "explanation": "Data from a source is assigned to a variable that is later passed to a sink, creating a variable-mediated taint flow.",
+      "remediation": "Validate tainted variables before passing them to sinks. Use allowlists, type checks, or sanitization functions on data from external sources.",
+      "code_snippet": "    print(f\"\\nExecuting: {' '.join(cmd)}\")\n\n    try:\n        subprocess.run(cmd, check=True)\n    except subprocess.CalledProcessError as exc:\n        print(\"hf jobs command failed\", file=sys.stderr)\n        raise",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "239e6848c46d6835ad06ff4027e5b0e22b5286ea3e10b2837e39c3cd32eb1973",
+      "occurrences": [
+        {
+          "file": "scripts/run_vllm_eval_job.py",
+          "start_line": 180,
+          "end_line": 180,
+          "start_column": 8,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "SC1",
+      "finding_id": "finding-500d7193cfe1441db467378dc6572b01",
+      "category": "Supply Chain",
+      "pattern": "Unpinned Dependencies",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 2,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "huggingface-hub>=0.26.0",
+      "explanation": "Dependencies lack version pinning, allowing potential malicious package updates. Consider pinning versions.",
+      "remediation": "Pin all dependency versions in requirements.txt or pyproject.toml. Use exact versions (==) or compatible ranges. Run pip-audit regularly.",
+      "code_snippet": "# Core dependencies\nhuggingface-hub>=0.26.0\npython-dotenv>=1.2.1\npyyaml>=6.0.3\nrequests>=2.32.5",
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "e2ea94d639caff8d152505c7049ed125918bf41c9e806d872b68756a84f064d0",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 2,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "SC1",
+      "finding_id": "finding-4384bce2d74f40a6b0f865ff4dfaf227",
+      "category": "Supply Chain",
+      "pattern": "Unpinned Dependencies",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 3,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "python-dotenv>=1.2.1",
+      "explanation": "Dependencies lack version pinning, allowing potential malicious package updates. Consider pinning versions.",
+      "remediation": "Pin all dependency versions in requirements.txt or pyproject.toml. Use exact versions (==) or compatible ranges. Run pip-audit regularly.",
+      "code_snippet": "# Core dependencies\nhuggingface-hub>=0.26.0\npython-dotenv>=1.2.1\npyyaml>=6.0.3\nrequests>=2.32.5\nmarkdown-it-py>=3.0.0",
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "c7cbdb7c112bb43f49f0aac51fb22234349238a6a60f94180e1107d8607adb74",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 3,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "SC4",
+      "finding_id": "finding-0f074ef4cf7f4106b4234de67da63204",
+      "category": "Supply Chain",
+      "pattern": "Unverifiable Dependency: python-dotenv has 2 known advisory(ies) (CVE-2026-28684 (python-dotenv: Symlink following in set_key allows arbitrary file overwrite via ); CVE-2026-28684 (python-dotenv reads key-value pairs from a .env file and can set them as environ)), but the manifest does not pin a version, so it is unknown whether the installed release is affected",
+      "severity": "LOW",
+      "confidence": 0.4,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 3,
+        "end_line": null
+      },
+      "finding": "python-dotenv",
+      "explanation": "OSV returned advisories for this package, but its resolved version is unknown. A package-name lookup does not establish whether the installed release is affected by those advisories.",
+      "remediation": "Determine the dependency's exact resolved version from the environment or lockfile and compare it with the advisories in OSV (osv.dev). If it is affected, use a verified fixed release or remove or replace the dependency when no fix is available.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "08c67d51c961de6a4bf29cd01e9f86161d8ed98fbb6dc0c96442a78900991c1f",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 3,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "SC1",
+      "finding_id": "finding-6b27fa6cf3964f17900c13448a71c6ed",
+      "category": "Supply Chain",
+      "pattern": "Unpinned Dependencies",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 4,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "pyyaml>=6.0.3",
+      "explanation": "Dependencies lack version pinning, allowing potential malicious package updates. Consider pinning versions.",
+      "remediation": "Pin all dependency versions in requirements.txt or pyproject.toml. Use exact versions (==) or compatible ranges. Run pip-audit regularly.",
+      "code_snippet": "# Core dependencies\nhuggingface-hub>=0.26.0\npython-dotenv>=1.2.1\npyyaml>=6.0.3\nrequests>=2.32.5\nmarkdown-it-py>=3.0.0\n",
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "61d2913fbe3a6a47e7d8593cdeb849789630b32e037c46234cfb38897becd734",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 4,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "SC4",
+      "finding_id": "finding-974f11c56e8e497397f9433999938390",
+      "category": "Supply Chain",
+      "pattern": "Unverifiable Dependency: pyyaml has 8 known advisory(ies) (CVE-2019-20477 (Deserialization of Untrusted Data in PyYAML); CVE-2020-1747 (Improper Input Validation in PyYAML); CVE-2020-14343 (Improper Input Validation in PyYAML) +5 more), but the manifest does not pin a version, so it is unknown whether the installed release is affected",
+      "severity": "LOW",
+      "confidence": 0.4,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 4,
+        "end_line": null
+      },
+      "finding": "pyyaml",
+      "explanation": "OSV returned advisories for this package, but its resolved version is unknown. A package-name lookup does not establish whether the installed release is affected by those advisories.",
+      "remediation": "Determine the dependency's exact resolved version from the environment or lockfile and compare it with the advisories in OSV (osv.dev). If it is affected, use a verified fixed release or remove or replace the dependency when no fix is available.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "63d3785d38c76088e3330226a537403e99607363507ca953b3b9cef01fb72913",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 4,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "SC1",
+      "finding_id": "finding-72623d23e19a45038f827b0ffbafd5ac",
+      "category": "Supply Chain",
+      "pattern": "Unpinned Dependencies",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 5,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "requests>=2.32.5",
+      "explanation": "Dependencies lack version pinning, allowing potential malicious package updates. Consider pinning versions.",
+      "remediation": "Pin all dependency versions in requirements.txt or pyproject.toml. Use exact versions (==) or compatible ranges. Run pip-audit regularly.",
+      "code_snippet": "huggingface-hub>=0.26.0\npython-dotenv>=1.2.1\npyyaml>=6.0.3\nrequests>=2.32.5\nmarkdown-it-py>=3.0.0\n\n# Inference provider evaluation",
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a6a46231a06eb6f3d38b2a9c28c76b1cbec2174d36d8964c626b4d6435e9b8be",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 5,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "SC4",
+      "finding_id": "finding-29742905ad4d4dd0b1a7a490db399675",
+      "category": "Supply Chain",
+      "pattern": "Unverifiable Dependency: requests has 16 known advisory(ies) (CVE-2014-1830 (Exposure of Sensitive Information to an Unauthorized Actor in Requests); CVE-2024-47081 (Requests vulnerable to .netrc credentials leak via malicious URLs); CVE-2024-35195 (Requests `Session` object does not verify requests after making first request wi) +13 more), but the manifest does not pin a version, so it is unknown whether the installed release is affected",
+      "severity": "LOW",
+      "confidence": 0.4,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 5,
+        "end_line": null
+      },
+      "finding": "requests",
+      "explanation": "OSV returned advisories for this package, but its resolved version is unknown. A package-name lookup does not establish whether the installed release is affected by those advisories.",
+      "remediation": "Determine the dependency's exact resolved version from the environment or lockfile and compare it with the advisories in OSV (osv.dev). If it is affected, use a verified fixed release or remove or replace the dependency when no fix is available.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "09deeb6fdb55899e7b284b11a4a1f240e895ab350d9ef10d889ca4cada77cadd",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 5,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "SC1",
+      "finding_id": "finding-a34b4864590843e582fd78d2779c7a1b",
+      "category": "Supply Chain",
+      "pattern": "Unpinned Dependencies",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 6,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "markdown-it-py>=3.0.0\n",
+      "explanation": "Dependencies lack version pinning, allowing potential malicious package updates. Consider pinning versions.",
+      "remediation": "Pin all dependency versions in requirements.txt or pyproject.toml. Use exact versions (==) or compatible ranges. Run pip-audit regularly.",
+      "code_snippet": "python-dotenv>=1.2.1\npyyaml>=6.0.3\nrequests>=2.32.5\nmarkdown-it-py>=3.0.0\n\n# Inference provider evaluation\ninspect-ai>=0.3.0",
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a003fd404e98c736965362b88f4a32b1dbdcdcad4de060e10846f719e501b4b6",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 6,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "SC4",
+      "finding_id": "finding-737ae52485024255aaabc7ea2890f5ba",
+      "category": "Supply Chain",
+      "pattern": "Unverifiable Dependency: markdown-it-py has 4 known advisory(ies) (CVE-2023-26302 (markdown-it-py Denial of Service vulnerability in the command line interface); CVE-2023-26303 (markdown-it-py Denial of Service vulnerability); CVE-2023-26302 (Denial of service could be caused to the command line interface of markdown-it-p) +1 more), but the manifest does not pin a version, so it is unknown whether the installed release is affected",
+      "severity": "LOW",
+      "confidence": 0.4,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 6,
+        "end_line": null
+      },
+      "finding": "markdown-it-py",
+      "explanation": "OSV returned advisories for this package, but its resolved version is unknown. A package-name lookup does not establish whether the installed release is affected by those advisories.",
+      "remediation": "Determine the dependency's exact resolved version from the environment or lockfile and compare it with the advisories in OSV (osv.dev). If it is affected, use a verified fixed release or remove or replace the dependency when no fix is available.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5ce1033f1c12a05a6b93d5040c2908c27660e553dd38c79c35d97ed6b9936c8a",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 6,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "SC1",
+      "finding_id": "finding-0a044290cde94e97b4608f4dd5b429ef",
+      "category": "Supply Chain",
+      "pattern": "Unpinned Dependencies",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 9,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "inspect-ai>=0.3.0",
+      "explanation": "Dependencies lack version pinning, allowing potential malicious package updates. Consider pinning versions.",
+      "remediation": "Pin all dependency versions in requirements.txt or pyproject.toml. Use exact versions (==) or compatible ranges. Run pip-audit regularly.",
+      "code_snippet": "markdown-it-py>=3.0.0\n\n# Inference provider evaluation\ninspect-ai>=0.3.0\ninspect-evals\nopenai\n",
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "845f732820485639d49223f95b7a0f4b3c527c230d0259d272382a8f8f1807c2",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 9,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "SC1",
+      "finding_id": "finding-bfc7dbc657b44fe5aa8b0d9bfbf403e6",
+      "category": "Supply Chain",
+      "pattern": "Unpinned Dependencies",
+      "severity": "LOW",
+      "confidence": 0.6,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 10,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "inspect-evals",
+      "explanation": "Dependencies lack version pinning, allowing potential malicious package updates. Consider pinning versions.",
+      "remediation": "Pin all dependency versions in requirements.txt or pyproject.toml. Use exact versions (==) or compatible ranges. Run pip-audit regularly.",
+      "code_snippet": "\n# Inference provider evaluation\ninspect-ai>=0.3.0\ninspect-evals\nopenai\n\n# vLLM custom model evaluation (optional, GPU required)",
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "6311c7872163085c3d8257e7c7ee05e4403ced92593d77c6f98a0847998f72f2",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 10,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "SC1",
+      "finding_id": "finding-33577a8a1dc449a0b21fba452d9c67c2",
+      "category": "Supply Chain",
+      "pattern": "Unpinned Dependencies",
+      "severity": "LOW",
+      "confidence": 0.6,
+      "location": {
+        "file": "requirements.txt",
+        "start_line": 11,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "openai\n",
+      "explanation": "Dependencies lack version pinning, allowing potential malicious package updates. Consider pinning versions.",
+      "remediation": "Pin all dependency versions in requirements.txt or pyproject.toml. Use exact versions (==) or compatible ranges. Run pip-audit regularly.",
+      "code_snippet": "# Inference provider evaluation\ninspect-ai>=0.3.0\ninspect-evals\nopenai\n\n# vLLM custom model evaluation (optional, GPU required)\n# Note: These are auto-installed via PEP 723 headers when using `uv run`",
+      "intent": null,
+      "tags": [
+        "Supply Chain"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ff4a1b11ac57446bbf24d343db79b88e1cb876ce3284b6360f7904a04dc73e98",
+      "occurrences": [
+        {
+          "file": "requirements.txt",
+          "start_line": 11,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 14,
+    "scanned_components": 14,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 14,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 96,
+        "end_line": 96,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 132,
+        "end_line": 132,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 224,
+        "end_line": 224,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 234,
+        "end_line": 234,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 543,
+        "end_line": 543,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 8,
+        "completed": 8,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 8,
+        "completed": 8,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 14,
+        "completed": 14,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 55,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py get-prs --repo-id \"username/model-name\"",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 76,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py --help",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 77,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py inspect-tables --help",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 78,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py extract-readme --help",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 96,
+        "column": 44,
+        "evidence": "- **Task Typing**: `--task-type` sets the `task.type` field in model-index output (e.g., `text-generation`, `summarization`)",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 132,
+        "column": 8,
+        "evidence": "uv run scripts/train_sft_example.py",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 157,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py inspect-tables --repo-id \"username/model\"",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 160,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py extract-readme \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 167,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py extract-readme \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 172,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py extract-readme \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 189,
+        "column": 34,
+        "evidence": "AA_API_KEY=\"your-api-key\" uv run scripts/evaluation_manager.py import-aa \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 202,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py import-aa \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 210,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py import-aa \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 224,
+        "column": 16,
+        "evidence": "hf jobs uv run hf-evaluation/scripts/inspect_eval_uv.py \\",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 234,
+        "column": 16,
+        "evidence": "hf jobs uv run hf-evaluation/scripts/inspect_eval_uv.py \\",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 243,
+        "column": 8,
+        "evidence": "uv run scripts/run_eval_job.py \\",
+        "target_path": "scripts/run_eval_job.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 270,
+        "column": 8,
+        "evidence": "uv run scripts/lighteval_vllm_uv.py \\",
+        "target_path": "scripts/lighteval_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 275,
+        "column": 8,
+        "evidence": "uv run scripts/lighteval_vllm_uv.py \\",
+        "target_path": "scripts/lighteval_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 280,
+        "column": 8,
+        "evidence": "uv run scripts/lighteval_vllm_uv.py \\",
+        "target_path": "scripts/lighteval_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 286,
+        "column": 8,
+        "evidence": "uv run scripts/lighteval_vllm_uv.py \\",
+        "target_path": "scripts/lighteval_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 294,
+        "column": 16,
+        "evidence": "hf jobs uv run scripts/lighteval_vllm_uv.py \\",
+        "target_path": "scripts/lighteval_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 332,
+        "column": 8,
+        "evidence": "uv run scripts/inspect_vllm_uv.py \\",
+        "target_path": "scripts/inspect_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 337,
+        "column": 8,
+        "evidence": "uv run scripts/inspect_vllm_uv.py \\",
+        "target_path": "scripts/inspect_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 343,
+        "column": 8,
+        "evidence": "uv run scripts/inspect_vllm_uv.py \\",
+        "target_path": "scripts/inspect_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 351,
+        "column": 16,
+        "evidence": "hf jobs uv run scripts/inspect_vllm_uv.py \\",
+        "target_path": "scripts/inspect_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 373,
+        "column": 8,
+        "evidence": "uv run scripts/run_vllm_eval_job.py \\",
+        "target_path": "scripts/run_vllm_eval_job.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 379,
+        "column": 8,
+        "evidence": "uv run scripts/run_vllm_eval_job.py \\",
+        "target_path": "scripts/run_vllm_eval_job.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 387,
+        "column": 8,
+        "evidence": "uv run scripts/run_vllm_eval_job.py \\",
+        "target_path": "scripts/run_vllm_eval_job.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 406,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py --help",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 407,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py --version",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 412,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py inspect-tables --repo-id \"username/model-name\"",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 417,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py extract-readme \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 429,
+        "column": 23,
+        "evidence": "AA_API_KEY=... uv run scripts/evaluation_manager.py import-aa \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 438,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py show --repo-id \"username/model-name\"",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 439,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py validate --repo-id \"username/model-name\"",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 444,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py get-prs --repo-id \"username/model-name\"",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 450,
+        "column": 16,
+        "evidence": "hf jobs uv run scripts/inspect_eval_uv.py \\",
+        "target_path": "scripts/inspect_eval_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 460,
+        "column": 8,
+        "evidence": "uv run scripts/run_eval_job.py \\",
+        "target_path": "scripts/run_eval_job.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 469,
+        "column": 16,
+        "evidence": "hf jobs uv run scripts/lighteval_vllm_uv.py \\",
+        "target_path": "scripts/lighteval_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 476,
+        "column": 16,
+        "evidence": "hf jobs uv run scripts/inspect_vllm_uv.py \\",
+        "target_path": "scripts/inspect_vllm_uv.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 483,
+        "column": 8,
+        "evidence": "uv run scripts/run_vllm_eval_job.py \\",
+        "target_path": "scripts/run_vllm_eval_job.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 543,
+        "column": 109,
+        "evidence": "- Compares token sets: `\"OLMo-3-32B\"` \u2192 `{\"olmo\", \"3\", \"32b\"}` matches `\"**Olmo 3 32B**\"` or `\"[Olmo-3-32B](...)`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 562,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py extract-readme \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 570,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py get-prs \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 574,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py extract-readme \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 587,
+        "column": 8,
+        "evidence": "uv run scripts/evaluation_manager.py get-prs \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 591,
+        "column": 23,
+        "evidence": "AA_API_KEY=... uv run scripts/evaluation_manager.py import-aa \\",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 641,
+        "column": 20,
+        "evidence": "\"python\", \"scripts/evaluation_manager.py\",",
+        "target_path": "scripts/evaluation_manager.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 35,
+    "findings_after_filtering": 35
+  },
+  "_meta": {
+    "cisco_result": "skills-hugging-face-evaluation-scan.json",
+    "skill_dir": "skills/huggingface-skills/skills/hugging-face-evaluation",
+    "scanned_at": "2026-10-22T04:35:53.908949+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

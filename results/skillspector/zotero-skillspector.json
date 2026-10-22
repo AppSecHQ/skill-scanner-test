@@ -1,0 +1,1080 @@
+{
+  "skill": {
+    "name": "zotero",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/clawhub-zotero",
+    "scanned_at": "2026-10-22T04:41:00.166648+00:00"
+  },
+  "risk_assessment": {
+    "score": 100,
+    "severity": "CRITICAL",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "CRITICAL"
+  },
+  "components": [
+    {
+      "path": "EVAL.md",
+      "type": "markdown",
+      "lines": 135,
+      "executable": false,
+      "size_bytes": 6022,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 187,
+      "executable": false,
+      "size_bytes": 7215,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/troubleshooting.md",
+      "type": "markdown",
+      "lines": 135,
+      "executable": false,
+      "size_bytes": 5268,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/zotero.py",
+      "type": "python",
+      "lines": 1721,
+      "executable": true,
+      "size_bytes": 61164,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "TT3",
+      "finding_id": "finding-c3b07a947f334d8e887139d166560384",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'req' from os.environ.get (line 92, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 94,
+        "end_line": 94,
+        "start_column": 17,
+        "end_column": 56
+      },
+      "finding": "urllib.request.urlopen(req, timeout=30)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "    for attempt in range(_MAX_RETRIES + 1):\n        req = urllib.request.Request(url, data=body, headers=headers, method=method)\n        try:\n            with urllib.request.urlopen(req, timeout=30) as resp:\n                resp_body = resp.read().decode(\"utf-8\")\n                resp_headers = dict(resp.headers)\n                return resp_body, resp_headers",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ed03e5371048cc42e689f66b85a00604a53054cecc17c2bfd9eb027ea516dc6f",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 94,
+          "end_line": 94,
+          "start_column": 17,
+          "end_column": 56
+        }
+      ]
+    },
+    {
+      "id": "TT3",
+      "finding_id": "finding-19f9580a82d94e76af6e94ca5e8425de",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'req' from os.environ.get (line 755, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 757,
+        "end_line": 757,
+        "start_column": 13,
+        "end_column": 52
+      },
+      "finding": "urllib.request.urlopen(req, timeout=20)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "    url = \"https://api.crossref.org/works\" + urllib.parse.urlencode(params)\n    req = urllib.request.Request(url, headers={\"Accept\": \"application/json\"})\n    try:\n        with urllib.request.urlopen(req, timeout=20) as resp:\n            data = json.loads(resp.read().decode(\"utf-8\"))\n        return data.get(\"message\", {}).get(\"items\", [])\n    except (urllib.error.URLError, urllib.error.HTTPError, Exception) as e:",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "21745513cfbee8dfd28301c2b54faba9aa6be9be74c3c2920b61153d62fc1cd2",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 757,
+          "end_line": 757,
+          "start_column": 13,
+          "end_column": 52
+        }
+      ]
+    },
+    {
+      "id": "TT3",
+      "finding_id": "finding-b70ab598650348dea823f30783b119df",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'req' from os.environ.get (line 810, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 811,
+        "end_line": 811,
+        "start_column": 9,
+        "end_column": 48
+      },
+      "finding": "urllib.request.urlopen(req, timeout=30)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "    }\n    body = json.dumps({field: value}).encode(\"utf-8\")\n    req = urllib.request.Request(url, data=body, headers=headers, method=\"PATCH\")\n    with urllib.request.urlopen(req, timeout=30) as resp:\n        return resp.status\n\n",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ed03e5371048cc42e689f66b85a00604a53054cecc17c2bfd9eb027ea516dc6f",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 811,
+          "end_line": 811,
+          "start_column": 9,
+          "end_column": 48
+        }
+      ]
+    },
+    {
+      "id": "TT3",
+      "finding_id": "finding-8fc4b1f328ed46d29ef222edf053fdec",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'req' from os.environ.get (line 919, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 921,
+        "end_line": 921,
+        "start_column": 13,
+        "end_column": 52
+      },
+      "finding": "urllib.request.urlopen(req, timeout=15)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "    url = f\"https://api.unpaywall.org/v2/{urllib.parse.quote(doi, safe='')}?email={CROSSREF_EMAIL}\"\n    req = urllib.request.Request(url, headers={\"Accept\": \"application/json\"})\n    try:\n        with urllib.request.urlopen(req, timeout=15) as resp:\n            data = json.loads(resp.read().decode(\"utf-8\"))\n        oa = data.get(\"best_oa_location\") or {}\n        pdf_url = oa.get(\"url_for_pdf\")",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "889a5658dd6142b08efaccffb20425bb37837aefad0c1bd0e423bfcafdca4fd1",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 921,
+          "end_line": 921,
+          "start_column": 13,
+          "end_column": 52
+        }
+      ]
+    },
+    {
+      "id": "TT3",
+      "finding_id": "finding-da62fa14fe4e4f5381c8197f70ce9cad",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'req' from os.environ.get (line 983, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 988,
+        "end_line": 988,
+        "start_column": 13,
+        "end_column": 52
+      },
+      "finding": "urllib.request.urlopen(req, timeout=60)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "        \"Accept\": \"application/pdf,*/*\",\n    })\n    try:\n        with urllib.request.urlopen(req, timeout=60) as resp:\n            with open(dest_path, \"wb\") as f:\n                shutil.copyfileobj(resp, f)\n        # Verify it's actually a PDF (check magic bytes)",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "368ce9aa1c14d843fb75bf9c94bef60aa2dff525b2e999770f85737f57de7958",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 988,
+          "end_line": 988,
+          "start_column": 13,
+          "end_column": 52
+        }
+      ]
+    },
+    {
+      "id": "TT3",
+      "finding_id": "finding-1ffa8fb313014dbca68092c3c71f1654",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'auth_req' from os.environ.get (line 1069, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 1074,
+        "end_line": 1074,
+        "start_column": 13,
+        "end_column": 57
+      },
+      "finding": "urllib.request.urlopen(auth_req, timeout=30)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "        headers=auth_headers, method=\"POST\",\n    )\n    try:\n        with urllib.request.urlopen(auth_req, timeout=30) as resp:\n            auth_data = json.loads(resp.read().decode(\"utf-8\"))\n    except urllib.error.HTTPError as e:\n        print(f\"    \u26a0  Upload auth failed: {e.code}\", file=sys.stderr)",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3156119df05f6f09a38bef030c4794c70c49540ee3b2cd0271aad0a0c055a11c",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 1074,
+          "end_line": 1074,
+          "start_column": 13,
+          "end_column": 57
+        }
+      ]
+    },
+    {
+      "id": "TT3",
+      "finding_id": "finding-36ba53a9809e4231b541fb2c55db4e1d",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'reg_req' from os.environ.get (line 1112, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 1117,
+        "end_line": 1117,
+        "start_column": 13,
+        "end_column": 56
+      },
+      "finding": "urllib.request.urlopen(reg_req, timeout=30)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "        headers=reg_headers, method=\"POST\",\n    )\n    try:\n        with urllib.request.urlopen(reg_req, timeout=30) as resp:\n            pass\n        return True\n    except urllib.error.HTTPError as e:",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "e9ff7f5bb94b586c5e359231db98abc27ba8a0de1983e6ce5af7429f23e34f28",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 1117,
+          "end_line": 1117,
+          "start_column": 13,
+          "end_column": 56
+        }
+      ]
+    },
+    {
+      "id": "TT3",
+      "finding_id": "finding-521ee4fff7674860b029b1c9472681a3",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'req' from os.environ.get (line 1351, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 1353,
+        "end_line": 1353,
+        "start_column": 21,
+        "end_column": 60
+      },
+      "finding": "urllib.request.urlopen(req, timeout=30)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "            }\n            req = urllib.request.Request(url, headers=req_headers, method=\"DELETE\")\n            try:\n                with urllib.request.urlopen(req, timeout=30) as resp:\n                    pass\n                print(f\"\ud83d\uddd1\ufe0f  Permanently deleted: {title} [{key}]\")\n            except urllib.error.HTTPError as e:",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ed03e5371048cc42e689f66b85a00604a53054cecc17c2bfd9eb027ea516dc6f",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 1353,
+          "end_line": 1353,
+          "start_column": 21,
+          "end_column": 60
+        }
+      ]
+    },
+    {
+      "id": "TT3",
+      "finding_id": "finding-dedda19f123d40198341656389482db6",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'req' from os.environ.get (line 1351, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 1371,
+        "end_line": 1371,
+        "start_column": 21,
+        "end_column": 60
+      },
+      "finding": "urllib.request.urlopen(req, timeout=30)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "            body = json.dumps(patch_data).encode(\"utf-8\")\n            req = urllib.request.Request(url, data=body, headers=req_headers, method=\"PATCH\")\n            try:\n                with urllib.request.urlopen(req, timeout=30) as resp:\n                    pass\n                print(f\"\ud83d\uddd1\ufe0f  Trashed: {title} [{key}]\")\n            except urllib.error.HTTPError as e:",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ed03e5371048cc42e689f66b85a00604a53054cecc17c2bfd9eb027ea516dc6f",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 1371,
+          "end_line": 1371,
+          "start_column": 21,
+          "end_column": 60
+        }
+      ]
+    },
+    {
+      "id": "TT3",
+      "finding_id": "finding-2bb96f5bd13844eaab8f9fff494c03b6",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'req' from os.environ.get (line 1452, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 1454,
+        "end_line": 1454,
+        "start_column": 13,
+        "end_column": 52
+      },
+      "finding": "urllib.request.urlopen(req, timeout=30)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "    body = json.dumps(changes).encode(\"utf-8\")\n    req = urllib.request.Request(url, data=body, headers=req_headers, method=\"PATCH\")\n    try:\n        with urllib.request.urlopen(req, timeout=30) as resp:\n            pass\n        print(\"\u2705 Updated successfully.\")\n    except urllib.error.HTTPError as e:",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ed03e5371048cc42e689f66b85a00604a53054cecc17c2bfd9eb027ea516dc6f",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 1454,
+          "end_line": 1454,
+          "start_column": 13,
+          "end_column": 52
+        }
+      ]
+    },
+    {
+      "id": "LP3",
+      "finding_id": "finding-af4a9748498142e88e80242b31108c18",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, file_read, file_write, network.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, file_read, file_write, network.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-821c805588f14c48a2ff423a97088793",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 534,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": "https://api.crossref.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\ndef _doi_to_item(doi):\n    \"\"\"Fallback: fetch metadata from CrossRef for a DOI and convert to Zotero format.\"\"\"\n    url = f\"https://api.crossref.org/works/{urllib.parse.quote(doi, safe='')}\"\n    req = urllib.request.Request(url, headers={\"Accept\": \"application/json\"})\n    try:\n        with urllib.request.urlopen(req, timeout=15) as resp:",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3d3547f384630996905cfd74fdee65b93e8b40d7941fa1457f6877350f5bffd0",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 534,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-9a2bce012aec42f0949975452903eda1",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 754,
+        "end_line": null,
+        "start_column": 11
+      },
+      "finding": "https://api.crossref.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    }\n    if first_author:\n        params[\"query.author\"] = first_author\n    url = \"https://api.crossref.org/works\" + urllib.parse.urlencode(params)\n    req = urllib.request.Request(url, headers={\"Accept\": \"application/json\"})\n    try:\n        with urllib.request.urlopen(req, timeout=20) as resp:",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3d3547f384630996905cfd74fdee65b93e8b40d7941fa1457f6877350f5bffd0",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 754,
+          "end_line": null,
+          "start_column": 11
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-ab20f07fa1a54bae82be23afd178772e",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 918,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": "https://api.unpaywall.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\ndef _try_unpaywall(doi):\n    \"\"\"Try Unpaywall for an OA PDF URL. Returns (pdf_url, source_url) or None.\"\"\"\n    url = f\"https://api.unpaywall.org/v2/{urllib.parse.quote(doi, safe='')}?email={CROSSREF_EMAIL}\"\n    req = urllib.request.Request(url, headers={\"Accept\": \"application/json\"})\n    try:\n        with urllib.request.urlopen(req, timeout=15) as resp:",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "993c9da63a9a91526367f69cb74d4871aa7e02a56984b2e47f6e70ad355b0c9d",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 918,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-52ee7c2e99a245fa97cd4775bf86d25b",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 935,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": "https://api.semanticscholar.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\ndef _try_semantic_scholar(doi):\n    \"\"\"Try Semantic Scholar for an OA PDF URL. Returns (pdf_url, source_url) or None.\"\"\"\n    url = f\"https://api.semanticscholar.org/graph/v1/paper/DOI:{urllib.parse.quote(doi, safe='')}?fields=openAccessPdf\"\n    req = urllib.request.Request(url, headers={\"Accept\": \"application/json\"})\n    try:\n        with urllib.request.urlopen(req, timeout=15) as resp:",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "28a730c612683642ad2da1e285c84fc44a86c8ba8b39befce231ed47aae91211",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 935,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-d65a70e964924f8c860343c81e2ac145",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "scripts/zotero.py",
+        "start_line": 1622,
+        "end_line": null,
+        "start_column": 55
+      },
+      "finding": "Skip confirmation",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "    # delete\n    p = subparsers.add_parser(\"delete\", help=\"Move items to trash (default) or permanently delete\")\n    p.add_argument(\"keys\", nargs=\"+\", help=\"Item key(s) to delete\")\n    p.add_argument(\"--yes\", action=\"store_true\", help=\"Skip confirmation\")\n    p.add_argument(\"--permanent\", action=\"store_true\", help=\"Permanently delete (default is recoverable trash)\")\n    p.add_argument(\"--trash\", action=\"store_true\", help=\"Move to trash (default, kept for backwards compat)\")\n",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "f2585ed1a9f8ffe69bade4f4a85869690c663180a11cc20f5d4a1c41371c139d",
+      "occurrences": [
+        {
+          "file": "scripts/zotero.py",
+          "start_line": 1622,
+          "end_line": null,
+          "start_column": 55
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 4,
+    "scanned_components": 4,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 4,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 154,
+        "end_line": 154,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 32,
+        "column": 21,
+        "evidence": "All operations use `scripts/zotero.py` (Python 3, zero external dependencies).",
+        "target_path": "scripts/zotero.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 35,
+        "column": 9,
+        "evidence": "python3 scripts/zotero.py <command> [options]",
+        "target_path": "scripts/zotero.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 154,
+        "column": 45,
+        "evidence": "python3 zotero.py fetch-pdfs --download-dir ./pdfs",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 187,
+        "column": 78,
+        "evidence": "- For common errors and troubleshooting, see [references/troubleshooting.md](references/troubleshooting.md)",
+        "target_path": "references/troubleshooting.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 187,
+        "column": 47,
+        "evidence": "- For common errors and troubleshooting, see [references/troubleshooting.md](references/troubleshooting.md)",
+        "target_path": "references/troubleshooting.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 16,
+    "findings_after_filtering": 16
+  },
+  "_meta": {
+    "cisco_result": "zotero-scan.json",
+    "skill_dir": "skills/clawhub-zotero",
+    "scanned_at": "2026-10-22T04:41:00.437014+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

@@ -1,0 +1,1666 @@
+{
+  "skill": {
+    "name": "azure-kubernetes-automatic-readiness",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/microsoft-azure-skills/skills/azure-kubernetes/azure-kubernetes-automatic-readiness",
+    "scanned_at": "2026-10-22T04:48:00.306729+00:00"
+  },
+  "risk_assessment": {
+    "score": 68,
+    "severity": "HIGH",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "HIGH"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 249,
+      "executable": false,
+      "size_bytes": 17606,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/common-fixes.md",
+      "type": "markdown",
+      "lines": 355,
+      "executable": false,
+      "size_bytes": 7459,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/constraint-spec-v1.yaml",
+      "type": "yaml",
+      "lines": 595,
+      "executable": false,
+      "size_bytes": 24895,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/mcp-integration.md",
+      "type": "markdown",
+      "lines": 147,
+      "executable": false,
+      "size_bytes": 8651,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/migration-guide-summary.md",
+      "type": "markdown",
+      "lines": 152,
+      "executable": false,
+      "size_bytes": 7081,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/sanitize-readiness-input.jq",
+      "type": "other",
+      "lines": 305,
+      "executable": false,
+      "size_bytes": 7953,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "PE4",
+      "finding_id": "finding-0ecb169ce55b4e98a91640e22419884a",
+      "category": "Privilege Escalation",
+      "pattern": "Docker Socket Access",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/common-fixes.md",
+        "start_line": 328,
+        "end_line": null,
+        "start_column": 29
+      },
+      "finding": "/var/run/docker.sock",
+      "explanation": "Potential security issue detected. Manual review is recommended.",
+      "remediation": "Review the flagged content for security risks. Ensure no credentials, secrets, or sensitive data are exposed.",
+      "code_snippet": "| hostPath use case | Recommended replacement |\n|---|---|\n| Log collection (`/var/log`) | Azure Monitor Container Insights (auto-enabled on AKS Automatic) |\n| Container runtime socket (`/var/run/docker.sock`) | Use the AKS Automatic node observability features \u2014 direct socket access not supported |\n| Shared config files | `configMap` volume |\n| Secrets / credentials | Kubernetes `secret` volume or Azure Key Vault CSI Driver |\n| Ephemeral scratch space | `emptyDir` volume |",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "82774870748edc004b04ad4b6f08788d1a63a7390f4b4995a800bfe432879245",
+      "occurrences": [
+        {
+          "file": "references/common-fixes.md",
+          "start_line": 328,
+          "end_line": null,
+          "start_column": 29
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-70fa76dc14d24babb90484185c3c6d71",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 54,
+        "end_line": null,
+        "start_column": 17
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "az aks get-credentials \\\n  --resource-group <target-resource-group> \\\n  --name <target-cluster-name> \\\n  --file <target-kubeconfig>\n\n# Dry-run server-side apply \u2014 catches admission policy rejections\nKUBECONFIG=<target-kubeconfig> kubectl apply \\",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 54,
+          "end_line": null,
+          "start_column": 17
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-735a063270a24adaae2b045dbb2ebccf",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 57,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "  --file <target-kubeconfig>\n\n# Dry-run server-side apply \u2014 catches admission policy rejections\nKUBECONFIG=<target-kubeconfig> kubectl apply \\\n  --dry-run=server -f <manifests-directory>/\n```\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 57,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-6ac999251c4343e4a5455c92acab5ceb",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 64,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "Creating a staging namespace and applying workloads mutate the target cluster. Run them only after the dry-run evidence is reviewed and the owner explicitly approves staging:\n\n```bash\nKUBECONFIG=<target-kubeconfig> kubectl create namespace <staging-namespace>\nKUBECONFIG=<target-kubeconfig> kubectl apply \\\n  -f <manifests-directory>/ -n <staging-namespace>\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 64,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-aefb7bf476ca4cd593a1c830b6f56cc6",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 65,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n```bash\nKUBECONFIG=<target-kubeconfig> kubectl create namespace <staging-namespace>\nKUBECONFIG=<target-kubeconfig> kubectl apply \\\n  -f <manifests-directory>/ -n <staging-namespace>\n\n# Preserve workload and admission evidence",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 65,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-26619d38a6bb4de09b8020bf689d24c5",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 69,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "  -f <manifests-directory>/ -n <staging-namespace>\n\n# Preserve workload and admission evidence\nKUBECONFIG=<target-kubeconfig> kubectl get pods \\\n  -n <staging-namespace> -o wide\nKUBECONFIG=<target-kubeconfig> kubectl get events \\\n  -n <staging-namespace> --sort-by=.metadata.creationTimestamp",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 69,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-65dbea872aa6440b835f11f38800cb8c",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 71,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "# Preserve workload and admission evidence\nKUBECONFIG=<target-kubeconfig> kubectl get pods \\\n  -n <staging-namespace> -o wide\nKUBECONFIG=<target-kubeconfig> kubectl get events \\\n  -n <staging-namespace> --sort-by=.metadata.creationTimestamp\n```\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 71,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-aa1cf5d38ebf4337a2014499f427b0a2",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 130,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "## Post-Migration Verification Commands\n\n```bash\nKUBECONFIG=<target-kubeconfig> kubectl get pods -A |\n  grep -v Running | grep -v Completed\n\nKUBECONFIG=<target-kubeconfig> kubectl get pods -A \\",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 130,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-bbb26b0e9fbc452cb11ba9e2213a95dc",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 133,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "KUBECONFIG=<target-kubeconfig> kubectl get pods -A |\n  grep -v Running | grep -v Completed\n\nKUBECONFIG=<target-kubeconfig> kubectl get pods -A \\\n  --field-selector status.phase=Pending\n\n# Deployment Safeguards / PSS constraints active on the target",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 133,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-d954423153a74270822f0a53871a3bc8",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 137,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "  --field-selector status.phase=Pending\n\n# Deployment Safeguards / PSS constraints active on the target\nKUBECONFIG=<target-kubeconfig> kubectl get constrainttemplate\nKUBECONFIG=<target-kubeconfig> kubectl get constraints\n\nKUBECONFIG=<target-kubeconfig> kubectl get vpa -A",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 137,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-dbf2db4268b941029faad27f45c0482e",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 138,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n# Deployment Safeguards / PSS constraints active on the target\nKUBECONFIG=<target-kubeconfig> kubectl get constrainttemplate\nKUBECONFIG=<target-kubeconfig> kubectl get constraints\n\nKUBECONFIG=<target-kubeconfig> kubectl get vpa -A\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 138,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-12791cf723de4eadb06436d81c00b222",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 140,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "kubeconfig",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "KUBECONFIG=<target-kubeconfig> kubectl get constrainttemplate\nKUBECONFIG=<target-kubeconfig> kubectl get constraints\n\nKUBECONFIG=<target-kubeconfig> kubectl get vpa -A\n\naz aks nodepool list \\\n  --resource-group <target-resource-group> \\",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "14883fb854849dcb81ed03e7c9b31e64261a0d6165a5a776dbc43d7a344ad47d",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 140,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-af51c4f3b783445f8500895879fdb4a6",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 57,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "KUBECONFIG",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "  --file <target-kubeconfig>\n\n# Dry-run server-side apply \u2014 catches admission policy rejections\nKUBECONFIG=<target-kubeconfig> kubectl apply \\\n  --dry-run=server -f <manifests-directory>/\n```\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cc7280e1396c52951b9f575c463a09f9f220c08bcb36dd1ff470fcce4a29d3db",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 57,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-e5b365c1cbc04a539c584bf723d77073",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 64,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "KUBECONFIG",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "Creating a staging namespace and applying workloads mutate the target cluster. Run them only after the dry-run evidence is reviewed and the owner explicitly approves staging:\n\n```bash\nKUBECONFIG=<target-kubeconfig> kubectl create namespace <staging-namespace>\nKUBECONFIG=<target-kubeconfig> kubectl apply \\\n  -f <manifests-directory>/ -n <staging-namespace>\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cc7280e1396c52951b9f575c463a09f9f220c08bcb36dd1ff470fcce4a29d3db",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 64,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-34a3723256e64f6392be35ac47951bf7",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 65,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "KUBECONFIG",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n```bash\nKUBECONFIG=<target-kubeconfig> kubectl create namespace <staging-namespace>\nKUBECONFIG=<target-kubeconfig> kubectl apply \\\n  -f <manifests-directory>/ -n <staging-namespace>\n\n# Preserve workload and admission evidence",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cc7280e1396c52951b9f575c463a09f9f220c08bcb36dd1ff470fcce4a29d3db",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 65,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-8b0851ccdd524a08a1faf69bfe3de09e",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 69,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "KUBECONFIG",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "  -f <manifests-directory>/ -n <staging-namespace>\n\n# Preserve workload and admission evidence\nKUBECONFIG=<target-kubeconfig> kubectl get pods \\\n  -n <staging-namespace> -o wide\nKUBECONFIG=<target-kubeconfig> kubectl get events \\\n  -n <staging-namespace> --sort-by=.metadata.creationTimestamp",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cc7280e1396c52951b9f575c463a09f9f220c08bcb36dd1ff470fcce4a29d3db",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 69,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-5f99359b396b48e99b2f8ef194bca2ab",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 71,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "KUBECONFIG",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "# Preserve workload and admission evidence\nKUBECONFIG=<target-kubeconfig> kubectl get pods \\\n  -n <staging-namespace> -o wide\nKUBECONFIG=<target-kubeconfig> kubectl get events \\\n  -n <staging-namespace> --sort-by=.metadata.creationTimestamp\n```\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cc7280e1396c52951b9f575c463a09f9f220c08bcb36dd1ff470fcce4a29d3db",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 71,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-4a04f0e1599d4a00a0ccd1e7e69a14cd",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 130,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "KUBECONFIG",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "## Post-Migration Verification Commands\n\n```bash\nKUBECONFIG=<target-kubeconfig> kubectl get pods -A |\n  grep -v Running | grep -v Completed\n\nKUBECONFIG=<target-kubeconfig> kubectl get pods -A \\",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cc7280e1396c52951b9f575c463a09f9f220c08bcb36dd1ff470fcce4a29d3db",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 130,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-b1e481bd9eee40aa9a6842a5c0a70d2f",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 133,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "KUBECONFIG",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "KUBECONFIG=<target-kubeconfig> kubectl get pods -A |\n  grep -v Running | grep -v Completed\n\nKUBECONFIG=<target-kubeconfig> kubectl get pods -A \\\n  --field-selector status.phase=Pending\n\n# Deployment Safeguards / PSS constraints active on the target",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cc7280e1396c52951b9f575c463a09f9f220c08bcb36dd1ff470fcce4a29d3db",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 133,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-4cd80811fec443d9adf3ead18e32f6dd",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 137,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "KUBECONFIG",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "  --field-selector status.phase=Pending\n\n# Deployment Safeguards / PSS constraints active on the target\nKUBECONFIG=<target-kubeconfig> kubectl get constrainttemplate\nKUBECONFIG=<target-kubeconfig> kubectl get constraints\n\nKUBECONFIG=<target-kubeconfig> kubectl get vpa -A",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cc7280e1396c52951b9f575c463a09f9f220c08bcb36dd1ff470fcce4a29d3db",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 137,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-1060185cae6e467698170804d3671eea",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 138,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "KUBECONFIG",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n# Deployment Safeguards / PSS constraints active on the target\nKUBECONFIG=<target-kubeconfig> kubectl get constrainttemplate\nKUBECONFIG=<target-kubeconfig> kubectl get constraints\n\nKUBECONFIG=<target-kubeconfig> kubectl get vpa -A\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cc7280e1396c52951b9f575c463a09f9f220c08bcb36dd1ff470fcce4a29d3db",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 138,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-b975569a92d944138c0e1fa0c288e678",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/migration-guide-summary.md",
+        "start_line": 140,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "KUBECONFIG",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "KUBECONFIG=<target-kubeconfig> kubectl get constrainttemplate\nKUBECONFIG=<target-kubeconfig> kubectl get constraints\n\nKUBECONFIG=<target-kubeconfig> kubectl get vpa -A\n\naz aks nodepool list \\\n  --resource-group <target-resource-group> \\",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cc7280e1396c52951b9f575c463a09f9f220c08bcb36dd1ff470fcce4a29d3db",
+      "occurrences": [
+        {
+          "file": "references/migration-guide-summary.md",
+          "start_line": 140,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-4e3059b7f7b744eeb9286d4183260fa4",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 73,
+        "end_line": null,
+        "start_column": 77
+      },
+      "finding": "without asking",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "Use when the user has local Kubernetes manifests, Helm charts, or Kustomize overlays in their workspace. Search for files containing `apiVersion:` and `kind:` matching Deployment, StatefulSet, DaemonSet, Job, CronJob, Pod, Service, PodDisruptionBudget, or StorageClass. For Helm charts, look for `Chart.yaml` and rendered templates under `templates/`.\n\n**Option C \u2014 Single manifest check**\nIf the user pastes or points to a single YAML manifest, validate it directly without asking for scope.\n\n### Step 2: Run Assessment\n",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8dc77d3dce9ba1f2672e813265a1b1a0c8594866ef38a4e978bf4f4451795465",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 73,
+          "end_line": null,
+          "start_column": 77
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-c4c982d2e9bc48b2b8eca7caa2310aa0",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.75,
+      "location": {
+        "file": "references/mcp-integration.md",
+        "start_line": 65,
+        "end_line": null,
+        "start_column": 28
+      },
+      "finding": "without asking",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "\n## Fallback Chain\n\nAttempt the applicable path without asking the user to identify tool availability:\n\n```text\nCluster and node-pool metadata:",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8dc77d3dce9ba1f2672e813265a1b1a0c8594866ef38a4e978bf4f4451795465",
+      "occurrences": [
+        {
+          "file": "references/mcp-integration.md",
+          "start_line": 65,
+          "end_line": null,
+          "start_column": 28
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-4e0e0755bcf3411d8e6d6c64d7a038cf",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/constraint-spec-v1.yaml",
+        "start_line": 536,
+        "end_line": null,
+        "start_column": 26
+      },
+      "finding": "run as root",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "    appliesWhen: PSS Restricted is enabled, or an active constraint sets runAsUserRule=MustRunAsNonRoot\n    category: podSecurity\n    check: |\n      Containers must not run as root under Restricted.\n      Check the following fields:\n      - spec.securityContext.runAsNonRoot / runAsUser\n      - spec.containers[*].securityContext.runAsNonRoot / runAsUser",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "1cfe84ad238a83b6b7b002f0cf3adcd0ed383f2482b1b6e3a518efc19eb1d2c0",
+      "occurrences": [
+        {
+          "file": "references/constraint-spec-v1.yaml",
+          "start_line": 536,
+          "end_line": null,
+          "start_column": 26
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": false,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 6,
+    "scanned_components": 6,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 6,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 6,
+        "end_line": 6,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 50,
+        "end_line": 50,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 70,
+        "end_line": 70,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 124,
+        "end_line": 124,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 125,
+        "end_line": 125,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 185,
+        "end_line": 185,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 186,
+        "end_line": 186,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 6,
+        "column": 13,
+        "evidence": "version: \"1.1.0\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 16,
+        "column": 25,
+        "evidence": "> See [constraint spec](./references/constraint-spec-v1.yaml) for all safeguard rules, [common fixes](./references/common-fixes.md) for YAML patterns, [migratio",
+        "target_path": "references/constraint-spec-v1.yaml",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 16,
+        "column": 103,
+        "evidence": "](./references/constraint-spec-v1.yaml) for all safeguard rules, [common fixes](./references/common-fixes.md) for YAML patterns, [migration guide](./references/",
+        "target_path": "references/common-fixes.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 16,
+        "column": 170,
+        "evidence": "ommon fixes](./references/common-fixes.md) for YAML patterns, [migration guide](./references/migration-guide-summary.md) for end-to-end steps, and [MCP integrat",
+        "target_path": "references/migration-guide-summary.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 16,
+        "column": 255,
+        "evidence": "erences/migration-guide-summary.md) for end-to-end steps, and [MCP integration](./references/mcp-integration.md) for tool details and fallback handling.",
+        "target_path": "references/mcp-integration.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 18,
+        "column": 174,
+        "evidence": "rnetes workloads and cluster configurations are compatible with [AKS Automatic](https://learn.microsoft.com/en-us/azure/aks/intro-aks-automatic), identify issue",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 50,
+        "column": 144,
+        "evidence": "s: Secret data values, ConfigMap data values, environment variable values from `valueFrom.secretKeyRef`, service account tokens, or connection strings.",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 58,
+        "column": 58,
+        "evidence": "| Host Kubernetes capability or `kubectl` piped through `scripts/sanitize-readiness-input.jq` | Read allowlisted workload fields for local evaluation against th",
+        "target_path": "scripts/sanitize-readiness-input.jq",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 70,
+        "column": 298,
+        "evidence": " Pod, Service, PodDisruptionBudget, or StorageClass. For Helm charts, look for `Chart.yaml` and rendered templates under `templates/`.",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 80,
+        "column": 229,
+        "evidence": "as no readiness-assessment operation \u2014 do not expect one ([Azure MCP AKS tools](https://learn.microsoft.com/azure/developer/azure-mcp-server/tools/azure-kuberne",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 81,
+        "column": 202,
+        "evidence": "ell/cluster access and exposes the bundled filter, pipe `kubectl` JSON through `scripts/sanitize-readiness-input.jq` (requires `jq`) before anything reaches the",
+        "target_path": "scripts/sanitize-readiness-input.jq",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 82,
+        "column": 53,
+        "evidence": "4. Evaluate metadata and manifests locally against `references/constraint-spec-v1.yaml`.",
+        "target_path": "references/constraint-spec-v1.yaml",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 90,
+        "column": 7,
+        "evidence": "jq -f scripts/sanitize-readiness-input.jq",
+        "target_path": "scripts/sanitize-readiness-input.jq",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 112,
+        "column": 31,
+        "evidence": "host-specific options are in `references/mcp-integration.md`. Do not bypass",
+        "target_path": "references/mcp-integration.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 117,
+        "column": 7,
+        "evidence": "Load `references/constraint-spec-v1.yaml` and evaluate every manifest against every rule: `check` says what and which fields to inspect, `fix` gives allowed val",
+        "target_path": "references/constraint-spec-v1.yaml",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 124,
+        "column": 4,
+        "evidence": "- `securityContext.privileged` not true \u2192 `safeguard-no-privileged-containers`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 125,
+        "column": 4,
+        "evidence": "- `capabilities.add` only adds allowed capabilities \u2192 `safeguard-container-capabilities`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 184,
+        "column": 51,
+        "evidence": "**Deterministic fixes** (the constraint rule and `references/common-fixes.md` define a direct field transformation \u2014 generate a YAML diff):",
+        "target_path": "references/common-fixes.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 185,
+        "column": 50,
+        "evidence": "- `safeguard-container-resource-requests` \u2014 add `resources.requests`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 186,
+        "column": 48,
+        "evidence": "- `safeguard-container-capabilities` \u2014 remove `capabilities.add`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 192,
+        "column": 18,
+        "evidence": "Use patterns in `references/common-fixes.md` and generate a before/after diff. Starting resource values use safe defaults \u2014 VPA (enabled on Automatic) will auto",
+        "target_path": "references/common-fixes.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 222,
+        "column": 209,
+        "evidence": "move (the documented in-place path is Automatic \u2192 Standard, `--sku base`). See `references/migration-guide-summary.md` for supported journeys and the full check",
+        "target_path": "references/migration-guide-summary.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 234,
+        "column": 108,
+        "evidence": "ls (401/403/404, no context) | Credentials, RBAC, scope, or wrong target | See `references/mcp-integration.md` (SRE Agent UAMI scope vs `az login` hosts); conti",
+        "target_path": "references/mcp-integration.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 243,
+        "column": 4,
+        "evidence": "| `references/constraint-spec-v1.yaml` | Always load for offline validation \u2014 all constraint IDs, severities, and fix patterns |",
+        "target_path": "references/constraint-spec-v1.yaml",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 244,
+        "column": 4,
+        "evidence": "| `references/common-fixes.md` | When generating deterministic fixes \u2014 before/after YAML patterns |",
+        "target_path": "references/common-fixes.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 245,
+        "column": 4,
+        "evidence": "| `references/migration-guide-summary.md` | When user asks about migration steps or after assessment is complete |",
+        "target_path": "references/migration-guide-summary.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 246,
+        "column": 4,
+        "evidence": "| `references/mcp-integration.md` | When discovering Azure MCP capabilities, wiring the sanitized `kubectl` read, or debugging the fallback chain |",
+        "target_path": "references/mcp-integration.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 247,
+        "column": 4,
+        "evidence": "| `scripts/sanitize-readiness-input.jq` | Allowlist projection for `kubectl -o json` output before it reaches the model (requires `jq`) |",
+        "target_path": "scripts/sanitize-readiness-input.jq",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 25,
+    "findings_after_filtering": 25
+  },
+  "_meta": {
+    "cisco_result": "microsoft-azure-skills-skills-azure-kubernetes-azure-kubernetes-automatic-readiness-scan.json",
+    "skill_dir": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/microsoft-azure-skills/skills/azure-kubernetes/azure-kubernetes-automatic-readiness",
+    "scanned_at": "2026-10-22T04:48:00.578639+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

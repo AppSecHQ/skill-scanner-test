@@ -1,0 +1,2797 @@
+{
+  "skill": {
+    "name": "gitclaw",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/clawhub-gitclaw",
+    "scanned_at": "2026-10-22T04:31:07.709805+00:00"
+  },
+  "risk_assessment": {
+    "score": 100,
+    "severity": "CRITICAL",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "HIGH"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 359,
+      "executable": false,
+      "size_bytes": 10301,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "PE3",
+      "finding_id": "finding-3279584f362c4233ac52dd3c351e2433",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 35,
+        "end_line": null,
+        "start_column": 26
+      },
+      "finding": "Access Token",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "2. **Visibility**: `public` or `private`\n3. (Optional) **Backup frequency** in minutes (default: **60**)\n\nDo NOT ask for a Personal Access Token. We use `gh` auth.\n\n---\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d791fddf2b521316d721148b0ff375b4cd22146833b76e12a6a85aae7e9ea3f2",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 35,
+          "end_line": null,
+          "start_column": 26
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-7e6516dd720848d3bcd0a8c665800676",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 52,
+        "end_line": null,
+        "start_column": 25
+      },
+      "finding": "&& sudo",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "- If `brew` exists:\n  - `brew install git`\n- Else if `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y git`\n- Else if `dnf` exists:\n  - `sudo dnf install -y git`\n- Else if `yum` exists:",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d54d4fa72a85501965b136126c5daeba7ca262314088bebfb309c2d7804c3dda",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 52,
+          "end_line": null,
+          "start_column": 25
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-492d0724856b4d6288449571ba0b305e",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 83,
+        "end_line": null,
+        "start_column": 25
+      },
+      "finding": "&& sudo",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "If missing, attempt install:\n\n- If `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y cron`\n  - `sudo systemctl enable --now cron || sudo service cron start || true`\n- Else if `dnf` exists:\n  - `sudo dnf install -y cronie`",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d54d4fa72a85501965b136126c5daeba7ca262314088bebfb309c2d7804c3dda",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 83,
+          "end_line": null,
+          "start_column": 25
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-5407d16f8f82487f93ada749a4bf2e0d",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 120,
+        "end_line": null,
+        "start_column": 56
+      },
+      "finding": "&& sudo",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "\n- Else if `apt-get` exists (official GitHub CLI packages; preferred):\n  - Install using the official apt repo steps:\n    - `(type -p wget >/dev/null || (sudo apt-get update && sudo apt-get install -y wget))`\n    - `sudo mkdir -p -m 755 /etc/apt/keyrings`\n    - `out=$(mktemp) && wget -nv -O\"$out\" https://cli.github.com/packages/githubcli-archive-keyring.gpg`\n    - `cat \"$out\" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null`",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d54d4fa72a85501965b136126c5daeba7ca262314088bebfb309c2d7804c3dda",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 120,
+          "end_line": null,
+          "start_column": 56
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-31031eaa757f44e49219bf64886dfcec",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 127,
+        "end_line": null,
+        "start_column": 27
+      },
+      "finding": "&& sudo",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "    - `sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg`\n    - `sudo mkdir -p -m 755 /etc/apt/sources.list.d`\n    - `echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null`\n    - `sudo apt-get update && sudo apt-get install -y gh`\n\n- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d54d4fa72a85501965b136126c5daeba7ca262314088bebfb309c2d7804c3dda",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 127,
+          "end_line": null,
+          "start_column": 27
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-d236f59fed284d759d0f19fced51a521",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 58,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "--noconfirm",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "- Else if `yum` exists:\n  - `sudo yum install -y git`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm git`\n- Else if `zypper` exists:\n  - `sudo zypper install -y git`\n- Else if `apk` exists:",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a014815f0ddc65fa55e48490cbc5abc0c42ba52621d173802841a71eda94e2b2",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 58,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-c10a6edce54644a896dbaf9e3745989b",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 92,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "--noconfirm",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "  - `sudo yum install -y cronie`\n  - `sudo systemctl enable --now crond || true`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm cronie`\n  - `sudo systemctl enable --now cronie || true`\n- Else if `apk` exists:\n  - `sudo apk add dcron`",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a014815f0ddc65fa55e48490cbc5abc0c42ba52621d173802841a71eda94e2b2",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 92,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-7ed38bf3e2354e86a0ae2e2a25840b1f",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 145,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "--noconfirm",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "  - `sudo zypper install -y gh`\n\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm github-cli`\n\n- Else if `apk` exists:\n  - `sudo apk add github-cli`",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a014815f0ddc65fa55e48490cbc5abc0c42ba52621d173802841a71eda94e2b2",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 145,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-9fcc98e70ed14c0db3ff04c14882459c",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 84,
+        "end_line": null,
+        "start_column": 39
+      },
+      "finding": "| sudo ",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "\n- If `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y cron`\n  - `sudo systemctl enable --now cron || sudo service cron start || true`\n- Else if `dnf` exists:\n  - `sudo dnf install -y cronie`\n  - `sudo systemctl enable --now crond || true`",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8f26f53bcbcfbd9fb11a52b90ffc7313a44714737c9e55dde0122f11bd18f036",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 84,
+          "end_line": null,
+          "start_column": 39
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-18df7134284443e3a16900ce917c5a0c",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 123,
+        "end_line": null,
+        "start_column": 18
+      },
+      "finding": "| sudo ",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "    - `(type -p wget >/dev/null || (sudo apt-get update && sudo apt-get install -y wget))`\n    - `sudo mkdir -p -m 755 /etc/apt/keyrings`\n    - `out=$(mktemp) && wget -nv -O\"$out\" https://cli.github.com/packages/githubcli-archive-keyring.gpg`\n    - `cat \"$out\" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null`\n    - `sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg`\n    - `sudo mkdir -p -m 755 /etc/apt/sources.list.d`\n    - `echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null`",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8f26f53bcbcfbd9fb11a52b90ffc7313a44714737c9e55dde0122f11bd18f036",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 123,
+          "end_line": null,
+          "start_column": 18
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-f9810b5cb8f34c5faabc92043f0653ad",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 126,
+        "end_line": null,
+        "start_column": 156
+      },
+      "finding": "| sudo ",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "    - `cat \"$out\" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null`\n    - `sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg`\n    - `sudo mkdir -p -m 755 /etc/apt/sources.list.d`\n    - `echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null`\n    - `sudo apt-get update && sudo apt-get install -y gh`\n\n- Else if `dnf` exists:",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8f26f53bcbcfbd9fb11a52b90ffc7313a44714737c9e55dde0122f11bd18f036",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 126,
+          "end_line": null,
+          "start_column": 156
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-8069d3da72dd42b99b6f39caa5abb191",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 130,
+        "end_line": null,
+        "start_column": 56
+      },
+      "finding": "| sudo ",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "    - `sudo apt-get update && sudo apt-get install -y gh`\n\n- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`\n  - `sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo || sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8f26f53bcbcfbd9fb11a52b90ffc7313a44714737c9e55dde0122f11bd18f036",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 130,
+          "end_line": null,
+          "start_column": 56
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-564d76221b7645409eff4a5563bbe05a",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 131,
+        "end_line": null,
+        "start_column": 89
+      },
+      "finding": "| sudo ",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "\n- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`\n  - `sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo || sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n\n- Else if `yum` exists:",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8f26f53bcbcfbd9fb11a52b90ffc7313a44714737c9e55dde0122f11bd18f036",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 131,
+          "end_line": null,
+          "start_column": 89
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-f48a40831a3f4cf1b7e74826a8f881fb",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 132,
+        "end_line": null,
+        "start_column": 43
+      },
+      "finding": "| sudo ",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`\n  - `sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo || sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n\n- Else if `yum` exists:\n  - `type -p yum-config-manager >/dev/null || sudo yum install -y yum-utils`",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8f26f53bcbcfbd9fb11a52b90ffc7313a44714737c9e55dde0122f11bd18f036",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 132,
+          "end_line": null,
+          "start_column": 43
+        }
+      ]
+    },
+    {
+      "id": "TM2",
+      "finding_id": "finding-12a806f810364307bb1a5f37e04d4eb9",
+      "category": "Tool Misuse",
+      "pattern": "Chaining Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 135,
+        "end_line": null,
+        "start_column": 44
+      },
+      "finding": "| sudo ",
+      "explanation": "Tool calls are chained to bypass individual safety checks or escalate capabilities beyond what any single tool call would allow.",
+      "remediation": "Limit tool chaining depth and validate the output of each tool before passing it to the next. Require explicit user approval for multi-step chains.",
+      "code_snippet": "  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n\n- Else if `yum` exists:\n  - `type -p yum-config-manager >/dev/null || sudo yum install -y yum-utils`\n  - `sudo yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo`\n  - `sudo yum install -y gh`\n",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8f26f53bcbcfbd9fb11a52b90ffc7313a44714737c9e55dde0122f11bd18f036",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 135,
+          "end_line": null,
+          "start_column": 44
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-68595720b97949aca1680b61e93b4647",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 52,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- If `brew` exists:\n  - `brew install git`\n- Else if `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y git`\n- Else if `dnf` exists:\n  - `sudo dnf install -y git`\n- Else if `yum` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 52,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-7bade2953c9347c580fdd17bb7d9aa55",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 52,
+        "end_line": null,
+        "start_column": 28
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- If `brew` exists:\n  - `brew install git`\n- Else if `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y git`\n- Else if `dnf` exists:\n  - `sudo dnf install -y git`\n- Else if `yum` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 52,
+          "end_line": null,
+          "start_column": 28
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-38642beb130541518295d1550209fee5",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 54,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y git`\n- Else if `dnf` exists:\n  - `sudo dnf install -y git`\n- Else if `yum` exists:\n  - `sudo yum install -y git`\n- Else if `pacman` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 54,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-5524bb1c9ab149f9940ca8e90967a82a",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 56,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `dnf` exists:\n  - `sudo dnf install -y git`\n- Else if `yum` exists:\n  - `sudo yum install -y git`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm git`\n- Else if `zypper` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 56,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-88914507b30f431fa6857080d22b67b1",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 58,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `yum` exists:\n  - `sudo yum install -y git`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm git`\n- Else if `zypper` exists:\n  - `sudo zypper install -y git`\n- Else if `apk` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 58,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-ecd4bdcefa894dbb8dd5124ba5134ab5",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 60,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm git`\n- Else if `zypper` exists:\n  - `sudo zypper install -y git`\n- Else if `apk` exists:\n  - `sudo apk add git`\n- Else if macOS and `xcode-select` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 60,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-f0d650ccdd7a4fb38bf2f4fef12ff660",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 62,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `zypper` exists:\n  - `sudo zypper install -y git`\n- Else if `apk` exists:\n  - `sudo apk add git`\n- Else if macOS and `xcode-select` exists:\n  - `xcode-select --install` (this may prompt the user)\n- Else:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 62,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-e3feb3a87a244544a7c7193e9a29cb67",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 83,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "If missing, attempt install:\n\n- If `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y cron`\n  - `sudo systemctl enable --now cron || sudo service cron start || true`\n- Else if `dnf` exists:\n  - `sudo dnf install -y cronie`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 83,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-7596ae908c38469492e8a27589fbc313",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 83,
+        "end_line": null,
+        "start_column": 28
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "If missing, attempt install:\n\n- If `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y cron`\n  - `sudo systemctl enable --now cron || sudo service cron start || true`\n- Else if `dnf` exists:\n  - `sudo dnf install -y cronie`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 83,
+          "end_line": null,
+          "start_column": 28
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-96d343625bf04cf4a58aa4fffcf2fdf5",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 84,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "\n- If `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y cron`\n  - `sudo systemctl enable --now cron || sudo service cron start || true`\n- Else if `dnf` exists:\n  - `sudo dnf install -y cronie`\n  - `sudo systemctl enable --now crond || true`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 84,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-20805e9fdd6547bc87cfcdd2289811ef",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 84,
+        "end_line": null,
+        "start_column": 41
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "\n- If `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y cron`\n  - `sudo systemctl enable --now cron || sudo service cron start || true`\n- Else if `dnf` exists:\n  - `sudo dnf install -y cronie`\n  - `sudo systemctl enable --now crond || true`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 84,
+          "end_line": null,
+          "start_column": 41
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-eae66def800347c983e7a3012edef2bd",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 86,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo apt-get update && sudo apt-get install -y cron`\n  - `sudo systemctl enable --now cron || sudo service cron start || true`\n- Else if `dnf` exists:\n  - `sudo dnf install -y cronie`\n  - `sudo systemctl enable --now crond || true`\n- Else if `yum` exists:\n  - `sudo yum install -y cronie`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 86,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-20f1af31cf6c4e94a3673346ef5e14ad",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 87,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo systemctl enable --now cron || sudo service cron start || true`\n- Else if `dnf` exists:\n  - `sudo dnf install -y cronie`\n  - `sudo systemctl enable --now crond || true`\n- Else if `yum` exists:\n  - `sudo yum install -y cronie`\n  - `sudo systemctl enable --now crond || true`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 87,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-d4a283bc293c4de4a3431864142878a1",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 89,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo dnf install -y cronie`\n  - `sudo systemctl enable --now crond || true`\n- Else if `yum` exists:\n  - `sudo yum install -y cronie`\n  - `sudo systemctl enable --now crond || true`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm cronie`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 89,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-490475ddcbfd4afaaa236b61bbd6deca",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 90,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo systemctl enable --now crond || true`\n- Else if `yum` exists:\n  - `sudo yum install -y cronie`\n  - `sudo systemctl enable --now crond || true`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm cronie`\n  - `sudo systemctl enable --now cronie || true`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 90,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-1f49b98c146e47f7b63be5f60df26a04",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 92,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo yum install -y cronie`\n  - `sudo systemctl enable --now crond || true`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm cronie`\n  - `sudo systemctl enable --now cronie || true`\n- Else if `apk` exists:\n  - `sudo apk add dcron`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 92,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-c7d0d4051c944d10ae9f6c15ac54f59c",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 93,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo systemctl enable --now crond || true`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm cronie`\n  - `sudo systemctl enable --now cronie || true`\n- Else if `apk` exists:\n  - `sudo apk add dcron`\n  - `sudo rc-update add dcron default || true`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 93,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-d531306129ec474c977f2521a87efe35",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 95,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo pacman -S --noconfirm cronie`\n  - `sudo systemctl enable --now cronie || true`\n- Else if `apk` exists:\n  - `sudo apk add dcron`\n  - `sudo rc-update add dcron default || true`\n  - `sudo rc-service dcron start || true`\n- Else:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 95,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-68f3a6886bc24d23b6be6f5cd679c0c9",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 96,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo systemctl enable --now cronie || true`\n- Else if `apk` exists:\n  - `sudo apk add dcron`\n  - `sudo rc-update add dcron default || true`\n  - `sudo rc-service dcron start || true`\n- Else:\n  - If you can\u2019t install, tell the user cron is required for scheduling.",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 96,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-d55afda0e6c04aa986fb90eef389b213",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 97,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `apk` exists:\n  - `sudo apk add dcron`\n  - `sudo rc-update add dcron default || true`\n  - `sudo rc-service dcron start || true`\n- Else:\n  - If you can\u2019t install, tell the user cron is required for scheduling.\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 97,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-64c8a095d2f242f69fd7e851d6d908c2",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 120,
+        "end_line": null,
+        "start_column": 36
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "\n- Else if `apt-get` exists (official GitHub CLI packages; preferred):\n  - Install using the official apt repo steps:\n    - `(type -p wget >/dev/null || (sudo apt-get update && sudo apt-get install -y wget))`\n    - `sudo mkdir -p -m 755 /etc/apt/keyrings`\n    - `out=$(mktemp) && wget -nv -O\"$out\" https://cli.github.com/packages/githubcli-archive-keyring.gpg`\n    - `cat \"$out\" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 120,
+          "end_line": null,
+          "start_column": 36
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-63962ede98f647a89c200a8fd3ff28b9",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 120,
+        "end_line": null,
+        "start_column": 59
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "\n- Else if `apt-get` exists (official GitHub CLI packages; preferred):\n  - Install using the official apt repo steps:\n    - `(type -p wget >/dev/null || (sudo apt-get update && sudo apt-get install -y wget))`\n    - `sudo mkdir -p -m 755 /etc/apt/keyrings`\n    - `out=$(mktemp) && wget -nv -O\"$out\" https://cli.github.com/packages/githubcli-archive-keyring.gpg`\n    - `cat \"$out\" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 120,
+          "end_line": null,
+          "start_column": 59
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-bece51630f9d4b78ab3a8c1ca5665742",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 121,
+        "end_line": null,
+        "start_column": 7
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `apt-get` exists (official GitHub CLI packages; preferred):\n  - Install using the official apt repo steps:\n    - `(type -p wget >/dev/null || (sudo apt-get update && sudo apt-get install -y wget))`\n    - `sudo mkdir -p -m 755 /etc/apt/keyrings`\n    - `out=$(mktemp) && wget -nv -O\"$out\" https://cli.github.com/packages/githubcli-archive-keyring.gpg`\n    - `cat \"$out\" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null`\n    - `sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 121,
+          "end_line": null,
+          "start_column": 7
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-6f70d0467c524d2d9d83cd375df22d38",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 123,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "    - `(type -p wget >/dev/null || (sudo apt-get update && sudo apt-get install -y wget))`\n    - `sudo mkdir -p -m 755 /etc/apt/keyrings`\n    - `out=$(mktemp) && wget -nv -O\"$out\" https://cli.github.com/packages/githubcli-archive-keyring.gpg`\n    - `cat \"$out\" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null`\n    - `sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg`\n    - `sudo mkdir -p -m 755 /etc/apt/sources.list.d`\n    - `echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 123,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-789444bb0bc94829b95855ebbececcb0",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 124,
+        "end_line": null,
+        "start_column": 7
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "    - `sudo mkdir -p -m 755 /etc/apt/keyrings`\n    - `out=$(mktemp) && wget -nv -O\"$out\" https://cli.github.com/packages/githubcli-archive-keyring.gpg`\n    - `cat \"$out\" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null`\n    - `sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg`\n    - `sudo mkdir -p -m 755 /etc/apt/sources.list.d`\n    - `echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null`\n    - `sudo apt-get update && sudo apt-get install -y gh`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 124,
+          "end_line": null,
+          "start_column": 7
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-5f31abb94f0b4febb27ef69767f54815",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 125,
+        "end_line": null,
+        "start_column": 7
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "    - `out=$(mktemp) && wget -nv -O\"$out\" https://cli.github.com/packages/githubcli-archive-keyring.gpg`\n    - `cat \"$out\" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null`\n    - `sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg`\n    - `sudo mkdir -p -m 755 /etc/apt/sources.list.d`\n    - `echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null`\n    - `sudo apt-get update && sudo apt-get install -y gh`\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 125,
+          "end_line": null,
+          "start_column": 7
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-76746cdd38dc43239a8957a39238baba",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 126,
+        "end_line": null,
+        "start_column": 158
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "    - `cat \"$out\" | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null`\n    - `sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg`\n    - `sudo mkdir -p -m 755 /etc/apt/sources.list.d`\n    - `echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null`\n    - `sudo apt-get update && sudo apt-get install -y gh`\n\n- Else if `dnf` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 126,
+          "end_line": null,
+          "start_column": 158
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-90b0c282e8d34916af130c2d695778cf",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 127,
+        "end_line": null,
+        "start_column": 7
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "    - `sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg`\n    - `sudo mkdir -p -m 755 /etc/apt/sources.list.d`\n    - `echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null`\n    - `sudo apt-get update && sudo apt-get install -y gh`\n\n- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 127,
+          "end_line": null,
+          "start_column": 7
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-b31caa5094f34dfd9e12b0ecb7c5edde",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 127,
+        "end_line": null,
+        "start_column": 30
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "    - `sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg`\n    - `sudo mkdir -p -m 755 /etc/apt/sources.list.d`\n    - `echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null`\n    - `sudo apt-get update && sudo apt-get install -y gh`\n\n- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 127,
+          "end_line": null,
+          "start_column": 30
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-72c1c4a8500a43cd987ae0571766a1cd",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 130,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "    - `sudo apt-get update && sudo apt-get install -y gh`\n\n- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`\n  - `sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo || sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 130,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-f3bfaf578e6b451881bff1257fe82fad",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 130,
+        "end_line": null,
+        "start_column": 58
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "    - `sudo apt-get update && sudo apt-get install -y gh`\n\n- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`\n  - `sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo || sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 130,
+          "end_line": null,
+          "start_column": 58
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-319ac4b0e4dd47048034268a6bb95bb9",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 131,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "\n- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`\n  - `sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo || sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n\n- Else if `yum` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 131,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-e3c5b9b965b64741ba2547fd073ae8cb",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 131,
+        "end_line": null,
+        "start_column": 91
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "\n- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`\n  - `sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo || sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n\n- Else if `yum` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 131,
+          "end_line": null,
+          "start_column": 91
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-6a3d5a19c33246efabb6da08d936d0e4",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 132,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`\n  - `sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo || sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n\n- Else if `yum` exists:\n  - `type -p yum-config-manager >/dev/null || sudo yum install -y yum-utils`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 132,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-1f96eb89aa6043e6a819b71b46b961c4",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 132,
+        "end_line": null,
+        "start_column": 45
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `dnf` exists:\n  - `sudo dnf install -y 'dnf-command(config-manager)' || sudo dnf install -y dnf5-plugins || true`\n  - `sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo || sudo dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n\n- Else if `yum` exists:\n  - `type -p yum-config-manager >/dev/null || sudo yum install -y yum-utils`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 132,
+          "end_line": null,
+          "start_column": 45
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-13e991e80d584c54b642d8a08ae23daf",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 135,
+        "end_line": null,
+        "start_column": 46
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo dnf install -y gh --repo gh-cli || sudo dnf install -y gh || true`\n\n- Else if `yum` exists:\n  - `type -p yum-config-manager >/dev/null || sudo yum install -y yum-utils`\n  - `sudo yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo`\n  - `sudo yum install -y gh`\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 135,
+          "end_line": null,
+          "start_column": 46
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-9e936e9c0b6b4318946885d0b2df3a95",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 136,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "\n- Else if `yum` exists:\n  - `type -p yum-config-manager >/dev/null || sudo yum install -y yum-utils`\n  - `sudo yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo`\n  - `sudo yum install -y gh`\n\n- Else if `zypper` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 136,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-3e69261e640d429cb9f010d680790e7e",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 137,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `yum` exists:\n  - `type -p yum-config-manager >/dev/null || sudo yum install -y yum-utils`\n  - `sudo yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo`\n  - `sudo yum install -y gh`\n\n- Else if `zypper` exists:\n  - `sudo zypper addrepo https://cli.github.com/packages/rpm/gh-cli.repo || true`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 137,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-a1670dc9b3e0490e9e7914f1bacfdd10",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 140,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo yum install -y gh`\n\n- Else if `zypper` exists:\n  - `sudo zypper addrepo https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo zypper ref`\n  - `sudo zypper install -y gh`\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 140,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-283dd6cd0df2489ab94afe715ee5a5e3",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 141,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "\n- Else if `zypper` exists:\n  - `sudo zypper addrepo https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo zypper ref`\n  - `sudo zypper install -y gh`\n\n- Else if `pacman` exists:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 141,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-96b1b4d716d64a76a34b7e0e259bda60",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 142,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "- Else if `zypper` exists:\n  - `sudo zypper addrepo https://cli.github.com/packages/rpm/gh-cli.repo || true`\n  - `sudo zypper ref`\n  - `sudo zypper install -y gh`\n\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm github-cli`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 142,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-74a4c8fce93442359ec1c5020b45339b",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 145,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo zypper install -y gh`\n\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm github-cli`\n\n- Else if `apk` exists:\n  - `sudo apk add github-cli`",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 145,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE2",
+      "finding_id": "finding-ae43b25bd904490f8beca789669ce1f1",
+      "category": "Privilege Escalation",
+      "pattern": "Sudo/Root Execution",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 148,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "sudo ",
+      "explanation": "Commands invoke sudo or root privileges. Verify this elevated access is necessary and justified.",
+      "remediation": "Avoid sudo/root unless strictly required. Prefer least-privilege patterns. If elevation is needed, document the justification and scope.",
+      "code_snippet": "  - `sudo pacman -S --noconfirm github-cli`\n\n- Else if `apk` exists:\n  - `sudo apk add github-cli`\n\n- Else:\n  - Tell the user you can\u2019t auto-install `gh` on this OS.",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "16746f7044f347c6322d4c5b879b3fb06b2f205cbf1c9a209b43d52b34b3afd7",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 148,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-a20c9fbc8d144e27adb4984855f8cfeb",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 58,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "--noconfirm",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "- Else if `yum` exists:\n  - `sudo yum install -y git`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm git`\n- Else if `zypper` exists:\n  - `sudo zypper install -y git`\n- Else if `apk` exists:",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a7474568c235140a02645982dfffb35602360cfd2c0ca1b6f945af6131bd8615",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 58,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-dae8ee0ce20c4f75b7b96e38771ee99d",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 92,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "--noconfirm",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "  - `sudo yum install -y cronie`\n  - `sudo systemctl enable --now crond || true`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm cronie`\n  - `sudo systemctl enable --now cronie || true`\n- Else if `apk` exists:\n  - `sudo apk add dcron`",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a7474568c235140a02645982dfffb35602360cfd2c0ca1b6f945af6131bd8615",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 92,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-eabd7bad4e2a4d2da78cf530cb43840e",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 145,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "--noconfirm",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "  - `sudo zypper install -y gh`\n\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm github-cli`\n\n- Else if `apk` exists:\n  - `sudo apk add github-cli`",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a7474568c235140a02645982dfffb35602360cfd2c0ca1b6f945af6131bd8615",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 145,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-4d7feda17f064bb8878fae632c6618db",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 84,
+        "end_line": null,
+        "start_column": 10
+      },
+      "finding": "systemctl enable",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "\n- If `apt-get` exists:\n  - `sudo apt-get update && sudo apt-get install -y cron`\n  - `sudo systemctl enable --now cron || sudo service cron start || true`\n- Else if `dnf` exists:\n  - `sudo dnf install -y cronie`\n  - `sudo systemctl enable --now crond || true`",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "9bd3987b1e7eb1f3ae4e81621a2f94408559610e4556fdb1373fa6f662c9f677",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 84,
+          "end_line": null,
+          "start_column": 10
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-950b9b45f94d4c208d6f6c557b4469bb",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 87,
+        "end_line": null,
+        "start_column": 10
+      },
+      "finding": "systemctl enable",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "  - `sudo systemctl enable --now cron || sudo service cron start || true`\n- Else if `dnf` exists:\n  - `sudo dnf install -y cronie`\n  - `sudo systemctl enable --now crond || true`\n- Else if `yum` exists:\n  - `sudo yum install -y cronie`\n  - `sudo systemctl enable --now crond || true`",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "9bd3987b1e7eb1f3ae4e81621a2f94408559610e4556fdb1373fa6f662c9f677",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 87,
+          "end_line": null,
+          "start_column": 10
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-f7d4e1ad5f76497582ed4816f6865d26",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 90,
+        "end_line": null,
+        "start_column": 10
+      },
+      "finding": "systemctl enable",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "  - `sudo systemctl enable --now crond || true`\n- Else if `yum` exists:\n  - `sudo yum install -y cronie`\n  - `sudo systemctl enable --now crond || true`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm cronie`\n  - `sudo systemctl enable --now cronie || true`",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "9bd3987b1e7eb1f3ae4e81621a2f94408559610e4556fdb1373fa6f662c9f677",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 90,
+          "end_line": null,
+          "start_column": 10
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-f9fdb61e9df946dfb33e33f931e134c7",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 93,
+        "end_line": null,
+        "start_column": 10
+      },
+      "finding": "systemctl enable",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "  - `sudo systemctl enable --now crond || true`\n- Else if `pacman` exists:\n  - `sudo pacman -S --noconfirm cronie`\n  - `sudo systemctl enable --now cronie || true`\n- Else if `apk` exists:\n  - `sudo apk add dcron`\n  - `sudo rc-update add dcron default || true`",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "9bd3987b1e7eb1f3ae4e81621a2f94408559610e4556fdb1373fa6f662c9f677",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 93,
+          "end_line": null,
+          "start_column": 10
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-dc3ccb4d300442329d56f9381971fb55",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 335,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "crontab -l",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "\n2. Install without duplicates:\n\n- `crontab -l 2>/dev/null | grep -F \"$CRON_CMD\" >/dev/null`\n- If not found, append:\n  - `(crontab -l 2>/dev/null; echo \"$CRON_LINE\") | crontab -`\n",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ae94da2449e2e257253c9244c39b330c10fe1283ba753053b5109d492e5143fa",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 335,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-c8c1caa7fc6747e188b456ec543d074f",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 337,
+        "end_line": null,
+        "start_column": 6
+      },
+      "finding": "crontab -l",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "\n- `crontab -l 2>/dev/null | grep -F \"$CRON_CMD\" >/dev/null`\n- If not found, append:\n  - `(crontab -l 2>/dev/null; echo \"$CRON_LINE\") | crontab -`\n\n3. Confirm:\n",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ae94da2449e2e257253c9244c39b330c10fe1283ba753053b5109d492e5143fa",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 337,
+          "end_line": null,
+          "start_column": 6
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-3347d15d66d54808a6b9ceef493475b1",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 341,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": "crontab -l",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "\n3. Confirm:\n\n- `crontab -l | grep -F \"$CRON_CMD\"`\n\n---\n",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ae94da2449e2e257253c9244c39b330c10fe1283ba753053b5109d492e5143fa",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 341,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": false,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 1,
+    "scanned_components": 0,
+    "coverage_percent": 0.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 0,
+    "partially_inspected_files": 1,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "static",
+        "reason_code": "static_parse_limit",
+        "message": "A security-relevant expression exceeded a bounded static parser's span limit.",
+        "path": "SKILL.md",
+        "start_line": null,
+        "end_line": null,
+        "fatal": false,
+        "analyzers": [
+          "static_patterns_tool_misuse"
+        ]
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 200,
+        "end_line": 200,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 259,
+        "end_line": 259,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 316,
+        "end_line": 316,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 320,
+        "end_line": 320,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 330,
+        "end_line": 330,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 349,
+        "end_line": 349,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 353,
+        "end_line": 353,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "degraded",
+        "planned_work": 1,
+        "completed": 0,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 200,
+        "column": 29,
+        "evidence": "- `git config user.name \"gitclaw.ai\"`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 259,
+        "column": 5,
+        "evidence": "- `$HOME/.openclaw/gitclaw/auto_backup.sh`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 316,
+        "column": 5,
+        "evidence": "- `$HOME/.openclaw/gitclaw/auto_backup.sh`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 320,
+        "column": 15,
+        "evidence": "- `chmod +x \"$HOME/.openclaw/gitclaw/auto_backup.sh\"`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 330,
+        "column": 15,
+        "evidence": "- `CRON_CMD=\"$HOME/.openclaw/gitclaw/auto_backup.sh\"`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 349,
+        "column": 5,
+        "evidence": "- `$HOME/.openclaw/gitclaw/auto_backup.sh`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 353,
+        "column": 17,
+        "evidence": "- `tail -n 50 \"$HOME/.openclaw/gitclaw/backup.log\" || true`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      }
+    ],
+    "limitations": [
+      "Analyzer static_patterns_tool_misuse status: degraded."
+    ],
+    "findings_before_filtering": 68,
+    "findings_after_filtering": 68
+  },
+  "_meta": {
+    "cisco_result": "gitclaw-scan.json",
+    "skill_dir": "skills/clawhub-gitclaw",
+    "scanned_at": "2026-10-22T04:31:07.982292+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

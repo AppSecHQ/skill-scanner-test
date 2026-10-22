@@ -1,0 +1,1428 @@
+{
+  "skill": {
+    "name": "usfiscaldata",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/K-Dense-AI-scientific-agent-skills/skills/usfiscaldata",
+    "scanned_at": "2026-10-22T04:39:21.984917+00:00"
+  },
+  "risk_assessment": {
+    "score": 33,
+    "severity": "MEDIUM",
+    "recommendation": "CAUTION",
+    "max_issue_severity": "HIGH"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 205,
+      "executable": false,
+      "size_bytes": 9626,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/api-basics.md",
+      "type": "markdown",
+      "lines": 88,
+      "executable": false,
+      "size_bytes": 3953,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/datasets-debt.md",
+      "type": "markdown",
+      "lines": 185,
+      "executable": false,
+      "size_bytes": 7109,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/datasets-fiscal.md",
+      "type": "markdown",
+      "lines": 191,
+      "executable": false,
+      "size_bytes": 9620,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/datasets-interest-rates.md",
+      "type": "markdown",
+      "lines": 190,
+      "executable": false,
+      "size_bytes": 7024,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/datasets-securities.md",
+      "type": "markdown",
+      "lines": 264,
+      "executable": false,
+      "size_bytes": 10148,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/examples.md",
+      "type": "markdown",
+      "lines": 220,
+      "executable": false,
+      "size_bytes": 9702,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/parameters.md",
+      "type": "markdown",
+      "lines": 191,
+      "executable": false,
+      "size_bytes": 6692,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/response-format.md",
+      "type": "markdown",
+      "lines": 184,
+      "executable": false,
+      "size_bytes": 6093,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "AE1",
+      "finding_id": "finding-b395aef5eba84ee589aad8beb2eaa378",
+      "category": "analysis-evasion",
+      "pattern": "Incomplete referenced artifact analysis",
+      "severity": "HIGH",
+      "confidence": 1.0,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 183,
+        "end_line": null
+      },
+      "finding": "references/datasets-debt.md (partial)",
+      "explanation": "Referenced artifact was not completely inspected",
+      "remediation": "Review the reported expression and analyzer's parsing limitation; correct the scanner if it misinterprets valid source, then rerun the scan. Keep required references; incomplete analysis is not proof of malicious evasion.",
+      "code_snippet": "- **[datasets-debt.md](references/datasets-debt.md)** \u2014 Debt datasets: Debt to the Penny, Historical Debt, Schedules of Federal Debt, TROR",
+      "intent": null,
+      "tags": [
+        "coverage",
+        "reference",
+        "target-disposition:partial"
+      ],
+      "evidence": {
+        "target_path": "references/datasets-debt.md",
+        "target_disposition": "partial",
+        "reasons": [
+          {
+            "reason_code": "static_parse_limit",
+            "message": "A security-relevant expression exceeded a bounded static parser's span limit.",
+            "phase": "static",
+            "analyzers": [
+              "static_patterns_tool_misuse"
+            ]
+          }
+        ]
+      },
+      "match_fingerprint": "063faa77d5faa3256b865797f71729d40292ab07c04d1047d3b4feec290cf5f3",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 183,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-968a63f7c8ad4ade9a0734a54102f2e1",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 17,
+        "end_line": null,
+        "start_column": 15
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\nFree, open REST API from the U.S. Department of the Treasury for federal financial data. No API key or registration required.\n\n**Base URL:** `https://api.fiscaldata.treasury.gov/services/api/fiscal_service`\n\nBrowse [the current dataset catalog](https://fiscaldata.treasury.gov/datasets/) via the dataset search. Verify endpoint paths on each dataset's API Quick Guide \u2014 paths change over time.\n",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 17,
+          "end_line": null,
+          "start_column": 15
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-3a7bb0d0bc4648c8ae61810362109fd6",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 33,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "import requests\nimport pandas as pd\n\nBASE_URL = \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service\"\n\n# Get the current national debt (Debt to the Penny)\nresp = requests.get(f\"{BASE_URL}/v2/accounting/od/debt_to_penny\", params={",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 33,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-59bf28cb88284061a4de47e8dc41b972",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/api-basics.md",
+        "start_line": 16,
+        "end_line": null,
+        "start_column": 11
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "```\nBASE URL + ENDPOINT + PARAMETERS\n\nBase URL:  https://api.fiscaldata.treasury.gov/services/api/fiscal_service\nEndpoint:  /v2/accounting/od/debt_to_penny\nParams:    ?fields=record_date,tot_pub_debt_out_amt&sort=-record_date&page[size]=5\n",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/api-basics.md",
+          "start_line": 16,
+          "end_line": null,
+          "start_column": 11
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-260cea03dfc0443f977e7e5d3f14f131",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/api-basics.md",
+        "start_line": 21,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Params:    ?fields=record_date,tot_pub_debt_out_amt&sort=-record_date&page[size]=5\n\nFull URL:\nhttps://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?fields=record_date%2Ctot_pub_debt_out_amt&sort=-record_date&page%5Bsize%5D=5\n```\n\n- Endpoint components use lowercase + underscores",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/api-basics.md",
+          "start_line": 21,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-b6475cf9247940918ccc96c6d4a2515b",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/datasets-debt.md",
+        "start_line": 22,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "```python\n# Current national debt\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny\",\n    params={\"sort\": \"-record_date\", \"page[size]\": 1},\n    timeout=30,\n)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/datasets-debt.md",
+          "start_line": 22,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-aaa28225194c4dd58252f2cf4638b409",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/datasets-debt.md",
+        "start_line": 33,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n# Preview of debt since January 2024; fetch_all() is needed for the full series\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny\",\n    params={\n        \"fields\": \"record_date,tot_pub_debt_out_amt\",\n        \"filter\": \"record_date:gte:2024-01-01\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/datasets-debt.md",
+          "start_line": 33,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-cb86a537932a43f09ecb569934e4bd55",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/datasets-debt.md",
+        "start_line": 63,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "```python\n# Full historical debt series (verify it fits in the requested page)\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_outstanding\",\n    params={\"sort\": \"-record_date\", \"page[size]\": 10000},\n    timeout=30,\n)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/datasets-debt.md",
+          "start_line": 63,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-0977ec60e99747b8b491da91b6c2c8ad",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/datasets-debt.md",
+        "start_line": 122,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "```python\n# TROR data, sorted by funding type\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/debt/tror\",\n    params={\"sort\": \"funding_type_id\"},\n    timeout=30,\n)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/datasets-debt.md",
+          "start_line": 122,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-cfeb216a024349e0893784f0340e3307",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/datasets-interest-rates.md",
+        "start_line": 22,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "```python\n# Get average rates for all marketable securities, most recent month\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/avg_interest_rates\",\n    params={\n        \"filter\": \"security_type_desc:eq:Marketable\",\n        \"sort\": \"-record_date\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/datasets-interest-rates.md",
+          "start_line": 22,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-f9bda049fb3341f68e73dbc4a83ba75d",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/datasets-interest-rates.md",
+        "start_line": 37,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n# First-page preview of historical rates for a specific security type\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/avg_interest_rates\",\n    params={\n        \"fields\": \"record_date,avg_interest_rate_amt\",\n        \"filter\": \"security_desc:eq:Treasury Notes,record_date:gte:2010-01-01\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/datasets-interest-rates.md",
+          "start_line": 37,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-de0cde33ba984b2b9e1aaa131f0241ba",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/datasets-securities.md",
+        "start_line": 31,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "```python\n# Get recent 10-year Treasury note auctions\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/auctions_query\",\n    params={\n        \"filter\": \"security_type:eq:Note,original_security_term:eq:10-Year,inflation_index_security:eq:No,floating_rate:eq:No\",\n        \"sort\": \"-auction_date\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/datasets-securities.md",
+          "start_line": 31,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-00e507e899d042d89d329d722ee692ac",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/datasets-securities.md",
+        "start_line": 44,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n# Get all auctions in 2024\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/auctions_query\",\n    params={\n        \"filter\": \"auction_date:gte:2024-01-01,auction_date:lte:2024-12-31\",\n        \"sort\": \"-auction_date\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/datasets-securities.md",
+          "start_line": 44,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-638b66c93d6946709f67321bf3698b02",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/datasets-securities.md",
+        "start_line": 76,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "# Get upcoming auctions\nfrom datetime import date\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/upcoming_auctions\",\n    params={\"filter\": f\"auction_date:gte:{date.today().isoformat()}\", \"sort\": \"auction_date\", \"page[size]\": 1000},\n    timeout=30,\n)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/datasets-securities.md",
+          "start_line": 76,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-047ecc054725497d85fc5b175b71ae90",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/datasets-securities.md",
+        "start_line": 110,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "```python\n# Recent buyback operations\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/buybacks_operations\",\n    params={\"sort\": \"-operation_date\", \"page[size]\": 10},\n    timeout=30,\n)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/datasets-securities.md",
+          "start_line": 110,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-cee700196dd046ddae0b096cfd69b281",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/examples.md",
+        "start_line": 15,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "import requests\nimport pandas as pd\n\nBASE_URL = \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service\"\n\ndef fetch(endpoint, **params):\n    \"\"\"Fetch one page; callers requesting a complete result use fetch_all.\"\"\"",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/examples.md",
+          "start_line": 15,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-714d649819dd41d9977f230f46a03e83",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/examples.md",
+        "start_line": 198,
+        "end_line": null,
+        "start_column": 9
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "```r\nlibrary(httr)\nlibrary(jsonlite)\nbase <- \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service\"\nresponse <- GET(paste0(base, \"/v1/accounting/mts/mts_table_9\"),\n                query = list(filter = \"line_code_nbr:eq:120\",\n                             sort = \"-record_date\", `page[size]` = 1),",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/examples.md",
+          "start_line": 198,
+          "end_line": null,
+          "start_column": 9
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-acfd46d0ca7c441aac1eba8b2bd0098c",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/parameters.md",
+        "start_line": 137,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "        raise ValueError(\"page[size] must be positive\")\n    params[\"page[size]\"] = min(size, 10000)  # local request-size policy\n    params[\"page[number]\"] = 1\n    base = \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service\"\n    rows = []\n    expected = None\n    for page in range(1, max_pages + 1):",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/parameters.md",
+          "start_line": 137,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-53a6a78e294e4a3abd4f47dc9c3a66bc",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/parameters.md",
+        "start_line": 186,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    \"page[number]\": 1\n}\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/rates_of_exchange\",\n    params=params,\n    timeout=30,\n)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/parameters.md",
+          "start_line": 186,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-2e7bfae09f744e87ae59013e3257a89e",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/response-format.md",
+        "start_line": 118,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\ndef api_to_dataframe(endpoint, params=None):\n    \"\"\"Fetch ONE PAGE and return a DataFrame plus pagination metadata.\"\"\"\n    base = \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service\"\n    resp = requests.get(f\"{base}{endpoint}\", params=params, timeout=30)\n    resp.raise_for_status()\n    result = resp.json()",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/response-format.md",
+          "start_line": 118,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-41a903b1326b4989903daca1b45263a4",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/response-format.md",
+        "start_line": 162,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "import io\n\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny\",\n    params={\"format\": \"csv\", \"sort\": \"-record_date\", \"page[size]\": 100},\n    timeout=30,\n)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/response-format.md",
+          "start_line": 162,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-bde188d3f34943998c4f7d26e55e1901",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/response-format.md",
+        "start_line": 178,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.fiscaldata.treasury.gov/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "import xml.etree.ElementTree as ET\n\nresp = requests.get(\n    \"https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny\",\n    params={\"format\": \"xml\", \"page[size]\": 10},\n    timeout=30,\n)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a008cb903e8a93e8655a26be9f44f1d915d1cf3e4b3592c600b245083b361261",
+      "occurrences": [
+        {
+          "file": "references/response-format.md",
+          "start_line": 178,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": false,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 9,
+    "scanned_components": 8,
+    "coverage_percent": 88.9,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 8,
+    "partially_inspected_files": 1,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 8,
+        "end_line": 8,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "static",
+        "reason_code": "static_parse_limit",
+        "message": "A security-relevant expression exceeded a bounded static parser's span limit.",
+        "path": "references/datasets-debt.md",
+        "start_line": null,
+        "end_line": null,
+        "fatal": false,
+        "analyzers": [
+          "static_patterns_tool_misuse"
+        ]
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "reference_coverage",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 8,
+        "column": 13,
+        "evidence": "version: \"1.5\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 19,
+        "column": 38,
+        "evidence": "Browse [the current dataset catalog](https://fiscaldata.treasury.gov/datasets/) via the dataset search. Verify endpoint paths on each dataset's API Quick Guide ",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 95,
+        "column": 109,
+        "evidence": "| Monthly Treasury Statement (MTS) | `/v1/accounting/mts/mts_table_1` (18 tables \u2014 see [datasets-fiscal.md](references/datasets-fiscal.md)) | Monthly |",
+        "target_path": "references/datasets-fiscal.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 145,
+        "column": 57,
+        "evidence": "Use the bounded `fetch_all()` helper in [parameters.md](references/parameters.md). For small result sets, a single request with `page[size]=10000` may suffice w",
+        "target_path": "references/parameters.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 177,
+        "column": 43,
+        "evidence": "Reviewed against the [official API guide](https://fiscaldata.treasury.gov/api-documentation/), dataset data dictionaries, and unauthenticated live GET responses",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 181,
+        "column": 21,
+        "evidence": "- **[api-basics.md](references/api-basics.md)** \u2014 URL structure, HTTP methods, versioning, data types",
+        "target_path": "references/api-basics.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 182,
+        "column": 21,
+        "evidence": "- **[parameters.md](references/parameters.md)** \u2014 All parameters with detailed examples and edge cases",
+        "target_path": "references/parameters.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 183,
+        "column": 24,
+        "evidence": "- **[datasets-debt.md](references/datasets-debt.md)** \u2014 Debt datasets: Debt to the Penny, Historical Debt, Schedules of Federal Debt, TROR",
+        "target_path": "references/datasets-debt.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 184,
+        "column": 26,
+        "evidence": "- **[datasets-fiscal.md](references/datasets-fiscal.md)** \u2014 Daily Treasury Statement, Monthly Treasury Statement, revenue, spending",
+        "target_path": "references/datasets-fiscal.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 185,
+        "column": 34,
+        "evidence": "- **[datasets-interest-rates.md](references/datasets-interest-rates.md)** \u2014 Average interest rates, exchange rates, TIPS/CPI, certified interest rates",
+        "target_path": "references/datasets-interest-rates.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 186,
+        "column": 30,
+        "evidence": "- **[datasets-securities.md](references/datasets-securities.md)** \u2014 Treasury auctions, savings bonds, SLGS, buybacks",
+        "target_path": "references/datasets-securities.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 187,
+        "column": 26,
+        "evidence": "- **[response-format.md](references/response-format.md)** \u2014 Response objects, error handling, pagination, response codes",
+        "target_path": "references/response-format.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 188,
+        "column": 19,
+        "evidence": "- **[examples.md](references/examples.md)** \u2014 Python, R, and pandas code examples for common use cases",
+        "target_path": "references/examples.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      }
+    ],
+    "limitations": [
+      "Analyzer static_patterns_tool_misuse status: degraded."
+    ],
+    "findings_before_filtering": 22,
+    "findings_after_filtering": 22
+  },
+  "_meta": {
+    "cisco_result": "skills-usfiscaldata-scan.json",
+    "skill_dir": "skills/K-Dense-AI-scientific-agent-skills/skills/usfiscaldata",
+    "scanned_at": "2026-10-22T04:39:22.335213+00:00",
+    "mode": "static",
+    "exit_code": 0
+  }
+}

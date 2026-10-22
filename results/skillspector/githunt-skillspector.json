@@ -1,0 +1,1310 @@
+{
+  "skill": {
+    "name": "githunt",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/clawhub-githunt",
+    "scanned_at": "2026-10-22T04:31:09.889400+00:00"
+  },
+  "risk_assessment": {
+    "score": 17,
+    "severity": "LOW",
+    "recommendation": "SAFE",
+    "max_issue_severity": "MEDIUM"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 158,
+      "executable": false,
+      "size_bytes": 5008,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "_meta.json",
+      "type": "json",
+      "lines": 20,
+      "executable": false,
+      "size_bytes": 528,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/githunt-search.sh",
+      "type": "shell",
+      "lines": 107,
+      "executable": true,
+      "size_bytes": 4265,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "skill/SKILL.md",
+      "type": "markdown",
+      "lines": 192,
+      "executable": false,
+      "size_bytes": 5395,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "skill/_meta.json",
+      "type": "json",
+      "lines": 20,
+      "executable": false,
+      "size_bytes": 528,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "skill/scripts/githunt-search.sh",
+      "type": "shell",
+      "lines": 75,
+      "executable": true,
+      "size_bytes": 2062,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "LP3",
+      "finding_id": "finding-2445b18bab984f96b2f1f20ac1c19d00",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: shell.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: shell.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-68c3d57944554394b08a7d00018b0287",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 30,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -N -X POST \"https://api.githunt.ai/v1/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Real-time streaming search that returns candidates as they're found. Returns **top 10 sample results** for free.\n\n```bash\ncurl -N -X POST \"https://api.githunt.ai/v1/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d '{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "44316b41013fc6a789c73ab3d4db02845cfe1d48d6b7de60f9fce6b248930f02",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 30,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-d74f8b02d2be43bdba64fa1cd96a8a1b",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 139,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -N -X POST \"https://api.githunt.ai/v1/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n### Find React Developers in Berlin (Streaming)\n```bash\ncurl -N -X POST \"https://api.githunt.ai/v1/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d '{\"location\": \"berlin\", \"role\": \"frontend\"}' 2>/dev/null | \\",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "44316b41013fc6a789c73ab3d4db02845cfe1d48d6b7de60f9fce6b248930f02",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 139,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-1ffb090c02094655b3397833e79ac691",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 69,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -X POST \"https://api.githunt.ai/v1/rank/user\" \\\n  -H \"Content-Type: application/json\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Get detailed score for a specific GitHub user.\n\n```bash\ncurl -X POST \"https://api.githunt.ai/v1/rank/user\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"username\": \"torvalds\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "33a8b2126398f87b0dc0ab12a841617189f125552b44f24bde52934a32c1e376",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 69,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-6016ae5396654ffcba3a8bb46f25aa57",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 148,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -s -X POST \"https://api.githunt.ai/v1/rank/user\" \\\n  -H \"Content-Type: application/json\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n### Score a Specific Candidate\n```bash\ncurl -s -X POST \"https://api.githunt.ai/v1/rank/user\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"username\": \"sindresorhus\", \"skills\": [\"javascript\", \"typescript\"]}' | jq\n```",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "04a8b494d16a972e252f129b8c4c5cadd637c2828d6239c14dd6b56adb98472f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 148,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-9e535e1632db4842af71be36c41d2a50",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 96,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -s -X POST \"https://api.githunt.ai/v1/rank/user\" \\\n  -H \"Content-Type: application/json\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n### Score a Specific Candidate\n```bash\ncurl -s -X POST \"https://api.githunt.ai/v1/rank/user\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"username\": \"DHH\", \"skills\": [\"ruby\", \"rails\"]}' | jq\n```",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "04a8b494d16a972e252f129b8c4c5cadd637c2828d6239c14dd6b56adb98472f",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 96,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-d045851a80dc4f66b0a508d48033bd41",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 23,
+        "end_line": null,
+        "start_column": 11
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n## API Endpoints\n\nBase URL: `https://api.githunt.ai/v1`\n\n### Search Developers (Streaming) - Main Endpoint\n",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 23,
+          "end_line": null,
+          "start_column": 11
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-99b621076ac14d56b691dbaf8b630f39",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 30,
+        "end_line": null,
+        "start_column": 17
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Real-time streaming search that returns candidates as they're found. Returns **top 10 sample results** for free.\n\n```bash\ncurl -N -X POST \"https://api.githunt.ai/v1/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d '{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 30,
+          "end_line": null,
+          "start_column": 17
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-6b8365b645724321af8338815af463ba",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 69,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Get detailed score for a specific GitHub user.\n\n```bash\ncurl -X POST \"https://api.githunt.ai/v1/rank/user\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"username\": \"torvalds\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 69,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-fffda4eaa8d5469cbd658dec4257212b",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 139,
+        "end_line": null,
+        "start_column": 17
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n### Find React Developers in Berlin (Streaming)\n```bash\ncurl -N -X POST \"https://api.githunt.ai/v1/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d '{\"location\": \"berlin\", \"role\": \"frontend\"}' 2>/dev/null | \\",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 139,
+          "end_line": null,
+          "start_column": 17
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-8a340736f4f947c4af5d38ef8c0c093a",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 148,
+        "end_line": null,
+        "start_column": 17
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n### Score a Specific Candidate\n```bash\ncurl -s -X POST \"https://api.githunt.ai/v1/rank/user\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"username\": \"sindresorhus\", \"skills\": [\"javascript\", \"typescript\"]}' | jq\n```",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 148,
+          "end_line": null,
+          "start_column": 17
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-9a69244efd244fe2b36fd8633b287ad2",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/githunt-search.sh",
+        "start_line": 7,
+        "end_line": null,
+        "start_column": 28
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "#\n# Roles: frontend, backend, fullstack, mobile, devops, data, security, blockchain, ai, gaming\n\nAPI_URL=\"${GITHUNT_API_URL:-https://api.githunt.ai/v1}\"\n\nlocation=\"${1:-}\"\nrole=\"${2:-}\"",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "scripts/githunt-search.sh",
+          "start_line": 7,
+          "end_line": null,
+          "start_column": 28
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-d699c46adcfe4131a7c42d5e582b13ae",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 23,
+        "end_line": null,
+        "start_column": 11
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n## API Endpoints\n\nBase URL: `https://api.githunt.ai/v1`\n\n### Rank Users (Main Endpoint)\n",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 23,
+          "end_line": null,
+          "start_column": 11
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-30d1bd3391eb40ccb4349843bbcce4ac",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 30,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Search and rank GitHub developers by location and tech stack.\n\n```bash\ncurl -X POST \"https://api.githunt.ai/v1/rank/users\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"location\": \"berlin\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 30,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-72bbc4c769ce42eca6e2f373a22c3346",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 53,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Same as above but returns results via Server-Sent Events for real-time updates.\n\n```bash\ncurl -X POST \"https://api.githunt.ai/v1/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d '{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 53,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-5e198e21fd3446f895b355be0739d42f",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 68,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Get detailed score for a specific GitHub user.\n\n```bash\ncurl -X POST \"https://api.githunt.ai/v1/rank/user\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"username\": \"torvalds\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 68,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-8ac8dade4fbc4ac496baf0c28cfc8a8c",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 80,
+        "end_line": null,
+        "start_column": 17
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n### Find React Developers in Berlin\n```bash\ncurl -s -X POST \"https://api.githunt.ai/v1/rank/users\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"location\": \"berlin\", \"skills\": [\"react\", \"typescript\"], \"maxUsers\": 10}' \\\n  | gunzip | jq '.results[:5] | .[] | {login, name, score, location}'",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 80,
+          "end_line": null,
+          "start_column": 17
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-ed2edfd9cfd04cb8b76a3a5a602c7786",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 88,
+        "end_line": null,
+        "start_column": 17
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n### Find Backend Engineers in Europe\n```bash\ncurl -s -X POST \"https://api.githunt.ai/v1/rank/users\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"location\": \"europe\", \"role\": \"backend\", \"skills\": [\"go\", \"kubernetes\"], \"maxUsers\": 20}' \\\n  | gunzip | jq '.results'",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 88,
+          "end_line": null,
+          "start_column": 17
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-624cb3aac23747a884406b48b66e5d9e",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 96,
+        "end_line": null,
+        "start_column": 17
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n### Score a Specific Candidate\n```bash\ncurl -s -X POST \"https://api.githunt.ai/v1/rank/user\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"username\": \"DHH\", \"skills\": [\"ruby\", \"rails\"]}' | jq\n```",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 96,
+          "end_line": null,
+          "start_column": 17
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-6572fd82599a4263b346606790161d35",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/scripts/githunt-search.sh",
+        "start_line": 10,
+        "end_line": null,
+        "start_column": 28
+      },
+      "finding": "https://api.githunt.ai/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "#   githunt-search.sh \"san francisco\" python\n#   githunt-search.sh germany \"go,kubernetes\" 50\n\nAPI_URL=\"${GITHUNT_API_URL:-https://api.githunt.ai/v1}\"\n\nlocation=\"${1:-}\"\nskills=\"${2:-}\"",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3f68b9ad868678b9ccba6248736a515ad456e0317b14e27c3f281f5c37641b9f",
+      "occurrences": [
+        {
+          "file": "skill/scripts/githunt-search.sh",
+          "start_line": 10,
+          "end_line": null,
+          "start_column": 28
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-73f1e710c9e4443485bbb3b1d9b3c4dc",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/githunt-search.sh",
+        "start_line": 50,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -s -N -X POST \"$API_URL/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -H \"User-Agent: OpenClaw/1.0 (githunt-skill)\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "echo \"\"\n\n# Make streaming request and parse SSE\ncurl -s -N -X POST \"$API_URL/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -H \"User-Agent: OpenClaw/1.0 (githunt-skill)\" \\",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "55e6a1855377ecf5d492cbaae9289f69efab67bb7b3c3cd2bd5c7ece6bc94f2e",
+      "occurrences": [
+        {
+          "file": "scripts/githunt-search.sh",
+          "start_line": 50,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-6fbe0add14e042eaab886d6bc87b8c7a",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 30,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -X POST \"https://api.githunt.ai/v1/rank/users\" \\\n  -H \"Content-Type: application/json\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Search and rank GitHub developers by location and tech stack.\n\n```bash\ncurl -X POST \"https://api.githunt.ai/v1/rank/users\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"location\": \"berlin\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "dafa759bc24cbbdc8e5a84a705c8fa10f88fb57854cef01d3510900033c94c7f",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 30,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-0dc34f87f0624b52a73fe811f26b4cef",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 53,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -X POST \"https://api.githunt.ai/v1/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d '{\n    \"location\": \"london\",\n    \"skills\": [\"python\", \"djan",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Same as above but returns results via Server-Sent Events for real-time updates.\n\n```bash\ncurl -X POST \"https://api.githunt.ai/v1/rank/users/stream\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept: text/event-stream\" \\\n  -d '{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "4042729b985a2971a4e1db5cf699e6f2a23b5918bc59aff9552e0cc98438a440",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 53,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-a2fb72ebe7a74281bc961bc5e0a5f83f",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "skill/SKILL.md",
+        "start_line": 88,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -s -X POST \"https://api.githunt.ai/v1/rank/users\" \\\n  -H \"Content-Type: application/json\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n### Find Backend Engineers in Europe\n```bash\ncurl -s -X POST \"https://api.githunt.ai/v1/rank/users\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"location\": \"europe\", \"role\": \"backend\", \"skills\": [\"go\", \"kubernetes\"], \"maxUsers\": 20}' \\\n  | gunzip | jq '.results'",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "91d53afa1cfe498b16360089d8add13629799f102417ac08a8a64c3e8d4d3f31",
+      "occurrences": [
+        {
+          "file": "skill/SKILL.md",
+          "start_line": 88,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-48a72caed0274fa98363b1cb4daba315",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "skill/scripts/githunt-search.sh",
+        "start_line": 48,
+        "end_line": null,
+        "start_column": 11
+      },
+      "finding": "curl -s -X POST \"$API_URL/rank/users\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept-Encoding: gzip\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "echo \"\"\n\n# Make request\nresponse=$(curl -s -X POST \"$API_URL/rank/users\" \\\n  -H \"Content-Type: application/json\" \\\n  -H \"Accept-Encoding: gzip\" \\\n  -d \"$payload\" --compressed 2>/dev/null)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "64d0fd739d8a08e5f8c51efe935a1818cee3ea109b8da1723692fc3be1aa4ca4",
+      "occurrences": [
+        {
+          "file": "skill/scripts/githunt-search.sh",
+          "start_line": 48,
+          "end_line": null,
+          "start_column": 11
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 6,
+    "scanned_components": 6,
+    "coverage_percent": 100.0,
+    "is_complete": true,
+    "status": "complete",
+    "execution_successful": true,
+    "fully_inspected_files": 6,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [],
+    "limitations": [],
+    "findings_before_filtering": 25,
+    "findings_after_filtering": 25
+  },
+  "_meta": {
+    "cisco_result": "githunt-scan.json",
+    "skill_dir": "skills/clawhub-githunt",
+    "scanned_at": "2026-10-22T04:31:10.163600+00:00",
+    "mode": "static",
+    "exit_code": 0
+  }
+}

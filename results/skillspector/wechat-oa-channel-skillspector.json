@@ -1,0 +1,1323 @@
+{
+  "skill": {
+    "name": "channel",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/clawhub-channel",
+    "scanned_at": "2026-10-22T04:40:33.156908+00:00"
+  },
+  "risk_assessment": {
+    "score": 100,
+    "severity": "CRITICAL",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "CRITICAL"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 270,
+      "executable": false,
+      "size_bytes": 7597,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/wechat_api.md",
+      "type": "markdown",
+      "lines": 302,
+      "executable": false,
+      "size_bytes": 7513,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/channel.py",
+      "type": "python",
+      "lines": 493,
+      "executable": true,
+      "size_bytes": 17365,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "TT3",
+      "finding_id": "finding-0ad1daa4d9c7471c9819e18d625899df",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'req' from os.getenv (line 56, credential/environment) \u2192 urllib.request.urlopen (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/channel.py",
+        "start_line": 57,
+        "end_line": 57,
+        "start_column": 13,
+        "end_column": 52
+      },
+      "finding": "urllib.request.urlopen(req, timeout=30)",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "    \n    try:\n        req = urllib.request.Request(url)\n        with urllib.request.urlopen(req, timeout=30) as response:\n            data = json.loads(response.read().decode('utf-8'))\n            \n            if 'access_token' in data:",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ed03e5371048cc42e689f66b85a00604a53054cecc17c2bfd9eb027ea516dc6f",
+      "occurrences": [
+        {
+          "file": "scripts/channel.py",
+          "start_line": 57,
+          "end_line": 57,
+          "start_column": 13,
+          "end_column": 52
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-85dacc6c0e0f468aa04d66994518dc62",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 254,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "Access Token",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n| \u63a5\u53e3 | \u6bcf\u65e5\u9650\u5236 | \u8bf4\u660e |\n|------|----------|------|\n| \u83b7\u53d6 Access Token | 2000 \u6b21 | \u6709\u6548\u671f 7200 \u79d2 |\n| \u521b\u5efa\u8349\u7a3f | 100 \u7bc7 | \u8349\u7a3f\u603b\u6570\u4e0a\u9650 100 |\n| \u4e0a\u4f20\u56fe\u7247 | \u65e0\u660e\u786e\u9650\u5236 | \u5355\u5f20\u6700\u5927 10MB |\n| \u53d1\u5e03 | \u65e0\u660e\u786e\u9650\u5236 | \u9700\u8981\u53d1\u5e03\u6743\u9650 |",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d791fddf2b521316d721148b0ff375b4cd22146833b76e12a6a85aae7e9ea3f2",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 254,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-b3a90faffdd8467fabf3ae19fd32eea2",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/channel.py",
+        "start_line": 30,
+        "end_line": null,
+        "start_column": 10
+      },
+      "finding": "Access Token",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "    os.makedirs(CONFIG_DIR, exist_ok=True)\n\ndef get_access_token() -> Optional[str]:\n    \"\"\"\u83b7\u53d6 Access Token\"\"\"\n    appid = os.getenv('WECHAT_APPID')\n    appsecret = os.getenv('WECHAT_APPSECRET')\n    ",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d791fddf2b521316d721148b0ff375b4cd22146833b76e12a6a85aae7e9ea3f2",
+      "occurrences": [
+        {
+          "file": "scripts/channel.py",
+          "start_line": 30,
+          "end_line": null,
+          "start_column": 10
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-a4740bd1c6ca450fba90b51ae6f077be",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/channel.py",
+        "start_line": 74,
+        "end_line": null,
+        "start_column": 29
+      },
+      "finding": "Access Token",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "                \n                return token\n            else:\n                print(f\"\u274c \u83b7\u53d6 Access Token \u5931\u8d25: {data.get('errmsg', 'Unknown error')}\")\n                return None\n                \n    except Exception as e:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d791fddf2b521316d721148b0ff375b4cd22146833b76e12a6a85aae7e9ea3f2",
+      "occurrences": [
+        {
+          "file": "scripts/channel.py",
+          "start_line": 74,
+          "end_line": null,
+          "start_column": 29
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-c9d565c663484c458ef0aaa4a40a77d4",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 7,
+        "end_line": null,
+        "start_column": 7
+      },
+      "finding": "Access Token",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n## \u8ba4\u8bc1\n\n### \u83b7\u53d6 Access Token\n\n```\nGET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=%2A%2A%2A",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation",
+        "contextual-triage",
+        "likely-benign-context"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d791fddf2b521316d721148b0ff375b4cd22146833b76e12a6a85aae7e9ea3f2",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 7,
+          "end_line": null,
+          "start_column": 7
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-e8172ee504354812b8b6d7b7937bec7c",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 246,
+        "end_line": null,
+        "start_column": 7
+      },
+      "finding": "Access Token",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n## Python \u793a\u4f8b\n\n### \u83b7\u53d6 Access Token\n\n```python\nimport requests",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation",
+        "contextual-triage",
+        "likely-benign-context"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d791fddf2b521316d721148b0ff375b4cd22146833b76e12a6a85aae7e9ea3f2",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 246,
+          "end_line": null,
+          "start_column": 7
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-94d5fdefbfbd469a82fe2d7573c963c6",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/channel.py",
+        "start_line": 440,
+        "end_line": null,
+        "start_column": 9
+      },
+      "finding": "access token",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "        parser.print_help()\n        return\n    \n    # \u83b7\u53d6 access token\n    access_token = get_access_token()\n    if not access_token:\n        return",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "903a9f18e7222d4c1e39fcf76dec31bef3fd46b6332f4bc5bc823999d287548b",
+      "occurrences": [
+        {
+          "file": "scripts/channel.py",
+          "start_line": 440,
+          "end_line": null,
+          "start_column": 9
+        }
+      ]
+    },
+    {
+      "id": "LP3",
+      "finding_id": "finding-f02d4b4cdf854edfb8ec3118957b566c",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, file_read, file_write, network.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, file_read, file_write, network.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-e5e5d7b0b9044dca950acf8841479479",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 279,
+        "end_line": null,
+        "start_column": 15
+      },
+      "finding": "requests.post(url, json=",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "        }]\n    }\n    \n    response = requests.post(url, json=data)\n    return response.json()\n```\n",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "13ef5f4402c0e832d92af3b2835957fa90e7d38711562daa323e177bdb3b2ea8",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 279,
+          "end_line": null,
+          "start_column": 15
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-d982b6685d6a4a3a87121a1c44507a17",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 10,
+        "end_line": null,
+        "start_column": 4
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "### \u83b7\u53d6 Access Token\n\n```\nGET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=%2A%2A%2A\n```\n\n**\u54cd\u5e94**\uff1a",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 10,
+          "end_line": null,
+          "start_column": 4
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-02c29a67424a4f71982e9a6103dfca14",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 31,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "### \u65b0\u589e\u8349\u7a3f\n\n```\nPOST https://api.weixin.qq.com/cgi-bin/draft/add?access_token=%2A%2A%2A\n```\n\n**\u8bf7\u6c42\u4f53**\uff1a",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 31,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-8c1e9e4378e64734af08edafaba3ea84",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 77,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "### \u83b7\u53d6\u8349\u7a3f\u5217\u8868\n\n```\nPOST https://api.weixin.qq.com/cgi-bin/draft/batchget?access_token=%2A%2A%2A\n```\n\n**\u8bf7\u6c42\u4f53**\uff1a",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 77,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-7f38b3a28f2948859e8c89c763ba5d27",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 132,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "### \u5220\u9664\u8349\u7a3f\n\n```\nPOST https://api.weixin.qq.com/cgi-bin/draft/delete?access_token=%2A%2A%2A\n```\n\n**\u8bf7\u6c42\u4f53**\uff1a",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 132,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-14d25575906c438f832656ce3717f554",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 145,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "### \u53d1\u5e03\u8349\u7a3f\uff08\u53d1\u5e03\u529f\u80fd\uff09\n\n```\nPOST https://api.weixin.qq.com/cgi-bin/freepublish/submit?access_token=%2A%2A%2A\n```\n\n**\u8bf7\u6c42\u4f53**\uff1a",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 145,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-f54e62491dcb45729dc78b0949200dc0",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 170,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "### \u4e0a\u4f20\u56fe\u6587\u6d88\u606f\u5185\u7684\u56fe\u7247\n\n```\nPOST https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=%2A%2A%2A\n```\n\n**Content-Type**: `multipart/form-data`",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 170,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-4a8a78097e6c409ba8036ba63ebcfd6e",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 191,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "### \u65b0\u589e\u6c38\u4e45\u7d20\u6750\uff08\u5c01\u9762\u56fe\uff09\n\n```\nPOST https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=%2A%2A%2A&type=image\n```\n\n**Content-Type**: `multipart/form-data`",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 191,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-18ebceec10f648f284f551dac49d83ae",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 252,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "import requests\n\ndef get_access_token(appid, appsecret):\n    url = f\"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%7Bappid%7D&secret=%2A%2A%2A}\"\n    response = requests.get(url)\n    data = response.json()\n    return data.get('access_token')",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 252,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-f0bc8442352c4a71b6aac7c99207b52f",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 265,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "import json\n\ndef create_draft(access_token, title, content, author=\"\"):\n    url = f\"https://api.weixin.qq.com/cgi-bin/draft/add?access_token=%2A%2A%2A}\"\n    \n    data = {\n        \"articles\": [{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 265,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-d9ff7647c5a64948bef21ddcf40421af",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/wechat_api.md",
+        "start_line": 289,
+        "end_line": null,
+        "start_column": 12
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "import requests\n\ndef upload_image(access_token, image_path):\n    url = f\"https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=%2A%2A%2A}\"\n    \n    with open(image_path, 'rb') as f:\n        files = {'media': f}",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "references/wechat_api.md",
+          "start_line": 289,
+          "end_line": null,
+          "start_column": 12
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-1488a6fd98e84b769fcd21c55c409f8e",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/channel.py",
+        "start_line": 18,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "https://api.weixin.qq.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "from typing import List, Dict, Optional\n\n# \u5fae\u4fe1 API \u914d\u7f6e\nWECHAT_API_BASE = \"https://api.weixin.qq.com/cgi-bin\"\n\n# \u5b58\u50a8\u6587\u4ef6\nCONFIG_DIR = os.path.expanduser(\"~/.config/channel\")",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5051592be94bbaa0d4f86802ff5c7e420e2bd06b940b22d4b37ef740b9dbb868",
+      "occurrences": [
+        {
+          "file": "scripts/channel.py",
+          "start_line": 18,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 3,
+    "scanned_components": 3,
+    "coverage_percent": 100.0,
+    "is_complete": true,
+    "status": "complete",
+    "execution_successful": true,
+    "fully_inspected_files": 3,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 27,
+        "column": 16,
+        "evidence": "1. \u767b\u5f55 [\u5fae\u4fe1\u516c\u4f17\u5e73\u53f0](https://mp.weixin.qq.com)",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 51,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py create \"\u6587\u7ae0\u6807\u9898\" \"\u8fd9\u91cc\u662f\u6b63\u6587\u5185\u5bb9...\"",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 56,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py create \"\u6587\u7ae0\u6807\u9898\" --file article.txt",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 61,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py create \"\u6587\u7ae0\u6807\u9898\" \"\u6b63\u6587\u5185\u5bb9...\" --cover cover.jpg",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 66,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py create \"\u6587\u7ae0\u6807\u9898\" \"\u6b63\u6587...\" --author \"\u5f20\u4e09\"",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 73,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py create \"\u6807\u9898\" \"\u8fd9\u662f\u6b63\u6587\u5185\u5bb9\uff0c\u652f\u6301\u6362\u884c\u3002\\n\\n\u7b2c\u4e8c\u6bb5\u5185\u5bb9...\"",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 78,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py create \"\u6807\u9898\" \"\u6b63\u6587\\n\\n!<span class=\\\"image\\\"><span>\u63cf\u8ff0</span></span>(/path/to/image.jpg)\\n\\n\u66f4\u591a\u5185\u5bb9...\"",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 83,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py create \"\u6807\u9898\" \"<p>\u6b63\u6587</p><img src='url' />\"",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 90,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py list",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 93,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py list --limit 50",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 110,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py publish MEDIA_ID_1234567890abcdef",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 118,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py delete MEDIA_ID_1234567890abcdef",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 194,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py create \"\u4eca\u65e5\u65b0\u95fb\" \"\u4eca\u5929\u7684\u91cd\u8981\u65b0\u95fb\u662f...\" --author \"\u7f16\u8f91\u90e8\"",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 197,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py list",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 198,
+        "column": 9,
+        "evidence": "python3 scripts/channel.py publish MEDIA_ID_xxxx",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 207,
+        "column": 13,
+        "evidence": "python3 scripts/channel.py create \"$title\" --file \"$file\"",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 221,
+        "column": 18,
+        "evidence": "RESULT=$(python3 scripts/channel.py create \"$TITLE\" \"$CONTENT\" --cover daily_cover.jpg)",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 225,
+        "column": 11,
+        "evidence": "# python3 scripts/channel.py publish \"$MEDIA_ID\"",
+        "target_path": "scripts/channel.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 269,
+        "column": 37,
+        "evidence": "- \u8349\u7a3f\u7bb1\u63a5\u53e3: [references/wechat_api.md](references/wechat_api.md)",
+        "target_path": "references/wechat_api.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 269,
+        "column": 11,
+        "evidence": "- \u8349\u7a3f\u7bb1\u63a5\u53e3: [references/wechat_api.md](references/wechat_api.md)",
+        "target_path": "references/wechat_api.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 20,
+    "findings_after_filtering": 20
+  },
+  "_meta": {
+    "cisco_result": "wechat-oa-channel-scan.json",
+    "skill_dir": "skills/clawhub-channel",
+    "scanned_at": "2026-10-22T04:40:33.446888+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

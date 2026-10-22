@@ -1,0 +1,1788 @@
+{
+  "skill": {
+    "name": "literature-review",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/K-Dense-AI-scientific-agent-skills/skills/literature-review",
+    "scanned_at": "2026-10-22T04:36:23.524744+00:00"
+  },
+  "risk_assessment": {
+    "score": 100,
+    "severity": "CRITICAL",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "CRITICAL"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 229,
+      "executable": false,
+      "size_bytes": 12869,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "assets/review_template.md",
+      "type": "markdown",
+      "lines": 419,
+      "executable": false,
+      "size_bytes": 13769,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/citation_styles.md",
+      "type": "markdown",
+      "lines": 177,
+      "executable": false,
+      "size_bytes": 7627,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/core_workflow.md",
+      "type": "markdown",
+      "lines": 268,
+      "executable": false,
+      "size_bytes": 11876,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/database_strategies.md",
+      "type": "markdown",
+      "lines": 183,
+      "executable": false,
+      "size_bytes": 10431,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/example_workflow.md",
+      "type": "markdown",
+      "lines": 71,
+      "executable": false,
+      "size_bytes": 3078,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/search_and_citation.md",
+      "type": "markdown",
+      "lines": 93,
+      "executable": false,
+      "size_bytes": 4685,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/generate_pdf.py",
+      "type": "python",
+      "lines": 107,
+      "executable": true,
+      "size_bytes": 4990,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/generate_schematic.py",
+      "type": "python",
+      "lines": 201,
+      "executable": true,
+      "size_bytes": 7782,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/generate_schematic_ai.py",
+      "type": "python",
+      "lines": 857,
+      "executable": true,
+      "size_bytes": 35684,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/search_databases.py",
+      "type": "python",
+      "lines": 266,
+      "executable": true,
+      "size_bytes": 8769,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/verify_citations.py",
+      "type": "python",
+      "lines": 198,
+      "executable": true,
+      "size_bytes": 9960,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "TT3",
+      "finding_id": "finding-c6839782cdae4beaafbb80c11e6caafd",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'headers' from os.environ.get (line 256, credential/environment) \u2192 requests.post (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 263,
+        "end_line": 266,
+        "start_column": 23,
+        "end_column": 13
+      },
+      "finding": "requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=payload, timeout=120,\n            )",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "        }\n        self._log(f\"POST {endpoint} using {payload['model']}\")\n        try:\n            response = requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=payload, timeout=120,\n            )",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "b6b35424447e5e288b520d7a8fc8078b00192f53391ab3c9a00a73f88be5a6ab",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 263,
+          "end_line": 266,
+          "start_column": 23,
+          "end_column": 13
+        }
+      ]
+    },
+    {
+      "id": "LP1",
+      "finding_id": "finding-aaf299811ac94e7b9242dc72497fb034",
+      "category": "MCP Least Privilege",
+      "pattern": "Code capability 'env' detected in scripts/generate_schematic.py but not covered by declared permissions.",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Code capability 'env' detected in scripts/generate_schematic.py but not covered by declared permissions.",
+      "explanation": "The skill uses 'env' capability that is not covered by the declared 'allowed-tools' preapproval. Review the host runtime's actual enforcement policy; runtime permissions are unknown unless separately verified, and this declaration alone does not establish a permission ceiling.",
+      "remediation": "Review whether the 'env' capability is required and whether the host runtime policy permits it; runtime permissions are unknown unless separately verified. Remove code that does not need the capability; do not broaden 'allowed-tools' preapproval solely to silence this finding.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-94e792ac3c374d64b77d142abaa7f105",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 44,
+        "end_line": null,
+        "start_column": 76
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n\ndef resolve_api_key(explicit=None):\n    \"\"\"Resolve the OpenRouter key from --api-key, the environment, then any .env file.\n\n    The .env scan walks up from the working directory and finally checks the\n    script's own directory, so running from anywhere inside a project picks up",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 44,
+          "end_line": null,
+          "start_column": 76
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-033944b9f9e84cad80ff06b877ea5584",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 46,
+        "end_line": null,
+        "start_column": 8
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "def resolve_api_key(explicit=None):\n    \"\"\"Resolve the OpenRouter key from --api-key, the environment, then any .env file.\n\n    The .env scan walks up from the working directory and finally checks the\n    script's own directory, so running from anywhere inside a project picks up\n    the key at its root. The child process is handed the resolved value through\n    build_subprocess_env, so it never has to repeat this search.",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 46,
+          "end_line": null,
+          "start_column": 8
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-76e46e9cc1ff499cb0eb6a2c4ccb8583",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 159,
+        "end_line": null,
+        "start_column": 72
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "    if Path(args.output).suffix.lower() != \".png\":\n        parser.error(\"--output must end in .png; format conversion is not supported\")\n\n    # Check for API key \u2014 resolves --api-key, the environment, then any .env file\n    api_key = resolve_api_key(args.api_key)\n    if not api_key:\n        print(\"Error: OPENROUTER_API_KEY not found\")",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 159,
+          "end_line": null,
+          "start_column": 72
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-ba15dc7f17f34f4aaafc9419eae17400",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 167,
+        "end_line": null,
+        "start_column": 61
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "        print(\"Get one at: https://openrouter.ai/keys\")\n        print(\"\\nSet it with:\")\n        print(\"  export OPENROUTER_API_KEY='your_api_key'\")\n        print(\"\\nOr add OPENROUTER_API_KEY=your_api_key to a .env file\")\n        print(\"Or use --api-key flag\")\n        sys.exit(1)\n    ",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 167,
+          "end_line": null,
+          "start_column": 61
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-302c48c43cbe48d0ac0c52e8352752aa",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 114,
+        "end_line": null,
+        "start_column": 76
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n\ndef _resolve_api_key(explicit: Optional[str] = None) -> Optional[str]:\n    \"\"\"Resolve the OpenRouter key from --api-key, the environment, then any .env file.\n\n    The .env scan walks up from the working directory and finally checks the\n    script's own directory, so running from anywhere inside a project picks up",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 114,
+          "end_line": null,
+          "start_column": 76
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-122c28bf2d5b40a5b276cfaf962b0d4c",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 116,
+        "end_line": null,
+        "start_column": 8
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "def _resolve_api_key(explicit: Optional[str] = None) -> Optional[str]:\n    \"\"\"Resolve the OpenRouter key from --api-key, the environment, then any .env file.\n\n    The .env scan walks up from the working directory and finally checks the\n    script's own directory, so running from anywhere inside a project picks up\n    the key at its root. Only the standard library is used: python-dotenv is a\n    common omission, and a missing optional dependency should not read as a",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 116,
+          "end_line": null,
+          "start_column": 8
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-a758caf52ea44479b9ba17eaffc26c6f",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 226,
+        "end_line": null,
+        "start_column": 75
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "            api_key: OpenRouter API key (or use OPENROUTER_API_KEY env var)\n            verbose: Print detailed progress information\n        \"\"\"\n        # Priority: 1) explicit api_key param, 2) environment variable, 3) .env file\n        self.api_key = _resolve_api_key(api_key)\n\n        if not self.api_key:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 226,
+          "end_line": null,
+          "start_column": 75
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-9c355ec990034c5c850234d9f69b479b",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 233,
+        "end_line": null,
+        "start_column": 53
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "            raise ValueError(\n                \"OPENROUTER_API_KEY not found. Please either:\\n\"\n                \"  1. Set the OPENROUTER_API_KEY environment variable\\n\"\n                \"  2. Add OPENROUTER_API_KEY to your .env file\\n\"\n                \"  3. Pass api_key parameter to the constructor\\n\"\n                \"Get your API key from: https://openrouter.ai/keys\"\n            )",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 233,
+          "end_line": null,
+          "start_column": 53
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-30f0bff913bd4322a8e7507d4c4dcee8",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 810,
+        "end_line": null,
+        "start_column": 72
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "    \n    args = parser.parse_args()\n    \n    # Check for API key \u2014 resolves --api-key, the environment, then any .env file\n    api_key = _resolve_api_key(args.api_key)\n    if not api_key:\n        print(\"Error: OPENROUTER_API_KEY not found\")",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 810,
+          "end_line": null,
+          "start_column": 72
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-115a4cf4c8af4b1782591e93349c83c5",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 816,
+        "end_line": null,
+        "start_column": 61
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "        print(\"Error: OPENROUTER_API_KEY not found\")\n        print(\"\\nSet it with:\")\n        print(\"  export OPENROUTER_API_KEY='your_api_key'\")\n        print(\"\\nOr add OPENROUTER_API_KEY=your_api_key to a .env file\")\n        print(\"Or provide via --api-key flag\")\n        sys.exit(1)\n    ",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 816,
+          "end_line": null,
+          "start_column": 61
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-5e9d4c91ecab47bf93e699a7bf282f3d",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 60,
+        "end_line": null,
+        "start_column": 32
+      },
+      "finding": ".env\"",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n    cwd = Path.cwd()\n    for directory in [cwd, *cwd.parents, Path(__file__).resolve().parent]:\n        env_file = directory / \".env\"\n        if not env_file.is_file():\n            continue\n        try:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "933e7e6dda63d615cb9ac0846682521855cd79c351e84f3fa87d934c18b752db",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 60,
+          "end_line": null,
+          "start_column": 32
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-d42fade00d1d4629a8f9f3809fb7363e",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 131,
+        "end_line": null,
+        "start_column": 32
+      },
+      "finding": ".env\"",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n    cwd = Path.cwd()\n    for directory in [cwd, *cwd.parents, Path(__file__).resolve().parent]:\n        env_file = directory / \".env\"\n        if not env_file.is_file():\n            continue\n        try:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "933e7e6dda63d615cb9ac0846682521855cd79c351e84f3fa87d934c18b752db",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 131,
+          "end_line": null,
+          "start_column": 32
+        }
+      ]
+    },
+    {
+      "id": "LP1",
+      "finding_id": "finding-721d316c866245edad07320b47b25446",
+      "category": "MCP Least Privilege",
+      "pattern": "Code capability 'network' detected in scripts/generate_schematic_ai.py but not covered by declared permissions.",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Code capability 'network' detected in scripts/generate_schematic_ai.py but not covered by declared permissions.",
+      "explanation": "The skill uses 'network' capability that is not covered by the declared 'allowed-tools' preapproval. Review the host runtime's actual enforcement policy; runtime permissions are unknown unless separately verified, and this declaration alone does not establish a permission ceiling.",
+      "remediation": "Review whether the 'network' capability is required and whether the host runtime policy permits it; runtime permissions are unknown unless separately verified. Remove code that does not need the capability; do not broaden 'allowed-tools' preapproval solely to silence this finding.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-296e9ea01cb54265bf7cd72607a0c3a8",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/database_strategies.md",
+        "start_line": 63,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "https://api.biorxiv.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n## bioRxiv and medRxiv\n\nThe [official API](https://api.biorxiv.org/) provides date/DOI metadata retrieval,\nnot a general keyword query endpoint. Use the server's search interface for\nkeyword discovery or filter the downloaded metadata explicitly.\n",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "974d8feb68b0fa4339fdfc04617dea0ce758b735a57f279ca9d43a64d5541976",
+      "occurrences": [
+        {
+          "file": "references/database_strategies.md",
+          "start_line": 63,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-9a5cdeca56bc48e69c66d042039c12d8",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/database_strategies.md",
+        "start_line": 67,
+        "end_line": null,
+        "start_column": 7
+      },
+      "finding": "https://api.biorxiv.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "not a general keyword query endpoint. Use the server's search interface for\nkeyword discovery or filter the downloaded metadata explicitly.\n\n- `GET https://api.biorxiv.org/details/{server}/{from}/{to}/{cursor}/json`, with\n  server `biorxiv` or `medrxiv`, date strings `YYYY-MM-DD`, zero-based\n  cursor (start at 0), and optional `category=cell_biology`.\n- Response `collection[]` holds records; `messages[]` describes status, count,",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "974d8feb68b0fa4339fdfc04617dea0ce758b735a57f279ca9d43a64d5541976",
+      "occurrences": [
+        {
+          "file": "references/database_strategies.md",
+          "start_line": 67,
+          "end_line": null,
+          "start_column": 7
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-db6febec89a0435d9687899b635493c6",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/database_strategies.md",
+        "start_line": 106,
+        "end_line": null,
+        "start_column": 29
+      },
+      "finding": "https://api.semanticscholar.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n## Semantic Scholar\n\nUse the [Graph API contract](https://api.semanticscholar.org/api-docs/graph)\n(and its downloadable [schema](https://api.semanticscholar.org/graph/v1/swagger.json)).\n\n- Relevance search: `GET https://api.semanticscholar.org/graph/v1/paper/search`;",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "28a730c612683642ad2da1e285c84fc44a86c8ba8b39befce231ed47aae91211",
+      "occurrences": [
+        {
+          "file": "references/database_strategies.md",
+          "start_line": 106,
+          "end_line": null,
+          "start_column": 29
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-eca2c86836da4395a23b81c1979ba87d",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/database_strategies.md",
+        "start_line": 107,
+        "end_line": null,
+        "start_column": 31
+      },
+      "finding": "https://api.semanticscholar.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "## Semantic Scholar\n\nUse the [Graph API contract](https://api.semanticscholar.org/api-docs/graph)\n(and its downloadable [schema](https://api.semanticscholar.org/graph/v1/swagger.json)).\n\n- Relevance search: `GET https://api.semanticscholar.org/graph/v1/paper/search`;\n  plain-text `query`, separate `year=2020-2024`, optional `fields`, `offset`,",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "28a730c612683642ad2da1e285c84fc44a86c8ba8b39befce231ed47aae91211",
+      "occurrences": [
+        {
+          "file": "references/database_strategies.md",
+          "start_line": 107,
+          "end_line": null,
+          "start_column": 31
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-07f119d662194c8b8be668bd39849e3e",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/database_strategies.md",
+        "start_line": 109,
+        "end_line": null,
+        "start_column": 25
+      },
+      "finding": "https://api.semanticscholar.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Use the [Graph API contract](https://api.semanticscholar.org/api-docs/graph)\n(and its downloadable [schema](https://api.semanticscholar.org/graph/v1/swagger.json)).\n\n- Relevance search: `GET https://api.semanticscholar.org/graph/v1/paper/search`;\n  plain-text `query`, separate `year=2020-2024`, optional `fields`, `offset`,\n  `limit` (maximum 100). Response has `data[]`, `total`, and optional `next`.\n  Only 1,000 relevance-ranked records are retrievable; not an exhaustive export.",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "28a730c612683642ad2da1e285c84fc44a86c8ba8b39befce231ed47aae91211",
+      "occurrences": [
+        {
+          "file": "references/database_strategies.md",
+          "start_line": 109,
+          "end_line": null,
+          "start_column": 25
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-e6a02b1f1eb540b9ae4e45a0a6b27eb5",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/database_strategies.md",
+        "start_line": 132,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "https://api.openalex.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "[OpenAlex authentication](https://help.openalex.org/api/authentication/) permits\nkeyless casual reads; a free key raises the daily budget. Use `api_key` or\n`Authorization: Bearer` without saving secrets in search logs. `GET\nhttps://api.openalex.org/works` accepts `search`, `filter`, `select`, and `sort`.\nResponses have `results[]` and `meta`. The current `per_page` maximum is 100;\nstart `cursor=*` and follow `meta.next_cursor` unchanged. Basic page-based\nretrieval stops at 10,000. Respect request credits and rate-limit headers;",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "084795d7f5b81a72f2535543703c44e1d51963080730b88bbb32b1efa47792bb",
+      "occurrences": [
+        {
+          "file": "references/database_strategies.md",
+          "start_line": 132,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-edcde715ec594b668ecd8cb3b61b2fcd",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/generate_pdf.py",
+        "start_line": 15,
+        "end_line": 15,
+        "start_column": 12,
+        "end_column": 80
+      },
+      "finding": "subprocess.run([name, '--version'], capture_output=True, check=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    available = True\n    for name in ('pandoc', 'xelatex'):\n        try:\n            subprocess.run([name, '--version'], capture_output=True, check=True)\n            print(f'[OK] {name} is installed')\n        except (subprocess.CalledProcessError, OSError):\n            print(f'[FAIL] {name} is NOT installed')",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5170f4b3b333e1b97d289769e353ed07537bb541c00169e3f78e3317d9a94993",
+      "occurrences": [
+        {
+          "file": "scripts/generate_pdf.py",
+          "start_line": 15,
+          "end_line": 15,
+          "start_column": 12,
+          "end_column": 80
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-ebb9ef4a98794cdca936abd0babacff5",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/generate_pdf.py",
+        "start_line": 68,
+        "end_line": 68,
+        "start_column": 17,
+        "end_column": 80
+      },
+      "finding": "subprocess.run(cmd, capture_output=True, text=True, check=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "            return False\n        cmd.extend(['--template', str(Path(template).resolve())])\n    try:\n        result = subprocess.run(cmd, capture_output=True, text=True, check=True)\n        if result.stderr:\n            print(result.stderr.strip())  # Surface missing citation and rendering warnings.\n        if not destination.is_file() or not destination.read_bytes().startswith(b'%PDF-'):",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "b59dc432c782f7d1cde7563378561ea24cfe0a8d6ce77e30394656cbdf4ec3eb",
+      "occurrences": [
+        {
+          "file": "scripts/generate_pdf.py",
+          "start_line": 68,
+          "end_line": 68,
+          "start_column": 17,
+          "end_column": 80
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-5c2ffab44ef84be1bfdb105ca66462e7",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 192,
+        "end_line": 192,
+        "start_column": 17,
+        "end_column": 84
+      },
+      "finding": "subprocess.run(cmd, check=False, env=build_subprocess_env(api_key))",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    \n    # Execute \u2014 pass API key via environment to avoid exposure in process listings\n    try:\n        result = subprocess.run(cmd, check=False, env=build_subprocess_env(api_key))\n        sys.exit(result.returncode)\n    except Exception as e:\n        print(f\"Error executing AI generation: {e}\")",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "963b112e3d9a0ee43971a532008da645d04cca652de68b969e1a2997ea4b3e9a",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 192,
+          "end_line": 192,
+          "start_column": 17,
+          "end_column": 84
+        }
+      ]
+    },
+    {
+      "id": "TT2",
+      "finding_id": "finding-fd642ba3889d4448bcfd388144e12962",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'api_key' from os.environ.get (line 160, credential/environment) \u2192 subprocess.run (code execution)",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 192,
+        "end_line": 192,
+        "start_column": 17,
+        "end_column": 84
+      },
+      "finding": "subprocess.run(cmd, check=False, env=build_subprocess_env(api_key))",
+      "explanation": "Data from a source is assigned to a variable that is later passed to a sink, creating a variable-mediated taint flow.",
+      "remediation": "Validate tainted variables before passing them to sinks. Use allowlists, type checks, or sanitization functions on data from external sources.",
+      "code_snippet": "    \n    # Execute \u2014 pass API key via environment to avoid exposure in process listings\n    try:\n        result = subprocess.run(cmd, check=False, env=build_subprocess_env(api_key))\n        sys.exit(result.returncode)\n    except Exception as e:\n        print(f\"Error executing AI generation: {e}\")",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "e23ab06d6cbc89353f487b281e35a2b44407b8c826f96bcd7f436207892cdc94",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 192,
+          "end_line": 192,
+          "start_column": 17,
+          "end_column": 84
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-f77d32427a0f4cbfae28d2c318e07158",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.7999999999999999,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 263,
+        "end_line": null,
+        "start_column": 23
+      },
+      "finding": "requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "        }\n        self._log(f\"POST {endpoint} using {payload['model']}\")\n        try:\n            response = requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=payload, timeout=120,\n            )",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5cd3b0948ba140426b4a440187ca431e193899557768a82d8f0ed4d865c4ca8a",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 263,
+          "end_line": null,
+          "start_column": 23
+        }
+      ]
+    },
+    {
+      "id": "TT2",
+      "finding_id": "finding-1323c4ffec234663affa3d6c14a8b02e",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'payload' from requests.post (line 362, network input) \u2192 requests.post (network output)",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 263,
+        "end_line": 266,
+        "start_column": 23,
+        "end_column": 13
+      },
+      "finding": "requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=payload, timeout=120,\n            )",
+      "explanation": "Data from a source is assigned to a variable that is later passed to a sink, creating a variable-mediated taint flow.",
+      "remediation": "Validate tainted variables before passing them to sinks. Use allowlists, type checks, or sanitization functions on data from external sources.",
+      "code_snippet": "        }\n        self._log(f\"POST {endpoint} using {payload['model']}\")\n        try:\n            response = requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=payload, timeout=120,\n            )",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "9a7baed83e2b37f91c0a30d0badbd2d67ffacedc01c911b8be682c9917012510",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 263,
+          "end_line": 266,
+          "start_column": 23,
+          "end_column": 13
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-97d5cb45af6f43a88221130fce2e1b14",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/database_strategies.md",
+        "start_line": 138,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": "https://api.crossref.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "retrieval stops at 10,000. Respect request credits and rate-limit headers;\nkeyless does not mean unlimited. See [paging](https://help.openalex.org/api/paging/).\n\nCrossref `GET https://api.crossref.org/works/{doi}` is a singleton metadata\nlookup with JSON `message`, no key or pagination. A 404 does not prove a DOI\nfrom another registration agency is invalid. List searches (`/works?query...`)\nhave different quotas and pagination: public list limit 1/s, polite 3/s, versus",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3d3547f384630996905cfd74fdee65b93e8b40d7941fa1457f6877350f5bffd0",
+      "occurrences": [
+        {
+          "file": "references/database_strategies.md",
+          "start_line": 138,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-b07bc91ab0ae45fcaf75b7a016c418a1",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/search_and_citation.md",
+        "start_line": 54,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": "https://api.crossref.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "helper extracts unique DOI candidates, URL-encodes them, and checks\n`GET https://doi.org/api/handles/{doi}`. Registration requires a successful\nHandle `responseCode=1` and matching identifier, not HTTP 200 alone. It then\nrequests `GET https://api.crossref.org/works/{doi}` and checks metadata identity.\nThese public singleton reads require no key or pagination.\n\nRead the report's `verified` as **registration confirmed**, `failed` as",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3d3547f384630996905cfd74fdee65b93e8b40d7941fa1457f6877350f5bffd0",
+      "occurrences": [
+        {
+          "file": "references/search_and_citation.md",
+          "start_line": 54,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-26de1af6697b4628b260777bc3259cd8",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/verify_citations.py",
+        "start_line": 90,
+        "end_line": null,
+        "start_column": 35
+      },
+      "finding": "https://api.crossref.org/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    def _get_crossref_metadata(self, doi: str) -> Dict:\n        \"\"\"Fetch one Crossref work; no list pagination or key is needed.\"\"\"\n        try:\n            response = self._get(f\"https://api.crossref.org/works/{quote(doi, safe='/')}\",\n                                 params={'mailto': self.email} if self.email else {})\n            if response.status_code != 200:\n                return {'metadata_status': 'unavailable', 'crossref_http_status': response.status_code}",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "3d3547f384630996905cfd74fdee65b93e8b40d7941fa1457f6877350f5bffd0",
+      "occurrences": [
+        {
+          "file": "scripts/verify_citations.py",
+          "start_line": 90,
+          "end_line": null,
+          "start_column": 35
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 12,
+    "scanned_components": 12,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 12,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 8,
+        "end_line": 8,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 46,
+        "end_line": 46,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 5,
+        "completed": 5,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 5,
+        "completed": 5,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 12,
+        "completed": 12,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 8,
+        "column": 13,
+        "evidence": "version: \"1.11\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 40,
+        "column": 73,
+        "evidence": "For systematic reviews, use the appropriate [PRISMA 2020 flow template](https://www.prisma-statement.org/prisma-2020-flow-diagram) and reconciled screening coun",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 45,
+        "column": 8,
+        "evidence": "python scripts/generate_schematic.py \"Conceptual evidence map; labels from the reviewed extraction table\" \\",
+        "target_path": "scripts/generate_schematic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 46,
+        "column": 6,
+        "evidence": "-o figures/evidence_map.png --doc-type journal --iterations 2",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 61,
+        "column": 34,
+        "evidence": "in [references/core_workflow.md](references/core_workflow.md):",
+        "target_path": "references/core_workflow.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 61,
+        "column": 5,
+        "evidence": "in [references/core_workflow.md](references/core_workflow.md):",
+        "target_path": "references/core_workflow.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 75,
+        "column": 37,
+        "evidence": "[references/search_and_citation.md](references/search_and_citation.md), and a full worked",
+        "target_path": "references/search_and_citation.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 75,
+        "column": 2,
+        "evidence": "[references/search_and_citation.md](references/search_and_citation.md), and a full worked",
+        "target_path": "references/search_and_citation.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 76,
+        "column": 47,
+        "evidence": "review is in [references/example_workflow.md](references/example_workflow.md).",
+        "target_path": "references/example_workflow.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 76,
+        "column": 15,
+        "evidence": "review is in [references/example_workflow.md](references/example_workflow.md).",
+        "target_path": "references/example_workflow.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 92,
+        "column": 237,
+        "evidence": "y. Report counts can exceed study counts. See the [Cochrane selection guidance](https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 146,
+        "column": 4,
+        "evidence": "- `scripts/verify_citations.py`: Check DOI registration and retrieve Crossref metadata for manual review",
+        "target_path": "scripts/verify_citations.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 147,
+        "column": 4,
+        "evidence": "- `scripts/generate_pdf.py`: Convert markdown to professional PDF",
+        "target_path": "scripts/generate_pdf.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 148,
+        "column": 4,
+        "evidence": "- `scripts/search_databases.py`: Process, deduplicate, and format search results",
+        "target_path": "scripts/search_databases.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 151,
+        "column": 4,
+        "evidence": "- `references/citation_styles.md`: Detailed citation formatting guide (APA, Nature, Vancouver, Chicago, IEEE)",
+        "target_path": "references/citation_styles.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 152,
+        "column": 4,
+        "evidence": "- `references/database_strategies.md`: Comprehensive database search strategies",
+        "target_path": "references/database_strategies.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 155,
+        "column": 4,
+        "evidence": "- `assets/review_template.md`: Complete literature review template with all sections",
+        "target_path": "assets/review_template.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 185,
+        "column": 50,
+        "evidence": "uv run --isolated --with requests==2.34.2 python scripts/verify_citations.py review.md",
+        "target_path": "scripts/verify_citations.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 201,
+        "column": 8,
+        "evidence": "python scripts/generate_pdf.py --check-deps",
+        "target_path": "scripts/generate_pdf.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 210,
+        "column": 37,
+        "evidence": "[references/database_strategies.md](references/database_strategies.md) for exact",
+        "target_path": "references/database_strategies.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 210,
+        "column": 2,
+        "evidence": "[references/database_strategies.md](references/database_strategies.md) for exact",
+        "target_path": "references/database_strategies.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 211,
+        "column": 62,
+        "evidence": "request/response limits and [references/example_workflow.md](references/example_workflow.md)",
+        "target_path": "references/example_workflow.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 211,
+        "column": 30,
+        "evidence": "request/response limits and [references/example_workflow.md](references/example_workflow.md)",
+        "target_path": "references/example_workflow.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 30,
+    "findings_after_filtering": 30
+  },
+  "_meta": {
+    "cisco_result": "skills-literature-review-scan.json",
+    "skill_dir": "skills/K-Dense-AI-scientific-agent-skills/skills/literature-review",
+    "scanned_at": "2026-10-22T04:36:23.843498+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

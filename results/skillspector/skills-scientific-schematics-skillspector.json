@@ -1,0 +1,1586 @@
+{
+  "skill": {
+    "name": "scientific-schematics",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/K-Dense-AI-scientific-agent-skills/skills/scientific-schematics",
+    "scanned_at": "2026-10-22T04:38:39.634684+00:00"
+  },
+  "risk_assessment": {
+    "score": 100,
+    "severity": "CRITICAL",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "CRITICAL"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 393,
+      "executable": false,
+      "size_bytes": 20304,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/best_practices.md",
+      "type": "markdown",
+      "lines": 552,
+      "executable": false,
+      "size_bytes": 20486,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/iterative_refinement.md",
+      "type": "markdown",
+      "lines": 324,
+      "executable": false,
+      "size_bytes": 15304,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/example_usage.sh",
+      "type": "shell",
+      "lines": 92,
+      "executable": true,
+      "size_bytes": 3548,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/generate_schematic.py",
+      "type": "python",
+      "lines": 201,
+      "executable": true,
+      "size_bytes": 7782,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/generate_schematic_ai.py",
+      "type": "python",
+      "lines": 857,
+      "executable": true,
+      "size_bytes": 35684,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "TT3",
+      "finding_id": "finding-6b808b014f014b989778a6f74c0e853a",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'headers' from os.environ.get (line 256, credential/environment) \u2192 requests.post (network output)",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 263,
+        "end_line": 266,
+        "start_column": 23,
+        "end_column": 13
+      },
+      "finding": "requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=payload, timeout=120,\n            )",
+      "explanation": "Credentials or environment variables flow to a network sink. This is a high-confidence indicator of credential exfiltration.",
+      "remediation": "Never send credentials or environment variables over the network. Use secure credential stores and avoid transmitting secrets in request bodies or URLs.",
+      "code_snippet": "        }\n        self._log(f\"POST {endpoint} using {payload['model']}\")\n        try:\n            response = requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=payload, timeout=120,\n            )",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "b6b35424447e5e288b520d7a8fc8078b00192f53391ab3c9a00a73f88be5a6ab",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 263,
+          "end_line": 266,
+          "start_column": 23,
+          "end_column": 13
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-e9e7431bb1a14315978c77579a54a7e7",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/iterative_refinement.md",
+        "start_line": 200,
+        "end_line": null,
+        "start_column": 65
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "# Get a key at https://openrouter.ai/keys\nexport OPENROUTER_API_KEY='sk-or-v1-your_key_here'\n\n# Alternatively store OPENROUTER_API_KEY in a private, untracked .env file.\n# --api-key also exists, but command-line arguments can enter shell history.\n\n# The only Python dependency",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "references/iterative_refinement.md",
+          "start_line": 200,
+          "end_line": null,
+          "start_column": 65
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-033b20c9e4b64e7f9be0a7766ca8ed55",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 44,
+        "end_line": null,
+        "start_column": 76
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n\ndef resolve_api_key(explicit=None):\n    \"\"\"Resolve the OpenRouter key from --api-key, the environment, then any .env file.\n\n    The .env scan walks up from the working directory and finally checks the\n    script's own directory, so running from anywhere inside a project picks up",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 44,
+          "end_line": null,
+          "start_column": 76
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-fabb9802854947eba06d349be54d9f82",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 46,
+        "end_line": null,
+        "start_column": 8
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "def resolve_api_key(explicit=None):\n    \"\"\"Resolve the OpenRouter key from --api-key, the environment, then any .env file.\n\n    The .env scan walks up from the working directory and finally checks the\n    script's own directory, so running from anywhere inside a project picks up\n    the key at its root. The child process is handed the resolved value through\n    build_subprocess_env, so it never has to repeat this search.",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 46,
+          "end_line": null,
+          "start_column": 8
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-60d83c5672db4e0c87dad79b37055fb9",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 159,
+        "end_line": null,
+        "start_column": 72
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "    if Path(args.output).suffix.lower() != \".png\":\n        parser.error(\"--output must end in .png; format conversion is not supported\")\n\n    # Check for API key \u2014 resolves --api-key, the environment, then any .env file\n    api_key = resolve_api_key(args.api_key)\n    if not api_key:\n        print(\"Error: OPENROUTER_API_KEY not found\")",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 159,
+          "end_line": null,
+          "start_column": 72
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-d4446397cace4569879231fcf7859274",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 167,
+        "end_line": null,
+        "start_column": 61
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "        print(\"Get one at: https://openrouter.ai/keys\")\n        print(\"\\nSet it with:\")\n        print(\"  export OPENROUTER_API_KEY='your_api_key'\")\n        print(\"\\nOr add OPENROUTER_API_KEY=your_api_key to a .env file\")\n        print(\"Or use --api-key flag\")\n        sys.exit(1)\n    ",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 167,
+          "end_line": null,
+          "start_column": 61
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-0bf229f15ce4436ab845e39f3e2c8a8b",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 114,
+        "end_line": null,
+        "start_column": 76
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n\ndef _resolve_api_key(explicit: Optional[str] = None) -> Optional[str]:\n    \"\"\"Resolve the OpenRouter key from --api-key, the environment, then any .env file.\n\n    The .env scan walks up from the working directory and finally checks the\n    script's own directory, so running from anywhere inside a project picks up",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 114,
+          "end_line": null,
+          "start_column": 76
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-f4d3af3183494567942add8957d23a0b",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 116,
+        "end_line": null,
+        "start_column": 8
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "def _resolve_api_key(explicit: Optional[str] = None) -> Optional[str]:\n    \"\"\"Resolve the OpenRouter key from --api-key, the environment, then any .env file.\n\n    The .env scan walks up from the working directory and finally checks the\n    script's own directory, so running from anywhere inside a project picks up\n    the key at its root. Only the standard library is used: python-dotenv is a\n    common omission, and a missing optional dependency should not read as a",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 116,
+          "end_line": null,
+          "start_column": 8
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-84ac782e9a1049d29019d0925a4593ae",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 226,
+        "end_line": null,
+        "start_column": 75
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "            api_key: OpenRouter API key (or use OPENROUTER_API_KEY env var)\n            verbose: Print detailed progress information\n        \"\"\"\n        # Priority: 1) explicit api_key param, 2) environment variable, 3) .env file\n        self.api_key = _resolve_api_key(api_key)\n\n        if not self.api_key:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 226,
+          "end_line": null,
+          "start_column": 75
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-3100f1700c95408ba8f4d794a8826a91",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 233,
+        "end_line": null,
+        "start_column": 53
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "            raise ValueError(\n                \"OPENROUTER_API_KEY not found. Please either:\\n\"\n                \"  1. Set the OPENROUTER_API_KEY environment variable\\n\"\n                \"  2. Add OPENROUTER_API_KEY to your .env file\\n\"\n                \"  3. Pass api_key parameter to the constructor\\n\"\n                \"Get your API key from: https://openrouter.ai/keys\"\n            )",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 233,
+          "end_line": null,
+          "start_column": 53
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-f49d4970a326435e8d6bbea232d1fb5c",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 810,
+        "end_line": null,
+        "start_column": 72
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "    \n    args = parser.parse_args()\n    \n    # Check for API key \u2014 resolves --api-key, the environment, then any .env file\n    api_key = _resolve_api_key(args.api_key)\n    if not api_key:\n        print(\"Error: OPENROUTER_API_KEY not found\")",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 810,
+          "end_line": null,
+          "start_column": 72
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-7b8fad9470d24ba2bbb428132d64cc97",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 816,
+        "end_line": null,
+        "start_column": 61
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "        print(\"Error: OPENROUTER_API_KEY not found\")\n        print(\"\\nSet it with:\")\n        print(\"  export OPENROUTER_API_KEY='your_api_key'\")\n        print(\"\\nOr add OPENROUTER_API_KEY=your_api_key to a .env file\")\n        print(\"Or provide via --api-key flag\")\n        sys.exit(1)\n    ",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 816,
+          "end_line": null,
+          "start_column": 61
+        }
+      ]
+    },
+    {
+      "id": "LP1",
+      "finding_id": "finding-370b5aa10d144edb98fd2b8ac95cdb79",
+      "category": "MCP Least Privilege",
+      "pattern": "Code capability 'network' detected in scripts/example_usage.sh but not covered by declared permissions.",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "scripts/example_usage.sh",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Code capability 'network' detected in scripts/example_usage.sh but not covered by declared permissions.",
+      "explanation": "The skill uses 'network' capability that is not covered by the declared 'allowed-tools' preapproval. Review the host runtime's actual enforcement policy; runtime permissions are unknown unless separately verified, and this declaration alone does not establish a permission ceiling.",
+      "remediation": "Review whether the 'network' capability is required and whether the host runtime policy permits it; runtime permissions are unknown unless separately verified. Remove code that does not need the capability; do not broaden 'allowed-tools' preapproval solely to silence this finding.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "scripts/example_usage.sh",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "LP1",
+      "finding_id": "finding-dc1917de8d0a4efa824ce7f9af4c2220",
+      "category": "MCP Least Privilege",
+      "pattern": "Code capability 'env' detected in scripts/generate_schematic.py but not covered by declared permissions.",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Code capability 'env' detected in scripts/generate_schematic.py but not covered by declared permissions.",
+      "explanation": "The skill uses 'env' capability that is not covered by the declared 'allowed-tools' preapproval. Review the host runtime's actual enforcement policy; runtime permissions are unknown unless separately verified, and this declaration alone does not establish a permission ceiling.",
+      "remediation": "Review whether the 'env' capability is required and whether the host runtime policy permits it; runtime permissions are unknown unless separately verified. Remove code that does not need the capability; do not broaden 'allowed-tools' preapproval solely to silence this finding.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-851999a7df3e4138b9f28d567a8afb16",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 60,
+        "end_line": null,
+        "start_column": 32
+      },
+      "finding": ".env\"",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n    cwd = Path.cwd()\n    for directory in [cwd, *cwd.parents, Path(__file__).resolve().parent]:\n        env_file = directory / \".env\"\n        if not env_file.is_file():\n            continue\n        try:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "933e7e6dda63d615cb9ac0846682521855cd79c351e84f3fa87d934c18b752db",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 60,
+          "end_line": null,
+          "start_column": 32
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-21313244010e4b7587097ebda028831b",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 131,
+        "end_line": null,
+        "start_column": 32
+      },
+      "finding": ".env\"",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n    cwd = Path.cwd()\n    for directory in [cwd, *cwd.parents, Path(__file__).resolve().parent]:\n        env_file = directory / \".env\"\n        if not env_file.is_file():\n            continue\n        try:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "933e7e6dda63d615cb9ac0846682521855cd79c351e84f3fa87d934c18b752db",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 131,
+          "end_line": null,
+          "start_column": 32
+        }
+      ]
+    },
+    {
+      "id": "AE4",
+      "finding_id": "finding-39123825054d4b7495e7abf93eb5fcfa",
+      "category": "analysis-evasion",
+      "pattern": null,
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/best_practices.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": null,
+      "explanation": "Suspicious Unicode normalization or mixed-script content",
+      "remediation": "Review the flagged content for security risks. Ensure no credentials, secrets, or sensitive data are exposed.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "artifact-integrity"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "references/best_practices.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-aa19948dd2e34c3bb9b8ee663c9898b5",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.75,
+      "location": {
+        "file": "references/best_practices.md",
+        "start_line": 83,
+        "end_line": null,
+        "start_column": 134
+      },
+      "finding": "without checking",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "\n**Choose the venue and article type first**\n- Nature's main-figure guide lists 89 mm and 183 mm widths; Extended Data has separate rules.\n- Other publishers have different width ranges and file requirements. Do not reuse Nature dimensions for Science, Cell, PLOS, or IEEE without checking that venue's current instructions.\n- See the source links under Journal-Specific Guidelines below.\n\n**Best Practices**",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "9341b6f34d6af9081a0d6673f4217b7307d273da9f43357efd9029e15c5da76c",
+      "occurrences": [
+        {
+          "file": "references/best_practices.md",
+          "start_line": 83,
+          "end_line": null,
+          "start_column": 134
+        }
+      ]
+    },
+    {
+      "id": "AE4",
+      "finding_id": "finding-799f516bdd6b4f16adc12a4781a55562",
+      "category": "analysis-evasion",
+      "pattern": null,
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/iterative_refinement.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": null,
+      "explanation": "Suspicious Unicode normalization or mixed-script content",
+      "remediation": "Review the flagged content for security risks. Ensure no credentials, secrets, or sensitive data are exposed.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "artifact-integrity"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "references/iterative_refinement.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-d1619ba851fc4672b6c4bd2917da9a10",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 192,
+        "end_line": 192,
+        "start_column": 17,
+        "end_column": 84
+      },
+      "finding": "subprocess.run(cmd, check=False, env=build_subprocess_env(api_key))",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    \n    # Execute \u2014 pass API key via environment to avoid exposure in process listings\n    try:\n        result = subprocess.run(cmd, check=False, env=build_subprocess_env(api_key))\n        sys.exit(result.returncode)\n    except Exception as e:\n        print(f\"Error executing AI generation: {e}\")",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "963b112e3d9a0ee43971a532008da645d04cca652de68b969e1a2997ea4b3e9a",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 192,
+          "end_line": 192,
+          "start_column": 17,
+          "end_column": 84
+        }
+      ]
+    },
+    {
+      "id": "TT2",
+      "finding_id": "finding-35c57250134749e19b317843a5d53f6e",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'api_key' from os.environ.get (line 160, credential/environment) \u2192 subprocess.run (code execution)",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "scripts/generate_schematic.py",
+        "start_line": 192,
+        "end_line": 192,
+        "start_column": 17,
+        "end_column": 84
+      },
+      "finding": "subprocess.run(cmd, check=False, env=build_subprocess_env(api_key))",
+      "explanation": "Data from a source is assigned to a variable that is later passed to a sink, creating a variable-mediated taint flow.",
+      "remediation": "Validate tainted variables before passing them to sinks. Use allowlists, type checks, or sanitization functions on data from external sources.",
+      "code_snippet": "    \n    # Execute \u2014 pass API key via environment to avoid exposure in process listings\n    try:\n        result = subprocess.run(cmd, check=False, env=build_subprocess_env(api_key))\n        sys.exit(result.returncode)\n    except Exception as e:\n        print(f\"Error executing AI generation: {e}\")",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "e23ab06d6cbc89353f487b281e35a2b44407b8c826f96bcd7f436207892cdc94",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic.py",
+          "start_line": 192,
+          "end_line": 192,
+          "start_column": 17,
+          "end_column": 84
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-02bc9ba456e44808923af21cfd1cee0b",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.7999999999999999,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 263,
+        "end_line": null,
+        "start_column": 23
+      },
+      "finding": "requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "        }\n        self._log(f\"POST {endpoint} using {payload['model']}\")\n        try:\n            response = requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=payload, timeout=120,\n            )",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "5cd3b0948ba140426b4a440187ca431e193899557768a82d8f0ed4d865c4ca8a",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 263,
+          "end_line": null,
+          "start_column": 23
+        }
+      ]
+    },
+    {
+      "id": "TT2",
+      "finding_id": "finding-83a19fe31fb64bb98337d77c353e01dc",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'payload' from requests.post (line 362, network input) \u2192 requests.post (network output)",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "scripts/generate_schematic_ai.py",
+        "start_line": 263,
+        "end_line": 266,
+        "start_column": 23,
+        "end_column": 13
+      },
+      "finding": "requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=payload, timeout=120,\n            )",
+      "explanation": "Data from a source is assigned to a variable that is later passed to a sink, creating a variable-mediated taint flow.",
+      "remediation": "Validate tainted variables before passing them to sinks. Use allowlists, type checks, or sanitization functions on data from external sources.",
+      "code_snippet": "        }\n        self._log(f\"POST {endpoint} using {payload['model']}\")\n        try:\n            response = requests.post(\n                f\"{self.base_url}/{endpoint}\", headers=headers,\n                json=payload, timeout=120,\n            )",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "9a7baed83e2b37f91c0a30d0badbd2d67ffacedc01c911b8be682c9917012510",
+      "occurrences": [
+        {
+          "file": "scripts/generate_schematic_ai.py",
+          "start_line": 263,
+          "end_line": 266,
+          "start_column": 23,
+          "end_column": 13
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 6,
+    "scanned_components": 6,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 6,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 8,
+        "end_line": 8,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 46,
+        "end_line": 46,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 58,
+        "end_line": 58,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 61,
+        "end_line": 61,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 64,
+        "end_line": 64,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 67,
+        "end_line": 67,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 83,
+        "end_line": 83,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 84,
+        "end_line": 84,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 8,
+        "column": 13,
+        "evidence": "version: \"1.10\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 46,
+        "column": 42,
+        "evidence": "Save diagrams under `figures/` using `-o figures/name.png`, then inspect every label and relationship before including them in a paper or poster. The output loc",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 58,
+        "column": 8,
+        "evidence": "python scripts/generate_schematic.py \"CONSORT participant flow diagram with 500 screened, 150 excluded, 350 randomized\" -o figures/consort.png --doc-type journa",
+        "target_path": "scripts/generate_schematic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 58,
+        "column": 124,
+        "evidence": "RT participant flow diagram with 500 screened, 150 excluded, 350 randomized\" -o figures/consort.png --doc-type journal",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 61,
+        "column": 8,
+        "evidence": "python scripts/generate_schematic.py \"Transformer encoder-decoder architecture showing multi-head attention\" -o figures/transformer.png --doc-type presentation",
+        "target_path": "scripts/generate_schematic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 61,
+        "column": 113,
+        "evidence": "python scripts/generate_schematic.py \"Transformer encoder-decoder architecture showing multi-head attention\" -o figures/transformer.png --doc-type presentation",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 64,
+        "column": 8,
+        "evidence": "python scripts/generate_schematic.py \"MAPK signaling pathway from EGFR to gene transcription\" -o figures/mapk_pathway.png --doc-type poster",
+        "target_path": "scripts/generate_schematic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 64,
+        "column": 98,
+        "evidence": "python scripts/generate_schematic.py \"MAPK signaling pathway from EGFR to gene transcription\" -o figures/mapk_pathway.png --doc-type poster",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 67,
+        "column": 8,
+        "evidence": "python scripts/generate_schematic.py \"Complex circuit diagram with op-amp, resistors, and capacitors\" -o figures/circuit.png --iterations 2 --doc-type journal",
+        "target_path": "scripts/generate_schematic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 67,
+        "column": 106,
+        "evidence": "python scripts/generate_schematic.py \"Complex circuit diagram with op-amp, resistors, and capacitors\" -o figures/circuit.png --iterations 2 --doc-type journal",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 83,
+        "column": 32,
+        "evidence": "**Output**: Versioned images (`name_v1.png`, `name_v2.png`), a copy of the latest successful version at the path you",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 83,
+        "column": 47,
+        "evidence": "**Output**: Versioned images (`name_v1.png`, `name_v2.png`), a copy of the latest successful version at the path you",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 84,
+        "column": 17,
+        "evidence": "asked for, and `name_review_log.json` with the score, critique, and any early-stop reason.",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 110,
+        "column": 299,
+        "evidence": "ffline, not with a paid end-to-end run. See [the verified contract and sources](references/iterative_refinement.md#openrouter-contract-reviewed-2026-09-30) befo",
+        "target_path": "references/iterative_refinement.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 112,
+        "column": 63,
+        "evidence": "For trial flows, use the [CONSORT 2025 template and item 22a](https://www.consort-spirit.org/item-22a-randomized), reconcile enrollment/allocation/follow-up/ana",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 112,
+        "column": 276,
+        "evidence": "ied primary outcome. For reviews, choose the appropriate [PRISMA 2020 template](https://www.prisma-statement.org/prisma-2020-flow-diagram); records, reports, an",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 163,
+        "column": 8,
+        "evidence": "python scripts/generate_schematic.py \"your diagram description\" -o output.png",
+        "target_path": "scripts/generate_schematic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 193,
+        "column": 38,
+        "evidence": "[references/iterative_refinement.md](references/iterative_refinement.md).",
+        "target_path": "references/iterative_refinement.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 193,
+        "column": 2,
+        "evidence": "[references/iterative_refinement.md](references/iterative_refinement.md).",
+        "target_path": "references/iterative_refinement.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 203,
+        "column": 8,
+        "evidence": "python scripts/generate_schematic.py \"diagram description\" -o output.png",
+        "target_path": "scripts/generate_schematic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 206,
+        "column": 8,
+        "evidence": "python scripts/generate_schematic.py \"complex diagram\" -o diagram.png --iterations 2",
+        "target_path": "scripts/generate_schematic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 209,
+        "column": 8,
+        "evidence": "python scripts/generate_schematic.py \"diagram\" -o out.png -v",
+        "target_path": "scripts/generate_schematic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 234,
+        "column": 425,
+        "evidence": "and verify their scientific content. Follow the [venue's figure specifications](https://research-figure-guide.nature.com/figures/preparing-figures-our-specifica",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 294,
+        "column": 6,
+        "evidence": "- **`references/iterative_refinement.md`** - The generate-review-refine loop, the Python API, every",
+        "target_path": "references/iterative_refinement.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 296,
+        "column": 6,
+        "evidence": "- **`references/best_practices.md`** - Publication standards and accessibility guidelines to draw",
+        "target_path": "references/best_practices.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 371,
+        "column": 8,
+        "evidence": "python scripts/generate_schematic.py \"your diagram description\" -o output.png",
+        "target_path": "scripts/generate_schematic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 23,
+    "findings_after_filtering": 23
+  },
+  "_meta": {
+    "cisco_result": "skills-scientific-schematics-scan.json",
+    "skill_dir": "skills/K-Dense-AI-scientific-agent-skills/skills/scientific-schematics",
+    "scanned_at": "2026-10-22T04:38:39.911883+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

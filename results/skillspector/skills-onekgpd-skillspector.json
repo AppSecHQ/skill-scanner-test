@@ -1,0 +1,1074 @@
+{
+  "skill": {
+    "name": "onekgpd",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/K-Dense-AI-scientific-agent-skills/skills/onekgpd",
+    "scanned_at": "2026-10-22T04:37:24.525845+00:00"
+  },
+  "risk_assessment": {
+    "score": 30,
+    "severity": "MEDIUM",
+    "recommendation": "CAUTION",
+    "max_issue_severity": "HIGH"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 429,
+      "executable": false,
+      "size_bytes": 22564,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "assets/kgpe.json",
+      "type": "json",
+      "lines": 48032,
+      "executable": false,
+      "size_bytes": 1037258,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/annotation_vocabularies.md",
+      "type": "markdown",
+      "lines": 192,
+      "executable": false,
+      "size_bytes": 4777,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/onekgpd_commands.md",
+      "type": "markdown",
+      "lines": 357,
+      "executable": false,
+      "size_bytes": 18164,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/onekgpd_api.py",
+      "type": "python",
+      "lines": 844,
+      "executable": true,
+      "size_bytes": 32584,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/onekgpd_meta.py",
+      "type": "python",
+      "lines": 485,
+      "executable": true,
+      "size_bytes": 19389,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "LP1",
+      "finding_id": "finding-fa090debfa2d4858bfc4a77d703149c0",
+      "category": "MCP Least Privilege",
+      "pattern": "Code capability 'network' detected in scripts/onekgpd_api.py but not covered by declared permissions.",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "scripts/onekgpd_api.py",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Code capability 'network' detected in scripts/onekgpd_api.py but not covered by declared permissions.",
+      "explanation": "The skill uses 'network' capability that is not covered by the declared 'allowed-tools' preapproval. Review the host runtime's actual enforcement policy; runtime permissions are unknown unless separately verified, and this declaration alone does not establish a permission ceiling.",
+      "remediation": "Review whether the 'network' capability is required and whether the host runtime policy permits it; runtime permissions are unknown unless separately verified. Remove code that does not need the capability; do not broaden 'allowed-tools' preapproval solely to silence this finding.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "scripts/onekgpd_api.py",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-2262b7ebe53942bc861c518b45e68cca",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/onekgpd_api.py",
+        "start_line": 223,
+        "end_line": 223,
+        "start_column": 14,
+        "end_column": 43
+      },
+      "finding": "getattr(args, arg_name, None)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "    \"\"\"\n    kwargs: dict[str, Any] = {}\n    for arg_name, field in _CSV_FIELDS:\n        raw = getattr(args, arg_name, None)\n        if raw is not None:\n            values = _split_csv(raw)\n            if not values:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "385320823a5329ec0752ad5af0cfb31d2b48ce186059c08a8ae6889586ab51f7",
+      "occurrences": [
+        {
+          "file": "scripts/onekgpd_api.py",
+          "start_line": 223,
+          "end_line": 223,
+          "start_column": 14,
+          "end_column": 43
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-9bfbd7cd695f4905a65085baf4382852",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/onekgpd_api.py",
+        "start_line": 230,
+        "end_line": 230,
+        "start_column": 14,
+        "end_column": 43
+      },
+      "finding": "getattr(args, arg_name, None)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "                raise ValueError(f\"--{arg_name.replace('_', '-')} must contain at least one term\")\n            kwargs[field] = values\n    for arg_name, field in _FLOAT_FIELDS:\n        val = getattr(args, arg_name, None)\n        if val is not None:\n            if not math.isfinite(val) or not 0 < val <= 1:\n                raise ValueError(",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "385320823a5329ec0752ad5af0cfb31d2b48ce186059c08a8ae6889586ab51f7",
+      "occurrences": [
+        {
+          "file": "scripts/onekgpd_api.py",
+          "start_line": 230,
+          "end_line": 230,
+          "start_column": 14,
+          "end_column": 43
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-e4ca514879c64d0ba6e3d7d026da78a9",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/onekgpd_api.py",
+        "start_line": 317,
+        "end_line": 317,
+        "start_column": 14,
+        "end_column": 43
+      },
+      "finding": "getattr(args, arg_name, None)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "    \"\"\"Echo the annotation/length flags that were actually set (for provenance).\"\"\"\n    out: dict[str, Any] = {}\n    for arg_name, _ in _FLOAT_FIELDS:\n        val = getattr(args, arg_name, None)\n        if val is not None:\n            out[arg_name] = val\n    for arg_name, _ in _CSV_FIELDS:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "385320823a5329ec0752ad5af0cfb31d2b48ce186059c08a8ae6889586ab51f7",
+      "occurrences": [
+        {
+          "file": "scripts/onekgpd_api.py",
+          "start_line": 317,
+          "end_line": 317,
+          "start_column": 14,
+          "end_column": 43
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-4b266a0c049d425b95c5378a84298572",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/onekgpd_api.py",
+        "start_line": 321,
+        "end_line": 321,
+        "start_column": 14,
+        "end_column": 43
+      },
+      "finding": "getattr(args, arg_name, None)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "        if val is not None:\n            out[arg_name] = val\n    for arg_name, _ in _CSV_FIELDS:\n        raw = getattr(args, arg_name, None)\n        if raw:\n            out[arg_name] = _split_csv(raw)\n    for arg_name, _ in _BOOL_FIELDS:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "385320823a5329ec0752ad5af0cfb31d2b48ce186059c08a8ae6889586ab51f7",
+      "occurrences": [
+        {
+          "file": "scripts/onekgpd_api.py",
+          "start_line": 321,
+          "end_line": 321,
+          "start_column": 14,
+          "end_column": 43
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-86af14c209524337bd5d4062e795b2a0",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/onekgpd_api.py",
+        "start_line": 242,
+        "end_line": 242,
+        "start_column": 11,
+        "end_column": 41
+      },
+      "finding": "getattr(args, arg_name, False)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "                raise ValueError(f\"--{arg_name.replace('_', '-')} underflows the API float32 bound to zero\")\n            kwargs[field] = val\n    for arg_name, field in _BOOL_FIELDS:\n        if getattr(args, arg_name, False):\n            kwargs[field] = True\n\n    # am-class vs am-score cannot be one argparse group (am-score is a range pair).",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d696490d800e06daea5d03fec2367ddbc7b2a9c1e7b7419d6b1b60dd0696e87f",
+      "occurrences": [
+        {
+          "file": "scripts/onekgpd_api.py",
+          "start_line": 242,
+          "end_line": 242,
+          "start_column": 11,
+          "end_column": 41
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-e7438f90a8354ce8b3a5a3c212f41e54",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/onekgpd_api.py",
+        "start_line": 325,
+        "end_line": 325,
+        "start_column": 11,
+        "end_column": 41
+      },
+      "finding": "getattr(args, arg_name, False)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "        if raw:\n            out[arg_name] = _split_csv(raw)\n    for arg_name, _ in _BOOL_FIELDS:\n        if getattr(args, arg_name, False):\n            out[arg_name] = True\n    if getattr(args, \"min_len_bp\", None) is not None:\n        out[\"variant_min_length\"] = args.min_len_bp",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d696490d800e06daea5d03fec2367ddbc7b2a9c1e7b7419d6b1b60dd0696e87f",
+      "occurrences": [
+        {
+          "file": "scripts/onekgpd_api.py",
+          "start_line": 325,
+          "end_line": 325,
+          "start_column": 11,
+          "end_column": 41
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 6,
+    "scanned_components": 6,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 6,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 17,
+        "end_line": 17,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 213,
+        "end_line": 213,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 6,
+        "completed": 6,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 17,
+        "column": 13,
+        "evidence": "version: \"1.4\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 102,
+        "column": 6,
+        "evidence": "`scripts/onekgpd_api.py` for variant/sample/kinship queries (it handles the",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 104,
+        "column": 6,
+        "evidence": "`scripts/onekgpd_meta.py` for sample/population metadata (offline, see",
+        "target_path": "scripts/onekgpd_meta.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 105,
+        "column": 36,
+        "evidence": "[Sample & population metadata](#sample--population-metadata-offline)).",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 107,
+        "column": 29,
+        "evidence": "[Coordinate Provenance](#coordinate-provenance-mandatory-first-step). This",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 176,
+        "column": 28,
+        "evidence": "[IGSR cohort announcement](https://www.internationalgenome.org/announcements/3202-samples-at-high-coverage-from-NYGC/).",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 188,
+        "column": 30,
+        "evidence": "[Variant-returning commands](#variant-returning-commands); a criterion used for",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 213,
+        "column": 64,
+        "evidence": "> `gnomad_exomes_af`, `gnomad_genomes_af`, and `am_score` use `0.0` for",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 242,
+        "column": 8,
+        "evidence": "uv run scripts/onekgpd_api.py count-samples \\",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 248,
+        "column": 8,
+        "evidence": "uv run scripts/onekgpd_api.py select-samples \\",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 255,
+        "column": 8,
+        "evidence": "uv run scripts/onekgpd_api.py count-variants-in-samples \\",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 260,
+        "column": 8,
+        "evidence": "uv run scripts/onekgpd_api.py select-variants-in-samples \\",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 275,
+        "column": 34,
+        "evidence": "[references/onekgpd_commands.md](references/onekgpd_commands.md).",
+        "target_path": "references/onekgpd_commands.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 275,
+        "column": 2,
+        "evidence": "[references/onekgpd_commands.md](references/onekgpd_commands.md).",
+        "target_path": "references/onekgpd_commands.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 298,
+        "column": 34,
+        "evidence": "[references/onekgpd_commands.md](references/onekgpd_commands.md).",
+        "target_path": "references/onekgpd_commands.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 298,
+        "column": 2,
+        "evidence": "[references/onekgpd_commands.md](references/onekgpd_commands.md).",
+        "target_path": "references/onekgpd_commands.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 336,
+        "column": 10,
+        "evidence": "script, `scripts/onekgpd_meta.py`, from a data file bundled in the skill \u2014 **no",
+        "target_path": "scripts/onekgpd_meta.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 339,
+        "column": 39,
+        "evidence": "then query its variants). Run `uv run scripts/onekgpd_meta.py <command>`.",
+        "target_path": "scripts/onekgpd_meta.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 361,
+        "column": 38,
+        "evidence": "See [references/onekgpd_commands.md](references/onekgpd_commands.md) for full",
+        "target_path": "references/onekgpd_commands.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 361,
+        "column": 6,
+        "evidence": "See [references/onekgpd_commands.md](references/onekgpd_commands.md) for full",
+        "target_path": "references/onekgpd_commands.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 373,
+        "column": 8,
+        "evidence": "uv run scripts/onekgpd_api.py count-samples \\",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 378,
+        "column": 8,
+        "evidence": "uv run scripts/onekgpd_api.py select-samples \\",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 383,
+        "column": 8,
+        "evidence": "uv run scripts/onekgpd_api.py count-variants-in-samples \\",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 388,
+        "column": 8,
+        "evidence": "uv run scripts/onekgpd_api.py select-variants-in-samples \\",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 401,
+        "column": 8,
+        "evidence": "uv run scripts/onekgpd_api.py count-samples-hom-ref \\",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 403,
+        "column": 8,
+        "evidence": "uv run scripts/onekgpd_api.py select-samples-hom-ref \\",
+        "target_path": "scripts/onekgpd_api.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 420,
+        "column": 38,
+        "evidence": "- [references/onekgpd_commands.md](references/onekgpd_commands.md) \u2014 full",
+        "target_path": "references/onekgpd_commands.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 420,
+        "column": 6,
+        "evidence": "- [references/onekgpd_commands.md](references/onekgpd_commands.md) \u2014 full",
+        "target_path": "references/onekgpd_commands.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 422,
+        "column": 45,
+        "evidence": "- [references/annotation_vocabularies.md](references/annotation_vocabularies.md)",
+        "target_path": "references/annotation_vocabularies.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 422,
+        "column": 6,
+        "evidence": "- [references/annotation_vocabularies.md](references/annotation_vocabularies.md)",
+        "target_path": "references/annotation_vocabularies.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 427,
+        "column": 25,
+        "evidence": "[command reference](references/onekgpd_commands.md#verified-api-contract).",
+        "target_path": "references/onekgpd_commands.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 7,
+    "findings_after_filtering": 7
+  },
+  "_meta": {
+    "cisco_result": "skills-onekgpd-scan.json",
+    "skill_dir": "skills/K-Dense-AI-scientific-agent-skills/skills/onekgpd",
+    "scanned_at": "2026-10-22T04:37:24.879620+00:00",
+    "mode": "static",
+    "exit_code": 0
+  }
+}

@@ -1,0 +1,2205 @@
+{
+  "skill": {
+    "name": "hugging-face-jobs",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/huggingface-skills/skills/hugging-face-jobs",
+    "scanned_at": "2026-10-22T04:35:53.358556+00:00"
+  },
+  "risk_assessment": {
+    "score": 67,
+    "severity": "HIGH",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "MEDIUM"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 1036,
+      "executable": false,
+      "size_bytes": 30812,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "index.html",
+      "type": "other",
+      "lines": 216,
+      "executable": false,
+      "size_bytes": 7682,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/hardware_guide.md",
+      "type": "markdown",
+      "lines": 336,
+      "executable": false,
+      "size_bytes": 8279,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/hub_saving.md",
+      "type": "markdown",
+      "lines": 352,
+      "executable": false,
+      "size_bytes": 7644,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/token_usage.md",
+      "type": "markdown",
+      "lines": 546,
+      "executable": false,
+      "size_bytes": 12424,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/troubleshooting.md",
+      "type": "markdown",
+      "lines": 475,
+      "executable": false,
+      "size_bytes": 9878,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/cot-self-instruct.py",
+      "type": "python",
+      "lines": 718,
+      "executable": true,
+      "size_bytes": 24883,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/finepdfs-stats.py",
+      "type": "python",
+      "lines": 546,
+      "executable": true,
+      "size_bytes": 17115,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/generate-responses.py",
+      "type": "python",
+      "lines": 587,
+      "executable": true,
+      "size_bytes": 20534,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "LP3",
+      "finding_id": "finding-b3408f38247e4f10b13afe4d5225c850",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-bebb3542880a4e37ae43264b96cdec7b",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 31,
+        "end_line": null,
+        "start_column": 2
+      },
+      "finding": "Schedule recurring task",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "- Execute jobs without local GPU/TPU setup\n- Process data at scale\n- Run batch inference or experiments\n- Schedule recurring tasks\n- Use GPUs/TPUs for any workload\n- Persist results to the Hugging Face Hub\n",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "083975996c52b64909e19c72b1a325baf48338e3b49cde45cab4306c9496b6ad",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 31,
+          "end_line": null,
+          "start_column": 2
+        }
+      ]
+    },
+    {
+      "id": "EA1",
+      "finding_id": "finding-016845bccd884feaa577435fa415acca",
+      "category": "Excessive Agency",
+      "pattern": "Unrestricted Tool Access",
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 423,
+        "end_line": null,
+        "start_column": 57
+      },
+      "finding": "run any command",
+      "explanation": "Skill grants unrestricted tool access without appropriate constraints. An agent with unfettered tool access can perform arbitrary actions including file modification, network requests, and code execution.",
+      "remediation": "Restrict tool access to only the tools required for the skill's stated purpose. Use an explicit allowlist rather than granting blanket access.",
+      "code_snippet": "run_job(image=\"python:3.12\", command=[\"python\", \"-c\", \"print('Hello!')\"], flavor=\"cpu-basic\")\n```\n\n**Benefits:** Full Docker control, use pre-built images, run any command\n**When to use:** Need specific Docker images, non-Python workloads, complex environments\n\n**Example with GPU:**",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "63b13bc7352fa9c6bdedae226041a9fdcd41290beb3a002160a4a7650e380f78",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 423,
+          "end_line": null,
+          "start_column": 57
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-dc11eb7fc10b46b7b62db1c7f7665e22",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 511,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "dataset.push_to_hub(\"username/dataset-name\", token=os.environ[\"HF_TOKEN\"])\n\n# Push artifacts\napi.upload_file(\n    path_or_fileobj=\"results.json\",\n    path_in_repo=\"results.json\",\n    repo_id=\"username/results\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 511,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-1fa1662be6c24e51974b37a42a6925bd",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 525,
+        "end_line": null,
+        "start_column": 2
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "# Upload to S3, GCS, etc.\nimport boto3\ns3 = boto3.client('s3')\ns3.upload_file('results.json', 'my-bucket', 'results.json')\n```\n\n**3. Send Results via API**",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 525,
+          "end_line": null,
+          "start_column": 2
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-d84a92d5f3744be19de9f736737a6851",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 554,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "api = HfApi(token=os.environ.get(\"HF_TOKEN\"))\n\n# Push your results\napi.upload_file(...)\n```\n\n### Verification Checklist",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 554,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-4f714033b1c9469e99378e31311ce73a",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "references/hub_saving.md",
+        "start_line": 35,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "```python\nfrom huggingface_hub import HfApi\napi = HfApi(token=os.environ.get(\"HF_TOKEN\"))\napi.upload_file(\n    path_or_fileobj=\"results.json\",\n    path_in_repo=\"results.json\",\n    repo_id=\"username/results\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "references/hub_saving.md",
+          "start_line": 35,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-b942e3cd29354b4cb49f392aca8b7f43",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "references/hub_saving.md",
+        "start_line": 49,
+        "end_line": null,
+        "start_column": 2
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "```python\nimport boto3\ns3 = boto3.client('s3')\ns3.upload_file('results.json', 'my-bucket', 'results.json')\n```\n\n**Google Cloud Storage:**",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "references/hub_saving.md",
+          "start_line": 49,
+          "end_line": null,
+          "start_column": 2
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-685680ff47aa4a22a39e579dcd741609",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "references/hub_saving.md",
+        "start_line": 190,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "\n# Push to Hub\napi = HfApi()\napi.upload_file(\"results.json\", \"results.json\", \"username/results\", repo_type=\"dataset\")\napi.upload_file(\"results.csv\", \"results.csv\", \"username/results\", repo_type=\"dataset\")\nprint(\"\u2705 Results pushed!\")\n\"\"\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "references/hub_saving.md",
+          "start_line": 190,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-8906336cfdc247c9b839ecc1866d6036",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "references/hub_saving.md",
+        "start_line": 191,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "# Push to Hub\napi = HfApi()\napi.upload_file(\"results.json\", \"results.json\", \"username/results\", repo_type=\"dataset\")\napi.upload_file(\"results.csv\", \"results.csv\", \"username/results\", repo_type=\"dataset\")\nprint(\"\u2705 Results pushed!\")\n\"\"\",\n    \"flavor\": \"cpu-basic\",",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "references/hub_saving.md",
+          "start_line": 191,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-ce6377b36817435cb1c92ef6e001691a",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "references/token_usage.md",
+        "start_line": 122,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "from huggingface_hub import HfApi\n\napi = HfApi(token=os.environ.get(\"HF_TOKEN\"))\napi.upload_file(...)\n```\n\n**Option 2: Auto-detection (Recommended)**",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "references/token_usage.md",
+          "start_line": 122,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-77b7dd2522a24a909c243060bb627747",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "references/token_usage.md",
+        "start_line": 131,
+        "end_line": null,
+        "start_column": 3
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "\n# Automatically uses HF_TOKEN env var\napi = HfApi()  # \u2705 Simpler, uses token from environment\napi.upload_file(...)\n```\n\n**Option 3: With transformers/datasets**",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "references/token_usage.md",
+          "start_line": 131,
+          "end_line": null,
+          "start_column": 3
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-94a64b6a60e74621a35d87f20fe0a5a9",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "scripts/finepdfs-stats.py",
+        "start_line": 506,
+        "end_line": null,
+        "start_column": 11
+      },
+      "finding": ".upload_file(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "        readme_content = create_readme(\n            args, global_stats, temporal_stats, scan_time, ascii_charts\n        )\n        api.upload_file(\n            path_or_fileobj=readme_content.encode(),\n            path_in_repo=\"README.md\",\n            repo_id=args.output_repo,",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d99ae5d75796a7b8c44be878fb522e35269f18fe9679b3bc03d216a62ec23dc",
+      "occurrences": [
+        {
+          "file": "scripts/finepdfs-stats.py",
+          "start_line": 506,
+          "end_line": null,
+          "start_column": 11
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-9af30f50b95f4e55a57891b957129413",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 533,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "requests.post(\"https://your-api.com/results\", json=",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "```python\n# POST results to your API\nimport requests\nrequests.post(\"https://your-api.com/results\", json=results)\n```\n\n### Required Configuration for Hub Push",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "0d52cf14492713f6fbd4eb0f9ee038f29f6ad6c2600a5d06ad82e87642641a68",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 533,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-5636c597ab70424a870388368706dadc",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "references/hub_saving.md",
+        "start_line": 65,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "requests.post(\"https://your-api.com/results\", json=",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n```python\nimport requests\nrequests.post(\"https://your-api.com/results\", json=results)\n```\n\n## Required Configuration for Hub Push",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "0d52cf14492713f6fbd4eb0f9ee038f29f6ad6c2600a5d06ad82e87642641a68",
+      "occurrences": [
+        {
+          "file": "references/hub_saving.md",
+          "start_line": 65,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-562c804eaa0b4c31afe11ae189e533a2",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 533,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "requests.post(\"https://",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "```python\n# POST results to your API\nimport requests\nrequests.post(\"https://your-api.com/results\", json=results)\n```\n\n### Required Configuration for Hub Push",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "af47f5cf03cc3edd6c4d3ba60347ace2d6a3eff63878fe84c8ff0701aaba25e1",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 533,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-adacc7dc0302441c84877330568403d7",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/hub_saving.md",
+        "start_line": 65,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "requests.post(\"https://",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n```python\nimport requests\nrequests.post(\"https://your-api.com/results\", json=results)\n```\n\n## Required Configuration for Hub Push",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "af47f5cf03cc3edd6c4d3ba60347ace2d6a3eff63878fe84c8ff0701aaba25e1",
+      "occurrences": [
+        {
+          "file": "references/hub_saving.md",
+          "start_line": 65,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E5",
+      "finding_id": "finding-6f176d16c7e145089619ff3046f3de84",
+      "category": "Data Exfiltration",
+      "pattern": "Cloud Storage Exfiltration",
+      "severity": "MEDIUM",
+      "confidence": 0.55,
+      "location": {
+        "file": "references/hub_saving.md",
+        "start_line": 58,
+        "end_line": null,
+        "start_column": 4
+      },
+      "finding": ".upload_from_filename(",
+      "explanation": "Data is uploaded to cloud storage (S3 / GCS / Azure Blob). This may be a legitimate backup or exfiltration to an external bucket. Manual review is recommended.",
+      "remediation": "Verify the destination bucket is trusted and owned by you. Never upload credentials, secrets, or workspace contents to external or unverified cloud storage.",
+      "code_snippet": "client = storage.Client()\nbucket = client.bucket('my-bucket')\nblob = bucket.blob('results.json')\nblob.upload_from_filename('results.json')\n```\n\n### Option 3: API Endpoint",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8143f8281bc6f0f3d13c132c153e4cb6cf47a586982a280c2cd0e360b4dddd2b",
+      "occurrences": [
+        {
+          "file": "references/hub_saving.md",
+          "start_line": 58,
+          "end_line": null,
+          "start_column": 4
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-16f892fb41ad4a389a8f4bb64d7d81e0",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "scripts/generate-responses.py",
+        "start_line": 207,
+        "end_line": null,
+        "start_column": 27
+      },
+      "finding": "Skip prompt",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "        gpu_memory_utilization: GPU memory utilization factor\n        max_model_len: Maximum model context length (None uses model default)\n        tensor_parallel_size: Number of GPUs to use (auto-detect if None)\n        skip_long_prompts: Skip prompts exceeding max_model_len instead of failing\n        max_samples: Maximum number of samples to process (None for all)\n        hf_token: Hugging Face authentication token\n    \"\"\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "4abbf29141c04c1a42f74cdce0013e9f9d13d25fe6fca8337d8190085db2610d",
+      "occurrences": [
+        {
+          "file": "scripts/generate-responses.py",
+          "start_line": 207,
+          "end_line": null,
+          "start_column": 27
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-d29e16a73fa447428b1ee4f1319001d1",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "scripts/generate-responses.py",
+        "start_line": 536,
+        "end_line": null,
+        "start_column": 18
+      },
+      "finding": "Skip prompt",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "            \"--skip-long-prompts\",\n            action=\"store_true\",\n            default=True,\n            help=\"Skip prompts that exceed max_model_len instead of failing (default: True)\",\n        )\n        parser.add_argument(\n            \"--no-skip-long-prompts\",",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "4abbf29141c04c1a42f74cdce0013e9f9d13d25fe6fca8337d8190085db2610d",
+      "occurrences": [
+        {
+          "file": "scripts/generate-responses.py",
+          "start_line": 536,
+          "end_line": null,
+          "start_column": 18
+        }
+      ]
+    },
+    {
+      "id": "PE1",
+      "finding_id": "finding-0ac070fe7d0c4d4b8dd1e6be4be67fd5",
+      "category": "Privilege Escalation",
+      "pattern": "Excessive Permissions",
+      "severity": "LOW",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/token_usage.md",
+        "start_line": 17,
+        "end_line": null,
+        "start_column": 4
+      },
+      "finding": "Permissions:*",
+      "explanation": "Skill requests more permissions than appear necessary for its stated functionality. Review if elevated access is justified.",
+      "remediation": "Request only the minimum permissions required. Document why each permission is needed. Remove broad permissions like '*' or 'all'.",
+      "code_snippet": "## Token Types\n\n### Read Token\n- **Permissions:** Download models/datasets, read private repos\n- **Use case:** Jobs that only need to download/read content\n- **Creation:** https://huggingface.co/settings/tokens\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d6a9be7bbca78c3e1ccd4d30a6dc74ee6157021a749be2f4f644556d6bd0fac7",
+      "occurrences": [
+        {
+          "file": "references/token_usage.md",
+          "start_line": 17,
+          "end_line": null,
+          "start_column": 4
+        }
+      ]
+    },
+    {
+      "id": "PE1",
+      "finding_id": "finding-af5257abedec4885aa0213d9b1e68a46",
+      "category": "Privilege Escalation",
+      "pattern": "Excessive Permissions",
+      "severity": "LOW",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/token_usage.md",
+        "start_line": 22,
+        "end_line": null,
+        "start_column": 4
+      },
+      "finding": "Permissions:*",
+      "explanation": "Skill requests more permissions than appear necessary for its stated functionality. Review if elevated access is justified.",
+      "remediation": "Request only the minimum permissions required. Document why each permission is needed. Remove broad permissions like '*' or 'all'.",
+      "code_snippet": "- **Creation:** https://huggingface.co/settings/tokens\n\n### Write Token\n- **Permissions:** Push models/datasets, create repos, modify content\n- **Use case:** Jobs that need to upload results (most common)\n- **Creation:** https://huggingface.co/settings/tokens\n- **\u26a0\ufe0f Required for:** Pushing models, datasets, or any uploads",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d6a9be7bbca78c3e1ccd4d30a6dc74ee6157021a749be2f4f644556d6bd0fac7",
+      "occurrences": [
+        {
+          "file": "references/token_usage.md",
+          "start_line": 22,
+          "end_line": null,
+          "start_column": 4
+        }
+      ]
+    },
+    {
+      "id": "PE1",
+      "finding_id": "finding-69d77b873c1046269f74c632003818cb",
+      "category": "Privilege Escalation",
+      "pattern": "Excessive Permissions",
+      "severity": "LOW",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/token_usage.md",
+        "start_line": 28,
+        "end_line": null,
+        "start_column": 4
+      },
+      "finding": "Permissions:*",
+      "explanation": "Skill requests more permissions than appear necessary for its stated functionality. Review if elevated access is justified.",
+      "remediation": "Request only the minimum permissions required. Document why each permission is needed. Remove broad permissions like '*' or 'all'.",
+      "code_snippet": "- **\u26a0\ufe0f Required for:** Pushing models, datasets, or any uploads\n\n### Organization Token\n- **Permissions:** Act on behalf of an organization\n- **Use case:** Jobs running under organization namespace\n- **Creation:** Organization settings \u2192 Tokens\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d6a9be7bbca78c3e1ccd4d30a6dc74ee6157021a749be2f4f644556d6bd0fac7",
+      "occurrences": [
+        {
+          "file": "references/token_usage.md",
+          "start_line": 28,
+          "end_line": null,
+          "start_column": 4
+        }
+      ]
+    },
+    {
+      "id": "PE1",
+      "finding_id": "finding-fbcc4caa0e22439887be313ea834b277",
+      "category": "Privilege Escalation",
+      "pattern": "Excessive Permissions",
+      "severity": "LOW",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/token_usage.md",
+        "start_line": 258,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": "permissions:*",
+      "explanation": "Skill requests more permissions than appear necessary for its stated functionality. Review if elevated access is justified.",
+      "remediation": "Request only the minimum permissions required. Document why each permission is needed. Remove broad permissions like '*' or 'all'.",
+      "code_snippet": "3. Verify access to target repository\n4. Use organization token if needed\n\n**Check token permissions:**\n```python\nfrom huggingface_hub import whoami\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "7e06ebda296bbeedb4b6c38cfbaea0ac27f9fa01ddf0a23a30d90d135d9575ca",
+      "occurrences": [
+        {
+          "file": "references/token_usage.md",
+          "start_line": 258,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 9,
+    "scanned_components": 8,
+    "coverage_percent": 88.9,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 8,
+    "partially_inspected_files": 1,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "static",
+        "reason_code": "obfuscated_instruction_text",
+        "message": "Obfuscated instruction text could not be fully evaluated by the deterministic layer.",
+        "path": "SKILL.md",
+        "start_line": null,
+        "end_line": null,
+        "fatal": false,
+        "analyzers": [
+          "static_patterns_agent_snooping",
+          "static_patterns_anti_refusal",
+          "static_patterns_deserialization",
+          "static_patterns_excessive_agency",
+          "static_patterns_harmful_content",
+          "static_patterns_memory_poisoning",
+          "static_patterns_privilege_escalation",
+          "static_patterns_prompt_injection",
+          "static_patterns_rogue_agent",
+          "static_patterns_ssrf",
+          "static_patterns_supply_chain",
+          "static_patterns_system_prompt_leakage",
+          "static_patterns_tool_misuse"
+        ]
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 108,
+        "end_line": 108,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 129,
+        "end_line": 129,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 148,
+        "end_line": 148,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 301,
+        "end_line": 301,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 314,
+        "end_line": 314,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 333,
+        "end_line": 333,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 334,
+        "end_line": 334,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 342,
+        "end_line": 342,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 349,
+        "end_line": 349,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 356,
+        "end_line": 356,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 364,
+        "end_line": 364,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 377,
+        "end_line": 377,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 386,
+        "end_line": 386,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 395,
+        "end_line": 395,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 512,
+        "end_line": 512,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 513,
+        "end_line": 513,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 525,
+        "end_line": 525,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 585,
+        "end_line": 585,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 592,
+        "end_line": 592,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 722,
+        "end_line": 722,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 729,
+        "end_line": 729,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 755,
+        "end_line": 755,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 759,
+        "end_line": 759,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 864,
+        "end_line": 864,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 872,
+        "end_line": 872,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 873,
+        "end_line": 873,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 891,
+        "end_line": 891,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 916,
+        "end_line": 916,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 1029,
+        "end_line": 1029,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "degraded",
+        "planned_work": 9,
+        "completed": 8,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 9,
+        "completed": 9,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 52,
+        "column": 35,
+        "evidence": "- Hugging Face Account with [Pro](https://hf.co/pro), [Team](https://hf.co/enterprise), or [Enterprise](https://hf.co/enterprise) plan (Jobs require paid plan)",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 52,
+        "column": 62,
+        "evidence": "- Hugging Face Account with [Pro](https://hf.co/pro), [Team](https://hf.co/enterprise), or [Enterprise](https://hf.co/enterprise) plan (Jobs require paid plan)",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 52,
+        "column": 105,
+        "evidence": "- Hugging Face Account with [Pro](https://hf.co/pro), [Team](https://hf.co/enterprise), or [Enterprise](https://hf.co/enterprise) plan (Jobs require paid plan)",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 108,
+        "column": 16,
+        "evidence": "\"script\": \"your_script.py\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 129,
+        "column": 16,
+        "evidence": "\"script\": \"your_script.py\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 148,
+        "column": 16,
+        "evidence": "\"script\": \"your_script.py\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 301,
+        "column": 13,
+        "evidence": "run_uv_job(\"my_script.py\", flavor=\"cpu-basic\", timeout=\"30m\")",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 314,
+        "column": 16,
+        "evidence": "\"script\": \"inference.py\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 333,
+        "column": 16,
+        "evidence": "\"script\": \"my_script.py\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 334,
+        "column": 16,
+        "evidence": "\"python\": \"3.11\", # Use Python 3.11",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 342,
+        "column": 13,
+        "evidence": "run_uv_job(\"my_script.py\", python=\"3.11\")",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 342,
+        "column": 36,
+        "evidence": "run_uv_job(\"my_script.py\", python=\"3.11\")",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 349,
+        "column": 166,
+        "evidence": "ust be **inline code** (a string) or a **URL**. A local filesystem path (like `\"./scripts/foo.py\"`) won't exist inside the remote container.",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 356,
+        "column": 27,
+        "evidence": "hf_jobs(\"uv\", {\"script\": \"./scripts/foo.py\"})",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 364,
+        "column": 16,
+        "evidence": "script = Path(\"hf-jobs/scripts/foo.py\").read_text()",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 377,
+        "column": 16,
+        "evidence": "hf jobs uv run ./scripts/foo.py -- --your --args",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 386,
+        "column": 16,
+        "evidence": "\"script\": \"inference.py\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 395,
+        "column": 13,
+        "evidence": "run_uv_job(\"inference.py\", dependencies=[\"transformers\", \"torch>=2.0\"])",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 468,
+        "column": 42,
+        "evidence": "> **Reference:** [HF Jobs Hardware Docs](https://huggingface.co/docs/hub/en/spaces-config-reference) (updated 07/2025)",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 491,
+        "column": 8,
+        "evidence": "- See `references/hardware_guide.md` for detailed specifications",
+        "target_path": "references/hardware_guide.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 512,
+        "column": 22,
+        "evidence": "path_or_fileobj=\"results.json\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 513,
+        "column": 19,
+        "evidence": "path_in_repo=\"results.json\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 525,
+        "column": 17,
+        "evidence": "s3.upload_file('results.json', 'my-bucket', 'results.json')",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 525,
+        "column": 46,
+        "evidence": "s3.upload_file('results.json', 'my-bucket', 'results.json')",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 565,
+        "column": 11,
+        "evidence": "**See:** `references/hub_saving.md` for detailed Hub persistence guide",
+        "target_path": "references/hub_saving.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 585,
+        "column": 32,
+        "evidence": "- Examples: `\"90m\"`, `\"2h\"`, `\"1.5h\"`, `300`, `\"1d\"`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 592,
+        "column": 13,
+        "evidence": "run_uv_job(\"script.py\", timeout=7200) # 2 hours in seconds",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 722,
+        "column": 16,
+        "evidence": "\"script\": \"your_script.py\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 729,
+        "column": 16,
+        "evidence": "\"script\": \"your_script.py\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 755,
+        "column": 26,
+        "evidence": "create_scheduled_uv_job(\"my_script.py\", schedule=\"@daily\", flavor=\"cpu-basic\")",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 759,
+        "column": 6,
+        "evidence": "\"ml_inference.py\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 849,
+        "column": 30,
+        "evidence": "See [Webhooks Documentation](https://huggingface.co/docs/huggingface_hub/guides/webhooks) for more details.",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 855,
+        "column": 52,
+        "evidence": "### Pattern 1: Dataset \u2192 Model Responses (vLLM) \u2014 `scripts/generate-responses.py`",
+        "target_path": "scripts/generate-responses.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 864,
+        "column": 16,
+        "evidence": "script = Path(\"hf-jobs/scripts/generate-responses.py\").read_text()",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 872,
+        "column": 27,
+        "evidence": "\"--temperature\", \"0.7\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 873,
+        "column": 21,
+        "evidence": "\"--top-p\", \"0.8\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 882,
+        "column": 52,
+        "evidence": "### Pattern 2: CoT Self-Instruct Synthetic Data \u2014 `scripts/cot-self-instruct.py`",
+        "target_path": "scripts/cot-self-instruct.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 891,
+        "column": 16,
+        "evidence": "script = Path(\"hf-jobs/scripts/cot-self-instruct.py\").read_text()",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 907,
+        "column": 61,
+        "evidence": "### Pattern 3: Streaming Dataset Stats (Polars + HF Hub) \u2014 `scripts/finepdfs-stats.py`",
+        "target_path": "scripts/finepdfs-stats.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 916,
+        "column": 16,
+        "evidence": "script = Path(\"hf-jobs/scripts/finepdfs-stats.py\").read_text()",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 983,
+        "column": 11,
+        "evidence": "**See:** `references/troubleshooting.md` for complete troubleshooting guide",
+        "target_path": "references/troubleshooting.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 988,
+        "column": 4,
+        "evidence": "- `references/token_usage.md` - Complete token usage guide",
+        "target_path": "references/token_usage.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 989,
+        "column": 4,
+        "evidence": "- `references/hardware_guide.md` - Hardware specs and selection",
+        "target_path": "references/hardware_guide.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 990,
+        "column": 4,
+        "evidence": "- `references/hub_saving.md` - Hub persistence guide",
+        "target_path": "references/hub_saving.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 991,
+        "column": 4,
+        "evidence": "- `references/troubleshooting.md` - Common issues and solutions",
+        "target_path": "references/troubleshooting.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 994,
+        "column": 4,
+        "evidence": "- `scripts/generate-responses.py` - vLLM batch generation: dataset \u2192 responses \u2192 push to Hub",
+        "target_path": "scripts/generate-responses.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 995,
+        "column": 4,
+        "evidence": "- `scripts/cot-self-instruct.py` - CoT Self-Instruct synthetic data generation + filtering \u2192 push to Hub",
+        "target_path": "scripts/cot-self-instruct.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 996,
+        "column": 4,
+        "evidence": "- `scripts/finepdfs-stats.py` - Polars streaming stats over `finepdfs-edu` parquet on Hub (optional push)",
+        "target_path": "scripts/finepdfs-stats.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 1001,
+        "column": 19,
+        "evidence": "- [HF Jobs Guide](https://huggingface.co/docs/huggingface_hub/guides/jobs) - Main documentation",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 1002,
+        "column": 27,
+        "evidence": "- [HF Jobs CLI Reference](https://huggingface.co/docs/huggingface_hub/guides/cli#hf-jobs) - Command line interface",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 1003,
+        "column": 27,
+        "evidence": "- [HF Jobs API Reference](https://huggingface.co/docs/huggingface_hub/package_reference/hf_api) - Python API details",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 1004,
+        "column": 32,
+        "evidence": "- [Hardware Flavors Reference](https://huggingface.co/docs/hub/en/spaces-config-reference) - Available hardware",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 1007,
+        "column": 22,
+        "evidence": "- [UV Scripts Guide](https://docs.astral.sh/uv/guides/scripts/) - PEP 723 inline dependencies",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 1008,
+        "column": 29,
+        "evidence": "- [UV Scripts Organization](https://huggingface.co/uv-scripts) - Community UV script collection",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 1009,
+        "column": 27,
+        "evidence": "- [HF Hub Authentication](https://huggingface.co/docs/huggingface_hub/quick-start#authentication) - Token setup",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 1010,
+        "column": 28,
+        "evidence": "- [Webhooks Documentation](https://huggingface.co/docs/huggingface_hub/guides/webhooks) - Event triggers",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 1029,
+        "column": 86,
+        "evidence": "| Run UV script | `hf_jobs(\"uv\", {...})` | `hf jobs uv run script.py` | `run_uv_job(\"script.py\")` |",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      }
+    ],
+    "limitations": [
+      "Analyzer static_patterns_agent_snooping status: degraded.",
+      "Analyzer static_patterns_anti_refusal status: degraded.",
+      "Analyzer static_patterns_deserialization status: degraded.",
+      "Analyzer static_patterns_excessive_agency status: degraded.",
+      "Analyzer static_patterns_harmful_content status: degraded.",
+      "Analyzer static_patterns_memory_poisoning status: degraded.",
+      "Analyzer static_patterns_privilege_escalation status: degraded.",
+      "Analyzer static_patterns_prompt_injection status: degraded.",
+      "Analyzer static_patterns_rogue_agent status: degraded.",
+      "Analyzer static_patterns_ssrf status: degraded.",
+      "Analyzer static_patterns_supply_chain status: degraded.",
+      "Analyzer static_patterns_system_prompt_leakage status: degraded.",
+      "Analyzer static_patterns_tool_misuse status: degraded."
+    ],
+    "findings_before_filtering": 24,
+    "findings_after_filtering": 24
+  },
+  "_meta": {
+    "cisco_result": "skills-hugging-face-jobs-scan.json",
+    "skill_dir": "skills/huggingface-skills/skills/hugging-face-jobs",
+    "scanned_at": "2026-10-22T04:35:53.706633+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

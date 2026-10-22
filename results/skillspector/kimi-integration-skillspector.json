@@ -1,0 +1,1672 @@
+{
+  "skill": {
+    "name": "kimi-integration",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/clawhub-kimi-integration",
+    "scanned_at": "2026-10-22T04:31:40.034755+00:00"
+  },
+  "risk_assessment": {
+    "score": 49,
+    "severity": "MEDIUM",
+    "recommendation": "CAUTION",
+    "max_issue_severity": "HIGH"
+  },
+  "components": [
+    {
+      "path": "README.md",
+      "type": "markdown",
+      "lines": 181,
+      "executable": false,
+      "size_bytes": 3931,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 308,
+      "executable": false,
+      "size_bytes": 6454,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/config-examples.md",
+      "type": "markdown",
+      "lines": 284,
+      "executable": false,
+      "size_bytes": 5868,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/test_kimi_connection.sh",
+      "type": "shell",
+      "lines": 70,
+      "executable": true,
+      "size_bytes": 1909,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "PE3",
+      "finding_id": "finding-b0ac44c22c854c5dacbf204557b5fac5",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 57,
+        "end_line": null,
+        "start_column": 57
+      },
+      "finding": ".env\n",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "Or add to `.env` file:\n\n```bash\necho 'MOONSHOT_API_KEY=\"sk-your-moonshot-key-here\"' >> ~/.env\n```\n\n#### Step 2: Add provider configuration",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 57,
+          "end_line": null,
+          "start_column": 57
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-16e0236cd6a24104b76a5038748dcd2d",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 150,
+        "end_line": null,
+        "start_column": 57
+      },
+      "finding": ".env\n",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "Or add to `.env`:\n\n```bash\necho 'KIMICODE_API_KEY=\"sk-your-kimicode-key-here\"' >> ~/.env\n```\n\n#### Step 2: Add provider configuration",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 150,
+          "end_line": null,
+          "start_column": 57
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-42a4816216494784b85316e6d5f8c8c3",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/config-examples.md",
+        "start_line": 194,
+        "end_line": null,
+        "start_column": 10
+      },
+      "finding": ".env\n",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n## Environment Variables Setup\n\n### Using .env file\n\nCreate or edit `~/.env`:\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "references/config-examples.md",
+          "start_line": 194,
+          "end_line": null,
+          "start_column": 10
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-3f3799182ec1447bb99048d883418f3f",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "README.md",
+        "start_line": 163,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n  -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Test endpoint directly:\n\n```bash\ncurl -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n  -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"kimi-k2.5\", \"messages\": [{\"role\": \"user\", \"content\": \"test\"}]}'",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "b6adb7e067c228850851df9daa4d91f73b6c95064d689e46a78c196d9fc85914",
+      "occurrences": [
+        {
+          "file": "README.md",
+          "start_line": 163,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-00dc5efd91504d2aa34d1dbadd923467",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 292,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n  -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\nTest API endpoint directly:\n```bash\ncurl -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n  -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"kimi-k2.5\", \"messages\": [{\"role\": \"user\", \"content\": \"test\"}]}'",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "b6adb7e067c228850851df9daa4d91f73b6c95064d689e46a78c196d9fc85914",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 292,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-b4ef47433e0045719d37be62cd03f0a3",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/config-examples.md",
+        "start_line": 263,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "curl -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n  -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "### Test API connection\n\n```bash\ncurl -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n  -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "b6adb7e067c228850851df9daa4d91f73b6c95064d689e46a78c196d9fc85914",
+      "occurrences": [
+        {
+          "file": "references/config-examples.md",
+          "start_line": 263,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "LP3",
+      "finding_id": "finding-f52ed12324914f92b29f72efcd054508",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: shell.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: shell.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-94299fe705b74e3794e43e020fec4400",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/config-examples.md",
+        "start_line": 196,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "Create or edit `~/.env",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "\n### Using .env file\n\nCreate or edit `~/.env`:\n\n```bash\n# Moonshot AI (Kimi K2.5)",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "161215496206ba26d4b848ff28689241e87ce289ca96eb4ed6c0358c25fe1717",
+      "occurrences": [
+        {
+          "file": "references/config-examples.md",
+          "start_line": 196,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-17b6f3b5c431445db2f6dcc8657465e8",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/test_kimi_connection.sh",
+        "start_line": 24,
+        "end_line": null,
+        "start_column": 13
+      },
+      "finding": "curl -s -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n    -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n    -H \"Content-Type: application/json\" \\\n    -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "  \n  # Test Moonshot API\n  echo \"  Testing Moonshot API...\"\n  response=$(curl -s -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n    -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n    -H \"Content-Type: application/json\" \\\n    -d '{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "91928af78cf3ca02ca13c94e23c7d39ed5a8c69af647340ce35a34cc2be123da",
+      "occurrences": [
+        {
+          "file": "scripts/test_kimi_connection.sh",
+          "start_line": 24,
+          "end_line": null,
+          "start_column": 13
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-de0ca58919904900b682dd889c949c69",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "README.md",
+        "start_line": 53,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    \"mode\": \"merge\",\n    \"providers\": {\n      \"moonshot\": {\n        \"baseUrl\": \"https://api.moonshot.cn/v1\",\n        \"apiKey\": \"${MOONSHOT_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "README.md",
+          "start_line": 53,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-3d8897df84c04bad8f7504a60ec561c0",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "README.md",
+        "start_line": 163,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "Test endpoint directly:\n\n```bash\ncurl -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n  -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"kimi-k2.5\", \"messages\": [{\"role\": \"user\", \"content\": \"test\"}]}'",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "README.md",
+          "start_line": 163,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-a20b4b9c8e134b18b30a584ff8cd7be4",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 77,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    \"mode\": \"merge\",\n    \"providers\": {\n      \"moonshot\": {\n        \"baseUrl\": \"https://api.moonshot.cn/v1\",\n        \"apiKey\": \"${MOONSHOT_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 77,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-0c4dea71e9e74491a48fa0a92dc8fae4",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 243,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    \"mode\": \"merge\",\n    \"providers\": {\n      \"moonshot\": {\n        \"baseUrl\": \"https://api.moonshot.cn/v1\",\n        \"apiKey\": \"${MOONSHOT_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 243,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-3b0fa0922dd741af9597b3ed88293b34",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 292,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\nTest API endpoint directly:\n```bash\ncurl -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n  -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"model\": \"kimi-k2.5\", \"messages\": [{\"role\": \"user\", \"content\": \"test\"}]}'",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 292,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-6e0949db2ca848b79594ed92309c9aef",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/config-examples.md",
+        "start_line": 13,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    \"mode\": \"merge\",\n    \"providers\": {\n      \"moonshot\": {\n        \"baseUrl\": \"https://api.moonshot.cn/v1\",\n        \"apiKey\": \"${MOONSHOT_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "references/config-examples.md",
+          "start_line": 13,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-bb360cc089e543659421bf4b65800340",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/config-examples.md",
+        "start_line": 33,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    \"mode\": \"merge\",\n    \"providers\": {\n      \"moonshot\": {\n        \"baseUrl\": \"https://api.moonshot.cn/v1\",\n        \"apiKey\": \"${MOONSHOT_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "references/config-examples.md",
+          "start_line": 33,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-ef2faddc14eb4899b4357decaf07aca1",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/config-examples.md",
+        "start_line": 172,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    \"mode\": \"merge\",\n    \"providers\": {\n      \"moonshot\": {\n        \"baseUrl\": \"https://api.moonshot.cn/v1\",\n        \"apiKey\": \"${MOONSHOT_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "references/config-examples.md",
+          "start_line": 172,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-ee86e435db0e49e5ba3ec12cbaff64f5",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/config-examples.md",
+        "start_line": 232,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    \"mode\": \"merge\",\n    \"providers\": {\n      \"moonshot\": {\n        \"baseUrl\": \"https://api.moonshot.cn/v1\",\n        \"apiKey\": \"${MOONSHOT_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "references/config-examples.md",
+          "start_line": 232,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-84c57a333e194125a5b88c940ef2053c",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/config-examples.md",
+        "start_line": 263,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "### Test API connection\n\n```bash\ncurl -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n  -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "references/config-examples.md",
+          "start_line": 263,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-5059539586a7447c95b993e17466c104",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/test_kimi_connection.sh",
+        "start_line": 24,
+        "end_line": null,
+        "start_column": 30
+      },
+      "finding": "https://api.moonshot.cn/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "  \n  # Test Moonshot API\n  echo \"  Testing Moonshot API...\"\n  response=$(curl -s -X POST \"https://api.moonshot.cn/v1/chat/completions\" \\\n    -H \"Authorization: Bearer $MOONSHOT_API_KEY\" \\\n    -H \"Content-Type: application/json\" \\\n    -d '{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "eccc8a7991113a9d526700f2a4d495f71d2c735d691cb001d58ebeaa5ca81c36",
+      "occurrences": [
+        {
+          "file": "scripts/test_kimi_connection.sh",
+          "start_line": 24,
+          "end_line": null,
+          "start_column": 30
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-9c500a26092b40309126ff4432a0b0e4",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/test_kimi_connection.sh",
+        "start_line": 52,
+        "end_line": null,
+        "start_column": 13
+      },
+      "finding": "curl -s -X POST \"https://api.kimi.com/coding/v1/chat/completions\" \\\n    -H \"Authorization: Bearer $KIMICODE_API_KEY\" \\\n    -H \"Content-Type: application/json\" \\\n    -d ",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "  \n  # Test Kimi Code API\n  echo \"  Testing Kimi Code API...\"\n  response=$(curl -s -X POST \"https://api.kimi.com/coding/v1/chat/completions\" \\\n    -H \"Authorization: Bearer $KIMICODE_API_KEY\" \\\n    -H \"Content-Type: application/json\" \\\n    -d '{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2c8f1f104f6f893ec959369a1776f340b92420173fb7312d7f3390db0d22e335",
+      "occurrences": [
+        {
+          "file": "scripts/test_kimi_connection.sh",
+          "start_line": 52,
+          "end_line": null,
+          "start_column": 13
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-ee07a7b178e745a6a35513ca7f574036",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "README.md",
+        "start_line": 27,
+        "end_line": null,
+        "start_column": 17
+      },
+      "finding": "https://api.kimi.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "### 1. Get API Keys\n\n- **Moonshot AI**: https://platform.moonshot.cn\n- **Kimi Code**: https://api.kimi.com/coding\n\n### 2. Set Environment Variables\n",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ff19f612f5ce84c1f1291ae13fb9eb6a5b024d50f1c523c5a3b061867d525b5f",
+      "occurrences": [
+        {
+          "file": "README.md",
+          "start_line": 27,
+          "end_line": null,
+          "start_column": 17
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-bc9936f96c84452db80b72338aefd3e9",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "README.md",
+        "start_line": 172,
+        "end_line": null,
+        "start_column": 18
+      },
+      "finding": "https://api.kimi.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "## Resources\n\n- [Moonshot AI Documentation](https://platform.moonshot.cn/docs)\n- [Kimi Code API](https://api.kimi.com/coding/docs)\n- [Clawdbot Model Providers](https://docs.clawd.bot/concepts/model-providers)\n\n## Contributing",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ff19f612f5ce84c1f1291ae13fb9eb6a5b024d50f1c523c5a3b061867d525b5f",
+      "occurrences": [
+        {
+          "file": "README.md",
+          "start_line": 172,
+          "end_line": null,
+          "start_column": 18
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-feadea036c774aa2b46520060065eb2a",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 36,
+        "end_line": null,
+        "start_column": 9
+      },
+      "finding": "https://api.kimi.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n### Kimi Code\n\n1. Visit https://api.kimi.com/coding\n2. Register an account  \n3. Navigate to API Keys section\n4. Create a new API key",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ff19f612f5ce84c1f1291ae13fb9eb6a5b024d50f1c523c5a3b061867d525b5f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 36,
+          "end_line": null,
+          "start_column": 9
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-4ee0ee9e43394e2e86c9e835ce21449b",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 175,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.kimi.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    \"mode\": \"merge\",\n    \"providers\": {\n      \"kimicode\": {\n        \"baseUrl\": \"https://api.kimi.com/coding/v1\",\n        \"apiKey\": \"${KIMICODE_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ff19f612f5ce84c1f1291ae13fb9eb6a5b024d50f1c523c5a3b061867d525b5f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 175,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-358919f5e95b423d97febec85b22ca59",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 251,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.kimi.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "        ]\n      },\n      \"kimicode\": {\n        \"baseUrl\": \"https://api.kimi.com/coding/v1\",\n        \"apiKey\": \"${KIMICODE_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ff19f612f5ce84c1f1291ae13fb9eb6a5b024d50f1c523c5a3b061867d525b5f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 251,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-13f91ef11fab430797913e912903cded",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 307,
+        "end_line": null,
+        "start_column": 17
+      },
+      "finding": "https://api.kimi.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "## References\n\n- Moonshot AI Docs: https://platform.moonshot.cn/docs\n- Kimi Code API: https://api.kimi.com/coding/docs\n- Clawdbot Model Providers: /home/eyurc/clawdbot/docs/concepts/model-providers.md",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ff19f612f5ce84c1f1291ae13fb9eb6a5b024d50f1c523c5a3b061867d525b5f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 307,
+          "end_line": null,
+          "start_column": 17
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-6964eaa46d364b51a1a669c2eb94f065",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/config-examples.md",
+        "start_line": 122,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.kimi.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "    \"mode\": \"merge\",\n    \"providers\": {\n      \"kimicode\": {\n        \"baseUrl\": \"https://api.kimi.com/coding/v1\",\n        \"apiKey\": \"${KIMICODE_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ff19f612f5ce84c1f1291ae13fb9eb6a5b024d50f1c523c5a3b061867d525b5f",
+      "occurrences": [
+        {
+          "file": "references/config-examples.md",
+          "start_line": 122,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-571acd42e951485b8b91647c7611ae28",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "references/config-examples.md",
+        "start_line": 180,
+        "end_line": null,
+        "start_column": 20
+      },
+      "finding": "https://api.kimi.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "        ]\n      },\n      \"kimicode\": {\n        \"baseUrl\": \"https://api.kimi.com/coding/v1\",\n        \"apiKey\": \"${KIMICODE_API_KEY}\",\n        \"api\": \"openai-completions\",\n        \"models\": [",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ff19f612f5ce84c1f1291ae13fb9eb6a5b024d50f1c523c5a3b061867d525b5f",
+      "occurrences": [
+        {
+          "file": "references/config-examples.md",
+          "start_line": 180,
+          "end_line": null,
+          "start_column": 20
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-cdd737dac02248cebc9bb83b9dc47f1c",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/test_kimi_connection.sh",
+        "start_line": 52,
+        "end_line": null,
+        "start_column": 30
+      },
+      "finding": "https://api.kimi.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "  \n  # Test Kimi Code API\n  echo \"  Testing Kimi Code API...\"\n  response=$(curl -s -X POST \"https://api.kimi.com/coding/v1/chat/completions\" \\\n    -H \"Authorization: Bearer $KIMICODE_API_KEY\" \\\n    -H \"Content-Type: application/json\" \\\n    -d '{",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ff19f612f5ce84c1f1291ae13fb9eb6a5b024d50f1c523c5a3b061867d525b5f",
+      "occurrences": [
+        {
+          "file": "scripts/test_kimi_connection.sh",
+          "start_line": 52,
+          "end_line": null,
+          "start_column": 30
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 4,
+    "scanned_components": 4,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 4,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 62,
+        "end_line": 62,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 69,
+        "end_line": 69,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 102,
+        "end_line": 102,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 131,
+        "end_line": 131,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 136,
+        "end_line": 136,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 155,
+        "end_line": 155,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 227,
+        "end_line": 227,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 233,
+        "end_line": 233,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 247,
+        "end_line": 247,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 295,
+        "end_line": 295,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 300,
+        "end_line": 300,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 62,
+        "column": 12,
+        "evidence": "Edit your `clawdbot.json` config:",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 69,
+        "column": 21,
+        "evidence": "\"primary\": \"moonshot/kimi-k2.5\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 102,
+        "column": 20,
+        "evidence": "\"id\": \"kimi-k2.5\",",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 131,
+        "column": 21,
+        "evidence": "clawdbot models set moonshot/kimi-k2.5",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 136,
+        "column": 8,
+        "evidence": "/model moonshot/kimi-k2.5",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 155,
+        "column": 12,
+        "evidence": "Edit your `clawdbot.json` config:",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 227,
+        "column": 21,
+        "evidence": "\"primary\": \"moonshot/kimi-k2.5\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 233,
+        "column": 10,
+        "evidence": "\"moonshot/kimi-k2.5\": {",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 247,
+        "column": 20,
+        "evidence": "{ \"id\": \"kimi-k2.5\", \"name\": \"Kimi K2.5\", \"contextWindow\": 200000 }",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 295,
+        "column": 18,
+        "evidence": "-d '{\"model\": \"kimi-k2.5\", \"messages\": [{\"role\": \"user\", \"content\": \"test\"}]}'",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 300,
+        "column": 19,
+        "evidence": "- **Kimi K2.5** (`moonshot/kimi-k2.5`) - Best for general tasks, 200K context",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 30,
+    "findings_after_filtering": 30
+  },
+  "_meta": {
+    "cisco_result": "kimi-integration-scan.json",
+    "skill_dir": "skills/clawhub-kimi-integration",
+    "scanned_at": "2026-10-22T04:31:40.303856+00:00",
+    "mode": "static",
+    "exit_code": 0
+  }
+}

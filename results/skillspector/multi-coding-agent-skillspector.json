@@ -1,0 +1,1764 @@
+{
+  "skill": {
+    "name": "coding-agent",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/clawhub-multi-coding-agent",
+    "scanned_at": "2026-10-22T04:32:11.379012+00:00"
+  },
+  "risk_assessment": {
+    "score": 100,
+    "severity": "CRITICAL",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "HIGH"
+  },
+  "components": [
+    {
+      "path": "README.md",
+      "type": "markdown",
+      "lines": 68,
+      "executable": false,
+      "size_bytes": 1987,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 384,
+      "executable": false,
+      "size_bytes": 12356,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/claude-code.md",
+      "type": "markdown",
+      "lines": 169,
+      "executable": false,
+      "size_bytes": 3989,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/gemini-cli.md",
+      "type": "markdown",
+      "lines": 188,
+      "executable": false,
+      "size_bytes": 3468,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "EA5",
+      "finding_id": "finding-721dbfecd82c412ca483c975e7b70108",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "README.md",
+        "start_line": 21,
+        "end_line": 21,
+        "start_column": 0,
+        "end_column": 44
+      },
+      "finding": "claude -p \"Add error handling to src/api.ts\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "bash pty:true workdir:~/project command:\"codex exec 'Add error handling'\"\n\n# Fallback to Claude Code\nclaude -p \"Add error handling to src/api.ts\"\n\n# Fallback to Gemini\ngemini \"Add error handling to src/api.ts\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "6c0f8a66f598d6f076c74b156f6032dd7c32fd4400e31aa02c919b46d1a20b18",
+      "occurrences": [
+        {
+          "file": "README.md",
+          "start_line": 21,
+          "end_line": 21,
+          "start_column": 0,
+          "end_column": 44
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-93412747655b458c8d6f1b3d7d6658be",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 183,
+        "end_line": 183,
+        "start_column": 0,
+        "end_column": 44
+      },
+      "finding": "claude -p \"Add error handling to src/api.ts\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n```bash\n# Non-interactive\nclaude -p \"Add error handling to src/api.ts\"\nclaude -p --permission-mode acceptEdits \"Fix the bug\"\n\n# Interactive (with PTY)",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "6c0f8a66f598d6f076c74b156f6032dd7c32fd4400e31aa02c919b46d1a20b18",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 183,
+          "end_line": 183,
+          "start_column": 0,
+          "end_column": 44
+        }
+      ]
+    },
+    {
+      "id": "AS1",
+      "finding_id": "finding-add416fdf02a4b0c860c86a8ad62d496",
+      "category": "Agent Snooping",
+      "pattern": "Agent Config Directory Access",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 116,
+        "end_line": null,
+        "start_column": 50
+      },
+      "finding": "~/.codex/config.toml",
+      "explanation": "Skill reads from agent configuration directories (.claude/, .codex/, .gemini/). These directories may contain API keys, personal settings, and other credentials that the skill has no legitimate need to access.",
+      "remediation": "Remove all code or instructions that access agent configuration directories (.claude/, .codex/, .gemini/). If configuration values are needed, pass them explicitly as parameters or environment variables \u2014 never read the agent's own config files.",
+      "code_snippet": "\n## Codex CLI\n\n**Model:** `gpt-5.2-codex` is the default (set in ~/.codex/config.toml)\n\n### Flags\n",
+      "intent": null,
+      "tags": [
+        "Agent Snooping"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ac8a2c85e2eeb5e14c174cae3d679d330225a562a4847ce1a64de3a1bcf488fb",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 116,
+          "end_line": null,
+          "start_column": 50
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-378263945e10439c8f3f743259f35296",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 184,
+        "end_line": 184,
+        "start_column": 0,
+        "end_column": 53
+      },
+      "finding": "claude -p --permission-mode acceptEdits \"Fix the bug\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "```bash\n# Non-interactive\nclaude -p \"Add error handling to src/api.ts\"\nclaude -p --permission-mode acceptEdits \"Fix the bug\"\n\n# Interactive (with PTY)\nbash pty:true workdir:~/project command:\"claude 'Your task'\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "b42cb37a5b1b19b5116e4244aa8dd18ab04fb40343ac9a1c86ef50d1ac2b5caa",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 184,
+          "end_line": 184,
+          "start_column": 0,
+          "end_column": 53
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-13cbe4704b3e48ba8e97b9f3b8dcd73c",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 56,
+        "end_line": 56,
+        "start_column": 0,
+        "end_column": 53
+      },
+      "finding": "claude -p --permission-mode acceptEdits \"Fix the bug\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n```bash\n# Auto-accept edits (recommended for automation)\nclaude -p --permission-mode acceptEdits \"Fix the bug\"\n\n# Full bypass (like Codex --yolo)\nclaude -p --dangerously-skip-permissions \"Build the feature\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "b42cb37a5b1b19b5116e4244aa8dd18ab04fb40343ac9a1c86ef50d1ac2b5caa",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 56,
+          "end_line": 56,
+          "start_column": 0,
+          "end_column": 53
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-5a93cf26c3264ea3b126e81adb3ccc20",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 264,
+        "end_line": null,
+        "start_column": 13
+      },
+      "finding": "remove /tmp/issue-78",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "gh pr create --repo user/repo --head fix/issue-78 --title \"fix: ...\" --body \"...\"\n\n# 5. Cleanup\ngit worktree remove /tmp/issue-78\ngit worktree remove /tmp/issue-99\n```\n",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "b582f93aba025c00398a9fe1de278158fa5c9c15e78ef10f0bb0e11c078abad9",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 264,
+          "end_line": null,
+          "start_column": 13
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-d614a37d45274e91a073e7b0cee69cd4",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 265,
+        "end_line": null,
+        "start_column": 13
+      },
+      "finding": "remove /tmp/issue-99",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "\n# 5. Cleanup\ngit worktree remove /tmp/issue-78\ngit worktree remove /tmp/issue-99\n```\n\n---",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "7c1b0875dd041cff18d6ec6f0568dadb4d6264cf413b8d0e005e97a448c2102f",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 265,
+          "end_line": null,
+          "start_column": 13
+        }
+      ]
+    },
+    {
+      "id": "E4",
+      "finding_id": "finding-fee652f3fcc64a5d905e0d47e30f2a44",
+      "category": "Data Exfiltration",
+      "pattern": "Context Leakage",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 310,
+        "end_line": null,
+        "start_column": 2
+      },
+      "finding": "Capture context",
+      "explanation": "Code or instructions that leak agent conversation context to external services, potentially exposing sensitive user interactions.",
+      "remediation": "Remove any code that sends prompts, responses, or session data externally. Preserve user privacy; never exfiltrate conversation content.",
+      "code_snippet": "Transfer context between agents (e.g., plan with Codex, execute with Claude):\n\n```bash\n# Capture context from current agent\nCONTEXT=$(tmux -S \"$SOCKET\" capture-pane -p -t planner -S -500)\n\n# Fork to new agent with context",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "4a0c4f991eca111ef87cbb11c732000bea934c1f174d9cb57f6e3b63a4d417e9",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 310,
+          "end_line": null,
+          "start_column": 2
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-7fb2d2a494924eceb74729a8b0c1ef72",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 20,
+        "end_line": 20,
+        "start_column": 0,
+        "end_column": 28
+      },
+      "finding": "claude -p \"Your prompt here\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "The `-p` flag runs Claude in non-interactive mode: it processes the prompt and exits.\n\n```bash\nclaude -p \"Your prompt here\"\n```\n\n**Note:** The `-p` flag skips workspace trust dialogs. Only use in trusted directories.",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "0a6c01845d5977d1a3b7e96d697836e5e6463f89d72686552a8fd37c0302bc8f",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 20,
+          "end_line": 20,
+          "start_column": 0,
+          "end_column": 28
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-5cca84ae79b145baac6286efabf164ca",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 59,
+        "end_line": 59,
+        "start_column": 0,
+        "end_column": 60
+      },
+      "finding": "claude -p --dangerously-skip-permissions \"Build the feature\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "claude -p --permission-mode acceptEdits \"Fix the bug\"\n\n# Full bypass (like Codex --yolo)\nclaude -p --dangerously-skip-permissions \"Build the feature\"\n```\n\n---",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "904c0c62fdc8506c455ca1aa23157282d95982cca55bf705650d5f083f548744",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 59,
+          "end_line": 59,
+          "start_column": 0,
+          "end_column": 60
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-ba667b1344404588adde593b5c848629",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 68,
+        "end_line": 68,
+        "start_column": 0,
+        "end_column": 51
+      },
+      "finding": "claude -p --model opus \"Design the database schema\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n```bash\n# Use Opus for complex tasks\nclaude -p --model opus \"Design the database schema\"\n\n# Use Haiku for quick/cheap tasks\nclaude -p --model haiku \"Add a docstring\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "305527b02c74627b8ad5da9e82cf16f01a8875db2bf39d113f0d84d7c246b425",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 68,
+          "end_line": 68,
+          "start_column": 0,
+          "end_column": 51
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-1642e00e756b4e66a95178658f8fabd2",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 71,
+        "end_line": 71,
+        "start_column": 0,
+        "end_column": 41
+      },
+      "finding": "claude -p --model haiku \"Add a docstring\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "claude -p --model opus \"Design the database schema\"\n\n# Use Haiku for quick/cheap tasks\nclaude -p --model haiku \"Add a docstring\"\n\n# Use Sonnet (default, balanced)\nclaude -p --model sonnet \"Refactor this function\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "0d76c7112a98679996ecbc89c17960c8a573939b38a693d189c37df746e9dc5b",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 71,
+          "end_line": 71,
+          "start_column": 0,
+          "end_column": 41
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-d9efed692557490580bb8fc158c988a4",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 74,
+        "end_line": 74,
+        "start_column": 0,
+        "end_column": 49
+      },
+      "finding": "claude -p --model sonnet \"Refactor this function\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "claude -p --model haiku \"Add a docstring\"\n\n# Use Sonnet (default, balanced)\nclaude -p --model sonnet \"Refactor this function\"\n\n# With fallback\nclaude -p --model opus --fallback-model sonnet \"Complex task\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "4430ebd03d54af81043709fe6dbad96f512bdf904bace7b3039b90fbdb6e9d2a",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 74,
+          "end_line": 74,
+          "start_column": 0,
+          "end_column": 49
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-cdc9eb20656047f9ad56fd46b94098be",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 77,
+        "end_line": 77,
+        "start_column": 0,
+        "end_column": 61
+      },
+      "finding": "claude -p --model opus --fallback-model sonnet \"Complex task\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "claude -p --model sonnet \"Refactor this function\"\n\n# With fallback\nclaude -p --model opus --fallback-model sonnet \"Complex task\"\n```\n\n**Models:**",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "fd7808d50b247c7f4eafe1861b810fe873683b41f8b7c5c7e579955dae9288e6",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 77,
+          "end_line": 77,
+          "start_column": 0,
+          "end_column": 61
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-b108ac097fb84cc1beb4022236104f8e",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 91,
+        "end_line": 91,
+        "start_column": 0,
+        "end_column": 47
+      },
+      "finding": "claude -p --max-budget-usd 5 \"Build a REST API\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n```bash\n# Cap spending at $5\nclaude -p --max-budget-usd 5 \"Build a REST API\"\n\n# Combine with fallback for cost optimization\nclaude -p --model opus --fallback-model haiku --max-budget-usd 2 \"Review this code\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "e0e141dcd1ae3029d338c9c8d0be00eafbeab034e700f40e61badeb1bde20367",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 91,
+          "end_line": 91,
+          "start_column": 0,
+          "end_column": 47
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-ac7ec67878d64132bd4ecdfe90aac15a",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 94,
+        "end_line": 94,
+        "start_column": 0,
+        "end_column": 83
+      },
+      "finding": "claude -p --model opus --fallback-model haiku --max-budget-usd 2 \"Review this code\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "claude -p --max-budget-usd 5 \"Build a REST API\"\n\n# Combine with fallback for cost optimization\nclaude -p --model opus --fallback-model haiku --max-budget-usd 2 \"Review this code\"\n```\n\n---",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "d79e7469946bbcd15be2208094959b2f5a2bce53518192d9df92caafbb3e0826",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 94,
+          "end_line": 94,
+          "start_column": 0,
+          "end_column": 83
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-a1b6b00c45d64ab08d0698997caff743",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 103,
+        "end_line": 103,
+        "start_column": 0,
+        "end_column": 31
+      },
+      "finding": "claude -p \"Summarize this file\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n```bash\n# Plain text (default)\nclaude -p \"Summarize this file\"\n\n# JSON (single result)\nclaude -p --output-format json \"List the functions in this file\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "e0f10273701d5b257c4314d66022827c3f040416f3c026da5f0fdc196b87af50",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 103,
+          "end_line": 103,
+          "start_column": 0,
+          "end_column": 31
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-29bfc1263c304dabb1bf39b115890c41",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 106,
+        "end_line": 106,
+        "start_column": 0,
+        "end_column": 64
+      },
+      "finding": "claude -p --output-format json \"List the functions in this file\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "claude -p \"Summarize this file\"\n\n# JSON (single result)\nclaude -p --output-format json \"List the functions in this file\"\n\n# Streaming JSON (for real-time processing)\nclaude -p --output-format stream-json \"Analyze this codebase\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "f6e9355eae88f85c357d1970698f2a842859924fe3737b4cf90721a6592a4145",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 106,
+          "end_line": 106,
+          "start_column": 0,
+          "end_column": 64
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-55846da5bb1a431097cf5b1d8bd67db1",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 109,
+        "end_line": 109,
+        "start_column": 0,
+        "end_column": 61
+      },
+      "finding": "claude -p --output-format stream-json \"Analyze this codebase\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "claude -p --output-format json \"List the functions in this file\"\n\n# Streaming JSON (for real-time processing)\nclaude -p --output-format stream-json \"Analyze this codebase\"\n```\n\n---",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "9a89142e63e013db14315cc784ca850a5299cbc508df0613b78918dc2fcdf9f8",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 109,
+          "end_line": 109,
+          "start_column": 0,
+          "end_column": 61
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-573305c11e75443397891bcece499a9b",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 118,
+        "end_line": 118,
+        "start_column": 0,
+        "end_column": 83
+      },
+      "finding": "claude -p --add-dir ~/project --add-dir ~/shared \"Refactor across both directories\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n```bash\n# Add specific directories for file access\nclaude -p --add-dir ~/project --add-dir ~/shared \"Refactor across both directories\"\n```\n\n---",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "2b7516ad3ae6ed1df0b00043013b98ae93b22fb5a09697889049252f27067aa9",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 118,
+          "end_line": 118,
+          "start_column": 0,
+          "end_column": 83
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-62135ee3087a4767916dfc81b3ac3160",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 127,
+        "end_line": 127,
+        "start_column": 0,
+        "end_column": 45
+      },
+      "finding": "claude -p -c \"Follow up on the previous task\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n```bash\n# Continue last conversation\nclaude -p -c \"Follow up on the previous task\"\n\n# Resume specific session\nclaude -p -r session-id \"Continue from here\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "688219146ed83b5fb8d31a7fae984174e64a98ba9397444c724377a736eae9bc",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 127,
+          "end_line": 127,
+          "start_column": 0,
+          "end_column": 45
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-6fdd3821c6264c0f91f65ebc58099646",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 130,
+        "end_line": 130,
+        "start_column": 0,
+        "end_column": 44
+      },
+      "finding": "claude -p -r session-id \"Continue from here\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "claude -p -c \"Follow up on the previous task\"\n\n# Resume specific session\nclaude -p -r session-id \"Continue from here\"\n\n# List sessions\nclaude --list-sessions",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "05fa4d55a97ad0b32cdda3e49d1245f35bfd266fcc0ef10c61c62f93f165e8ec",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 130,
+          "end_line": 130,
+          "start_column": 0,
+          "end_column": 44
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-de11642fff914a48ae0fede6fe73a8b5",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 142,
+        "end_line": 142,
+        "start_column": 0,
+        "end_column": 86
+      },
+      "finding": "claude -p --permission-mode acceptEdits \"Fix the null pointer exception in src/api.ts\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n### Quick Code Fix\n```bash\nclaude -p --permission-mode acceptEdits \"Fix the null pointer exception in src/api.ts\"\n```\n\n### Full Auto Build",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "7f47758e81abe242b49c666a5d1f42c60091cc6d069ba87f0046738feeb91904",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 142,
+          "end_line": 142,
+          "start_column": 0,
+          "end_column": 86
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-b8284cba2f244472bb65ffef07599aa5",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 147,
+        "end_line": 147,
+        "start_column": 0,
+        "end_column": 89
+      },
+      "finding": "claude -p --dangerously-skip-permissions \"Build a REST API with CRUD endpoints for users\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n### Full Auto Build\n```bash\nclaude -p --dangerously-skip-permissions \"Build a REST API with CRUD endpoints for users\"\n```\n\n### Code Review with Budget",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "f482de97b89224056f9d369acf7a0d40af454e2e76759cdf1c0f4a2475e3b55b",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 147,
+          "end_line": 147,
+          "start_column": 0,
+          "end_column": 89
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-68347388e2164a618fde355dae346079",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/claude-code.md",
+        "start_line": 152,
+        "end_line": 152,
+        "start_column": 0,
+        "end_column": 78
+      },
+      "finding": "claude -p --model opus --max-budget-usd 1 \"Review this PR for security issues\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n### Code Review with Budget\n```bash\nclaude -p --model opus --max-budget-usd 1 \"Review this PR for security issues\"\n```\n\n### Background Task (with PTY)",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "592e196358d8cdb35df672eb4bde115db6ccf7ce9b1a547fe5db90784d841fe4",
+      "occurrences": [
+        {
+          "file": "references/claude-code.md",
+          "start_line": 152,
+          "end_line": 152,
+          "start_column": 0,
+          "end_column": 78
+        }
+      ]
+    },
+    {
+      "id": "EA5",
+      "finding_id": "finding-5881a5900e37412cb18a21e137a9ffc0",
+      "category": "Excessive Agency",
+      "pattern": "External Model or Provider Selection",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/gemini-cli.md",
+        "start_line": 72,
+        "end_line": 72,
+        "start_column": 0,
+        "end_column": 48
+      },
+      "finding": "gemini -m gemini-2.5-pro \"Complex analysis task\"",
+      "explanation": "Skill selects an external model or provider that may use a different account or billing plan than the operator expects. Undisclosed model switches can cause unexpected cost or quota consumption.",
+      "remediation": "Remove the model/provider override or disclose it prominently and require explicit operator approval before invoking an external coding CLI or billed model.",
+      "code_snippet": "\n```bash\n# Specify model\ngemini -m gemini-2.5-pro \"Complex analysis task\"\n\n# Default model (usually gemini-2.5-flash)\ngemini \"Quick task\"",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {
+        "selection_surface": "command"
+      },
+      "match_fingerprint": "4ada14a54c71b28e2423c2e6a50127b029c1681d2b9494b2f84d34c2b9ec9ab1",
+      "occurrences": [
+        {
+          "file": "references/gemini-cli.md",
+          "start_line": 72,
+          "end_line": 72,
+          "start_column": 0,
+          "end_column": 48
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-b50b44d2e7934072b64b9454c1b4a71e",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 123,
+        "end_line": null,
+        "start_column": 32
+      },
+      "finding": "auto-approve",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "| Flag | Effect |\n|------|--------|\n| `exec \"prompt\"` | One-shot execution, exits when done |\n| `--full-auto` | Sandboxed but auto-approves in workspace |\n| `--yolo` | NO sandbox, NO approvals (fastest, most dangerous) |\n\n### Building/Creating",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d136f35fbcfa4c6db41b45ba9d17d36e2634ea52685668d0ec094a066e0ff6b8",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 123,
+          "end_line": null,
+          "start_column": 32
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-9870d52d2f3a44d0bfb618ce984e6429",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 128,
+        "end_line": null,
+        "start_column": 18
+      },
+      "finding": "auto-approve",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "\n### Building/Creating\n```bash\n# Quick one-shot (auto-approves) - remember PTY!\nbash pty:true workdir:~/project command:\"codex exec --full-auto 'Build a dark mode toggle'\"\n\n# Background for longer work",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d136f35fbcfa4c6db41b45ba9d17d36e2634ea52685668d0ec094a066e0ff6b8",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 128,
+          "end_line": null,
+          "start_column": 18
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-8f72e1bfbc3b479dacad6274451dc2e1",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 332,
+        "end_line": null,
+        "start_column": 34
+      },
+      "finding": "auto-approve",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "   - If an agent fails/hangs, respawn it or ask the user for direction, but don't silently take over.\n3. **Be patient** - don't kill sessions because they're \"slow\"\n4. **Monitor with process:log** - check progress without interfering\n5. **--full-auto for building** - auto-approves changes\n6. **vanilla for reviewing** - no special flags needed\n7. **Parallel is OK** - run many Codex processes at once for batch work\n8. **NEVER start Codex in ~/clawd/** - it'll read your soul docs and get weird ideas about the org chart!",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d136f35fbcfa4c6db41b45ba9d17d36e2634ea52685668d0ec094a066e0ff6b8",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 332,
+          "end_line": null,
+          "start_column": 34
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-d7a51b99427a4637a23ed9d45e12a1c4",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 124,
+        "end_line": null,
+        "start_column": 25
+      },
+      "finding": "NO approval",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "|------|--------|\n| `exec \"prompt\"` | One-shot execution, exits when done |\n| `--full-auto` | Sandboxed but auto-approves in workspace |\n| `--yolo` | NO sandbox, NO approvals (fastest, most dangerous) |\n\n### Building/Creating\n```bash",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "fcd87fcd554d4153c2280a2eaecfbdd76af0fe8feea69fbdf3cfac3108392e6c",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 124,
+          "end_line": null,
+          "start_column": 25
+        }
+      ]
+    },
+    {
+      "id": "OH2",
+      "finding_id": "finding-8bb2fb4823f5444fa6872369b678a17f",
+      "category": "Output Handling",
+      "pattern": "Cross-Context Output",
+      "severity": "MEDIUM",
+      "confidence": 0.75,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 307,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "Transfer context between agents",
+      "explanation": "Output from one security context is used in another without boundary enforcement. Cross-context output flow can leak sensitive information or escalate privileges across trust boundaries.",
+      "remediation": "Enforce strict context boundaries. Do not pass output from one security domain into another without explicit validation and redaction of sensitive content.",
+      "code_snippet": "\n### Agent Forking\n\nTransfer context between agents (e.g., plan with Codex, execute with Claude):\n\n```bash\n# Capture context from current agent",
+      "intent": null,
+      "tags": [
+        "Output Handling"
+      ],
+      "evidence": {},
+      "match_fingerprint": "abcf7f907dd61b1b2bc963349e1e5a7e4c5be80902ffaff63b9a03a83b677069",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 307,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-076888977acb4b5ca8287d836d4d258c",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "references/gemini-cli.md",
+        "start_line": 36,
+        "end_line": null,
+        "start_column": 17
+      },
+      "finding": "Auto-approve",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "\n| Flag | Description |\n|------|-------------|\n| `-y, --yolo` | Auto-approve all actions |\n| `--approval-mode <mode>` | Approval handling (see below) |\n| `-m, --model <model>` | Select model |\n| `-s, --sandbox` | Run in sandbox mode |",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2bc2097f5a24b7a009cb4f5943903c6bd4ce6a54c787f7b7b355553150219a5a",
+      "occurrences": [
+        {
+          "file": "references/gemini-cli.md",
+          "start_line": 36,
+          "end_line": null,
+          "start_column": 17
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-61262d42596f43b8be77d1f01dca4ab6",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "references/gemini-cli.md",
+        "start_line": 53,
+        "end_line": null,
+        "start_column": 16
+      },
+      "finding": "Auto-approve",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "| Mode | Behavior |\n|------|----------|\n| `default` | Prompt for approval |\n| `auto_edit` | Auto-approve edit tools only |\n| `yolo` | Auto-approve all tools |\n\n```bash",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2bc2097f5a24b7a009cb4f5943903c6bd4ce6a54c787f7b7b355553150219a5a",
+      "occurrences": [
+        {
+          "file": "references/gemini-cli.md",
+          "start_line": 53,
+          "end_line": null,
+          "start_column": 16
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-3d687b4641d240ce834de53e535239b2",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "references/gemini-cli.md",
+        "start_line": 54,
+        "end_line": null,
+        "start_column": 11
+      },
+      "finding": "Auto-approve",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "|------|----------|\n| `default` | Prompt for approval |\n| `auto_edit` | Auto-approve edit tools only |\n| `yolo` | Auto-approve all tools |\n\n```bash\n# Auto-approve edits only",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2bc2097f5a24b7a009cb4f5943903c6bd4ce6a54c787f7b7b355553150219a5a",
+      "occurrences": [
+        {
+          "file": "references/gemini-cli.md",
+          "start_line": 54,
+          "end_line": null,
+          "start_column": 11
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-787b90f25a274dc892490aae3952a918",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "references/gemini-cli.md",
+        "start_line": 57,
+        "end_line": null,
+        "start_column": 2
+      },
+      "finding": "Auto-approve",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "| `yolo` | Auto-approve all tools |\n\n```bash\n# Auto-approve edits only\ngemini --approval-mode auto_edit \"Fix the bug in api.ts\"\n\n# Full auto (yolo)",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2bc2097f5a24b7a009cb4f5943903c6bd4ce6a54c787f7b7b355553150219a5a",
+      "occurrences": [
+        {
+          "file": "references/gemini-cli.md",
+          "start_line": 57,
+          "end_line": null,
+          "start_column": 2
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": false,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 4,
+    "scanned_components": 4,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 4,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 183,
+        "end_line": 183,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 206,
+        "end_line": 206,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 4,
+        "completed": 4,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 183,
+        "column": 34,
+        "evidence": "claude -p \"Add error handling to src/api.ts\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 190,
+        "column": 25,
+        "evidence": "**Detailed docs:** See `references/claude-code.md`",
+        "target_path": "references/claude-code.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 206,
+        "column": 31,
+        "evidence": "gemini \"Add error handling to src/api.ts\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 213,
+        "column": 25,
+        "evidence": "**Detailed docs:** See `references/gemini-cli.md`",
+        "target_path": "references/gemini-cli.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 35,
+    "findings_after_filtering": 35
+  },
+  "_meta": {
+    "cisco_result": "multi-coding-agent-scan.json",
+    "skill_dir": "skills/clawhub-multi-coding-agent",
+    "scanned_at": "2026-10-22T04:32:11.673134+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

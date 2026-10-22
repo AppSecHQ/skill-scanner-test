@@ -1,0 +1,1422 @@
+{
+  "skill": {
+    "name": "hypogenic",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/K-Dense-AI-scientific-agent-skills/skills/hypogenic",
+    "scanned_at": "2026-10-22T04:35:59.534574+00:00"
+  },
+  "risk_assessment": {
+    "score": 99,
+    "severity": "CRITICAL",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "HIGH"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 331,
+      "executable": false,
+      "size_bytes": 14348,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "assets/dataset_manifest.example.json",
+      "type": "json",
+      "lines": 30,
+      "executable": false,
+      "size_bytes": 874,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "assets/result.example.json",
+      "type": "json",
+      "lines": 18,
+      "executable": false,
+      "size_bytes": 448,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "assets/run_config.example.json",
+      "type": "json",
+      "lines": 46,
+      "executable": false,
+      "size_bytes": 1227,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "assets/task_config.example.yaml",
+      "type": "yaml",
+      "lines": 38,
+      "executable": false,
+      "size_bytes": 1325,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/configuration.md",
+      "type": "markdown",
+      "lines": 144,
+      "executable": false,
+      "size_bytes": 5776,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/datasets.md",
+      "type": "markdown",
+      "lines": 152,
+      "executable": false,
+      "size_bytes": 6754,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/evaluation.md",
+      "type": "markdown",
+      "lines": 158,
+      "executable": false,
+      "size_bytes": 5455,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/security.md",
+      "type": "markdown",
+      "lines": 171,
+      "executable": false,
+      "size_bytes": 7714,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/sources.md",
+      "type": "markdown",
+      "lines": 107,
+      "executable": false,
+      "size_bytes": 8247,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/upstream.md",
+      "type": "markdown",
+      "lines": 267,
+      "executable": false,
+      "size_bytes": 13554,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/__init__.py",
+      "type": "python",
+      "lines": 1,
+      "executable": true,
+      "size_bytes": 64,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/_common.py",
+      "type": "python",
+      "lines": 1312,
+      "executable": true,
+      "size_bytes": 45618,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/audit_dataset.py",
+      "type": "python",
+      "lines": 412,
+      "executable": true,
+      "size_bytes": 13671,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/evaluate_local.py",
+      "type": "python",
+      "lines": 250,
+      "executable": true,
+      "size_bytes": 7925,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/inspect_outputs.py",
+      "type": "python",
+      "lines": 166,
+      "executable": true,
+      "size_bytes": 5771,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/plan_run.py",
+      "type": "python",
+      "lines": 249,
+      "executable": true,
+      "size_bytes": 8527,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/validate_config.py",
+      "type": "python",
+      "lines": 192,
+      "executable": true,
+      "size_bytes": 5878,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "OH1",
+      "finding_id": "finding-f0fe5b4939b94fc299fe51fb07c0051e",
+      "category": "Output Handling",
+      "pattern": "Unvalidated Output Injection",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/security.md",
+        "start_line": 144,
+        "end_line": null,
+        "start_column": 21
+      },
+      "finding": "execute model code",
+      "explanation": "Model output is used without validation or sanitization. Unvalidated output injected into downstream contexts (SQL, shell, HTML) enables injection attacks and arbitrary code execution.",
+      "remediation": "Validate and sanitize all model output before using it in downstream contexts. Use parameterized queries for SQL, shell quoting for commands, and HTML encoding for web output.",
+      "code_snippet": "\nThe pinned local-wrapper module imports vLLM at module load, so the base install\ndoes not reliably provide even the Hugging Face wrapper. Do not install the\nheavy `dev` extra or execute model code merely to make a help path work.\n\n## Supply-chain controls\n",
+      "intent": null,
+      "tags": [
+        "Output Handling"
+      ],
+      "evidence": {},
+      "match_fingerprint": "1801ae0cec6f788a208aab9cb40f90d76a06b8b4cbb901291982a0f72b809591",
+      "occurrences": [
+        {
+          "file": "references/security.md",
+          "start_line": 144,
+          "end_line": null,
+          "start_column": 21
+        }
+      ]
+    },
+    {
+      "id": "LP1",
+      "finding_id": "finding-b411b5975df14831ad5f0774ba0b9bfe",
+      "category": "MCP Least Privilege",
+      "pattern": "Code capability 'env' detected in scripts/_common.py but not covered by declared permissions.",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "scripts/_common.py",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Code capability 'env' detected in scripts/_common.py but not covered by declared permissions.",
+      "explanation": "The skill uses 'env' capability that is not covered by the declared 'allowed-tools' preapproval. Review the host runtime's actual enforcement policy; runtime permissions are unknown unless separately verified, and this declaration alone does not establish a permission ceiling.",
+      "remediation": "Review whether the 'env' capability is required and whether the host runtime policy permits it; runtime permissions are unknown unless separately verified. Remove code that does not need the capability; do not broaden 'allowed-tools' preapproval solely to silence this finding.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "scripts/_common.py",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-ea7ee735e489462d955557bbae6f196b",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/_common.py",
+        "start_line": 96,
+        "end_line": null,
+        "start_column": 36
+      },
+      "finding": ".env\"",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "        (\"http:\", \"https:\", \"ftp:\", \"s3:\", \"gs:\", \"file:\")\n    ):\n        raise CliError(\"URLs are not accepted as local paths\")\n    if any(part.lower().startswith(\".env\") for part in Path(value).parts):\n        raise CliError(\".env files and directories are not accepted\")\n\n",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "933e7e6dda63d615cb9ac0846682521855cd79c351e84f3fa87d934c18b752db",
+      "occurrences": [
+        {
+          "file": "scripts/_common.py",
+          "start_line": 96,
+          "end_line": null,
+          "start_column": 36
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-3344e864af514fcfa26fd8aa81605879",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.6,
+      "location": {
+        "file": "scripts/_common.py",
+        "start_line": 97,
+        "end_line": null,
+        "start_column": 24
+      },
+      "finding": ".env ",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "    ):\n        raise CliError(\"URLs are not accepted as local paths\")\n    if any(part.lower().startswith(\".env\") for part in Path(value).parts):\n        raise CliError(\".env files and directories are not accepted\")\n\n\ndef _absolute_lexical(path: Path) -> Path:",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "66ef81c27c03406fd9935e5fc86fc4126d7150c15b8d076fdc528d05cea7c7bf",
+      "occurrences": [
+        {
+          "file": "scripts/_common.py",
+          "start_line": 97,
+          "end_line": null,
+          "start_column": 24
+        }
+      ]
+    },
+    {
+      "id": "EA2",
+      "finding_id": "finding-69366efaad9c43daa22424c126ecb533",
+      "category": "Excessive Agency",
+      "pattern": "Autonomous Decision Making",
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/security.md",
+        "start_line": 72,
+        "end_line": null,
+        "start_column": 35
+      },
+      "finding": "automatically delete",
+      "explanation": "Skill enables autonomous high-impact decisions without human-in-the-loop verification. Critical operations (destructive commands, financial transactions, data deletion) should require explicit user confirmation.",
+      "remediation": "Add human-in-the-loop confirmation for destructive, irreversible, or high-impact operations. Never auto-execute commands that modify files, send data, or alter system state.",
+      "code_snippet": "\nAnthropic's [commercial retention\npage](https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data)\nstates that API inputs/outputs are automatically deleted within 30 days.\nAnthropic's [API retention\ndocumentation](https://platform.claude.com/docs/en/manage-claude/api-and-data-retention)\ndescribes eligible ZDR arrangements, feature exceptions, legal/misuse",
+      "intent": null,
+      "tags": [
+        "Excessive Agency"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ee6af536eee1323b1733eced8f31a554eb978c75dd7c3210f0083aa6f84ed87a",
+      "occurrences": [
+        {
+          "file": "references/security.md",
+          "start_line": 72,
+          "end_line": null,
+          "start_column": 35
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-a3df450527a74ca4b77c97e09689c086",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/sources.md",
+        "start_line": 16,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "https://api.github.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "  dependencies, artifact hashes and trusted-publisher provenance. The 96,169-byte\n  wheel was downloaded and its SHA-256 matched the metadata.\n- [Official repository](https://github.com/ChicagoHAI/hypothesis-generation),\n  [latest release](https://api.github.com/repos/ChicagoHAI/hypothesis-generation/releases/latest),\n  and [default branch](https://api.github.com/repos/ChicagoHAI/hypothesis-generation/commits/master):\n  v0.3.5 and master `bd37a3129a2f98ee586f545a57b10b59496eedad` remain unchanged.\n- [Pinned release source](https://github.com/ChicagoHAI/hypothesis-generation/tree/8c3800ccae155e333fac5b530afa8abdaac38300)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "061abab0022b7a79cdf98b2721e4ad6d47cd4ad12584ecf052130ef51f05d966",
+      "occurrences": [
+        {
+          "file": "references/sources.md",
+          "start_line": 16,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-5fae87022c8241839ac430388f4cb9db",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/sources.md",
+        "start_line": 17,
+        "end_line": null,
+        "start_column": 23
+      },
+      "finding": "https://api.github.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "  wheel was downloaded and its SHA-256 matched the metadata.\n- [Official repository](https://github.com/ChicagoHAI/hypothesis-generation),\n  [latest release](https://api.github.com/repos/ChicagoHAI/hypothesis-generation/releases/latest),\n  and [default branch](https://api.github.com/repos/ChicagoHAI/hypothesis-generation/commits/master):\n  v0.3.5 and master `bd37a3129a2f98ee586f545a57b10b59496eedad` remain unchanged.\n- [Pinned release source](https://github.com/ChicagoHAI/hypothesis-generation/tree/8c3800ccae155e333fac5b530afa8abdaac38300)\n  and [pyproject](https://github.com/ChicagoHAI/hypothesis-generation/blob/8c3800ccae155e333fac5b530afa8abdaac38300/pyproject.toml):",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "061abab0022b7a79cdf98b2721e4ad6d47cd4ad12584ecf052130ef51f05d966",
+      "occurrences": [
+        {
+          "file": "references/sources.md",
+          "start_line": 17,
+          "end_line": null,
+          "start_column": 23
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-2a32a421c8f444f4b614216c19425eb0",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/sources.md",
+        "start_line": 52,
+        "end_line": null,
+        "start_column": 23
+      },
+      "finding": "https://api.github.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "## Datasets\n\n- [HypoBench GitHub repository](https://github.com/ChicagoHAI/HypoBench-datasets)\n  and [default commit](https://api.github.com/repos/ChicagoHAI/HypoBench-datasets/commits/main):\n  remain at `7e4bbc341ee90b7efaa607f67a81543cd68cdf2e`.\n- [Pinned dataset tree](https://github.com/ChicagoHAI/HypoBench-datasets/tree/7e4bbc341ee90b7efaa607f67a81543cd68cdf2e):\n  the deceptive-review config and train/validation/test JSON hashes were",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "061abab0022b7a79cdf98b2721e4ad6d47cd4ad12584ecf052130ef51f05d966",
+      "occurrences": [
+        {
+          "file": "references/sources.md",
+          "start_line": 52,
+          "end_line": null,
+          "start_column": 23
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-349fab506ddb43f99c76544ac286dd4d",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/upstream.md",
+        "start_line": 96,
+        "end_line": null,
+        "start_column": 16
+      },
+      "finding": "https://api.openai.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "\n| Wrapper | Default request | Authentication | Request / returned value |\n| --- | --- | --- | --- |\n| `gpt` | `POST https://api.openai.com/v1/chat/completions` | SDK Bearer API key | `model`, chat `messages`, `max_tokens`, `temperature`, `n`; reads `usage.prompt_tokens`, `usage.completion_tokens`, then `choices[0].message.content` |\n| `claude` | `POST https://api.anthropic.com/v1/messages` | SDK `x-api-key` and `anthropic-version: 2023-06-01` | Extracts one system message into top-level `system`; sends remaining `messages`, `model`, `max_tokens`, `temperature`; reads only `content[0].text` |\n\nCurrent [OpenAI Chat Completions documentation](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "49130770b598873cb46b4c0a98b1cf27c95fe909d4c07e88c505e6f0a11eb2bf",
+      "occurrences": [
+        {
+          "file": "references/upstream.md",
+          "start_line": 96,
+          "end_line": null,
+          "start_column": 16
+        }
+      ]
+    },
+    {
+      "id": "E1",
+      "finding_id": "finding-978dba517f11400c987dcc3e233d81a7",
+      "category": "Data Exfiltration",
+      "pattern": "External Transmission",
+      "severity": "MEDIUM",
+      "confidence": 0.5,
+      "location": {
+        "file": "references/upstream.md",
+        "start_line": 97,
+        "end_line": null,
+        "start_column": 19
+      },
+      "finding": "https://api.anthropic.com/",
+      "explanation": "Data is being sent to an external URL. This could be legitimate telemetry or data exfiltration. Manual review is recommended.",
+      "remediation": "Verify the destination URL is trusted and necessary. Remove or replace with documented APIs. Ensure no secrets, tokens, or PII are transmitted.",
+      "code_snippet": "| Wrapper | Default request | Authentication | Request / returned value |\n| --- | --- | --- | --- |\n| `gpt` | `POST https://api.openai.com/v1/chat/completions` | SDK Bearer API key | `model`, chat `messages`, `max_tokens`, `temperature`, `n`; reads `usage.prompt_tokens`, `usage.completion_tokens`, then `choices[0].message.content` |\n| `claude` | `POST https://api.anthropic.com/v1/messages` | SDK `x-api-key` and `anthropic-version: 2023-06-01` | Extracts one system message into top-level `system`; sends remaining `messages`, `model`, `max_tokens`, `temperature`; reads only `content[0].text` |\n\nCurrent [OpenAI Chat Completions documentation](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)\nmarks `max_tokens` deprecated and incompatible with o-series models. HypoGeniC",
+      "intent": null,
+      "tags": [
+        "Data Exfiltration"
+      ],
+      "evidence": {},
+      "match_fingerprint": "68762c738f2c1125ac179b20c291291823571bdf6301d390e3134410c017da10",
+      "occurrences": [
+        {
+          "file": "references/upstream.md",
+          "start_line": 97,
+          "end_line": null,
+          "start_column": 19
+        }
+      ]
+    },
+    {
+      "id": "AST10",
+      "finding_id": "finding-65998730c2514cb3a151c11e71106d5a",
+      "category": "Dangerous Code Execution",
+      "pattern": "Insecure deserialization: yaml.load() with an unsafe Loader",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/_common.py",
+        "start_line": 307,
+        "end_line": 307,
+        "start_column": 15,
+        "end_column": 55
+      },
+      "finding": "yaml.load(text, Loader=UniqueSafeLoader)",
+      "explanation": "Untrusted data is passed to an insecure deserializer (pickle, marshal, dill, jsonpickle, joblib, yaml.load without a safe Loader, or torch.load without weights_only). These deserializers reconstruct arbitrary objects and invoke callables during loading, so deserializing attacker-controlled bytes is equivalent to arbitrary code execution.",
+      "remediation": "Never deserialize untrusted input with pickle/marshal/dill/jsonpickle/joblib. Use a data-only format such as JSON. For YAML use yaml.safe_load; for PyTorch use torch.load(..., weights_only=True); for numpy avoid allow_pickle=True. If a binary format is unavoidable, verify an HMAC/signature over the bytes before loading.",
+      "code_snippet": "        construct_mapping,\n    )\n    try:\n        return yaml.load(text, Loader=UniqueSafeLoader)\n    except CliError:\n        raise\n    except yaml.YAMLError as exc:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "db1627298afce39b9867e67497f5fc3a11eac7a53c9d62bcfa45faba4a9f8633",
+      "occurrences": [
+        {
+          "file": "scripts/_common.py",
+          "start_line": 307,
+          "end_line": 307,
+          "start_column": 15,
+          "end_column": 55
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 18,
+    "scanned_components": 18,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 18,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 8,
+        "end_line": 8,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 59,
+        "end_line": 59,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 198,
+        "end_line": 198,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 232,
+        "end_line": 232,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 240,
+        "end_line": 240,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 264,
+        "end_line": 264,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 8,
+        "completed": 8,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 18,
+        "completed": 18,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 8,
+        "column": 13,
+        "evidence": "version: \"1.4\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 31,
+        "column": 8,
+        "evidence": "use `../hypothesis-generation/SKILL.md`. For open-ended ideation, use the",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 59,
+        "column": 18,
+        "evidence": "links it to tag `v0.3.5` and commit",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 72,
+        "column": 38,
+        "evidence": "install an unpinned branch tip. See `references/upstream.md` for package/source",
+        "target_path": "references/upstream.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 90,
+        "column": 4,
+        "evidence": "- `assets/run_config.example.json` is this skill's **local review policy**. It",
+        "target_path": "assets/run_config.example.json",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 100,
+        "column": 9,
+        "evidence": "python3 scripts/validate_config.py run \\",
+        "target_path": "scripts/validate_config.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 101,
+        "column": 11,
+        "evidence": "--input assets/run_config.example.json \\",
+        "target_path": "assets/run_config.example.json",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 109,
+        "column": 10,
+        "evidence": "python scripts/validate_config.py task \\",
+        "target_path": "scripts/validate_config.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 110,
+        "column": 11,
+        "evidence": "--input assets/task_config.example.yaml \\",
+        "target_path": "assets/task_config.example.yaml",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 119,
+        "column": 7,
+        "evidence": "Read `references/configuration.md` before adapting either template.",
+        "target_path": "references/configuration.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 139,
+        "column": 9,
+        "evidence": "python3 scripts/audit_dataset.py \\",
+        "target_path": "scripts/audit_dataset.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 140,
+        "column": 14,
+        "evidence": "--manifest assets/dataset_manifest.example.json \\",
+        "target_path": "assets/dataset_manifest.example.json",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 150,
+        "column": 2,
+        "evidence": "`references/datasets.md` before deriving a cleaned snapshot.",
+        "target_path": "references/datasets.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 158,
+        "column": 9,
+        "evidence": "python3 scripts/plan_run.py \\",
+        "target_path": "scripts/plan_run.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 194,
+        "column": 22,
+        "evidence": "the pinned help and `references/upstream.md` first.",
+        "target_path": "references/upstream.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 198,
+        "column": 16,
+        "evidence": "- task class: `hypogenic.tasks.BaseTask` (not exported from package root);",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 213,
+        "column": 17,
+        "evidence": "workarounds in `references/upstream.md`.",
+        "target_path": "references/upstream.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 220,
+        "column": 35,
+        "evidence": "request/response restrictions in `references/upstream.md` before execution.",
+        "target_path": "references/upstream.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 231,
+        "column": 9,
+        "evidence": "python3 scripts/inspect_outputs.py hypotheses \\",
+        "target_path": "scripts/inspect_outputs.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 232,
+        "column": 11,
+        "evidence": "--input outputs/hypotheses.json \\",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 239,
+        "column": 9,
+        "evidence": "python3 scripts/inspect_outputs.py results \\",
+        "target_path": "scripts/inspect_outputs.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 240,
+        "column": 11,
+        "evidence": "--input results/test_predictions.json \\",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 253,
+        "column": 9,
+        "evidence": "python3 scripts/evaluate_local.py plan \\",
+        "target_path": "scripts/evaluate_local.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 263,
+        "column": 9,
+        "evidence": "python3 scripts/evaluate_local.py report \\",
+        "target_path": "scripts/evaluate_local.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 264,
+        "column": 13,
+        "evidence": "--results results/test_predictions.json \\",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 271,
+        "column": 26,
+        "evidence": "[Redis response caching](https://github.com/ChicagoHAI/hypothesis-generation)",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 276,
+        "column": 2,
+        "evidence": "`references/evaluation.md`.",
+        "target_path": "references/evaluation.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 298,
+        "column": 4,
+        "evidence": "- `references/configuration.md` \u2014 official task YAML versus local run policy",
+        "target_path": "references/configuration.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 299,
+        "column": 4,
+        "evidence": "- `references/upstream.md` \u2014 package, source, CLI, providers, and known quirks",
+        "target_path": "references/upstream.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 300,
+        "column": 4,
+        "evidence": "- `references/datasets.md` \u2014 pinned repositories, hashes, splits, and audits",
+        "target_path": "references/datasets.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 301,
+        "column": 4,
+        "evidence": "- `references/evaluation.md` \u2014 local schemas, metrics, and scientific limits",
+        "target_path": "references/evaluation.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 302,
+        "column": 4,
+        "evidence": "- `references/security.md` \u2014 credentials, privacy, prompt injection, and logs",
+        "target_path": "references/security.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 303,
+        "column": 4,
+        "evidence": "- `references/sources.md` \u2014 dated official sources used for this refresh",
+        "target_path": "references/sources.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 307,
+        "column": 4,
+        "evidence": "- `scripts/validate_config.py` \u2014 schema and named-env presence checks",
+        "target_path": "scripts/validate_config.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 308,
+        "column": 4,
+        "evidence": "- `scripts/plan_run.py` \u2014 bounded token/cost preflight",
+        "target_path": "scripts/plan_run.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 309,
+        "column": 4,
+        "evidence": "- `scripts/audit_dataset.py` \u2014 manifest, checksum, schema, and leakage audit",
+        "target_path": "scripts/audit_dataset.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 310,
+        "column": 4,
+        "evidence": "- `scripts/inspect_outputs.py` \u2014 redacted hypothesis/result inspection",
+        "target_path": "scripts/inspect_outputs.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 311,
+        "column": 4,
+        "evidence": "- `scripts/evaluate_local.py` \u2014 model-free evaluation plan and report",
+        "target_path": "scripts/evaluate_local.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 11,
+    "findings_after_filtering": 11
+  },
+  "_meta": {
+    "cisco_result": "skills-hypogenic-scan.json",
+    "skill_dir": "skills/K-Dense-AI-scientific-agent-skills/skills/hypogenic",
+    "scanned_at": "2026-10-22T04:35:59.825661+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

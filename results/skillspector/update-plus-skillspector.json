@@ -1,0 +1,1044 @@
+{
+  "skill": {
+    "name": "update-plus",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/clawhub-update-plus",
+    "scanned_at": "2026-10-22T04:40:08.831102+00:00"
+  },
+  "risk_assessment": {
+    "score": 100,
+    "severity": "CRITICAL",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "HIGH"
+  },
+  "components": [
+    {
+      "path": "README.md",
+      "type": "markdown",
+      "lines": 230,
+      "executable": false,
+      "size_bytes": 5353,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 127,
+      "executable": false,
+      "size_bytes": 3576,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "bin/lib/backup.sh",
+      "type": "shell",
+      "lines": 225,
+      "executable": true,
+      "size_bytes": 6184,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "bin/lib/config.sh",
+      "type": "shell",
+      "lines": 160,
+      "executable": true,
+      "size_bytes": 4771,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "bin/lib/cron.sh",
+      "type": "shell",
+      "lines": 78,
+      "executable": true,
+      "size_bytes": 2472,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "bin/lib/notify.sh",
+      "type": "shell",
+      "lines": 93,
+      "executable": true,
+      "size_bytes": 2561,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "bin/lib/restore.sh",
+      "type": "shell",
+      "lines": 279,
+      "executable": true,
+      "size_bytes": 7166,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "bin/lib/update.sh",
+      "type": "shell",
+      "lines": 427,
+      "executable": true,
+      "size_bytes": 12195,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "bin/lib/utils.sh",
+      "type": "shell",
+      "lines": 168,
+      "executable": true,
+      "size_bytes": 4074,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "update-plus.example.json",
+      "type": "json",
+      "lines": 42,
+      "executable": false,
+      "size_bytes": 1087,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "YR1",
+      "finding_id": "finding-03094b94d989411fb6140424a3bf0872",
+      "category": "YARA Match",
+      "pattern": "YARA rule 'backdoor_persistence': Backdoor persistence with malicious payloads (shell commands, SSH key injection, hidden root users) [malware]",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "README.md",
+        "start_line": 48,
+        "end_line": null
+      },
+      "finding": "echo 'export PATH=\"$HOME/bin:$PATH\"' >> ~/.zshrc  # or ~/.bashrc",
+      "explanation": "YARA rule matched a known malware signature (reverse shell, backdoor, ransomware, C2 framework, or info stealer).",
+      "remediation": "Remove the malware payload or compromised file entirely. Investigate how it entered the skill and audit all other artifacts for additional indicators of compromise.",
+      "code_snippet": "Optional GPG encryption |\n| **Cloud Sync** | Upload backups to Google Drive, S3, Dropbox via rclone |\n| **Notifications** | Get notified via WhatsApp, Telegram, or Discord |\n| **Connection Retry** | Auto-retry on network failure (configurable) |\n\n## Installation\n\n```bash\ngit clone https://github.com/hopyky/update-plus.git ~/.openclaw/skills/update-plus\n```\n\n### Add to PATH\n\n```bash\nmkdir -p ~/bin\necho 'export PATH=\"$HOME/bin:$PATH\"' >> ~/.zshrc  # or ~/.bashrc\nsource ~/.zshrc\nln -sf ~/.openclaw/skills/update-plus/bin/update-plus ~/bin/update-plus\n```\n\n### Dependencies\n\n| Dependency | Required | Purpose |\n|------------|----------|---------|\n| `git` | Yes | Update skills from repositories |\n| `jq` | Yes | Parse JSON configuration |\n| `rsync` | Yes | Efficient file copying |\n| `rclone` | No | Cloud storage sync |\n| `gpg` | No | Backup encryption |\n\n## Configuration\n\nCreate `~/.openclaw/update-plus.json`:\n\n```json\n{\n  \"backup_dir\": \"~/.openclaw/backups\",\n  \"backup_before_update\": true,\n  \"",
+      "intent": null,
+      "tags": [
+        "YARA Match"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cdc61a1b98c86b15539322ccc6edacf06d97b9120df187ccf9578a88f56f8fe7",
+      "occurrences": [
+        {
+          "file": "README.md",
+          "start_line": 48,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "RA1",
+      "finding_id": "finding-c8ba55dee3b6463aa331186d2ba7d90a",
+      "category": "Rogue Agent",
+      "pattern": "Self-Modification",
+      "severity": "HIGH",
+      "confidence": 0.85,
+      "location": {
+        "file": "README.md",
+        "start_line": 57,
+        "end_line": null,
+        "start_column": 16
+      },
+      "finding": "Update skill",
+      "explanation": "Skill modifies its own code, configuration, or behavior at runtime. Self-modification enables an agent to escalate privileges, disable safety constraints, or install persistent backdoors.",
+      "remediation": "Prevent the skill from modifying its own code, SKILL.md, or configuration files. Treat skill files as read-only at runtime.",
+      "code_snippet": "\n| Dependency | Required | Purpose |\n|------------|----------|---------|\n| `git` | Yes | Update skills from repositories |\n| `jq` | Yes | Parse JSON configuration |\n| `rsync` | Yes | Efficient file copying |\n| `rclone` | No | Cloud storage sync |",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "10e90eae9d02dc511faa1fb7eebd12917a866212a274648e18eaf240ce9c7bb6",
+      "occurrences": [
+        {
+          "file": "README.md",
+          "start_line": 57,
+          "end_line": null,
+          "start_column": 16
+        }
+      ]
+    },
+    {
+      "id": "RA1",
+      "finding_id": "finding-2039cdf137dc4597b68907614fbf65c4",
+      "category": "Rogue Agent",
+      "pattern": "Self-Modification",
+      "severity": "HIGH",
+      "confidence": 0.85,
+      "location": {
+        "file": "bin/lib/update.sh",
+        "start_line": 252,
+        "end_line": null,
+        "start_column": 2
+      },
+      "finding": "Update skill",
+      "explanation": "Skill modifies its own code, configuration, or behavior at runtime. Self-modification enables an agent to escalate privileges, disable safety constraints, or install persistent backdoors.",
+      "remediation": "Prevent the skill from modifying its own code, SKILL.md, or configuration files. Treat skill files as read-only at runtime.",
+      "code_snippet": "  update_git_skills\n}\n\n# Update skills via git pull\nupdate_git_skills() {\n  local skills_dirs_json=$(get_skills_dirs)\n",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "10e90eae9d02dc511faa1fb7eebd12917a866212a274648e18eaf240ce9c7bb6",
+      "occurrences": [
+        {
+          "file": "bin/lib/update.sh",
+          "start_line": 252,
+          "end_line": null,
+          "start_column": 2
+        }
+      ]
+    },
+    {
+      "id": "RA1",
+      "finding_id": "finding-fd44b4968ea8444b80e21499eb25b1b8",
+      "category": "Rogue Agent",
+      "pattern": "Self-Modification",
+      "severity": "HIGH",
+      "confidence": 0.85,
+      "location": {
+        "file": "bin/lib/update.sh",
+        "start_line": 239,
+        "end_line": null,
+        "start_column": 23
+      },
+      "finding": "update skill",
+      "explanation": "Skill modifies its own code, configuration, or behavior at runtime. Self-modification enables an agent to escalate privileges, disable safety constraints, or install persistent backdoors.",
+      "remediation": "Prevent the skill from modifying its own code, SKILL.md, or configuration files. Treat skill files as read-only at runtime.",
+      "code_snippet": "# Update all skills\nupdate_skills() {\n  if [[ \"$DRY_RUN\" == true ]]; then\n    log_dry_run \"Would update skills\"\n    log_info \"Checking for skill updates...\"\n    update_git_skills\n    return 0",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ddff085d74589b81d2837424a54bc4aae34bbc754235d46e40aa14249ff29212",
+      "occurrences": [
+        {
+          "file": "bin/lib/update.sh",
+          "start_line": 239,
+          "end_line": null,
+          "start_column": 23
+        }
+      ]
+    },
+    {
+      "id": "TM1",
+      "finding_id": "finding-26348b112a8b4b30b0d942d987b26c11",
+      "category": "Tool Misuse",
+      "pattern": "Tool Parameter Abuse",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "bin/lib/update.sh",
+        "start_line": 317,
+        "end_line": null,
+        "start_column": 4
+      },
+      "finding": "git reset --hard",
+      "explanation": "Tool parameters are crafted to achieve unintended or unsafe behavior. Parameter abuse can bypass intended safety checks (e.g. shell=True, --force, dangerous glob patterns).",
+      "remediation": "Validate all tool parameters against an allowlist. Reject dangerous parameter values (shell=True, --force, -rf /) and use safe defaults.",
+      "code_snippet": "\n  if ! git pull --quiet 2>/dev/null; then\n    log_error \"$skill_name update failed, rolling back...\"\n    git reset --hard --quiet \"$current_commit\"\n    return 1\n  fi\n",
+      "intent": null,
+      "tags": [
+        "Tool Misuse"
+      ],
+      "evidence": {},
+      "match_fingerprint": "f21f5124192a6ca491d13034d2b1dcaae69642decbd659201773b11a2bc5c2a5",
+      "occurrences": [
+        {
+          "file": "bin/lib/update.sh",
+          "start_line": 317,
+          "end_line": null,
+          "start_column": 4
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-4cac9693a0d040b8b02170ca7ae0ea61",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "README.md",
+        "start_line": 65,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "Create `~/.openclaw",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "\n## Configuration\n\nCreate `~/.openclaw/update-plus.json`:\n\n```json\n{",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "36317713b8a0b970aa43c7872cef5ed2b9bde7930c9397c693a3b4aedd2dad01",
+      "occurrences": [
+        {
+          "file": "README.md",
+          "start_line": 65,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-f4fa7424442949d98f7aa4e3859ee701",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.6,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 62,
+        "end_line": null,
+        "start_column": 0
+      },
+      "finding": "Create `~/.openclaw",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "\n## Configuration\n\nCreate `~/.openclaw/update-plus.json`:\n\n```json\n{",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "36317713b8a0b970aa43c7872cef5ed2b9bde7930c9397c693a3b4aedd2dad01",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 62,
+          "end_line": null,
+          "start_column": 0
+        }
+      ]
+    },
+    {
+      "id": "LP3",
+      "finding_id": "finding-1319901e041a4085ba9b1fe55ec01953",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: shell.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: shell.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-bf8608ddfbd846e5ada9ff728f9e1da5",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.8,
+      "location": {
+        "file": "bin/lib/cron.sh",
+        "start_line": 6,
+        "end_line": null,
+        "start_column": 2
+      },
+      "finding": "Install cron job for",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "# Version: 4.0.3\n# For OpenClaw\n\n# Install cron job for automatic updates\ninstall_cron() {\n  local cron_schedule=\"${1:-0 2 * * *}\"  # Default: 2 AM daily\n  local script_path=\"${SCRIPT_DIR}/update-plus\"",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "d17b4a9461d0f9f6c8244e7dfbc203fbeac9b9b22200cddaa80fb1367588c129",
+      "occurrences": [
+        {
+          "file": "bin/lib/cron.sh",
+          "start_line": 6,
+          "end_line": null,
+          "start_column": 2
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-3dfc0ad41f13477184e37ef18e147ae7",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "bin/lib/cron.sh",
+        "start_line": 26,
+        "end_line": null,
+        "start_column": 5
+      },
+      "finding": "crontab -l",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "  local cron_cmd=\"${cron_schedule} PATH=${cron_path} ${script_path} update >> ${log_path} 2>&1\"\n\n  # Check if already installed\n  if crontab -l 2>/dev/null | grep -q \"update-plus\"; then\n    log_warning \"Cron job already installed. Use 'uninstall-cron' first to reinstall.\"\n    echo \"\"\n    echo \"Current cron entry:\"",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ae94da2449e2e257253c9244c39b330c10fe1283ba753053b5109d492e5143fa",
+      "occurrences": [
+        {
+          "file": "bin/lib/cron.sh",
+          "start_line": 26,
+          "end_line": null,
+          "start_column": 5
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-5e45700931fa4825ab5dbeb57c519750",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "bin/lib/cron.sh",
+        "start_line": 30,
+        "end_line": null,
+        "start_column": 4
+      },
+      "finding": "crontab -l",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "    log_warning \"Cron job already installed. Use 'uninstall-cron' first to reinstall.\"\n    echo \"\"\n    echo \"Current cron entry:\"\n    crontab -l 2>/dev/null | grep -A1 \"Update Plus\"\n    return 1\n  fi\n",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ae94da2449e2e257253c9244c39b330c10fe1283ba753053b5109d492e5143fa",
+      "occurrences": [
+        {
+          "file": "bin/lib/cron.sh",
+          "start_line": 30,
+          "end_line": null,
+          "start_column": 4
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-7ba84d39830047348d9b7f63ef363be4",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "bin/lib/cron.sh",
+        "start_line": 43,
+        "end_line": null,
+        "start_column": 4
+      },
+      "finding": "crontab -l",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "\n  # Append to crontab\n  {\n    crontab -l 2>/dev/null || true\n    echo \"\"\n    echo \"$cron_comment\"\n    echo \"$cron_cmd\"",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ae94da2449e2e257253c9244c39b330c10fe1283ba753053b5109d492e5143fa",
+      "occurrences": [
+        {
+          "file": "bin/lib/cron.sh",
+          "start_line": 43,
+          "end_line": null,
+          "start_column": 4
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-f030b518c89c472fbc11b27ae83c5cea",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "bin/lib/cron.sh",
+        "start_line": 59,
+        "end_line": null,
+        "start_column": 7
+      },
+      "finding": "crontab -l",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "\n# Uninstall cron job\nuninstall_cron() {\n  if ! crontab -l 2>/dev/null | grep -q \"update-plus\"; then\n    log_warning \"No cron job found for update-plus\"\n    return 1\n  fi",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ae94da2449e2e257253c9244c39b330c10fe1283ba753053b5109d492e5143fa",
+      "occurrences": [
+        {
+          "file": "bin/lib/cron.sh",
+          "start_line": 59,
+          "end_line": null,
+          "start_column": 7
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-7899165ed2d34920b180a212a7155eca",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "bin/lib/cron.sh",
+        "start_line": 67,
+        "end_line": null,
+        "start_column": 2
+      },
+      "finding": "crontab -l",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "  log_info \"Removing cron job...\"\n\n  # Remove lines containing update-plus\n  crontab -l 2>/dev/null | grep -v \"update-plus\" | grep -v \"Update Plus\" | crontab -\n\n  log_success \"Cron job removed!\"\n  return 0",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "ae94da2449e2e257253c9244c39b330c10fe1283ba753053b5109d492e5143fa",
+      "occurrences": [
+        {
+          "file": "bin/lib/cron.sh",
+          "start_line": 67,
+          "end_line": null,
+          "start_column": 2
+        }
+      ]
+    },
+    {
+      "id": "RA2",
+      "finding_id": "finding-d9e5dda708cc453d98271694df247c6e",
+      "category": "Rogue Agent",
+      "pattern": "Session Persistence",
+      "severity": "MEDIUM",
+      "confidence": 0.85,
+      "location": {
+        "file": "bin/lib/cron.sh",
+        "start_line": 51,
+        "end_line": null,
+        "start_column": 43
+      },
+      "finding": "crontab -e",
+      "explanation": "Skill establishes unauthorized persistence across sessions via cron jobs, startup scripts, or state files. Session persistence allows an attacker to maintain access beyond the current interaction.",
+      "remediation": "Remove any persistence mechanisms (cron jobs, startup scripts, state files). Skills should not maintain state across sessions without explicit user consent.",
+      "code_snippet": "\n  log_success \"Cron job installed!\"\n  echo \"\"\n  log_info \"To change schedule, edit with: crontab -e\"\n  log_info \"To remove, run: update-plus uninstall-cron\"\n\n  return 0",
+      "intent": null,
+      "tags": [
+        "Rogue Agent"
+      ],
+      "evidence": {},
+      "match_fingerprint": "8aaffab3a8c61287d22c6ed7b047f0277c66d1a25aab24af483b6aa288b4256d",
+      "occurrences": [
+        {
+          "file": "bin/lib/cron.sh",
+          "start_line": 51,
+          "end_line": null,
+          "start_column": 43
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 10,
+    "scanned_components": 9,
+    "coverage_percent": 90.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 9,
+    "partially_inspected_files": 1,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "static",
+        "reason_code": "static_parse_limit",
+        "message": "A security-relevant expression exceeded a bounded static parser's span limit.",
+        "path": "bin/lib/backup.sh",
+        "start_line": null,
+        "end_line": null,
+        "fatal": false,
+        "analyzers": [
+          "static_patterns_tool_misuse"
+        ]
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 8,
+        "completed": 8,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "degraded",
+        "planned_work": 10,
+        "completed": 9,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 10,
+        "completed": 10,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [],
+    "limitations": [
+      "Analyzer static_patterns_tool_misuse status: degraded."
+    ],
+    "findings_before_filtering": 15,
+    "findings_after_filtering": 15
+  },
+  "_meta": {
+    "cisco_result": "update-plus-scan.json",
+    "skill_dir": "skills/clawhub-update-plus",
+    "scanned_at": "2026-10-22T04:40:09.125806+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

@@ -1,0 +1,1435 @@
+{
+  "skill": {
+    "name": "yara-rule-authoring",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/trailofbits-skills/plugins/yara-authoring/skills/yara-rule-authoring",
+    "scanned_at": "2026-10-22T04:33:26.539085+00:00"
+  },
+  "risk_assessment": {
+    "score": 100,
+    "severity": "CRITICAL",
+    "recommendation": "DO_NOT_INSTALL",
+    "max_issue_severity": "CRITICAL"
+  },
+  "components": [
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 645,
+      "executable": false,
+      "size_bytes": 26749,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/MAL_Mac_ProtonRAT_Jan25.yar",
+      "type": "other",
+      "lines": 99,
+      "executable": false,
+      "size_bytes": 3493,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/MAL_NPM_SupplyChain_Jan25.yar",
+      "type": "other",
+      "lines": 170,
+      "executable": false,
+      "size_bytes": 5787,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/MAL_Win_Remcos_Jan25.yar",
+      "type": "other",
+      "lines": 103,
+      "executable": false,
+      "size_bytes": 3382,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/SUSP_CRX_SuspiciousPermissions.yar",
+      "type": "other",
+      "lines": 134,
+      "executable": false,
+      "size_bytes": 4552,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "examples/SUSP_JS_Obfuscation_Jan25.yar",
+      "type": "other",
+      "lines": 185,
+      "executable": false,
+      "size_bytes": 6185,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/crx-module.md",
+      "type": "markdown",
+      "lines": 214,
+      "executable": false,
+      "size_bytes": 6701,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/dex-module.md",
+      "type": "markdown",
+      "lines": 383,
+      "executable": false,
+      "size_bytes": 10384,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/performance.md",
+      "type": "markdown",
+      "lines": 333,
+      "executable": false,
+      "size_bytes": 8181,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/strings.md",
+      "type": "markdown",
+      "lines": 433,
+      "executable": false,
+      "size_bytes": 11754,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/style-guide.md",
+      "type": "markdown",
+      "lines": 257,
+      "executable": false,
+      "size_bytes": 8114,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/testing.md",
+      "type": "markdown",
+      "lines": 399,
+      "executable": false,
+      "size_bytes": 13319,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/atom_analyzer.py",
+      "type": "python",
+      "lines": 526,
+      "executable": true,
+      "size_bytes": 15551,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/pyproject.toml",
+      "type": "toml",
+      "lines": 25,
+      "executable": false,
+      "size_bytes": 553,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/yara_lint.py",
+      "type": "python",
+      "lines": 631,
+      "executable": true,
+      "size_bytes": 19230,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "workflows/rule-development.md",
+      "type": "markdown",
+      "lines": 493,
+      "executable": false,
+      "size_bytes": 13217,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "YR3",
+      "finding_id": "finding-55d18407ebbc4e78a9401bc75da4e28c",
+      "category": "YARA Match",
+      "pattern": "YARA rule 'crypto_coinjacking': Browser-based cryptojacking scripts (CoinHive, CryptoLoot, etc.) [cryptominers]",
+      "severity": "CRITICAL",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/crx-module.md",
+        "start_line": 171,
+        "end_line": null
+      },
+      "finding": "coinhive.min.js",
+      "explanation": "YARA rule matched cryptocurrency mining indicators (stratum protocol, mining pools, miner binaries, or cryptojacking scripts).",
+      "remediation": "Remove all cryptocurrency mining code, pool references, and miner binaries. Mining in agent skills is unauthorized resource abuse. Report the skill as malicious.",
+      "code_snippet": "sing signatures\"\n        score = 60\n\n    condition:\n        crx.is_crx and\n        not for any sig in crx.signatures : (sig.verified)\n}\n```\n\n### Combine with String Patterns\n\n```yara\nimport \"crx\"\n\nrule SUSP_CRX_CryptoMiner\n{\n    meta:\n        description = \"Detects potential cryptomining extensions\"\n        score = 80\n\n    strings:\n        $miner1 = \"CoinHive\" ascii wide nocase\n        $miner2 = \"coinhive.min.js\" ascii\n        $miner3 = /Miner\\.(start|stop)\\s*\\(/\n        $wasm_miner = \"cryptonight\" ascii\n        $pool_stratum = /stratum\\+tcp:\\/\\//\n\n    condition:\n        crx.is_crx and\n\n        // Needs background execution\n        for any perm in crx.permissions : (\n            perm == \"background\" or perm == \"alarms\"\n        ) and\n\n        // Miner indicators\n        (2 of ($miner*) or $wasm_miner or $pool_stratum)\n}\n```\n\n## Best Practices\n\n1. **Always validate file type first** \u2014 Start conditions with `crx.is_crx`\n\n2. **Don't over-match on common permissions** \u2014 `storage`, `acti",
+      "intent": null,
+      "tags": [
+        "YARA Match"
+      ],
+      "evidence": {},
+      "match_fingerprint": "4ae5a7cca84a4b42e83561589f2bb14f6a66472e77491faa023dede2f05ba63c",
+      "occurrences": [
+        {
+          "file": "references/crx-module.md",
+          "start_line": 171,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "YR1",
+      "finding_id": "finding-7c77bc76e5e44e028b2a17ac3e60da93",
+      "category": "YARA Match",
+      "pattern": "YARA rule 'c2_framework_indicators': Command-and-control framework indicators (Cobalt Strike, Metasploit, Sliver, etc.) [malware]",
+      "severity": "CRITICAL",
+      "confidence": 0.85,
+      "location": {
+        "file": "references/style-guide.md",
+        "start_line": 15,
+        "end_line": null
+      },
+      "finding": "CobaltStrike; CobaltStrike; CobaltStrike; CobaltStrike; CobaltStrike; CobaltStrike",
+      "explanation": "YARA rule matched a known malware signature (reverse shell, backdoor, ransomware, C2 framework, or info stealer).",
+      "remediation": "Remove the malware payload or compromised file entirely. Investigate how it entered the skill and audit all other artifacts for additional indicators of compromise.",
+      "code_snippet": " and Metadata\n\nConsistent naming for maintainable rule sets.\n\n## Naming Convention\n\n```\n{CATEGORY}_{PLATFORM}_{FAMILY}_{VARIANT}_{DATE}\n```\n\n| Component | Description | Examples |\n|-----------|-------------|----------|\n| CATEGORY | Threat classification | MAL, HKTL, WEBSHELL, EXPL, SUSP |\n| PLATFORM | Target OS/environment | Win, Lnx, Mac, Android, Multi |\n| FAMILY | Malware family name | Emotet, CobaltStrike, LockBit |\n| VARIANT | Specific variant/component | Loader, Beacon, Config |\n| DATE | Creation date (MonthYear format) | Jan25, May23 |\n\n### Category Prefixes\n\n| Prefix | Meaning | Use When |\n|--------|---------|----------|\n| `MAL_` | Confirmed malware | Verified malicious code |\n| `HKTL_` | Hacking tool | Dual-use tools (Mimikatz, Cobalt Strike) |\n| `WEBSHELL_` | Web shell | PHP/ASP/JSP backdoors |\n| `EXPL_` | Exploit | Exploit code or shellcode |\n| `VULN_` | Vulnerable | Vulnerable software patterns |\n| `SUSP_` | Suspicious | Lower confidence, may FP |\n| `PUA_` | Potentially unw",
+      "intent": null,
+      "tags": [
+        "YARA Match"
+      ],
+      "evidence": {},
+      "match_fingerprint": "93fc822f66cae50b7becfb6345b800d0f7fd25301778af1425d2ca7ecdfec84e",
+      "occurrences": [
+        {
+          "file": "references/style-guide.md",
+          "start_line": 15,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "AE1",
+      "finding_id": "finding-dfdfa4362ac8451ba42dc2b6ef2b2364",
+      "category": "analysis-evasion",
+      "pattern": "Incomplete referenced artifact analysis",
+      "severity": "HIGH",
+      "confidence": 1.0,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 505,
+        "end_line": null
+      },
+      "finding": "references/testing.md (partial)",
+      "explanation": "Referenced artifact was not completely inspected",
+      "remediation": "Review the reported expression and analyzer's parsing limitation; correct the scanner if it misinterprets valid source, then rerun the scan. Keep required references; incomplete analysis is not proof of malicious evasion.",
+      "code_snippet": "See [testing.md](references/testing.md) for detailed validation workflow and FP investigation.",
+      "intent": null,
+      "tags": [
+        "coverage",
+        "reference",
+        "target-disposition:partial"
+      ],
+      "evidence": {
+        "target_path": "references/testing.md",
+        "target_disposition": "partial",
+        "reasons": [
+          {
+            "reason_code": "static_parse_limit",
+            "message": "A security-relevant expression exceeded a bounded static parser's span limit.",
+            "phase": "static",
+            "analyzers": [
+              "static_patterns_tool_misuse"
+            ]
+          }
+        ]
+      },
+      "match_fingerprint": "94dc3d188b899e36206c64d816226e334efb683a51e8ab4c122fccccacff7280",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 505,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "AE1",
+      "finding_id": "finding-be6a4fa3b65e4fd0975ca3031709d159",
+      "category": "analysis-evasion",
+      "pattern": "Incomplete referenced artifact analysis",
+      "severity": "HIGH",
+      "confidence": 1.0,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 534,
+        "end_line": null
+      },
+      "finding": "references/testing.md (partial)",
+      "explanation": "Referenced artifact was not completely inspected",
+      "remediation": "Review the reported expression and analyzer's parsing limitation; correct the scanner if it misinterprets valid source, then rerun the scan. Keep required references; incomplete analysis is not proof of malicious evasion.",
+      "code_snippet": "| Testing and validation | [testing.md](references/testing.md) |",
+      "intent": null,
+      "tags": [
+        "coverage",
+        "reference",
+        "target-disposition:partial"
+      ],
+      "evidence": {
+        "target_path": "references/testing.md",
+        "target_disposition": "partial",
+        "reasons": [
+          {
+            "reason_code": "static_parse_limit",
+            "message": "A security-relevant expression exceeded a bounded static parser's span limit.",
+            "phase": "static",
+            "analyzers": [
+              "static_patterns_tool_misuse"
+            ]
+          }
+        ]
+      },
+      "match_fingerprint": "94dc3d188b899e36206c64d816226e334efb683a51e8ab4c122fccccacff7280",
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 534,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-da25403d94ac461dbd89138bf96c93bf",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "examples/MAL_Mac_ProtonRAT_Jan25.yar",
+        "start_line": 84,
+        "end_line": null,
+        "start_column": 18
+      },
+      "finding": "keychain",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "\n        // Credential theft indicators\n        $cred1 = \"security find-generic-password\" ascii\n        $cred2 = \"keychain\" ascii nocase\n\n        // Persistence paths\n        $persist1 = \"Library/LaunchAgents\" ascii",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "cf159af5f3c5aa20214f7ff51b2ec06e8190ff1ab76c35f09188a749bd35c424",
+      "occurrences": [
+        {
+          "file": "examples/MAL_Mac_ProtonRAT_Jan25.yar",
+          "start_line": 84,
+          "end_line": null,
+          "start_column": 18
+        }
+      ]
+    },
+    {
+      "id": "AR2",
+      "finding_id": "finding-6b5aacad5363482786dd44812a4acf4e",
+      "category": "Anti-Refusal",
+      "pattern": "Anti-Refusal Statement",
+      "severity": "HIGH",
+      "confidence": 0.8,
+      "location": {
+        "file": "references/performance.md",
+        "start_line": 333,
+        "end_line": 333,
+        "start_column": 26,
+        "end_column": 37
+      },
+      "finding": "no warnings",
+      "explanation": "Skill instructs the agent to omit warnings, disclaimers, or ethical commentary. Stripping safety caveats hides risk from the user and is a common jailbreak preamble.",
+      "remediation": "Remove instructions that suppress warnings, disclaimers, or ethical commentary. Let the agent surface safety-relevant caveats to the user.",
+      "code_snippet": "- [ ] Conditions ordered: cheap \u2192 expensive\n- [ ] Module checks pre-filtered with magic bytes/filesize\n- [ ] Tested against large corpus for timing\n- [ ] Atom analyzer shows no warnings",
+      "intent": null,
+      "tags": [
+        "Anti-Refusal"
+      ],
+      "evidence": {},
+      "match_fingerprint": "6c8054857f33a9ba7845d7c88384ccfa0cdb75d2cd98c594df12b25a3c301d9c",
+      "occurrences": [
+        {
+          "file": "references/performance.md",
+          "start_line": 333,
+          "end_line": 333,
+          "start_column": 26,
+          "end_column": 37
+        }
+      ]
+    },
+    {
+      "id": "YR1",
+      "finding_id": "finding-4d806646025e43b0b42cdfb4126bb044",
+      "category": "YARA Match",
+      "pattern": "YARA rule 'info_stealer': Information stealer patterns (credential harvesting, browser data theft) [malware]",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "references/strings.md",
+        "start_line": 420,
+        "end_line": null
+      },
+      "finding": "chrome_login = \"Login Data",
+      "explanation": "YARA rule matched a known malware signature (reverse shell, backdoor, ransomware, C2 framework, or info stealer).",
+      "remediation": "Remove the malware payload or compromised file entirely. Investigate how it entered the skill and audit all other artifacts for additional indicators of compromise.",
+      "code_snippet": "     // Every API client\n$bad = /https?:\\/\\//      // Every URL\n```\n\n**Combine for specificity:**\n\n```yara\nstrings:\n    $cred_path = /\\.(npmrc|env|ssh\\/id_rsa|aws\\/credentials)/\n    $read_file = /fs\\.readFile|readFileSync/\n    $discord = /discord\\.com\\/api\\/webhooks/\n\ncondition:\n    $cred_path and $read_file and $discord\n```\n\n### Credential Theft Patterns\n\n```yara\n// Browser credential databases\n$chrome_login = \"Login Data\"\n$firefox_logins = \"logins.json\"\n\n// Config file paths\n$npmrc = \".npmrc\"\n$ssh_key = /\\.ssh\\/(id_rsa|id_ed25519)/\n$aws_creds = \".aws/credentials\"\n$env_file = /\\.env(\\.local)?/\n\n// Combined with file read = suspicious\ncondition:\n    any of ($chrome_*, $firefox_*, $npmrc, $ssh_*, $aws_*, $env_*) and\n    any of ($read_file_*)\n```\n",
+      "intent": null,
+      "tags": [
+        "YARA Match"
+      ],
+      "evidence": {},
+      "match_fingerprint": "0aed88d51b691ca409fc86102d00219fb4facb3a701d830af025c7ac46f1d375",
+      "occurrences": [
+        {
+          "file": "references/strings.md",
+          "start_line": 420,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-1b2091abb96d495d865e82dcbec81176",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.7,
+      "location": {
+        "file": "references/strings.md",
+        "start_line": 424,
+        "end_line": null,
+        "start_column": 10
+      },
+      "finding": ".npmrc",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "$firefox_logins = \"logins.json\"\n\n// Config file paths\n$npmrc = \".npmrc\"\n$ssh_key = /\\.ssh\\/(id_rsa|id_ed25519)/\n$aws_creds = \".aws/credentials\"\n$env_file = /\\.env(\\.local)?/",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "90db6f55d69f559161a2849fde8edffb507139938d60d5919717abb304e0abfe",
+      "occurrences": [
+        {
+          "file": "references/strings.md",
+          "start_line": 424,
+          "end_line": null,
+          "start_column": 10
+        }
+      ]
+    },
+    {
+      "id": "PE3",
+      "finding_id": "finding-19ff0370a75b4f60afc74352abd1f8ea",
+      "category": "Privilege Escalation",
+      "pattern": "Credential Access",
+      "severity": "HIGH",
+      "confidence": 0.9,
+      "location": {
+        "file": "references/strings.md",
+        "start_line": 426,
+        "end_line": null,
+        "start_column": 14
+      },
+      "finding": ".aws/credentials",
+      "explanation": "Code accesses credential files (SSH keys, AWS credentials, etc.). This could indicate credential theft attempts.",
+      "remediation": "Remove references to credential paths. Use environment variables or secrets managers. For docs, use placeholder paths (e.g., /path/to/config). Never load .env or token files in production code paths.",
+      "code_snippet": "// Config file paths\n$npmrc = \".npmrc\"\n$ssh_key = /\\.ssh\\/(id_rsa|id_ed25519)/\n$aws_creds = \".aws/credentials\"\n$env_file = /\\.env(\\.local)?/\n\n// Combined with file read = suspicious",
+      "intent": null,
+      "tags": [
+        "Privilege Escalation"
+      ],
+      "evidence": {},
+      "match_fingerprint": "331a72fdde880d0a60ab85c10f4c8d6539b32d28d89f17860d019a208c66a6ce",
+      "occurrences": [
+        {
+          "file": "references/strings.md",
+          "start_line": 426,
+          "end_line": null,
+          "start_column": 14
+        }
+      ]
+    },
+    {
+      "id": "YR1",
+      "finding_id": "finding-155c93bba6ac4972951def71a65bbfe3",
+      "category": "YARA Match",
+      "pattern": "YARA rule 'info_stealer': Information stealer patterns (credential harvesting, browser data theft) [malware]",
+      "severity": "HIGH",
+      "confidence": 0.75,
+      "location": {
+        "file": "references/style-guide.md",
+        "start_line": 24,
+        "end_line": null
+      },
+      "finding": "Mimikatz; Mimikatz",
+      "explanation": "YARA rule matched a known malware signature (reverse shell, backdoor, ransomware, C2 framework, or info stealer).",
+      "remediation": "Remove the malware payload or compromised file entirely. Investigate how it entered the skill and audit all other artifacts for additional indicators of compromise.",
+      "code_snippet": "Mac, Android, Multi |\n| FAMILY | Malware family name | Emotet, CobaltStrike, LockBit |\n| VARIANT | Specific variant/component | Loader, Beacon, Config |\n| DATE | Creation date (MonthYear format) | Jan25, May23 |\n\n### Category Prefixes\n\n| Prefix | Meaning | Use When |\n|--------|---------|----------|\n| `MAL_` | Confirmed malware | Verified malicious code |\n| `HKTL_` | Hacking tool | Dual-use tools (Mimikatz, Cobalt Strike) |\n| `WEBSHELL_` | Web shell | PHP/ASP/JSP backdoors |\n| `EXPL_` | Exploit | Exploit code or shellcode |\n| `VULN_` | Vulnerable | Vulnerable software patterns |\n| `SUSP_` | Suspicious | Lower confidence, may FP |\n| `PUA_` | Potentially unwanted | Adware, bundleware |\n| `GEN_` | Generic | Broad detection category |\n\n### Additional Classifiers\n\nAppend when relevant:\n\n| Classifier | Meaning |\n|------------|---------|\n| `APT_` | APT-associated |\n| `CRIME_` | Cybercrime operation |\n| `RANSOM_` | Ransomware |\n| `RAT_` | Remote access trojan |\n| `MINER_` | Cryptominer |\n| `STE",
+      "intent": null,
+      "tags": [
+        "YARA Match"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2d88aa1001ea452fa2d638f7d02ca21d119f76ddc650ee350cadd44dd17975e0",
+      "occurrences": [
+        {
+          "file": "references/style-guide.md",
+          "start_line": 24,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "LP3",
+      "finding_id": "finding-a1ca9b6d5ff04251a0e1af2cd15d40ca",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: file_read.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: file_read.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 16,
+    "scanned_components": 15,
+    "coverage_percent": 93.8,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 15,
+    "partially_inspected_files": 1,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 68,
+        "end_line": 68,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 140,
+        "end_line": 140,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 392,
+        "end_line": 392,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "static",
+        "reason_code": "static_parse_limit",
+        "message": "A security-relevant expression exceeded a bounded static parser's span limit.",
+        "path": "references/testing.md",
+        "start_line": null,
+        "end_line": null,
+        "fatal": false,
+        "analyzers": [
+          "static_patterns_tool_misuse"
+        ]
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 3,
+        "completed": 3,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "reference_coverage",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "degraded",
+        "planned_work": 16,
+        "completed": 15,
+        "partial": 1,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 16,
+        "completed": 16,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 15,
+        "column": 193,
+        "evidence": "systems and is the recommended implementation. See [Migrating from Legacy YARA](#migrating-from-legacy-yara) if you have existing rules.",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 68,
+        "column": 45,
+        "evidence": "| **VS Code extensions** | (none needed) | `vscode.workspace` | Uncommon activationEvents, hidden file access |",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 140,
+        "column": 4,
+        "evidence": "- `process.env` alone \u2014 need specific env var names",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 219,
+        "column": 93,
+        "evidence": "- **yarGen returns only API names and paths** \u2192 See [When Strings Fail, Pivot to Structure](#when-strings-fail-pivot-to-structure)",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 392,
+        "column": 30,
+        "evidence": "**Key APIs:** `crx.is_crx`, `crx.permissions`, `crx.permhash()`",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 406,
+        "column": 21,
+        "evidence": "See [crx-module.md](references/crx-module.md) for complete API reference, permission risk assessment, and example rules.",
+        "target_path": "references/crx-module.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 426,
+        "column": 21,
+        "evidence": "See [dex-module.md](references/dex-module.md) for complete API reference, obfuscation detection, and example rules.",
+        "target_path": "references/dex-module.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 464,
+        "column": 22,
+        "evidence": "See [style-guide.md](references/style-guide.md) for full conventions, metadata requirements, and naming examples.",
+        "target_path": "references/style-guide.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 483,
+        "column": 18,
+        "evidence": "See [strings.md](references/strings.md) for the full decision tree and examples.",
+        "target_path": "references/strings.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 493,
+        "column": 22,
+        "evidence": "See [performance.md](references/performance.md) for detailed optimization patterns.",
+        "target_path": "references/performance.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 505,
+        "column": 18,
+        "evidence": "See [testing.md](references/testing.md) for detailed validation workflow and FP investigation.",
+        "target_path": "references/testing.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 507,
+        "column": 124,
+        "evidence": "For a comprehensive step-by-step guide covering all phases from sample collection to deployment, see [rule-development.md](workflows/rule-development.md).",
+        "target_path": "workflows/rule-development.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 525,
+        "column": 22,
+        "evidence": "See [performance.md](references/performance.md) for atom theory and optimization details.",
+        "target_path": "references/performance.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 531,
+        "column": 54,
+        "evidence": "| Naming and metadata conventions | [style-guide.md](references/style-guide.md) |",
+        "target_path": "references/style-guide.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 532,
+        "column": 56,
+        "evidence": "| Performance and atom optimization | [performance.md](references/performance.md) |",
+        "target_path": "references/performance.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 533,
+        "column": 44,
+        "evidence": "| String types and judgment | [strings.md](references/strings.md) |",
+        "target_path": "references/strings.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 534,
+        "column": 41,
+        "evidence": "| Testing and validation | [testing.md](references/testing.md) |",
+        "target_path": "references/testing.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 535,
+        "column": 51,
+        "evidence": "| Chrome extension module (crx) | [crx-module.md](references/crx-module.md) |",
+        "target_path": "references/crx-module.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 536,
+        "column": 46,
+        "evidence": "| Android DEX module (dex) | [dex-module.md](references/dex-module.md) |",
+        "target_path": "references/dex-module.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 542,
+        "column": 61,
+        "evidence": "| Complete rule development process | [rule-development.md](workflows/rule-development.md) |",
+        "target_path": "workflows/rule-development.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 550,
+        "column": 30,
+        "evidence": "| [MAL_Win_Remcos_Jan25.yar](examples/MAL_Win_Remcos_Jan25.yar) | PE malware: graduated string counts, multiple rules per family | Elastic Security |",
+        "target_path": "examples/MAL_Win_Remcos_Jan25.yar",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 551,
+        "column": 33,
+        "evidence": "| [MAL_Mac_ProtonRAT_Jan25.yar](examples/MAL_Mac_ProtonRAT_Jan25.yar) | macOS: Mach-O magic bytes, multi-category grouping | Airbnb BinaryAlert |",
+        "target_path": "examples/MAL_Mac_ProtonRAT_Jan25.yar",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 552,
+        "column": 35,
+        "evidence": "| [MAL_NPM_SupplyChain_Jan25.yar](examples/MAL_NPM_SupplyChain_Jan25.yar) | npm supply chain: real attack patterns, ERC-20 selectors | Stairwell Research |",
+        "target_path": "examples/MAL_NPM_SupplyChain_Jan25.yar",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 553,
+        "column": 35,
+        "evidence": "| [SUSP_JS_Obfuscation_Jan25.yar](examples/SUSP_JS_Obfuscation_Jan25.yar) | JavaScript: obfuscator detection, density-based matching | imp0rtp3, Nils Kuhnert |",
+        "target_path": "examples/SUSP_JS_Obfuscation_Jan25.yar",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 554,
+        "column": 40,
+        "evidence": "| [SUSP_CRX_SuspiciousPermissions.yar](examples/SUSP_CRX_SuspiciousPermissions.yar) | Chrome extensions: crx module, permissions | Educational |",
+        "target_path": "examples/SUSP_CRX_SuspiciousPermissions.yar",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 563,
+        "column": 17,
+        "evidence": "See [README.md](../../README.md#scripts) for detailed script documentation.",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 592,
+        "column": 28,
+        "evidence": "| [Neo23x0/signature-base](https://github.com/Neo23x0/signature-base) | 17,000+ production rules, multi-platform | Florian Roth |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 593,
+        "column": 35,
+        "evidence": "| [Elastic/protections-artifacts](https://github.com/elastic/protections-artifacts) | 1,000+ endpoint-tested rules | Elastic Security |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 594,
+        "column": 44,
+        "evidence": "| [reversinglabs/reversinglabs-yara-rules](https://github.com/reversinglabs/reversinglabs-yara-rules) | Threat research rules | ReversingLabs |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 595,
+        "column": 28,
+        "evidence": "| [imp0rtp3/js-yara-rules](https://github.com/imp0rtp3/js-yara-rules) | JavaScript/browser malware | imp0rtp3 |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 596,
+        "column": 26,
+        "evidence": "| [InQuest/awesome-yara](https://github.com/InQuest/awesome-yara) | Curated index of resources | InQuest |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 602,
+        "column": 22,
+        "evidence": "| [YARA Style Guide](https://github.com/Neo23x0/YARA-Style-Guide) | Naming conventions, metadata, string prefixes |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 603,
+        "column": 33,
+        "evidence": "| [YARA Performance Guidelines](https://github.com/Neo23x0/YARA-Performance-Guidelines) | Atom optimization, regex bounds |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 604,
+        "column": 37,
+        "evidence": "| [Kaspersky Applied YARA Training](https://yara.readthedocs.io/) | Expert techniques from production use |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 610,
+        "column": 12,
+        "evidence": "| [yarGen](https://github.com/Neo23x0/yarGen) | Extract candidate strings from samples |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 611,
+        "column": 11,
+        "evidence": "| [FLOSS](https://github.com/mandiant/flare-floss) | Extract obfuscated and stack strings |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 612,
+        "column": 13,
+        "evidence": "| [YARA-CI](https://yara-ci.cloud.virustotal.com/) | Automated goodware testing |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 613,
+        "column": 13,
+        "evidence": "| [YaraDbg](https://yaradbg.dev) | Web-based rule debugger |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 620,
+        "column": 19,
+        "evidence": "| [objective-see](https://objective-see.org/) | macOS malware research and samples |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 621,
+        "column": 26,
+        "evidence": "| [macOS Security Tools](https://github.com/0xmachos/macos-security-tools) | Reference list |",
+        "target_path": null,
+        "status": "rejected",
+        "disposition": "out_of_scope",
+        "reference_kind": "markdown_link"
+      }
+    ],
+    "limitations": [
+      "Analyzer static_patterns_tool_misuse status: degraded."
+    ],
+    "findings_before_filtering": 11,
+    "findings_after_filtering": 11
+  },
+  "_meta": {
+    "cisco_result": "plugins-yara-authoring-skills-yara-rule-authoring-scan.json",
+    "skill_dir": "skills/trailofbits-skills/plugins/yara-authoring/skills/yara-rule-authoring",
+    "scanned_at": "2026-10-22T04:33:26.826600+00:00",
+    "mode": "static",
+    "exit_code": 1
+  }
+}

@@ -1,0 +1,1396 @@
+{
+  "skill": {
+    "name": "pacsomatic",
+    "source": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/K-Dense-AI-scientific-agent-skills/skills/pacsomatic",
+    "scanned_at": "2026-10-22T04:37:13.160752+00:00"
+  },
+  "risk_assessment": {
+    "score": 37,
+    "severity": "MEDIUM",
+    "recommendation": "CAUTION",
+    "max_issue_severity": "MEDIUM"
+  },
+  "components": [
+    {
+      "path": "LICENSE",
+      "type": "other",
+      "lines": 21,
+      "executable": false,
+      "size_bytes": 1068,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "SKILL.md",
+      "type": "markdown",
+      "lines": 114,
+      "executable": false,
+      "size_bytes": 6477,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "config.yaml",
+      "type": "yaml",
+      "lines": 31,
+      "executable": false,
+      "size_bytes": 1060,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/agent-playbook.md",
+      "type": "markdown",
+      "lines": 31,
+      "executable": false,
+      "size_bytes": 2045,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/config-and-output.md",
+      "type": "markdown",
+      "lines": 98,
+      "executable": false,
+      "size_bytes": 5984,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "references/pacsomatic_guide.md",
+      "type": "markdown",
+      "lines": 76,
+      "executable": false,
+      "size_bytes": 5340,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    },
+    {
+      "path": "scripts/run_pacsomatic.py",
+      "type": "python",
+      "lines": 891,
+      "executable": true,
+      "size_bytes": 36728,
+      "source_url": null,
+      "source_identity": null,
+      "source_digest": null
+    }
+  ],
+  "structured_summaries": [],
+  "issues": [
+    {
+      "id": "LP3",
+      "finding_id": "finding-ab425676e6c24ff48d92b104b5669501",
+      "category": "MCP Least Privilege",
+      "pattern": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, file_write, network, shell.",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "SKILL.md",
+        "start_line": 1,
+        "end_line": null
+      },
+      "finding": "Skill declares no tool scope ('permissions' or 'allowed-tools') but code capabilities were detected: env, file_write, network, shell.",
+      "explanation": "Without declared permissions the skill's intent is opaque and cannot be validated.",
+      "remediation": "Clarify the skill's intended tool scope and review how the host runtime enforces it; runtime permissions are unknown unless separately verified. For Claude Code / Agent Skills SKILL.md, 'allowed-tools' records preapproved tools, not a permission ceiling; add a tool only when it is independently approved as necessary, not to silence this finding. For MCP server manifests, use a 'permissions' list naming the required capabilities.",
+      "code_snippet": null,
+      "intent": null,
+      "tags": [
+        "ASI02"
+      ],
+      "evidence": {},
+      "match_fingerprint": null,
+      "occurrences": [
+        {
+          "file": "SKILL.md",
+          "start_line": 1,
+          "end_line": null
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-61a32f45989c4e94ad9fc723b48bf5fe",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 76,
+        "end_line": 76,
+        "start_column": 16,
+        "end_column": 94
+      },
+      "finding": "subprocess.run([java, \"-version\"], capture_output=True, text=True, timeout=30)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    java = os.environ.get(\"JAVA_CMD\") or (str(Path(os.environ[\"JAVA_HOME\"]) / \"bin/java\") if os.environ.get(\"JAVA_HOME\") else \"java\")\n    if shutil.which(java) is None:\n        return None\n    completed = subprocess.run([java, \"-version\"], capture_output=True, text=True, timeout=30)\n    if completed.returncode:\n        return None\n    raw = f\"{completed.stdout}\\n{completed.stderr}\"",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "a632e921bc744bd8d894541780985288f93d63dcd82a1a40866b808529cf7335",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 76,
+          "end_line": 76,
+          "start_column": 16,
+          "end_column": 94
+        }
+      ]
+    },
+    {
+      "id": "TT2",
+      "finding_id": "finding-c1cd4312cf2e494f9a8a5baf03bede42",
+      "category": "Data Flow",
+      "pattern": "Tainted flow: 'java' from os.environ.get (line 73, credential/environment) \u2192 subprocess.run (code execution)",
+      "severity": "MEDIUM",
+      "confidence": 0.65,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 76,
+        "end_line": 76,
+        "start_column": 16,
+        "end_column": 94
+      },
+      "finding": "subprocess.run([java, \"-version\"], capture_output=True, text=True, timeout=30)",
+      "explanation": "Data from a source is assigned to a variable that is later passed to a sink, creating a variable-mediated taint flow.",
+      "remediation": "Validate tainted variables before passing them to sinks. Use allowlists, type checks, or sanitization functions on data from external sources.",
+      "code_snippet": "    java = os.environ.get(\"JAVA_CMD\") or (str(Path(os.environ[\"JAVA_HOME\"]) / \"bin/java\") if os.environ.get(\"JAVA_HOME\") else \"java\")\n    if shutil.which(java) is None:\n        return None\n    completed = subprocess.run([java, \"-version\"], capture_output=True, text=True, timeout=30)\n    if completed.returncode:\n        return None\n    raw = f\"{completed.stdout}\\n{completed.stderr}\"",
+      "intent": null,
+      "tags": [
+        "Data Flow"
+      ],
+      "evidence": {},
+      "match_fingerprint": "186cb1377bbe03b1a6dbe7d6ac0afe8c4ff8f8545a31bf6250ec9ff4176364d3",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 76,
+          "end_line": 76,
+          "start_column": 16,
+          "end_column": 94
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-b15f352192c64c74afa3992d5bffaec3",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 122,
+        "end_line": 122,
+        "start_column": 20,
+        "end_column": 39
+      },
+      "finding": "subprocess.run(cmd)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "    if not target.exists():\n        cmd = [\"git\", \"clone\", args.repo_url, str(target)]\n        info(\"Cloning repository: \" + \" \".join(cmd))\n        completed = subprocess.run(cmd)\n        if completed.returncode != 0:\n            fail(f\"git clone failed with code {completed.returncode}\")\n        if args.pipeline_version:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2331cdf7b4297f484e05309da6ae9b70bd15b46c04013cdc1a22b18bc6cf04d8",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 122,
+          "end_line": 122,
+          "start_column": 20,
+          "end_column": 39
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-8bade7b8aa614a588bfc6cf9df24046c",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 188,
+        "end_line": 188,
+        "start_column": 16,
+        "end_column": 35
+      },
+      "finding": "subprocess.run(cmd)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "        fail(\"Neither mamba nor conda is available to create environment\")\n\n    info(\"Creating conda environment: \" + \" \".join(cmd))\n    completed = subprocess.run(cmd)\n    if completed.returncode != 0:\n        fail(f\"Environment creation failed with code {completed.returncode}\")\n",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "2331cdf7b4297f484e05309da6ae9b70bd15b46c04013cdc1a22b18bc6cf04d8",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 188,
+          "end_line": 188,
+          "start_column": 16,
+          "end_column": 35
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-75b01af9f23a4a87b84d2475b7f82e28",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 126,
+        "end_line": 126,
+        "start_column": 24,
+        "end_column": 113
+      },
+      "finding": "subprocess.run([\"git\", \"-C\", str(target), \"checkout\", \"--detach\", args.pipeline_version])",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "        if completed.returncode != 0:\n            fail(f\"git clone failed with code {completed.returncode}\")\n        if args.pipeline_version:\n            completed = subprocess.run([\"git\", \"-C\", str(target), \"checkout\", \"--detach\", args.pipeline_version])\n            if completed.returncode:\n                fail(\"Could not check out requested pipeline revision in the new clone.\")\n    elif args.pipeline_version:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "757b4b3a89959ac52260e557b6d0b4a9b582079ba1af7f4ed2ee6bee11571a92",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 126,
+          "end_line": 126,
+          "start_column": 24,
+          "end_column": 113
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-fa9bd2afe90b42cfb3287428cb86ea42",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 130,
+        "end_line": 130,
+        "start_column": 17,
+        "end_column": 135
+      },
+      "finding": "subprocess.run([\"git\", \"-C\", str(target), \"rev-parse\", \"HEAD\", args.pipeline_version], capture_output=True, text=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "            if completed.returncode:\n                fail(\"Could not check out requested pipeline revision in the new clone.\")\n    elif args.pipeline_version:\n        result = subprocess.run([\"git\", \"-C\", str(target), \"rev-parse\", \"HEAD\", args.pipeline_version], capture_output=True, text=True)\n        revisions = result.stdout.splitlines()\n        if result.returncode or len(revisions) != 2 or revisions[0] != revisions[1]:\n            fail(\"Existing checkout differs from --pipeline-version; select its revision explicitly outside this helper.\")",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "6aa7b6ba2da9d937a0f3c3fb390cb873ebc064909dbf1bbb67af50e7f9aabb3e",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 130,
+          "end_line": 130,
+          "start_column": 17,
+          "end_column": 135
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-2601ac39ad474d6daec04d11bfb0d712",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 166,
+        "end_line": 166,
+        "start_column": 20,
+        "end_column": 71
+      },
+      "finding": "subprocess.run(cmd, capture_output=True, text=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "        commands.append([\"conda\", \"env\", \"list\"])\n\n    for cmd in commands:\n        completed = subprocess.run(cmd, capture_output=True, text=True)\n        combined = f\"{completed.stdout}\\n{completed.stderr}\"\n        prefix = parse_env_list_output(combined, env_name)\n        if prefix is not None and prefix.exists():",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "e55aac9e108cbbef10353ab0cd0c5c768c57c57e907c37b506cfe011b5574c4c",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 166,
+          "end_line": 166,
+          "start_column": 20,
+          "end_column": 71
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-b7c73d008f394c3e80fecdde331646c0",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 562,
+        "end_line": 562,
+        "start_column": 17,
+        "end_column": 108
+      },
+      "finding": "subprocess.run([args.nextflow_bin, \"-version\"], capture_output=True, text=True, timeout=60)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "            \"Dry-run and generate-only modes can continue without Nextflow.\"\n        )\n    if not nextflow_missing:\n        result = subprocess.run([args.nextflow_bin, \"-version\"], capture_output=True, text=True, timeout=60)\n        match = re.search(r\"version\\s+(\\d+)\\.(\\d+)\\.(\\d+)\", result.stdout + result.stderr)\n        if result.returncode or not match:\n            if args.run:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "e39a7b4171d160025df17cdce5472b0089a78ac93e71cd88101338c8bc8060fc",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 562,
+          "end_line": 562,
+          "start_column": 17,
+          "end_column": 108
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-66bf29e601104b6690cf5def30c5e9fe",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 693,
+        "end_line": 693,
+        "start_column": 20,
+        "end_column": 40
+      },
+      "finding": "subprocess.run(argv)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "def execute_launch(args, script_path):\n    argv, stdin_path = submit_command_for_executor(args.executor, script_path)\n    if args.executor not in SCHEDULER_CMDS:\n        completed = subprocess.run(argv)\n        if completed.returncode:\n            fail(f\"Execution failed with exit code {completed.returncode}\")\n        info(\"Local launcher exited successfully; review pipeline completion and QC outputs.\")",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "c3b4bb21e576185fe72824dd7842949b91fa635a5172c7a77de3754f6de50404",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 693,
+          "end_line": 693,
+          "start_column": 20,
+          "end_column": 40
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-d10d955b985c485ba7098bdab1159b6b",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 700,
+        "end_line": 700,
+        "start_column": 24,
+        "end_column": 90
+      },
+      "finding": "subprocess.run(argv, stdin=handle, text=True, capture_output=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "        return\n    if stdin_path:\n        with open(stdin_path, \"rb\") as handle:\n            completed = subprocess.run(argv, stdin=handle, text=True, capture_output=True)\n    else:\n        completed = subprocess.run(argv, text=True, capture_output=True)\n    stdout = (completed.stdout or \"\").strip()",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "90e6989f3c07f9fb62fc4ff665c9b3176e3360939e08c0a33ab1478254c97485",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 700,
+          "end_line": 700,
+          "start_column": 24,
+          "end_column": 90
+        }
+      ]
+    },
+    {
+      "id": "AST4",
+      "finding_id": "finding-66fa68314546405fb240f2d6387adb4e",
+      "category": "Dangerous Code Execution",
+      "pattern": "subprocess module call",
+      "severity": "MEDIUM",
+      "confidence": 0.7,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 702,
+        "end_line": 702,
+        "start_column": 20,
+        "end_column": 72
+      },
+      "finding": "subprocess.run(argv, text=True, capture_output=True)",
+      "explanation": "subprocess module calls execute external commands. Without careful input validation, this enables command injection.",
+      "remediation": "Use subprocess.run() with shell=False and an explicit argument list. Validate all inputs and avoid passing user-controlled data to commands.",
+      "code_snippet": "        with open(stdin_path, \"rb\") as handle:\n            completed = subprocess.run(argv, stdin=handle, text=True, capture_output=True)\n    else:\n        completed = subprocess.run(argv, text=True, capture_output=True)\n    stdout = (completed.stdout or \"\").strip()\n    stderr = (completed.stderr or \"\").strip()\n",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "de7633df863301575d8d68652ad96b91746ebdfe4f0ac14b83a3e4e3cc8690b6",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 702,
+          "end_line": 702,
+          "start_column": 20,
+          "end_column": 72
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-049b0cc8c314415e9c4a89e1c6041187",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 521,
+        "end_line": 521,
+        "start_column": 20,
+        "end_column": 40
+      },
+      "finding": "getattr(args, label)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "        fail(\"LSF walltime has minute precision; provide HH:MM or HH:MM:00.\")\n    if args.executor in SCHEDULER_CMDS:\n        for label in (\"job_name\", \"project\", \"queue\", \"outdir\", \"logdir\", \"stdout_file\", \"stderr_file\"):\n            value = getattr(args, label)\n            if value and not re.fullmatch(r\"[A-Za-z0-9_./%+,:@=-]+\", value):\n                fail(f\"--{label.replace('_', '-')} has characters unsupported in scheduler directives.\")\n    try:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "9338116f493d5424e800ded2a5fdb2cb9e756bc31256066f864eb251c4a0e896",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 521,
+          "end_line": 521,
+          "start_column": 20,
+          "end_column": 40
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-489f672ffa564314a4254d7b3ab1c817",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 546,
+        "end_line": 546,
+        "start_column": 11,
+        "end_column": 31
+      },
+      "finding": "getattr(args, label)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "        if not is_remote_path(args.fasta):\n            require_file(\"Reference FASTA\", args.fasta)\n    for label in (\"params_file\", \"nextflow_config\"):\n        if getattr(args, label):\n            require_file(label, getattr(args, label))\n    if args.genome:\n        ensure_no_spaces(\"genome\", args.genome)",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "9338116f493d5424e800ded2a5fdb2cb9e756bc31256066f864eb251c4a0e896",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 546,
+          "end_line": 546,
+          "start_column": 11,
+          "end_column": 31
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-192f7c096303439fbddc22abf7d68102",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 547,
+        "end_line": 547,
+        "start_column": 32,
+        "end_column": 52
+      },
+      "finding": "getattr(args, label)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "            require_file(\"Reference FASTA\", args.fasta)\n    for label in (\"params_file\", \"nextflow_config\"):\n        if getattr(args, label):\n            require_file(label, getattr(args, label))\n    if args.genome:\n        ensure_no_spaces(\"genome\", args.genome)\n",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "9338116f493d5424e800ded2a5fdb2cb9e756bc31256066f864eb251c4a0e896",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 547,
+          "end_line": 547,
+          "start_column": 32,
+          "end_column": 52
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-911563c2cff848ce91c633faa58b4cd3",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 809,
+        "end_line": 809,
+        "start_column": 16,
+        "end_column": 36
+      },
+      "finding": "getattr(args, field)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "\ndef normalize_paths(args):\n    for field in (\"tumor_bam\", \"normal_bam\", \"tumor_pbi\", \"normal_pbi\", \"fasta\", \"outdir\", \"workdir\", \"logdir\", \"samplesheet\", \"script_path\", \"params_file\", \"nextflow_config\", \"with_report\", \"with_dag\", \"singularity_cache\"):\n        value = getattr(args, field)\n        if value and not is_remote_path(value):\n            setattr(args, field, str(Path(value).expanduser().resolve()))\n    for field in (\"outdir\", \"workdir\", \"logdir\", \"samplesheet\", \"script_path\", \"params_file\", \"nextflow_config\"):",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "f32d484fbb7a54fd341d5790dec64befe9959a7f5cf1f3ec5c4f925c7df7e784",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 809,
+          "end_line": 809,
+          "start_column": 16,
+          "end_column": 36
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-343196a9523d4126949e14cb8f569ff8",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 813,
+        "end_line": 813,
+        "start_column": 26,
+        "end_column": 46
+      },
+      "finding": "getattr(args, field)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "        if value and not is_remote_path(value):\n            setattr(args, field, str(Path(value).expanduser().resolve()))\n    for field in (\"outdir\", \"workdir\", \"logdir\", \"samplesheet\", \"script_path\", \"params_file\", \"nextflow_config\"):\n        if is_remote_path(getattr(args, field)):\n            fail(f\"--{field.replace('_', '-')} must be local for this helper.\")\n    if not args.outdir:\n        fail(\"--outdir must be nonempty.\")",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "f32d484fbb7a54fd341d5790dec64befe9959a7f5cf1f3ec5c4f925c7df7e784",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 813,
+          "end_line": 813,
+          "start_column": 26,
+          "end_column": 46
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-1df280a464644031a3d398b323195c15",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 824,
+        "end_line": 824,
+        "start_column": 19,
+        "end_column": 37
+      },
+      "finding": "getattr(args, key)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "    artifacts = [Path(samplesheet_path).resolve(), Path(launch_script_path).resolve(), Path(args.outdir, args.config_name).resolve()]\n    if Path(args.config_name).name != args.config_name or not args.config_name:\n        fail(\"--config-name must be a filename under outdir.\")\n    inputs = [Path(getattr(args, key)).resolve() for key in (\"tumor_bam\", \"normal_bam\", \"tumor_pbi\", \"normal_pbi\", \"fasta\", \"params_file\", \"nextflow_config\") if getattr(args, key) and not is_remote_path(getattr(args, key))]\n    if len(set(artifacts)) != len(artifacts):\n        fail(\"Helper artifact paths must be distinct.\")\n    for path in artifacts:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "0ea27bc7c88864754715c9d4395a6dbd6ec663f9de6545a24d73a09173bc7589",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 824,
+          "end_line": 824,
+          "start_column": 19,
+          "end_column": 37
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-9b6b12ea2d2b4460a4177e9a627065f1",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 824,
+        "end_line": 824,
+        "start_column": 161,
+        "end_column": 179
+      },
+      "finding": "getattr(args, key)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "    artifacts = [Path(samplesheet_path).resolve(), Path(launch_script_path).resolve(), Path(args.outdir, args.config_name).resolve()]\n    if Path(args.config_name).name != args.config_name or not args.config_name:\n        fail(\"--config-name must be a filename under outdir.\")\n    inputs = [Path(getattr(args, key)).resolve() for key in (\"tumor_bam\", \"normal_bam\", \"tumor_pbi\", \"normal_pbi\", \"fasta\", \"params_file\", \"nextflow_config\") if getattr(args, key) and not is_remote_path(getattr(args, key))]\n    if len(set(artifacts)) != len(artifacts):\n        fail(\"Helper artifact paths must be distinct.\")\n    for path in artifacts:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "0ea27bc7c88864754715c9d4395a6dbd6ec663f9de6545a24d73a09173bc7589",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 824,
+          "end_line": 824,
+          "start_column": 161,
+          "end_column": 179
+        }
+      ]
+    },
+    {
+      "id": "AST7",
+      "finding_id": "finding-0f3c4a4d5e1840629c2a6e6fa5e37fd1",
+      "category": "Dangerous Code Execution",
+      "pattern": "Dynamic attribute access via getattr()",
+      "severity": "LOW",
+      "confidence": 0.5,
+      "location": {
+        "file": "scripts/run_pacsomatic.py",
+        "start_line": 824,
+        "end_line": 824,
+        "start_column": 203,
+        "end_column": 221
+      },
+      "finding": "getattr(args, key)",
+      "explanation": "Dynamic getattr() with a non-literal attribute name can access arbitrary object attributes, potentially bypassing access controls.",
+      "remediation": "Replace dynamic getattr() with explicit attribute access or a dictionary lookup with an allowlist of permitted attributes.",
+      "code_snippet": "    artifacts = [Path(samplesheet_path).resolve(), Path(launch_script_path).resolve(), Path(args.outdir, args.config_name).resolve()]\n    if Path(args.config_name).name != args.config_name or not args.config_name:\n        fail(\"--config-name must be a filename under outdir.\")\n    inputs = [Path(getattr(args, key)).resolve() for key in (\"tumor_bam\", \"normal_bam\", \"tumor_pbi\", \"normal_pbi\", \"fasta\", \"params_file\", \"nextflow_config\") if getattr(args, key) and not is_remote_path(getattr(args, key))]\n    if len(set(artifacts)) != len(artifacts):\n        fail(\"Helper artifact paths must be distinct.\")\n    for path in artifacts:",
+      "intent": null,
+      "tags": [
+        "Dangerous Code Execution"
+      ],
+      "evidence": {},
+      "match_fingerprint": "0ea27bc7c88864754715c9d4395a6dbd6ec663f9de6545a24d73a09173bc7589",
+      "occurrences": [
+        {
+          "file": "scripts/run_pacsomatic.py",
+          "start_line": 824,
+          "end_line": 824,
+          "start_column": 203,
+          "end_column": 221
+        }
+      ]
+    }
+  ],
+  "suppressed_count": 0,
+  "suppressed": [],
+  "metadata": {
+    "has_executable_scripts": true,
+    "skillspector_version": "2.12.0",
+    "llm_requested": false,
+    "llm_available": false,
+    "meta_analysis_applied": false,
+    "inference_usage": [],
+    "llm_provenance": {
+      "schema_version": 1,
+      "provider": {
+        "configured_adapter": "unknown",
+        "resolved_adapter": "unknown",
+        "effective_adapter": "not_applicable",
+        "effective_adapters": [],
+        "service": "unknown",
+        "routing": {
+          "deployment_override": null,
+          "deployment_source": "unknown",
+          "api_version": null,
+          "api_version_source": "unknown"
+        }
+      },
+      "analyzers": [
+        {
+          "analyzer_id": "mcp_tool_poisoning",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_developer_intent",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_quality_policy",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "semantic_security_discovery",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        },
+        {
+          "analyzer_id": "meta_analyzer",
+          "model": "z-ai/glm-5.3",
+          "model_source": "resolved_configuration",
+          "analyzer_revision": {
+            "value": "2.12.0",
+            "source": "skillspector_package",
+            "source_revision": {
+              "value": "11c8b48e35056602fad263438448e0ffb5be2776",
+              "source": "package_vcs_metadata"
+            }
+          }
+        }
+      ],
+      "sampling": {
+        "temperature": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "seed": {
+          "requested": null,
+          "source": "unset",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        },
+        "reasoning_effort": {
+          "requested": null,
+          "source": "provider_default",
+          "forwarded_to_client": null,
+          "adapter_support": false,
+          "provider_support": "unknown"
+        }
+      },
+      "determinism": {
+        "classification": "not_applicable",
+        "control_status": "not_applied",
+        "provider_guarantee": false,
+        "reason": "LLM analysis was not executed for this scan."
+      }
+    },
+    "filtering_mode": "heuristic"
+  },
+  "execution_successful": true,
+  "analysis_completeness": {
+    "total_components": 7,
+    "scanned_components": 7,
+    "coverage_percent": 100.0,
+    "is_complete": false,
+    "status": "partial",
+    "execution_successful": true,
+    "fully_inspected_files": 7,
+    "partially_inspected_files": 0,
+    "entirely_uninspected_files": 0,
+    "ledger_exceptions": [
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 7,
+        "end_line": 7,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 28,
+        "end_line": 28,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 59,
+        "end_line": 59,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 73,
+        "end_line": 73,
+        "fatal": false
+      },
+      {
+        "outcome": "partial",
+        "phase": "reference_resolution",
+        "reason_code": "reference_missing",
+        "message": "A local path-like reference does not match any bundled artifact, such as a file the skill writes at runtime.",
+        "path": "SKILL.md",
+        "start_line": 104,
+        "end_line": 104,
+        "fatal": false
+      }
+    ],
+    "scope_exclusions": [],
+    "analyzer_statuses": [
+      {
+        "analyzer_id": "artifact_integrity",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_ast",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "behavioral_taint_tracking",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "bundled_execution_surface",
+        "status": "not_applicable",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "no_applicable_files",
+        "message": "No files matched this analyzer's applicability contract."
+      },
+      {
+        "analyzer_id": "mcp_least_privilege",
+        "status": "completed",
+        "planned_work": 2,
+        "completed": 2,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_rug_pull",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "mcp_tool_poisoning",
+        "status": "completed",
+        "planned_work": 1,
+        "completed": 1,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "meta_analyzer",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_developer_intent",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_quality_policy",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "semantic_security_discovery",
+        "status": "disabled",
+        "planned_work": 0,
+        "completed": 0,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0,
+        "reason_code": "disabled_by_configuration",
+        "message": "Analyzer was disabled by the requested configuration."
+      },
+      {
+        "analyzer_id": "static_patterns_agent_snooping",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_anti_refusal",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_data_exfiltration",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_deserialization",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_excessive_agency",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_harmful_content",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_memory_poisoning",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_output_handling",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_privilege_escalation",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_prompt_injection",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_rogue_agent",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_ssrf",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_supply_chain",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_system_prompt_leakage",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_patterns_tool_misuse",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      },
+      {
+        "analyzer_id": "static_yara",
+        "status": "completed",
+        "planned_work": 7,
+        "completed": 7,
+        "partial": 0,
+        "skipped": 0,
+        "failed": 0,
+        "unaccounted": 0
+      }
+    ],
+    "references": [
+      {
+        "source_path": "SKILL.md",
+        "line": 7,
+        "column": 13,
+        "evidence": "version: \"1.4\"",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 19,
+        "column": 33,
+        "evidence": "Use [scripts/run_pacsomatic.py](scripts/run_pacsomatic.py) to prepare one matched",
+        "target_path": "scripts/run_pacsomatic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 19,
+        "column": 6,
+        "evidence": "Use [scripts/run_pacsomatic.py](scripts/run_pacsomatic.py) to prepare one matched",
+        "target_path": "scripts/run_pacsomatic.py",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 28,
+        "column": 51,
+        "evidence": "2026-10-01, despite the internal manifest saying `1.0.0`. The helper pins that",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 31,
+        "column": 38,
+        "evidence": "See [references/pacsomatic_guide.md](references/pacsomatic_guide.md) for sources",
+        "target_path": "references/pacsomatic_guide.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 31,
+        "column": 6,
+        "evidence": "See [references/pacsomatic_guide.md](references/pacsomatic_guide.md) for sources",
+        "target_path": "references/pacsomatic_guide.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 52,
+        "column": 63,
+        "evidence": "`--overwrite`; input files can never be artifact targets. `config.yaml` is an",
+        "target_path": "config.yaml",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 59,
+        "column": 64,
+        "evidence": "launcher scheduler (`--executor`) from Nextflow's per-task `process.executor`,",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "quoted_or_code"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 61,
+        "column": 76,
+        "evidence": "do not constrain task resources. Read [references/config-and-output.md](references/config-and-output.md).",
+        "target_path": "references/config-and-output.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 61,
+        "column": 43,
+        "evidence": "do not constrain task resources. Read [references/config-and-output.md](references/config-and-output.md).",
+        "target_path": "references/config-and-output.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 73,
+        "column": 8,
+        "evidence": "python skills/pacsomatic/scripts/run_pacsomatic.py \\",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 104,
+        "column": 8,
+        "evidence": "python tests/run_all.py --isolated pacsomatic",
+        "target_path": null,
+        "status": "missing",
+        "disposition": "partial",
+        "reference_kind": "plain_path"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 112,
+        "column": 23,
+        "evidence": "- [Operator playbook](references/agent-playbook.md)",
+        "target_path": "references/agent-playbook.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 113,
+        "column": 51,
+        "evidence": "- [Configuration, scheduler and output contracts](references/config-and-output.md)",
+        "target_path": "references/config-and-output.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      },
+      {
+        "source_path": "SKILL.md",
+        "line": 114,
+        "column": 44,
+        "evidence": "- [Upstream sources and scientific checks](references/pacsomatic_guide.md)",
+        "target_path": "references/pacsomatic_guide.md",
+        "status": "resolved",
+        "disposition": "analyzed",
+        "reference_kind": "markdown_link"
+      }
+    ],
+    "limitations": [],
+    "findings_before_filtering": 20,
+    "findings_after_filtering": 20
+  },
+  "_meta": {
+    "cisco_result": "skills-pacsomatic-scan.json",
+    "skill_dir": "skills/K-Dense-AI-scientific-agent-skills/skills/pacsomatic",
+    "scanned_at": "2026-10-22T04:37:13.415876+00:00",
+    "mode": "static",
+    "exit_code": 0
+  }
+}
