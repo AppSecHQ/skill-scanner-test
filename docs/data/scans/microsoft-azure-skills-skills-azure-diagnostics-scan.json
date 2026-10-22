@@ -1,0 +1,187 @@
+{
+  "skill_name": "azure-diagnostics",
+  "skill_path": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/microsoft-azure-skills/skills/azure-diagnostics",
+  "is_safe": true,
+  "max_severity": "MEDIUM",
+  "findings_count": 2,
+  "findings": [
+    {
+      "id": "TOOL_MISMATCH_NETWORK_69f558c9fa",
+      "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
+      "category": "unauthorized_tool_use",
+      "severity": "MEDIUM",
+      "title": "Undeclared network usage",
+      "description": "Skill code uses network libraries but doesn't declare network requirement",
+      "file_path": "SKILL.md",
+      "line_number": null,
+      "snippet": null,
+      "remediation": "Declare network usage in compatibility field or remove network calls",
+      "analyzer": "static",
+      "metadata": {
+        "semantic_facts": {
+          "evidence_kind": "capability_mismatch",
+          "context_kind": "manifest",
+          "signals": [
+            {
+              "rule_id": "TOOL_ABUSE_UNDECLARED_NETWORK",
+              "kind": "undeclared_network",
+              "file_path": "SKILL.md",
+              "value_class": "external_network"
+            }
+          ],
+          "candidate_flow": {
+            "source_class": "skill_code",
+            "sink_class": "external_network",
+            "transforms": [],
+            "cross_file": false,
+            "source_path": "scripts/test-messaging-connectivity.sh",
+            "sink_path": "scripts/test-messaging-connectivity.sh"
+          },
+          "flows": [
+            {
+              "source_class": "skill_code",
+              "sink_class": "external_network",
+              "transforms": [],
+              "cross_file": false,
+              "source_path": "scripts/test-messaging-connectivity.sh",
+              "sink_path": "scripts/test-messaging-connectivity.sh"
+            }
+          ]
+        },
+        "aitech": "AITech-2.1",
+        "aitech_name": "Excessive Agency",
+        "aisubtech": "AISubtech-2.1.2",
+        "aisubtech_name": "Capability and Permission Overreach",
+        "aitech_mappings": [
+          "OWASP: LLM03:2026: Excessive Agency",
+          "OWASP: ASI10: Rogue Agents",
+          "MITRE ATLAS: N/A",
+          "NIST AML: N/A"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM03:2026: Excessive Agency",
+          "OWASP: ASI10: Rogue Agents",
+          "MITRE ATLAS: N/A",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM03:2026: Excessive Agency",
+          "OWASP: ASI10: Rogue Agents",
+          "MITRE ATLAS: N/A",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    },
+    {
+      "id": "BASH_TAINT_4af0224c42",
+      "rule_id": "BEHAVIOR_BASH_TAINT_FLOW",
+      "category": "data_exfiltration",
+      "severity": "MEDIUM",
+      "title": "Bash: tainted data flows to dangerous sink",
+      "description": "Variable $ip (line 78) flows to `python3` at line 80.",
+      "file_path": "scripts/test-messaging-connectivity.sh",
+      "line_number": 80,
+      "snippet": "if [ -z \"$ip\" ] && command -v python3 >/dev/null 2>&1; then",
+      "remediation": "Review the data flow from source to sink. Avoid sending sensitive or untrusted data to network or execution commands.",
+      "analyzer": "behavioral",
+      "metadata": {
+        "source_var": "ip",
+        "source_line": 78,
+        "sink_command": "python3",
+        "taints": [
+          "COMMAND_OUTPUT"
+        ],
+        "behavior_category": "command_injection",
+        "aitech": "AITech-8.2",
+        "aitech_name": "Data Exfiltration / Exposure",
+        "aisubtech": "AISubtech-8.2.3",
+        "aisubtech_name": "Data Exfiltration via Agent Tooling",
+        "aitech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0024.000: Exfiltration via AI Inference API: Infer Training Data Membership",
+          "MITRE ATLAS: AML.T0035: AI Artifact Collection",
+          "MITRE ATLAS: AML.T0037: Data From Local System",
+          "MITRE ATLAS: AML.T0057: LLM Data Leakage",
+          "NIST AML: NISTAML.037: Training Data Attacks"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM02:2026: Sensitive Information Disclosure",
+          "OWASP: ASI02: Tool Misuse & Exploitation",
+          "OWASP: ASI09: Human-Agent Trust Exploitation",
+          "MITRE ATLAS: AML.T0086: Exfiltration via AI Agent Tool Invocation",
+          "NIST AML: N/A"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.22323298454284668,
+  "duration_ms": 223,
+  "analyzers_used": [
+    "static_analyzer",
+    "bytecode",
+    "pipeline",
+    "correlation",
+    "behavioral_analyzer",
+    "trigger_analyzer"
+  ],
+  "timestamp": "2026-10-22T04:36:01.265173+00:00",
+  "scan_metadata": {
+    "policy_name": "default",
+    "policy_version": "1.0",
+    "policy_preset_base": "balanced",
+    "policy_fingerprint_sha256": "3f48e661bfbc54597f97bbf3dcf2c1cbae2f596ddc79c0b44784efea326b3d1d",
+    "cel": {
+      "mode": "shadow",
+      "runtime": "cel-go",
+      "runtime_version": "v0.32.0;helper=2.3.1",
+      "fact_schema": "v1",
+      "expression_set_hash": "f26459b8f4a46a974d7ab0aaae34127b5b6a40d693e266e12fca03a69a6d26aa",
+      "evaluated": 0,
+      "retained": 2,
+      "would_suppress": 0,
+      "suppressed": 0,
+      "fallbacks": 0,
+      "projection_incomplete": 0,
+      "elapsed_ms": 0.0,
+      "projection_ms": 0.0,
+      "evaluation_ms": 0.0,
+      "errors": [],
+      "per_rule": {},
+      "suppressed_candidates": []
+    },
+    "rule_contract": {
+      "status": "passed",
+      "schema_version": 2,
+      "checked": 2,
+      "invalid_findings": 0,
+      "errors": []
+    },
+    "taxonomy": {
+      "source": "builtin",
+      "version": "2.0.0",
+      "name": "Cisco AI Security and Safety Taxonomy",
+      "revision": "655a343ac943a51b6f61f86e47156e7752c15dc6",
+      "snapshot_sha256": "413e8ce9081e6d91b78aaa0d0b1c06cdc15d0406ad319e23e9f9f4f80735c441",
+      "findings": {
+        "mapped": 2,
+        "not_applicable": 0,
+        "unmapped": 0
+      }
+    }
+  },
+  "scanner_version": "2.3.1",
+  "source": "microsoft",
+  "repo_url": "https://github.com/microsoft/azure-skills"
+}

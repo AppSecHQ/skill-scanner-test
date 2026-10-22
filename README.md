@@ -25,34 +25,34 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 
 | Metric | Count |
 |--------|-------|
-| Total Skills Scanned | 827 |
-| Safe Skills | 660 (80%) |
-| Skills with Issues | 167 (20%) |
-| Total Findings | 1553 |
+| Total Skills Scanned | 1303 |
+| Safe Skills | 1092 (84%) |
+| Skills with Issues | 211 (16%) |
+| Total Findings | 3058 |
 
 | Severity | Count |
 |----------|-------|
-| CRITICAL | 245 |
-| HIGH | 280 |
-| MEDIUM | 792 |
-| LOW | 205 |
+| CRITICAL | 378 |
+| HIGH | 325 |
+| MEDIUM | 1049 |
+| LOW | 869 |
 
 | Category | Count |
 |----------|-------|
-| data_exfiltration | 504 |
-| command_injection | 252 |
-| social_engineering | 172 |
-| unauthorized_tool_use | 168 |
+| data_exfiltration | 745 |
+| obfuscation | 582 |
+| policy_violation | 530 |
+| command_injection | 397 |
+| unauthorized_tool_use | 212 |
+| social_engineering | 208 |
 | transitive_trust_abuse | 151 |
-| policy_violation | 97 |
 | resource_abuse | 91 |
-| prompt_injection | 54 |
+| prompt_injection | 65 |
 | tool_chaining_abuse | 30 |
 | hardcoded_secrets | 23 |
+| supply_chain_attack | 17 |
 | skill_discovery_abuse | 6 |
-| obfuscation | 3 |
 | autonomy_abuse | 1 |
-| supply_chain_attack | 1 |
 
 - These results are visualized at [skillscan.io](https://skillscan.io/). See [summary-report.md](results/summary-report.md) for detailed findings by skill, severity breakdowns, and top risks. Per-skill scan results (JSON + Markdown) are in the [`results/`](results/) directory.
 <!-- END SCAN RESULTS -->

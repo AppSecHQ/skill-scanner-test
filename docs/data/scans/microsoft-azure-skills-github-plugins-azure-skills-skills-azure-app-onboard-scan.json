@@ -1,0 +1,196 @@
+{
+  "skill_name": "azure-app-onboard",
+  "skill_path": "/Users/brianlevine/claude-projects/skill-scanner-test/skills/microsoft-azure-skills/.github/plugins/azure-skills/skills/azure-app-onboard",
+  "is_safe": false,
+  "max_severity": "CRITICAL",
+  "findings_count": 1,
+  "findings": [
+    {
+      "id": "COMPOUND_FIND_EXEC_f6544b0909",
+      "rule_id": "COMPOUND_FIND_EXEC",
+      "category": "command_injection",
+      "severity": "CRITICAL",
+      "title": "Discovery and execution chain (find -exec)",
+      "description": "The find command with -exec executes commands on discovered files. An attacker can use this to find and execute hidden malicious scripts.",
+      "file_path": "scaffold/scripts/scaffold-conformance.sh",
+      "line_number": 21,
+      "snippet": "#!/usr/bin/env bash\n# Scaffold -> Deploy conformance gate (bash twin of scaffold-conformance.ps1).\n# Checks generated IaC against the plan for semantic defects `az bicep build` cannot catch.\n#\n# Usage:  scaffold-conformance.sh <sessionPath> [infraPath]\n# Output: JSON { passed, failures:[{id,detail,f",
+      "remediation": "Review the command sequence for potential multi-step attacks. Ensure all steps are necessary and safe.",
+      "analyzer": "pipeline",
+      "metadata": {
+        "pattern": "COMPOUND_FIND_EXEC",
+        "matched_lines": [
+          20
+        ],
+        "in_documentation": false,
+        "semantic_facts": {
+          "evidence_kind": "command_sequence",
+          "context_kind": "code",
+          "signal_kind": "compound_flow",
+          "commands": [
+            {
+              "executable": "find",
+              "argument_classes": [
+                "environment_reference",
+                "exec_action",
+                "wildcard"
+              ],
+              "downloads": false,
+              "executes": true,
+              "destructive": false,
+              "privilege_change": false,
+              "source_class": "filesystem",
+              "sink_class": "execution",
+              "file_path": "scaffold/scripts/scaffold-conformance.sh"
+            }
+          ],
+          "urls": [],
+          "flows": [
+            {
+              "source_class": "filesystem",
+              "sink_class": "execution",
+              "transforms": [],
+              "cross_file": false,
+              "source_path": "scaffold/scripts/scaffold-conformance.sh",
+              "sink_path": "scaffold/scripts/scaffold-conformance.sh"
+            }
+          ],
+          "candidate_flow": {
+            "source_class": "filesystem",
+            "sink_class": "execution",
+            "transforms": [],
+            "cross_file": false,
+            "source_path": "scaffold/scripts/scaffold-conformance.sh",
+            "sink_path": "scaffold/scripts/scaffold-conformance.sh"
+          },
+          "candidate_command": {
+            "executable": "find",
+            "argument_classes": [
+              "environment_reference",
+              "exec_action",
+              "wildcard"
+            ],
+            "downloads": false,
+            "executes": true,
+            "destructive": false,
+            "privilege_change": false,
+            "source_class": "filesystem",
+            "sink_class": "execution",
+            "file_path": "scaffold/scripts/scaffold-conformance.sh"
+          }
+        },
+        "cel": {
+          "decision": "keep",
+          "reason": "expression_true",
+          "fact_schema": "v1",
+          "expression_hash": "7141b8f3c69d2eaeb8ad3d3cae9838c57b4144ebc1ab34f63721dd997bee3603",
+          "pack": "core",
+          "rollout": "shadow"
+        },
+        "aitech": "AITech-9.1",
+        "aitech_name": "Model or Agentic System Manipulation",
+        "aisubtech": "AISubtech-9.1.1",
+        "aisubtech_name": "Code Execution",
+        "aitech_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning",
+          "Cisco AI MDL Code: MDL-006",
+          "Cisco AI MDL Code: MDL-007",
+          "Cisco AI MDL Code: MDL-005",
+          "Cisco AI MDL Code: MDL-010",
+          "Cisco AI MDL Code: MDL-012",
+          "Cisco AI MDL Code: MDL-014",
+          "Cisco AI MDL Code: MDL-015",
+          "Cisco AI MDL Code: MDL-019"
+        ],
+        "aisubtech_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning"
+        ],
+        "framework_mappings": [
+          "OWASP: LLM04:2026: Supply Chain",
+          "OWASP: ASI04: Agentic Supply Chain Vulnerabilities",
+          "OWASP: ASI05: Unexpected Code Execution (RCE)",
+          "MITRE ATLAS: AML.T0050: Command and Scripting Interpreter",
+          "NIST AML: NISTAML.023: Backdoor Poisoning"
+        ],
+        "taxonomy_status": "mapped",
+        "taxonomy_source": "rule"
+      }
+    }
+  ],
+  "scan_duration_seconds": 0.3034539222717285,
+  "duration_ms": 303,
+  "analyzers_used": [
+    "static_analyzer",
+    "bytecode",
+    "pipeline",
+    "correlation",
+    "behavioral_analyzer",
+    "trigger_analyzer"
+  ],
+  "timestamp": "2026-10-22T04:35:59.710105+00:00",
+  "scan_metadata": {
+    "policy_name": "default",
+    "policy_version": "1.0",
+    "policy_preset_base": "balanced",
+    "policy_fingerprint_sha256": "3f48e661bfbc54597f97bbf3dcf2c1cbae2f596ddc79c0b44784efea326b3d1d",
+    "cel": {
+      "mode": "shadow",
+      "runtime": "cel-go",
+      "runtime_version": "v0.32.0;helper=2.3.1",
+      "fact_schema": "v1",
+      "expression_set_hash": "f26459b8f4a46a974d7ab0aaae34127b5b6a40d693e266e12fca03a69a6d26aa",
+      "evaluated": 1,
+      "retained": 1,
+      "would_suppress": 0,
+      "suppressed": 0,
+      "fallbacks": 0,
+      "projection_incomplete": 0,
+      "elapsed_ms": 0.64,
+      "projection_ms": 0.207,
+      "evaluation_ms": 0.369,
+      "errors": [],
+      "per_rule": {
+        "COMPOUND_FIND_EXEC": {
+          "keep": 1,
+          "would_suppress": 0,
+          "fallback": 0,
+          "suppressed": 0,
+          "expression_hash": "7141b8f3c69d2eaeb8ad3d3cae9838c57b4144ebc1ab34f63721dd997bee3603",
+          "pack": "core",
+          "rollout": "shadow"
+        }
+      },
+      "suppressed_candidates": []
+    },
+    "rule_contract": {
+      "status": "passed",
+      "schema_version": 2,
+      "checked": 1,
+      "invalid_findings": 0,
+      "errors": []
+    },
+    "taxonomy": {
+      "source": "builtin",
+      "version": "2.0.0",
+      "name": "Cisco AI Security and Safety Taxonomy",
+      "revision": "655a343ac943a51b6f61f86e47156e7752c15dc6",
+      "snapshot_sha256": "413e8ce9081e6d91b78aaa0d0b1c06cdc15d0406ad319e23e9f9f4f80735c441",
+      "findings": {
+        "mapped": 1,
+        "not_applicable": 0,
+        "unmapped": 0
+      }
+    }
+  },
+  "scanner_version": "2.3.1",
+  "source": "microsoft",
+  "repo_url": "https://github.com/microsoft/azure-skills"
+}
