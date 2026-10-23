@@ -164,11 +164,51 @@
 <p><strong>Two of the sources are not repositories.</strong> open.feishu.cn and uizze.sh publish skills through the <code>.well-known/skills/index.json</code> convention: a JSON index on the vendor's own domain, with files served from the same host. skills.sh lists them as <code>site/&lt;host&gt;</code>. Our pipeline could not fetch them until this week. Anyone whose corpus is built from <code>git clone</code> is missing them, and the seven-scanner disagreement study, which worked from GitHub, would be too.</p>
 <p><strong>Install counts are large and flat.</strong> The hundredth skill has 513,690 installs. Position 25 has 831,089. The top 100 together report 80 million installs. A skill does not have to be good to be here; it has to be in a suite, or be installed by something automated.</p>
 <p><strong>The old scanning sample is stale.</strong> Our February list represented the top of the registry at the time. It no longer does. Any claim this site makes about "popular skills" has to be re-based on the new list, and the list has to be re-pulled on a schedule.</p>
-<h2 id="finding-1-one-repository-four-organisations-twelve-slots">Finding 1: one repository, four organisations, twelve slots</h2>
-<p>Ranks 25 to 28, 62 to 66, and 97 to 100 are the same four skills, ai-video-generation, ai-image-generation, twitter-automation, and ai-avatar-video, published three times under three GitHub organisations: 101-skills, magentosh, and qu-skills. Each repository is named <code>superpowers</code>. Each contains 86 skills. They are byte-identical, and all three sit at the same commit, <code>becc2564</code>, by the same author, dated 2026-08-03.</p>
-<p>The commit history leads to inference-sh/skills, the skills repository of the inference.sh API, created in January and actively maintained. In August it was forked to skills-101/superpowers, then to magentosh/superpowers, while 101-skills and qu-skills received direct copies. Each of the four organisations was created between June and August 2026 and holds exactly one public repository.</p>
-<p>We are not in a position to say who created the organisations or why. We can say what the effect is. skills.sh ranks by <code>owner/repo/skill</code>, so one skill set occupies twelve of the top hundred slots under a name that collides with obra/superpowers, the most-starred skills framework on GitHub. A user who searches the registry for "superpowers" and installs the first four results gets inference.sh's commercial API skills. Those skills instruct the agent to run <code>curl -fsSL https://cli.inference.sh | sh</code>, which is where their 18 HIGH findings come from.</p>
-<p>On this site, the three copies now point a canonical link at one page and the other two are out of the sitemap, with an "identical copies" note on all three. We did not remove any of them. The duplication is the finding.</p>
+<h2 id="finding-1-one-vendors-skill-set-at-least-seven-owners-twelve-slots-in-the-top-100">Finding 1: one vendor's skill set, at least seven owners, twelve slots in the top 100</h2>
+<p>Ranks 25 to 28, 62 to 66, and 97 to 100 are the same four skills, ai-video-generation, ai-image-generation, twitter-automation, and ai-avatar-video, published three times under three GitHub organisations: 101-skills, magentosh, and qu-skills. Each repository is named <code>superpowers</code>. Each contains 86 skills. They are byte-identical, and all three sit at the same commit, <code>becc2564</code>, dated 2026-08-03.</p>
+<p>The skills belong to inference.sh, a pay-per-run API for image, video, audio, and text models with its own CLI. Its official repository is inference-sh/skills, created in January and actively maintained. The commit author on every copy is the company's founder. In August the official repository was forked to skills-101/superpowers, then to magentosh/superpowers, while 101-skills and qu-skills received direct copies. Each of those organisations was created between June and August 2026 and holds exactly one public repository.</p>
+<p>Three was an undercount. Pulling the full all-time skills.sh listing, 600 rows, and searching for the same skill under other owners:</p>
+<table>
+<thead>
+<tr>
+<th>Owner / repository</th>
+<th>Rank of ai-avatar-video</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>101-skills/superpowers</td>
+<td>28</td>
+</tr>
+<tr>
+<td>magentosh/superpowers</td>
+<td>64</td>
+</tr>
+<tr>
+<td>qu-skills/superpowers</td>
+<td>95</td>
+</tr>
+<tr>
+<td>skills-shell/superpowers</td>
+<td>205</td>
+</tr>
+<tr>
+<td>prime-skills/runcomfy-agent-skills</td>
+<td>206</td>
+</tr>
+<tr>
+<td>its-a-skill-issue/superpowers</td>
+<td>221</td>
+</tr>
+<tr>
+<td>bankai-skills/superpowers</td>
+<td>233</td>
+</tr>
+</tbody>
+</table>
+<p>Below rank 600, further single-repository owners (inference-shell, inf-sh, inference-sh-3) publish the same set. We count at least six repositories named <code>superpowers</code> and around ten owners carrying one vendor's skills.</p>
+<p>We are not in a position to say why the copies exist, and we did not contact the company. We can say what the effect is. skills.sh ranks by <code>owner/repo/skill</code>, so one skill set occupies twelve of the top hundred slots, and many more below, under a name that collides with obra/superpowers, the most-starred skills framework on GitHub. A user who searches the registry for "superpowers" and installs the first four results gets inference.sh's commercial API skills. Those skills instruct the agent to run <code>curl -fsSL https://cli.inference.sh | sh</code> and then <code>belt login</code>, which is where their 18 HIGH findings come from. The credential they ask for is an inference.sh API key, not a third-party provider key.</p>
+<p>On this site, the three copies in the corpus now point a canonical link at one page and the other two are out of the sitemap, with an "identical copies" note on all three. We did not remove any of them. The duplication is the finding, and it is a registry-design finding more than a skill-content one: a ranking keyed on owner and repository can be multiplied by anyone willing to create organisations.</p>
 <h2 id="finding-2-two-false-positives-in-the-top-60">Finding 2: two false positives in the top 60</h2>
 <p>Scanners are tested on malicious skills. Popular skills are a different test: they are mostly written by careful people, and every finding is read by many users.</p>
 <p><strong>reddit-automation, flowkit-labs, rank 11, CRITICAL.</strong> The single finding is a YARA prompt-injection match on SKILL.md line 86. The matched text is inside a paragraph instructing the agent to treat all Reddit content as untrusted and to disregard any post that says "ignore your instructions". The skill is defending against the pattern it was flagged for. NVIDIA SkillSpector gives it a score of zero.</p>
