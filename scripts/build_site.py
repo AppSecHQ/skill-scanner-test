@@ -482,10 +482,13 @@ class SiteBuilder:
             for p in pages:
                 p["body_html"] = md_to_html(p["body_md"])
                 crumbs = self.breadcrumbs((p["title"], p["url"])) if p["url"] == f"/{section}/" else self.breadcrumbs((section.capitalize(), f"/{section}/"), (p["title"], p["url"]))
+                jsonld = self.jsonld_breadcrumbs(crumbs)
+                if p["url"] == "/data/":
+                    jsonld = [jsonld, self.jsonld_dataset(p)]
                 self.render("page.html", p["url"], {
                     "title": f"{p['title']} | skillscan.io",
                     "description": clip(p.get("description") or p["title"]),
-                    "section": section, "breadcrumbs": crumbs, "jsonld": self.jsonld_breadcrumbs(crumbs),
+                    "section": section, "breadcrumbs": crumbs, "jsonld": jsonld,
                     "lastmod": str(p.get("updated") or p.get("date") or self.site["scan_date"])[:10],
                 }, content=p, siblings=pages if len(pages) > 1 else None)
             if section == "learn" and not any(p["url"] == "/learn/" for p in pages):
@@ -497,6 +500,44 @@ class SiteBuilder:
                     "description": "Evergreen guides on what agent skills are, how to audit one before installing, what scanners catch and miss, and how to read a skillscan.io report.",
                     "section": "learn", "breadcrumbs": crumbs, "jsonld": self.jsonld_breadcrumbs(crumbs),
                 }, content=index, siblings=None)
+
+    def jsonld_dataset(self, page: dict) -> dict:
+        """schema.org Dataset for /data/, so the corpus is discoverable as data."""
+        timestamps = [t for s in self.skills for t in (s.first_scanned, s.timestamp) if t]
+        downloads = [
+            ("summary.json", "Current run: totals, severity and category counts, per-skill index"),
+            ("categories.json", "Finding category taxonomy with OWASP AST10 mapping"),
+            ("skillspector.json", "Per-skill NVIDIA SkillSpector verdicts"),
+            ("scanner-comparison.json", "Cisco skill-scanner vs SkillSpector comparison"),
+        ]
+        distribution = [
+            {"@type": "DataDownload", "name": name, "description": desc, "encodingFormat": "application/json",
+             "contentUrl": f"{self.base_url}/data/{name}"}
+            for name, desc in downloads if (self.data / name).exists()
+        ]
+        distribution.append({"@type": "DataDownload", "name": "Per-skill scan results", "encodingFormat": "application/json",
+                             "description": "Full findings for one skill, current run, at /data/scans/<stem>-scan.json",
+                             "contentUrl": f"{self.base_url}/data/scans/"})
+        ds = {
+            "@context": "https://schema.org", "@type": "Dataset",
+            "name": "skillscan.io: security scan results for AI agent skills",
+            "description": page.get("description") or page["title"],
+            "url": f"{self.base_url}/data/",
+            "license": "https://creativecommons.org/licenses/by/4.0/",
+            "isAccessibleForFree": True,
+            "creator": {"@type": "Organization", "name": "AppSecHQ", "url": "https://github.com/AppSecHQ/skill-scanner-test"},
+            "publisher": {"@type": "Organization", "name": SITE_NAME, "url": self.base_url + "/"},
+            "keywords": ["AI agent skills", "security scanning", "prompt injection", "supply chain security", "skills.sh", "ClawHub"],
+            "dateModified": self.site["scan_date"],
+            "distribution": distribution,
+            "measurementTechnique": "Static, behavioral, LLM and meta analysis with Cisco skill-scanner; static analysis with NVIDIA SkillSpector",
+            "variableMeasured": ["is_safe", "max_severity", "findings_count", "category"],
+        }
+        if timestamps:
+            ds["temporalCoverage"] = f"{min(timestamps)[:10]}/{max(timestamps)[:10]}"
+        if (self.data / "scans").exists():
+            ds["size"] = f"{len(self.skills)} skills"
+        return ds
 
     def build_404(self) -> None:
         self.render("404.html", "/404.html", {"title": "Page not found | skillscan.io", "description": "Page not found.", "section": "", "noindex": True, "url": "/404.html"})
@@ -561,6 +602,8 @@ class SiteBuilder:
             for f in static.iterdir():
                 if f.is_file():
                     shutil.copy2(f, self.docs / f.name)
+                elif f.is_dir():  # e.g. static/fonts/ -> docs/fonts/
+                    shutil.copytree(f, self.docs / f.name, dirs_exist_ok=True)
         (self.docs / "og-default.svg").unlink(missing_ok=True)  # replaced by og-default.png in static/
         if not (self.docs / "og-default.png").exists():
             logger.warning("docs-src/static/og-default.png missing; social cards will have no image")

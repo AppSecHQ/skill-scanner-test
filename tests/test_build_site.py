@@ -154,6 +154,9 @@ def site_root(tmp_path: Path) -> Path:
     static.mkdir()
     for name in ("theme.css", "site.js", "og-default.png", "favicon.svg", "favicon.ico", "apple-touch-icon.png", "icon-512.png"):
         (static / name).write_text("/* static */")
+    (static / "fonts").mkdir()
+    for font in ("newsreader-latin.woff2", "jetbrainsmono-latin.woff2"):
+        (static / "fonts" / font).write_bytes(b"wOF2")
     return tmp_path
 
 
@@ -321,6 +324,23 @@ class TestBuild:
         # Skills with a profile but no identical twin elsewhere are untouched.
         beta = (docs / "skills" / "skills-sh-beta" / "index.html").read_text()
         assert "copies-note" not in beta and 'rel="canonical" href="https://example.test/skills/skills-sh-beta/"' in beta
+
+    def test_fonts_self_hosted_and_dataset_jsonld(self, built):
+        docs, _ = built
+        assert (docs / "fonts" / "newsreader-latin.woff2").read_bytes() == b"wOF2"
+        home = (docs / "index.html").read_text()
+        assert "fonts.googleapis.com" not in home and "fonts.gstatic.com" not in home
+        assert 'rel="preload" href="/fonts/newsreader-latin.woff2" as="font"' in home
+        data = (docs / "data" / "index.html").read_text()
+        m = re.search(r'<script type="application/ld\+json">(.*?)</script>', data, re.S)
+        ld = json.loads(m.group(1))
+        ds = next(x for x in (ld if isinstance(ld, list) else [ld]) if x.get("@type") == "Dataset")
+        assert ds["license"] == "https://creativecommons.org/licenses/by/4.0/"
+        assert ds["url"] == "https://example.test/data/"
+        assert any(d["contentUrl"].endswith("/data/summary.json") for d in ds["distribution"])
+        assert ds["temporalCoverage"] == "2026-02-01/2026-02-07"
+        # Only the dataset page carries it.
+        assert '"Dataset"' not in (docs / "about" / "index.html").read_text()
 
     def test_category_page_uses_taxonomy_and_lists_affected(self, built):
         docs, _ = built
