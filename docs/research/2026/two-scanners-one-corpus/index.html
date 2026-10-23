@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Two scanners, one corpus: Cisco skill-scanner and NVIDIA SkillSpector on 1,302 skills | skillscan.io</title>
+  <meta name="description" content="We ran NVIDIA&#39;s SkillSpector in static mode over every skill the Cisco scanner had already scanned. At the strict tier the two agree 80% of the time with…">
+  <link rel="canonical" href="https://skillscan.io/research/2026/two-scanners-one-corpus/">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#f6f3ec" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#141311" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="skillscan.io">
+  <meta property="og:title" content="Two scanners, one corpus: Cisco skill-scanner and NVIDIA SkillSpector on 1,302 skills | skillscan.io">
+  <meta property="og:description" content="We ran NVIDIA&#39;s SkillSpector in static mode over every skill the Cisco scanner had already scanned. At the strict tier the two agree 80% of the time with…">
+  <meta property="og:url" content="https://skillscan.io/research/2026/two-scanners-one-corpus/">
+  <meta property="og:image" content="https://skillscan.io/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Two scanners, one corpus: Cisco skill-scanner and NVIDIA SkillSpector on 1,302 skills | skillscan.io">
+  <meta name="twitter:description" content="We ran NVIDIA&#39;s SkillSpector in static mode over every skill the Cisco scanner had already scanned. At the strict tier the two agree 80% of the time with…">
+  <link rel="alternate" type="application/atom+xml" title="skillscan.io research" href="/feed.xml">
+  <script>
+  // Apply saved or URL-requested theme before first paint to avoid a flash.
+  (function () {
+    try {
+      var q = new URLSearchParams(location.search).get('theme');
+      var t = (q === 'dark' || q === 'light') ? q : localStorage.getItem('theme');
+      if (q === 'dark' || q === 'light') localStorage.setItem('theme', q);
+      if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="/theme.css">
+<script type="application/ld+json">[{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "item": "https://skillscan.io/", "name": "Home", "position": 1}, {"@type": "ListItem", "item": "https://skillscan.io/research/", "name": "Research", "position": 2}, {"@type": "ListItem", "item": "https://skillscan.io/research/2026/two-scanners-one-corpus/", "name": "Two scanners, one corpus: Cisco skill-scanner and NVIDIA SkillSpector on 1,302 skills", "position": 3}]}, {"@context": "https://schema.org", "@type": "Article", "author": {"@type": "Organization", "name": "skillscan.io"}, "dateModified": "2026-10-22", "datePublished": "2026-10-22", "headline": "Two scanners, one corpus: Cisco skill-scanner and NVIDIA SkillSpector on 1,302 skills", "image": ["https://skillscan.io/og-default.png"], "publisher": {"@type": "Organization", "logo": {"@type": "ImageObject", "url": "https://skillscan.io/icon-512.png"}, "name": "skillscan.io", "url": "https://skillscan.io/"}, "url": "https://skillscan.io/research/2026/two-scanners-one-corpus/"}]</script></head>
+<body>
+  <nav class="topbar" aria-label="Site">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">skillscan.io <small>registry scan results</small></a>
+      <div class="nav-links">
+        <a href="/skills/">Skills</a>
+        <a href="/categories/">Categories</a>
+        <a href="/registries/">Registries</a>
+        <a href="/research/" class="active">Research</a>
+        <a href="/methodology/">Methodology</a>
+        <a href="/about/">About</a>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle light and dark theme"><span class="dot" aria-hidden="true"></span><span class="theme-toggle-label">Theme</span></button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+<a href="/">Home</a><span class="separator">/</span><a href="/research/">Research</a><span class="separator">/</span><span>Two scanners, one corpus: Cisco skill-scanner and NVIDIA SkillSpector on 1,302 skills</span>    </nav>
+<article>
+  <header class="note-detail-header">
+    <h1>Two scanners, one corpus: Cisco skill-scanner and NVIDIA SkillSpector on 1,302 skills</h1>
+    <div class="note-detail-meta">
+      <time class="note-date" datetime="2026-10-22">2026-10-22</time>
+      <div class="note-tags"><span class="tag-pill">results</span><span class="tag-pill">scanner-evaluation</span><span class="tag-pill">skillspector</span><span class="tag-pill">methodology</span></div>
+    </div>
+  </header>
+  <div class="note-body"><p>The <a href="/research/2026/618-skills-full-scan/">full-scan post</a> ended with a promise to add a second scanner over the same corpus. This is that. Every skill on this site now has two verdicts: one from Cisco's <code>skill-scanner</code> 2.3.1, which has been the backbone of the project, and one from NVIDIA's <a href="https://github.com/NVIDIA/skillspector">SkillSpector</a> 2.12.0. Both ran without a language model, so the comparison cost nothing to produce and anyone can reproduce it from the <a href="/data/">dataset</a>.</p>
+<p>The short version: the two scanners agree on the extreme cases and disagree on nearly everything in between. That is the same result the <a href="https://theweatherreport.ai/posts/skill-scanner-disagreement/">seven-scanner study</a> of 238,180 skills reported, now reproduced on a corpus with hand-labelled false positives in it.</p>
+<h2 id="setup">Setup</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Cisco skill-scanner</th>
+<th>NVIDIA SkillSpector</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Version</td>
+<td>2.3.1</td>
+<td>2.12.0</td>
+</tr>
+<tr>
+<td>Mode</td>
+<td>Static, behavioral, trigger; LLM and meta layers on the older full-scan runs</td>
+<td>Static only (<code>--no-llm</code>)</td>
+</tr>
+<tr>
+<td>Verdict scale</td>
+<td><code>is_safe</code> plus a max severity: INFO, LOW, MEDIUM, HIGH, CRITICAL</td>
+<td>Score 0 to 100, banded into SAFE (0 to 20), CAUTION (21 to 50), DO_NOT_INSTALL (51 and up)</td>
+</tr>
+<tr>
+<td>Skills compared</td>
+<td>1,302</td>
+<td>1,302</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>0 tokens</td>
+<td>0 tokens, about 3 seconds per skill</td>
+</tr>
+</tbody>
+</table>
+<p>The two scales do not line up, so we compare at two tiers. The <strong>loose tier</strong> asks whether each scanner raised anything at all: Cisco <code>is_safe</code> false against SkillSpector CAUTION or DO_NOT_INSTALL. The <strong>strict tier</strong> asks whether each scanner would tell you not to install: Cisco HIGH or CRITICAL against SkillSpector DO_NOT_INSTALL. Agreement is the share of skills where both said yes or both said no. Cohen's kappa corrects that for chance, so two scanners that flag everything would score 100% agreement and kappa 0.</p>
+<h2 id="the-headline">The headline</h2>
+<p>Strict tier:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>SkillSpector: do not install</th>
+<th>SkillSpector: anything else</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cisco HIGH or CRITICAL</strong></td>
+<td>82</td>
+<td>129</td>
+</tr>
+<tr>
+<td><strong>Cisco below HIGH</strong></td>
+<td>135</td>
+<td>956</td>
+</tr>
+</tbody>
+</table>
+<p>Agreement 79.7%, kappa 0.26.</p>
+<p>Loose tier:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>SkillSpector: CAUTION or worse</th>
+<th>SkillSpector: SAFE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cisco flagged</strong></td>
+<td>189</td>
+<td>22</td>
+</tr>
+<tr>
+<td><strong>Cisco clean</strong></td>
+<td>795</td>
+<td>296</td>
+</tr>
+</tbody>
+</table>
+<p>Agreement 37.2%, kappa 0.07.</p>
+<p>A kappa of 0.26 is "fair" on the usual scale. For two tools that both claim to tell you whether a skill is safe to install, it means that if one of them says no, the other one agrees less than half the time. Of the 106 skills Cisco rates CRITICAL, SkillSpector tells you not to install 48.</p>
+<h2 id="why-the-loose-tier-collapses">Why the loose tier collapses</h2>
+<p>SkillSpector says CAUTION about 767 of the 1,302 skills. That is not because it found something in 767 skills. 256 of those CAUTION verdicts carry a score of zero and no issues at all.</p>
+<p>The reason is in the scanner's design. When SkillSpector's deterministic layer cannot fully inspect a package, it fails closed: a SAFE verdict is downgraded to CAUTION with a record of what was left unread. In 250 of those 256 results the record says <code>reference_missing</code>: the SKILL.md refers to a file or path that is not in the package, so the scanner could not follow the instruction to its target. The rest are parse limits on large files, two syntax errors, and two cases of "obfuscated instruction text", one of which is ordinary prose with Unicode punctuation. The remaining CAUTION verdicts have scores in the low tens from a handful of low-severity pattern hits.</p>
+<p>So in static mode, SkillSpector's middle band is closer to "this has text I did not finish reading" than to "this is risky". That is a defensible choice for a scanner. It is a poor signal for a comparison, which is why the strict tier is the one to read.</p>
+<h2 id="where-they-disagree">Where they disagree</h2>
+<p><strong>Cisco says HIGH or CRITICAL, SkillSpector does not: 129 skills.</strong> SkillSpector put 107 of them at CAUTION and 22 at SAFE. The Cisco findings behind them are dominated by data exfiltration (93 skills), social engineering (72), and command injection (71). Ninety-one of the 129 are ClawHub skills. This is the ClawHub-heavy tail of the Cisco results, and a lot of it is signature matches on install scripts and credential handling.</p>
+<p><strong>SkillSpector says do not install, Cisco does not: 135 skills.</strong> Cisco rated 73 of them clean and 49 MEDIUM. SkillSpector's reasons are privilege escalation (77), analysis evasion (69), excessive agency (64), least-privilege violations in MCP configuration (58), and tool misuse (57). These are spread across Microsoft (33), ClawHub (32), and the K-Dense scientific skills (27). The analysis-evasion and least-privilege categories have no counterpart in the Cisco taxonomy, which is most of the explanation: SkillSpector is answering a question Cisco does not ask.</p>
+<p><strong>Both say stop: 82 skills.</strong> ClawHub 31, K-Dense 13, Microsoft 11, the heygen hyperframes video toolkit 6. These are the skills we would send a reader to first.</p>
+<p>Seventy-seven skills score exactly 100 on SkillSpector. The score saturates, so inside the DO_NOT_INSTALL band there is no ranking to read.</p>
+<h2 id="the-false-positive-register-scored-twice">The false-positive register, scored twice</h2>
+<p>We keep a <a href="/research/2026/false-positive-register/">register</a> of Cisco findings we believe are wrong, mostly security tools whose detection signatures match the scanner's own rules. A second scanner is the obvious test: does it make the same mistakes?</p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Cisco</th>
+<th>SkillSpector</th>
+<th>Verdict on the verdicts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ClawDefender</td>
+<td>37 CRITICAL static; 0 after LLM re-scan</td>
+<td>DO_NOT_INSTALL, score 100, 50 issues</td>
+<td>SkillSpector repeats the signature false positive that Cisco's LLM layer cleared</td>
+</tr>
+<tr>
+<td>yara-rule-authoring</td>
+<td>19 CRITICAL</td>
+<td>DO_NOT_INSTALL, 100</td>
+<td>Both match the YARA examples as attacks</td>
+</tr>
+<tr>
+<td>skill-scanner (Cisco's own skill)</td>
+<td>19 CRITICAL static; 0 after re-scan</td>
+<td>DO_NOT_INSTALL, 100</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>qa-test-planner</td>
+<td>22 CRITICAL</td>
+<td>DO_NOT_INSTALL, 57</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>hugging-face-datasets</td>
+<td>78 CRITICAL</td>
+<td>DO_NOT_INSTALL, 78</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>constant-time-testing</td>
+<td>12 CRITICAL</td>
+<td>CAUTION, score 0</td>
+<td>SkillSpector does not see the timing-attack harness as an attack</td>
+</tr>
+<tr>
+<td>libafl</td>
+<td>8 CRITICAL</td>
+<td>CAUTION, 25</td>
+<td>Mostly clears it</td>
+</tr>
+<tr>
+<td>azure-eventhub-java</td>
+<td>5 CRITICAL</td>
+<td>CAUTION, 0</td>
+<td>Clears it</td>
+</tr>
+</tbody>
+</table>
+<p>Two scanners built on pattern matching agree with each other on the pattern-matching mistakes. Agreement between scanners is not evidence that a finding is real when both are reading the same strings. The three cases where SkillSpector clears a Cisco false positive are all code-heavy security tooling, where its component-level analysis has something to work with that a YARA rule on documentation does not.</p>
+<p>Two newer register entries go the other way. The flowkit-labs <code>reddit-automation</code> skill is CRITICAL on Cisco for the phrase "ignore your instructions", which appears in a paragraph telling the agent to treat Reddit content as untrusted and to disregard exactly that phrase. SkillSpector gives it a score of zero. The mattpocock <code>implement</code> skill is HIGH on Cisco for "fetch it from the issue tracker and state its title", read as acquiring and executing remote content. SkillSpector rates it SAFE. In both cases the second scanner is right, and in both cases the right answer came from not having a rule rather than from having a better one.</p>
+<h2 id="largest-disagreements">Largest disagreements</h2>
+<p>Skills one scanner rates as severely as it can while the other stays at MEDIUM or below. The table runs one way because SkillSpector's score saturates at 100 so often; the other direction is shorter but exists. Eight skills Cisco rates CRITICAL get SkillSpector's SAFE: activecampaign, ci-gen, crypto-wallet, polymarket, save-money, sendclaw, x-trends, and telegram-pairing-customization, all on ClawHub, each with three to seven Cisco findings. Fourteen more are HIGH against SAFE.</p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Source</th>
+<th>Cisco</th>
+<th>SkillSpector</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>azure-prepare</td>
+<td>microsoft</td>
+<td>MEDIUM, 5 findings</td>
+<td>100, 69 issues</td>
+</tr>
+<tr>
+<td>foundry-iq</td>
+<td>microsoft</td>
+<td>MEDIUM, 2</td>
+<td>100, 50</td>
+</tr>
+<tr>
+<td>paper-lookup</td>
+<td>K-Dense-AI</td>
+<td>MEDIUM, 7</td>
+<td>100, 57</td>
+</tr>
+<tr>
+<td>dev-browser</td>
+<td>sawyerhood</td>
+<td>MEDIUM, 7</td>
+<td>100, 41</td>
+</tr>
+<tr>
+<td>hugging-face-evaluation</td>
+<td>huggingface</td>
+<td>MEDIUM, 96</td>
+<td>100, 35</td>
+</tr>
+<tr>
+<td>testing-handbook-generator</td>
+<td>trailofbits</td>
+<td>MEDIUM, 3</td>
+<td>100, 14</td>
+</tr>
+<tr>
+<td>earnings-calendar</td>
+<td>clawhub.ai</td>
+<td>MEDIUM, 2</td>
+<td>100, 7</td>
+</tr>
+<tr>
+<td>writing-skills</td>
+<td>skills.sh</td>
+<td>MEDIUM, 2</td>
+<td>100, 21</td>
+</tr>
+</tbody>
+</table>
+<p>The Microsoft rows are the ones to watch. SkillSpector reports privilege escalation and excessive agency in the Azure deployment and Foundry skills, where Cisco's own cross-file analysis also found environment-variable exfiltration chains at CRITICAL in the newer scans. We have not finished reading those by hand and are not publishing a verdict on them yet.</p>
+<h2 id="what-a-second-verdict-is-worth">What a second verdict is worth</h2>
+<p>Three things we now believe, having run both:</p>
+<ul>
+<li><strong>Agreement is a weak signal and disagreement is a strong one.</strong> When both scanners say stop, you still have to read the skill, because both can be fooled by the same strings. When they disagree at the strict tier, one of them has a blind spot, and the 264 skills in that position are the most useful thing this comparison produced.</li>
+<li><strong>Taxonomies do not map.</strong> Many of SkillSpector's strict-tier-only flags are categories Cisco does not have. A "second opinion" from a scanner with a different threat model is not a second opinion on the same question.</li>
+<li><strong>Static verdicts are rules, and rules have an author.</strong> Both scanners' mistakes trace to a specific pattern someone wrote. The <a href="https://arxiv.org/abs/2609.39607">Pretext</a> evasion work got past SkillSpector 97% of the time with rewrites that preserve meaning; it would get past Cisco's YARA rules the same way. Neither number here should be read as a detection rate.</li>
+</ul>
+<p>Every skill page will show both verdicts, and the full comparison, including every pair, is in <code>scanner-comparison.json</code> on the <a href="/data/">dataset page</a>.</p>
+<h2 id="method-and-limits">Method and limits</h2>
+<p>SkillSpector was installed from its GitHub repository (it is not on PyPI) and run per skill with <code>scan --no-llm --format json</code>. A non-zero exit code of 1 means a score above 50 and is a result, not an error. One skill could not be resolved to a local path and is excluded. The Cisco results are the published ones: the February corpus was scanned with every analyzer including the LLM layers, the K-Dense and October additions with static, behavioral, and trigger analyzers only. That mix favours Cisco slightly, since some of its clean verdicts came from a model reading the code. Kappa is computed over the 1,302 paired skills. Three byte-identical copies of one skill collection (86 skills each) are in the corpus and are counted three times; they agree with themselves, so they inflate agreement by a small amount in both tiers.</p>
+<h2 id="next">Next</h2>
+<p>Show both verdicts on every skill page. Add a third column from a scanner with a different design, most likely Snyk Agent Scan. Hand-review the 264 strict-tier disagreements and move the clear cases into the register. Re-run SkillSpector with a model on the disagreements only, which is where tokens buy the most.</p></div>
+</article>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <span class="footer-item">Last scan: 2026-10-22</span>
+      <span class="footer-item">1221 skills, 1303 scans</span>
+      <span class="footer-item">Scanner: cisco-ai-skill-scanner 2.3.1</span>
+      <span class="footer-item"><a href="/data/">Dataset</a></span>
+      <span class="footer-item"><a href="/request-a-scan/">Request a scan</a></span>
+      <span class="footer-item"><a href="https://github.com/AppSecHQ/skill-scanner-test" rel="noopener">GitHub</a></span>
+    </div>
+  </footer>
+  <script>
+  (function () {
+    var btn = document.getElementById('theme-toggle'); if (!btn) return;
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    function current() { return document.documentElement.getAttribute('data-theme') || (mq.matches ? 'dark' : 'light'); }
+    function label() { btn.querySelector('.theme-toggle-label').textContent = current() === 'dark' ? 'Dark' : 'Light'; }
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      label();
+    });
+    label();
+  })();
+  </script>
+</body>
+</html>

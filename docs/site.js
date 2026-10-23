@@ -43,7 +43,8 @@
       if (q && row.dataset.name.indexOf(q) === -1) ok = false;
       if (src && row.dataset.source !== src) ok = false;
       if (verdict) {
-        var isSafe = row.querySelector('.badge-safe') !== null;
+        var cell = row.querySelector('td.verdict') || row;
+        var isSafe = cell.querySelector('.badge-safe') !== null;
         if (verdict === 'safe' && !isSafe) ok = false;
         if (verdict === 'issues' && isSafe) ok = false;
       }
