@@ -2,7 +2,7 @@
 """Generate the static skillscan.io site into docs/.
 
 Inputs:  docs/data/summary.json, docs/data/scans/*.json, docs-src/data/categories.json,
-         docs/notes.json, docs-src/content/**/*.md, docs-src/static/*, docs-src/legacy/*
+         docs/notes.json, docs-src/content/**/*.md, docs-src/static/*
 Outputs: HTML pages with real URLs, sitemap.xml, robots.txt, feed.xml, 404.html,
          badge/<slug>.svg, data/slugs.json, data/redirects.json
 
@@ -32,7 +32,8 @@ logger = logging.getLogger("build_site")
 SITE_NAME = "skillscan.io"
 DEFAULT_BASE_URL = "https://skillscan.io"
 GENERATED_DIRS = ["skills", "categories", "registries", "research", "badge", "learn", "app"]
-LEGACY_DIR = "app"  # old SPA served at /app/ during the cutover window; noindex, not in sitemap
+# /app/ held the pre-redesign SPA until 2026-11-09. It is now a single noindex redirect stub
+# (docs-src/static/app/index.html) that maps old #/skill/... hash routes through data/redirects.json.
 PROTECTED_DIRS = {"data", "notes_draft"}  # never rmtree these under docs/
 SEVERITY_COLORS = {"CRITICAL": "#f87171", "HIGH": "#fb923c", "MEDIUM": "#facc15", "LOW": "#60a5fa", "SAFE": "#4ade80"}
 
@@ -566,7 +567,7 @@ class SiteBuilder:
             f"<url><loc>{html.escape(self.base_url + p['url'])}</loc><lastmod>{p['lastmod']}</lastmod></url>" for p in self.pages
         )
         write(self.docs / "sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls + "</urlset>")
-        write(self.docs / "robots.txt", f"User-agent: *\nAllow: /\nDisallow: /{LEGACY_DIR}/\nSitemap: {self.base_url}/sitemap.xml\n")
+        write(self.docs / "robots.txt", f"User-agent: *\nAllow: /\nSitemap: {self.base_url}/sitemap.xml\n")
 
     def write_maps(self) -> None:
         write(self.data / "slugs.json", json.dumps(self.slug_map, indent=1, ensure_ascii=False))
@@ -583,18 +584,6 @@ class SiteBuilder:
         if src.exists():
             self.data.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, self.data / "categories.json")
-
-    def publish_legacy(self) -> None:
-        """Copy the pre-redesign SPA from docs-src/legacy/ to docs/app/ verbatim.
-        The sources already use absolute /app/ and /data/ paths and carry a noindex meta."""
-        legacy = self.src / "legacy"
-        if not legacy.exists():
-            return
-        out = self.docs / LEGACY_DIR
-        out.mkdir(parents=True, exist_ok=True)
-        for f in legacy.iterdir():
-            if f.is_file():
-                shutil.copy2(f, out / f.name)
 
     def copy_static(self) -> None:
         static = self.src / "static"
@@ -624,7 +613,6 @@ class SiteBuilder:
         self.load()
         self.clean()
         self.copy_static()
-        self.publish_legacy()
         self.build_home()
         self.build_skills()
         self.build_categories()

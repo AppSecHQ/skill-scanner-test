@@ -1,5 +1,6 @@
 """Tests for the static site generator (scripts/build_site.py and scripts/sitegen/)."""
 import json
+import shutil
 import re
 import sys
 from pathlib import Path
@@ -396,18 +397,17 @@ def test_summary_sentence_safe_and_unsafe():
     assert "2 findings" in s and "1 high" in s and "obfuscation" in s
 
 
-# ----------------------------------------------------------------- cutover: taxonomy source + legacy /app/
-def test_taxonomy_copied_from_docs_src_and_legacy_app_published(site_root):
+# ----------------------------------------------------------------- taxonomy source; legacy /app/ retired
+def test_taxonomy_copied_from_docs_src_and_no_legacy_app(site_root):
     src_data = site_root / "docs-src" / "data"
     src_data.mkdir(parents=True, exist_ok=True)
     (src_data / "categories.json").write_text(json.dumps({"_meta": {}, "categories": [
         {"slug": "prompt_injection", "name": "Prompt Injection (from source)", "ast10_id": "AST05",
          "ast10_title": "Untrusted External Instructions", "secondary_ast10": [], "definition": "d", "check_yourself": "c"},
     ]}))
-    legacy = site_root / "docs-src" / "legacy"
-    legacy.mkdir(parents=True)
-    (legacy / "index.html").write_text('<!DOCTYPE html><meta name="robots" content="noindex, nofollow"><script src="/app/app.js"></script>')
-    (legacy / "app.js").write_text("fetch('/data/summary.json')")
+    static_app = site_root / "docs-src" / "static" / "app"
+    static_app.mkdir(parents=True)
+    shutil.copy2(Path(__file__).parent.parent / "docs-src" / "static" / "app" / "index.html", static_app / "index.html")
 
     docs = site_root / "docs"
     SiteBuilder(site_root, base_url="https://example.test").build()
@@ -417,14 +417,18 @@ def test_taxonomy_copied_from_docs_src_and_legacy_app_published(site_root):
     assert published["categories"][0]["name"] == "Prompt Injection (from source)"
     assert "Prompt Injection (from source)" in (docs / "categories" / "prompt-injection" / "index.html").read_text()
 
-    # legacy SPA served at /app/, noindex, excluded from sitemap, disallowed in robots
-    assert (docs / "app" / "index.html").exists() and (docs / "app" / "app.js").exists()
-    assert "noindex" in (docs / "app" / "index.html").read_text()
+    # the legacy SPA is retired: /app/ is only a noindex redirect stub from docs-src/static/app/,
+    # robots no longer disallows it, and the hash-route redirect map is still written
+    assert not (docs / "app" / "app.js").exists() and not (docs / "app" / "style.css").exists()
+    stub = (docs / "app" / "index.html").read_text()
+    assert "noindex" in stub and 'rel="canonical" href="https://skillscan.io/"' in stub and "redirects.json" in stub
+    robots = (docs / "robots.txt").read_text()
+    assert "Disallow" not in robots and "Sitemap: https://example.test/sitemap.xml" in robots
     assert "/app/" not in (docs / "sitemap.xml").read_text()
-    assert "Disallow: /app/" in (docs / "robots.txt").read_text()
+    assert (docs / "data" / "redirects.json").exists()
 
-    # rebuild is clean: /app/ is regenerated, docs/data untouched
+    # rebuild is clean: stale files under /app/ are removed, docs/data untouched
     (docs / "app" / "stale.txt").write_text("x")
     SiteBuilder(site_root, base_url="https://example.test").build()
-    assert not (docs / "app" / "stale.txt").exists()
+    assert not (docs / "app" / "stale.txt").exists() and (docs / "app" / "index.html").exists()
     assert (docs / "data" / "scans").exists()
