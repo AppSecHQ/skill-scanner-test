@@ -25,8 +25,8 @@ This could be expanded along both axes -- adding more scanners and targeting mor
 
 | Metric | Count |
 |--------|-------|
-| Total Skills Scanned | 1303 |
-| Safe Skills | 1092 (84%) |
+| Total Skills Scanned | 1325 |
+| Safe Skills | 1114 (84%) |
 | Skills with Issues | 211 (16%) |
 | Total Findings | 3058 |
 
