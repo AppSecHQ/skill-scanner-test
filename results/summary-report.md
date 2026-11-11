@@ -1,6 +1,6 @@
 # AI Agent Skills Security Scan Report
 
-**Generated:** 2026-10-22T14:35:50.937456
+**Generated:** 2026-11-11T15:47:23.574887
 **Scanner:** cisco-ai-skill-scanner 2.3.1
 **Analyzers:** behavioral, bytecode, correlation, llm, meta, pipeline, static, trigger
 
@@ -10,8 +10,8 @@
 
 | Metric | Count |
 |--------|-------|
-| Total Skills Scanned | 1303 |
-| Safe Skills | 1092 (84%) |
+| Total Skills Scanned | 1325 |
+| Safe Skills | 1114 (84%) |
 | Skills with Issues | 211 (16%) |
 | Scan Errors | 0 |
 
@@ -1125,234 +1125,256 @@
 | 1073 | [gitlab-cli-skills](gitlab-cli-skills-scan.md) | clawhub.ai | Yes | 0 | SAFE |
 | 1074 | [google-gemini-media](google-gemini-media-scan.md) | clawhub.ai | Yes | 0 | SAFE |
 | 1075 | [google-imagen-3-hyperrealistic-landscape](google-imagen-3-%E8%B6%85%E5%86%99%E5%AE%9E%E9%A3%8E%E6%99%AF-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1076 | [gtars](skills-gtars-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1077 | [guidelines-advisor](plugins-building-secure-contracts-skills-guidelines-advisor-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1078 | [hackernews](hacker-news-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1079 | [harness-writing](plugins-testing-handbook-skills-skills-harness-writing-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1080 | [hf-mcp](hf-mcp-skills-hf-mcp-scan.md) | huggingface | Yes | 0 | SAFE |
-| 1081 | [histolab](skills-histolab-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1082 | [hosted-agents-v2-py](github-skills-hosted-agents-v2-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 1083 | [hugging-face-trackio](skills-hugging-face-trackio-scan.md) | huggingface | Yes | 0 | SAFE |
-| 1084 | [humanize](humanize-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1085 | [humanize-ai](humanize-ai-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1086 | [hybrid-memory](hybrid-memory-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1087 | [hypogenic](skills-hypogenic-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1088 | [hypothesis-generation](skills-hypothesis-generation-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1089 | [insecure-defaults](plugins-insecure-defaults-skills-insecure-defaults-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1090 | [insula-memory](insula-memory-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1091 | [internal-comms](internal-comms-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1092 | [internal-comms](skills-internal-comms-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1093 | [interpreting-culture-index](plugins-culture-index-skills-interpreting-culture-index-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1094 | [json-canvas](skills-json-canvas-scan.md) | kepano | Yes | 0 | SAFE |
-| 1095 | [juicebox-v5](juicy-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1096 | [lab-hardware-cad](skills-lab-hardware-cad-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1097 | [labarchive-integration](skills-labarchive-integration-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1098 | [lamindb](skills-lamindb-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1099 | [language-learning](language-learning-tutor-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1100 | [latchbio-integration](skills-latchbio-integration-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1101 | [libfuzzer](plugins-testing-handbook-skills-skills-libfuzzer-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1102 | [lobster](lobster-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1103 | [local-falcon](local-falcon-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1104 | [logseq](logseq-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1105 | [m365-agents-dotnet](github-skills-m365-agents-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 1106 | [marine-carbonate-chemistry](skills-marine-carbonate-chemistry-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1107 | [markdown-mermaid-writing](skills-markdown-mermaid-writing-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1108 | [market-research-reports](skills-market-research-reports-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1109 | [marketing-ideas](marketing-ideas-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1110 | [markitdown](skills-markitdown-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1111 | [matchms](skills-matchms-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1112 | [matlab](skills-matlab-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1113 | [matplotlib](skills-matplotlib-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1114 | [mcp-builder](github-skills-mcp-builder-scan.md) | microsoft | Yes | 0 | SAFE |
-| 1115 | [mcp-builder](mcp-builder-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1116 | [mcp-builder](skills-mcp-builder-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1117 | [medchem](skills-medchem-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1118 | [memory-setup](memory-setup-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1119 | [mermaid-diagrams](mermaid-diagrams-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1120 | [microsoft-azure-webjobs-extensions-authentication-events-dotnet](github-skills-microsoft-azure-webjobs-extensions-authentication-events-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
-| 1121 | [modern-python](plugins-modern-python-skills-modern-python-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1122 | [molecular-dynamics](skills-molecular-dynamics-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1123 | [molfeat](skills-molfeat-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1124 | [molt-identity](molt-identity-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1125 | [moltbot-best-practices](moltbot-best-practices-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1126 | [native-data-fetching](native-data-fetching-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1127 | [networkx](skills-networkx-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1128 | [neurokit2](skills-neurokit2-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1129 | [neuropixels-analysis](skills-neuropixels-analysis-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1130 | [next-best-practices](next-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1131 | [nextjs-expert](nextjs-expert-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1132 | [nmrglue](skills-nmrglue-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1133 | [nuxt](nuxt-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1134 | [nwb-conversion](skills-nwb-conversion-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1135 | [obsidian-bases](skills-obsidian-bases-scan.md) | kepano | Yes | 0 | SAFE |
-| 1136 | [obsidian-markdown](skills-obsidian-markdown-scan.md) | kepano | Yes | 0 | SAFE |
-| 1137 | [obsidian-tasks](obsidian-tasks-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1138 | [onboarding-cro](onboarding-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1139 | [onekgpd](skills-onekgpd-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1140 | [openclaw](comprehensive-skill-for-installing%2C-configuring%2C-and-managing-the-openclaw-ecosystem-gateway%2C-channels%2C-models%2C-automation%2C-nodes%2C-and-deployment-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1141 | [opencode-controller](opencode-controller-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1142 | [openpiv](skills-openpiv-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1143 | [opentrons-integration](skills-opentrons-integration-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1144 | [optimize-for-gpu](skills-optimize-for-gpu-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1145 | [pacsomatic](skills-pacsomatic-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1146 | [page-cro](page-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1147 | [paid-ads](paid-ads-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1148 | [paperzilla](skills-paperzilla-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1149 | [parallel-web](skills-parallel-web-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1150 | [pathml](skills-pathml-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1151 | [pathway-enrichment](skills-pathway-enrichment-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1152 | [paywall-upgrade-cro](paywall-upgrade-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1153 | [pdd](pdd-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1154 | [pdf](pdf-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1155 | [pdf](skills-pdf-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1156 | [peer-review](skills-peer-review-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1157 | [pennylane](skills-pennylane-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1158 | [phylogenetics](skills-phylogenetics-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1159 | [pkpd-modeling](skills-pkpd-modeling-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1160 | [podcast-generation](github-skills-podcast-generation-scan.md) | microsoft | Yes | 0 | SAFE |
-| 1161 | [polars](skills-polars-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1162 | [polars-bio](skills-polars-bio-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1163 | [pptx](pptx-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1164 | [pptx](skills-pptx-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1165 | [preview-markdown](preview-markdown-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1166 | [pricing-strategy](pricing-strategy-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1167 | [primekg](skills-primekg-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1168 | [primer-design](skills-primer-design-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1169 | [programmatic-seo](programmatic-seo-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1170 | [property-based-testing](plugins-property-based-testing-skills-property-based-testing-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1171 | [pufferlib](skills-pufferlib-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1172 | [pybamm](skills-pybamm-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1173 | [pycalphad](skills-pycalphad-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1174 | [pydantic-models-py](github-skills-pydantic-models-py-scan.md) | microsoft | Yes | 0 | SAFE |
-| 1175 | [pydeseq2](skills-pydeseq2-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1176 | [pydicom](skills-pydicom-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1177 | [pylabrobot](skills-pylabrobot-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1178 | [pymatgen](skills-pymatgen-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1179 | [pymc](skills-pymc-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1180 | [pymoo](skills-pymoo-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1181 | [pyopenms](skills-pyopenms-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1182 | [pysam](skills-pysam-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1183 | [pytdc](skills-pytdc-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1184 | [python-appservice-deploy](microsoft-azure-skills-github-plugins-azure-skills-skills-python-appservice-deploy-scan.md) | microsoft | Yes | 0 | SAFE |
-| 1185 | [python-appservice-deploy](microsoft-azure-skills-skills-python-appservice-deploy-scan.md) | microsoft | Yes | 0 | SAFE |
-| 1186 | [pyzotero](skills-pyzotero-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1187 | [qiskit](skills-qiskit-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1188 | [qutip](skills-qutip-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1189 | [railway](railway-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1190 | [rdkit](skills-rdkit-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1191 | [react-expert](react-expert-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1192 | [react-flow-node-ts](github-skills-react-flow-node-ts-scan.md) | microsoft | Yes | 0 | SAFE |
-| 1193 | [react-native-best-practices](react-native-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1194 | [readwise-mcp](readwise-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1195 | [receiving-code-review](receiving-code-review-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1196 | [referral-program](referral-program-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1197 | [relion](skills-relion-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1198 | [relsa-severity-assessment](skills-relsa-severity-assessment-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1199 | [remotion-best-practices](remotion-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1200 | [remotion-video-toolkit](remotion-video-toolkit-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1201 | [requesting-code-review](requesting-code-review-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1202 | [research-grants](skills-research-grants-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1203 | [research-paper-writer](research-paper-writer-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1204 | [resume-builder](resume-builder-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1205 | [rowan](skills-rowan-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1206 | [rssaurus-cli](rssaurus-agent-friendly-rss-feed-reader-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1207 | [sarif-parsing](plugins-static-analysis-skills-sarif-parsing-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1208 | [scanpy](skills-scanpy-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1209 | [schema-markup](schema-markup-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1210 | [scholar-evaluation](skills-scholar-evaluation-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1211 | [scientific-brainstorming](skills-scientific-brainstorming-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1212 | [scientific-critical-thinking](skills-scientific-critical-thinking-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1213 | [scientific-visualization](skills-scientific-visualization-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1214 | [scientific-writing](skills-scientific-writing-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1215 | [scikit-bio](skills-scikit-bio-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1216 | [scikit-learn](skills-scikit-learn-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1217 | [scikit-survival](skills-scikit-survival-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1218 | [scvelo](skills-scvelo-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1219 | [scvi-tools](skills-scvi-tools-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1220 | [seaborn](skills-seaborn-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1221 | [secure-workflow-guide](plugins-building-secure-contracts-skills-secure-workflow-guide-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1222 | [security-auditor](security-auditor-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1223 | [semgrep](plugins-static-analysis-skills-semgrep-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1224 | [semgrep](plugins-testing-handbook-skills-skills-semgrep-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1225 | [semgrep-rule-creator](plugins-semgrep-rule-creator-skills-semgrep-rule-creator-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1226 | [semgrep-rule-variant-creator](plugins-semgrep-rule-variant-creator-skills-semgrep-rule-variant-creator-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1227 | [senior-architect](senior-architect-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1228 | [senior-devops](senior-devops-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1229 | [shap](skills-shap-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1230 | [sharp-edges](plugins-sharp-edges-skills-sharp-edges-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1231 | [ship-learn-next](ship-learn-next-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1232 | [signup-flow-cro](signup-flow-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1233 | [simpy](skills-simpy-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1234 | [skill-creator](github-skills-skill-creator-scan.md) | microsoft | Yes | 0 | SAFE |
-| 1235 | [skill-creator](jash-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1236 | [skill-creator](skill-creator-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1237 | [skill-creator](skills-skill-creator-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1238 | [skill-scanner](ai-skillner-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1239 | [skill-scanner](skillner-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1240 | [slack-gif-creator](skills-slack-gif-creator-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1241 | [slack-gif-creator](slack-gif-creator-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1242 | [social-content](social-content-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1243 | [solana-vulnerability-scanner](plugins-building-secure-contracts-skills-solana-vulnerabilityner-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1244 | [soulcraft](soulcraft-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1245 | [spring-boot-engineer](spring-boot-engineer-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1246 | [sql-pro](sql-pro-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1247 | [ssh-essentials](ssh-essentials-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1248 | [stable-baselines3](skills-stable-baselines3-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1249 | [statistical-analysis](skills-statistical-analysis-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1250 | [statsmodels](skills-statsmodels-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1251 | [stock-market-pro](stock-market-pro-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1252 | [substrate-vulnerability-scanner](plugins-building-secure-contracts-skills-substrate-vulnerabilityner-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1253 | [supabase-postgres-best-practices](supabase-postgres-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1254 | [swift-expert](swift-expert-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1255 | [sympy](skills-sympy-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1256 | [system_monitor](system-monitor-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1257 | [systematic-debugging](systematic-debugging-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1258 | [tailwind-design-system](tailwind-design-system-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1259 | [tamarind](skills-tamarind-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1260 | [template-skill](template-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1261 | [template-skill](template-skill-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1262 | [test-driven-development](test-driven-development-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1263 | [test-specialist](test-specialist-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1264 | [theme-factory](skills-theme-factory-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1265 | [theme-factory](theme-factory-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1266 | [tiledbvcf](skills-tiledbvcf-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1267 | [token-integration-analyzer](plugins-building-secure-contracts-skills-token-integration-analyzer-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1268 | [ton-vulnerability-scanner](plugins-building-secure-contracts-skills-ton-vulnerabilityner-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1269 | [transcribe](transcribe-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1270 | [treatment-plans](skills-treatment-plans-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1271 | [trmnl](trmnl-display-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1272 | [turborepo](turborepo-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1273 | [ui-ux-pro-max](ui-ux-pro-max-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1274 | [umap-learn](skills-umap-learn-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1275 | [uncertainty-and-units](skills-uncertainty-and-units-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1276 | [upgrading-expo](upgrading-expo-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1277 | [usfiscaldata](skills-usfiscaldata-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1278 | [vaex](skills-vaex-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1279 | [venue-templates](skills-venue-templates-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1280 | [vercel-composition-patterns](vercel-composition-patterns-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1281 | [vercel-react-best-practices](vercel-react-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1282 | [vercel-react-native-skills](vercel-react-native-skills-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1283 | [verification-before-completion](verification-before-completion-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1284 | [vue](vue-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1285 | [vue-best-practices](vue-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
-| 1286 | [web-artifacts-builder](skills-web-artifacts-builder-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1287 | [web-artifacts-builder](web-artifacts-builder-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1288 | [web-perf](skills-web-perf-scan.md) | cloudflare | Yes | 0 | SAFE |
-| 1289 | [webapp-testing](skills-webapp-testing-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1290 | [what-if-oracle](skills-what-if-oracle-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1291 | [wordpress-pro](wordpress-pro-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1292 | [wrangler](skills-wrangler-scan.md) | cloudflare | Yes | 0 | SAFE |
-| 1293 | [wycheproof](plugins-testing-handbook-skills-skills-wycheproof-scan.md) | trailofbits | Yes | 0 | SAFE |
-| 1294 | [x-trends](x-trends-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1295 | [xlsx](skills-xlsx-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1296 | [xlsx](xlsx-scan.md) | anthropic | Yes | 0 | SAFE |
-| 1297 | [youtube-api](youtube-api-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1298 | [youtube-music-cast](youtube-music-cast-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1299 | [youtube-search](youtube-search-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1300 | [yt-video-downloader](youtube-video-downloader-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1301 | [zarr-python](skills-zarr-python-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
-| 1302 | [zotero](zotero-scan.md) | clawhub.ai | Yes | 0 | SAFE |
-| 1303 | [zustand-store-ts](github-skills-zustand-store-ts-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1076 | [govisit-get-category-overview](skills-govisit-get-category-overview-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1077 | [govisit-get-category-section](skills-govisit-get-category-section-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1078 | [govisit-get-collection-overview](skills-govisit-get-collection-overview-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1079 | [govisit-get-collection-section](skills-govisit-get-collection-section-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1080 | [govisit-get-destination-overview](skills-govisit-get-destination-overview-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1081 | [govisit-get-destination-section](skills-govisit-get-destination-section-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1082 | [govisit-get-documentation-page](skills-govisit-get-documentation-page-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1083 | [govisit-get-page-faq](skills-govisit-get-page-faq-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1084 | [govisit-get-place-overview](skills-govisit-get-place-overview-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1085 | [govisit-get-place-section](skills-govisit-get-place-section-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1086 | [govisit-get-place-visit-facts](skills-govisit-get-place-visit-facts-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1087 | [govisit-get-statistics](skills-govisit-get-statistics-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1088 | [govisit-list-category-places](skills-govisit-list-category-places-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1089 | [govisit-list-collection-places](skills-govisit-list-collection-places-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1090 | [govisit-list-destination-activities](skills-govisit-list-destination-activities-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1091 | [govisit-list-destination-categories](skills-govisit-list-destination-categories-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1092 | [govisit-list-destination-highlights](skills-govisit-list-destination-highlights-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1093 | [govisit-list-destination-places](skills-govisit-list-destination-places-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1094 | [govisit-list-related-places](skills-govisit-list-related-places-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1095 | [govisit-search-destinations](skills-govisit-search-destinations-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1096 | [govisit-search-documentation](skills-govisit-search-documentation-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1097 | [govisit-search-places](skills-govisit-search-places-scan.md) | inhotel-io | Yes | 0 | SAFE |
+| 1098 | [gtars](skills-gtars-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1099 | [guidelines-advisor](plugins-building-secure-contracts-skills-guidelines-advisor-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1100 | [hackernews](hacker-news-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1101 | [harness-writing](plugins-testing-handbook-skills-skills-harness-writing-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1102 | [hf-mcp](hf-mcp-skills-hf-mcp-scan.md) | huggingface | Yes | 0 | SAFE |
+| 1103 | [histolab](skills-histolab-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1104 | [hosted-agents-v2-py](github-skills-hosted-agents-v2-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1105 | [hugging-face-trackio](skills-hugging-face-trackio-scan.md) | huggingface | Yes | 0 | SAFE |
+| 1106 | [humanize](humanize-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1107 | [humanize-ai](humanize-ai-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1108 | [hybrid-memory](hybrid-memory-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1109 | [hypogenic](skills-hypogenic-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1110 | [hypothesis-generation](skills-hypothesis-generation-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1111 | [insecure-defaults](plugins-insecure-defaults-skills-insecure-defaults-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1112 | [insula-memory](insula-memory-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1113 | [internal-comms](internal-comms-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1114 | [internal-comms](skills-internal-comms-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1115 | [interpreting-culture-index](plugins-culture-index-skills-interpreting-culture-index-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1116 | [json-canvas](skills-json-canvas-scan.md) | kepano | Yes | 0 | SAFE |
+| 1117 | [juicebox-v5](juicy-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1118 | [lab-hardware-cad](skills-lab-hardware-cad-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1119 | [labarchive-integration](skills-labarchive-integration-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1120 | [lamindb](skills-lamindb-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1121 | [language-learning](language-learning-tutor-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1122 | [latchbio-integration](skills-latchbio-integration-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1123 | [libfuzzer](plugins-testing-handbook-skills-skills-libfuzzer-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1124 | [lobster](lobster-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1125 | [local-falcon](local-falcon-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1126 | [logseq](logseq-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1127 | [m365-agents-dotnet](github-skills-m365-agents-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1128 | [marine-carbonate-chemistry](skills-marine-carbonate-chemistry-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1129 | [markdown-mermaid-writing](skills-markdown-mermaid-writing-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1130 | [market-research-reports](skills-market-research-reports-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1131 | [marketing-ideas](marketing-ideas-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1132 | [markitdown](skills-markitdown-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1133 | [matchms](skills-matchms-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1134 | [matlab](skills-matlab-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1135 | [matplotlib](skills-matplotlib-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1136 | [mcp-builder](github-skills-mcp-builder-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1137 | [mcp-builder](mcp-builder-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1138 | [mcp-builder](skills-mcp-builder-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1139 | [medchem](skills-medchem-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1140 | [memory-setup](memory-setup-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1141 | [mermaid-diagrams](mermaid-diagrams-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1142 | [microsoft-azure-webjobs-extensions-authentication-events-dotnet](github-skills-microsoft-azure-webjobs-extensions-authentication-events-dotnet-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1143 | [modern-python](plugins-modern-python-skills-modern-python-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1144 | [molecular-dynamics](skills-molecular-dynamics-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1145 | [molfeat](skills-molfeat-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1146 | [molt-identity](molt-identity-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1147 | [moltbot-best-practices](moltbot-best-practices-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1148 | [native-data-fetching](native-data-fetching-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1149 | [networkx](skills-networkx-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1150 | [neurokit2](skills-neurokit2-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1151 | [neuropixels-analysis](skills-neuropixels-analysis-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1152 | [next-best-practices](next-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1153 | [nextjs-expert](nextjs-expert-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1154 | [nmrglue](skills-nmrglue-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1155 | [nuxt](nuxt-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1156 | [nwb-conversion](skills-nwb-conversion-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1157 | [obsidian-bases](skills-obsidian-bases-scan.md) | kepano | Yes | 0 | SAFE |
+| 1158 | [obsidian-markdown](skills-obsidian-markdown-scan.md) | kepano | Yes | 0 | SAFE |
+| 1159 | [obsidian-tasks](obsidian-tasks-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1160 | [onboarding-cro](onboarding-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1161 | [onekgpd](skills-onekgpd-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1162 | [openclaw](comprehensive-skill-for-installing%2C-configuring%2C-and-managing-the-openclaw-ecosystem-gateway%2C-channels%2C-models%2C-automation%2C-nodes%2C-and-deployment-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1163 | [opencode-controller](opencode-controller-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1164 | [openpiv](skills-openpiv-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1165 | [opentrons-integration](skills-opentrons-integration-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1166 | [optimize-for-gpu](skills-optimize-for-gpu-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1167 | [pacsomatic](skills-pacsomatic-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1168 | [page-cro](page-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1169 | [paid-ads](paid-ads-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1170 | [paperzilla](skills-paperzilla-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1171 | [parallel-web](skills-parallel-web-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1172 | [pathml](skills-pathml-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1173 | [pathway-enrichment](skills-pathway-enrichment-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1174 | [paywall-upgrade-cro](paywall-upgrade-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1175 | [pdd](pdd-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1176 | [pdf](pdf-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1177 | [pdf](skills-pdf-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1178 | [peer-review](skills-peer-review-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1179 | [pennylane](skills-pennylane-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1180 | [phylogenetics](skills-phylogenetics-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1181 | [pkpd-modeling](skills-pkpd-modeling-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1182 | [podcast-generation](github-skills-podcast-generation-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1183 | [polars](skills-polars-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1184 | [polars-bio](skills-polars-bio-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1185 | [pptx](pptx-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1186 | [pptx](skills-pptx-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1187 | [preview-markdown](preview-markdown-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1188 | [pricing-strategy](pricing-strategy-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1189 | [primekg](skills-primekg-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1190 | [primer-design](skills-primer-design-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1191 | [programmatic-seo](programmatic-seo-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1192 | [property-based-testing](plugins-property-based-testing-skills-property-based-testing-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1193 | [pufferlib](skills-pufferlib-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1194 | [pybamm](skills-pybamm-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1195 | [pycalphad](skills-pycalphad-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1196 | [pydantic-models-py](github-skills-pydantic-models-py-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1197 | [pydeseq2](skills-pydeseq2-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1198 | [pydicom](skills-pydicom-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1199 | [pylabrobot](skills-pylabrobot-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1200 | [pymatgen](skills-pymatgen-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1201 | [pymc](skills-pymc-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1202 | [pymoo](skills-pymoo-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1203 | [pyopenms](skills-pyopenms-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1204 | [pysam](skills-pysam-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1205 | [pytdc](skills-pytdc-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1206 | [python-appservice-deploy](microsoft-azure-skills-github-plugins-azure-skills-skills-python-appservice-deploy-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1207 | [python-appservice-deploy](microsoft-azure-skills-skills-python-appservice-deploy-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1208 | [pyzotero](skills-pyzotero-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1209 | [qiskit](skills-qiskit-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1210 | [qutip](skills-qutip-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1211 | [railway](railway-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1212 | [rdkit](skills-rdkit-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1213 | [react-expert](react-expert-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1214 | [react-flow-node-ts](github-skills-react-flow-node-ts-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1215 | [react-native-best-practices](react-native-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1216 | [readwise-mcp](readwise-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1217 | [receiving-code-review](receiving-code-review-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1218 | [referral-program](referral-program-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1219 | [relion](skills-relion-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1220 | [relsa-severity-assessment](skills-relsa-severity-assessment-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1221 | [remotion-best-practices](remotion-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1222 | [remotion-video-toolkit](remotion-video-toolkit-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1223 | [requesting-code-review](requesting-code-review-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1224 | [research-grants](skills-research-grants-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1225 | [research-paper-writer](research-paper-writer-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1226 | [resume-builder](resume-builder-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1227 | [rowan](skills-rowan-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1228 | [rssaurus-cli](rssaurus-agent-friendly-rss-feed-reader-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1229 | [sarif-parsing](plugins-static-analysis-skills-sarif-parsing-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1230 | [scanpy](skills-scanpy-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1231 | [schema-markup](schema-markup-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1232 | [scholar-evaluation](skills-scholar-evaluation-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1233 | [scientific-brainstorming](skills-scientific-brainstorming-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1234 | [scientific-critical-thinking](skills-scientific-critical-thinking-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1235 | [scientific-visualization](skills-scientific-visualization-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1236 | [scientific-writing](skills-scientific-writing-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1237 | [scikit-bio](skills-scikit-bio-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1238 | [scikit-learn](skills-scikit-learn-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1239 | [scikit-survival](skills-scikit-survival-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1240 | [scvelo](skills-scvelo-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1241 | [scvi-tools](skills-scvi-tools-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1242 | [seaborn](skills-seaborn-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1243 | [secure-workflow-guide](plugins-building-secure-contracts-skills-secure-workflow-guide-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1244 | [security-auditor](security-auditor-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1245 | [semgrep](plugins-static-analysis-skills-semgrep-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1246 | [semgrep](plugins-testing-handbook-skills-skills-semgrep-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1247 | [semgrep-rule-creator](plugins-semgrep-rule-creator-skills-semgrep-rule-creator-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1248 | [semgrep-rule-variant-creator](plugins-semgrep-rule-variant-creator-skills-semgrep-rule-variant-creator-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1249 | [senior-architect](senior-architect-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1250 | [senior-devops](senior-devops-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1251 | [shap](skills-shap-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1252 | [sharp-edges](plugins-sharp-edges-skills-sharp-edges-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1253 | [ship-learn-next](ship-learn-next-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1254 | [signup-flow-cro](signup-flow-cro-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1255 | [simpy](skills-simpy-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1256 | [skill-creator](github-skills-skill-creator-scan.md) | microsoft | Yes | 0 | SAFE |
+| 1257 | [skill-creator](jash-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1258 | [skill-creator](skill-creator-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1259 | [skill-creator](skills-skill-creator-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1260 | [skill-scanner](ai-skillner-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1261 | [skill-scanner](skillner-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1262 | [slack-gif-creator](skills-slack-gif-creator-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1263 | [slack-gif-creator](slack-gif-creator-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1264 | [social-content](social-content-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1265 | [solana-vulnerability-scanner](plugins-building-secure-contracts-skills-solana-vulnerabilityner-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1266 | [soulcraft](soulcraft-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1267 | [spring-boot-engineer](spring-boot-engineer-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1268 | [sql-pro](sql-pro-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1269 | [ssh-essentials](ssh-essentials-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1270 | [stable-baselines3](skills-stable-baselines3-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1271 | [statistical-analysis](skills-statistical-analysis-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1272 | [statsmodels](skills-statsmodels-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1273 | [stock-market-pro](stock-market-pro-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1274 | [substrate-vulnerability-scanner](plugins-building-secure-contracts-skills-substrate-vulnerabilityner-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1275 | [supabase-postgres-best-practices](supabase-postgres-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1276 | [swift-expert](swift-expert-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1277 | [sympy](skills-sympy-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1278 | [system_monitor](system-monitor-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1279 | [systematic-debugging](systematic-debugging-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1280 | [tailwind-design-system](tailwind-design-system-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1281 | [tamarind](skills-tamarind-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1282 | [template-skill](template-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1283 | [template-skill](template-skill-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1284 | [test-driven-development](test-driven-development-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1285 | [test-specialist](test-specialist-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1286 | [theme-factory](skills-theme-factory-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1287 | [theme-factory](theme-factory-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1288 | [tiledbvcf](skills-tiledbvcf-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1289 | [token-integration-analyzer](plugins-building-secure-contracts-skills-token-integration-analyzer-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1290 | [ton-vulnerability-scanner](plugins-building-secure-contracts-skills-ton-vulnerabilityner-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1291 | [transcribe](transcribe-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1292 | [treatment-plans](skills-treatment-plans-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1293 | [trmnl](trmnl-display-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1294 | [turborepo](turborepo-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1295 | [ui-ux-pro-max](ui-ux-pro-max-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1296 | [umap-learn](skills-umap-learn-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1297 | [uncertainty-and-units](skills-uncertainty-and-units-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1298 | [upgrading-expo](upgrading-expo-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1299 | [usfiscaldata](skills-usfiscaldata-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1300 | [vaex](skills-vaex-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1301 | [venue-templates](skills-venue-templates-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1302 | [vercel-composition-patterns](vercel-composition-patterns-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1303 | [vercel-react-best-practices](vercel-react-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1304 | [vercel-react-native-skills](vercel-react-native-skills-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1305 | [verification-before-completion](verification-before-completion-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1306 | [vue](vue-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1307 | [vue-best-practices](vue-best-practices-scan.md) | skills.sh | Yes | 0 | SAFE |
+| 1308 | [web-artifacts-builder](skills-web-artifacts-builder-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1309 | [web-artifacts-builder](web-artifacts-builder-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1310 | [web-perf](skills-web-perf-scan.md) | cloudflare | Yes | 0 | SAFE |
+| 1311 | [webapp-testing](skills-webapp-testing-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1312 | [what-if-oracle](skills-what-if-oracle-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1313 | [wordpress-pro](wordpress-pro-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1314 | [wrangler](skills-wrangler-scan.md) | cloudflare | Yes | 0 | SAFE |
+| 1315 | [wycheproof](plugins-testing-handbook-skills-skills-wycheproof-scan.md) | trailofbits | Yes | 0 | SAFE |
+| 1316 | [x-trends](x-trends-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1317 | [xlsx](skills-xlsx-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1318 | [xlsx](xlsx-scan.md) | anthropic | Yes | 0 | SAFE |
+| 1319 | [youtube-api](youtube-api-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1320 | [youtube-music-cast](youtube-music-cast-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1321 | [youtube-search](youtube-search-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1322 | [yt-video-downloader](youtube-video-downloader-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1323 | [zarr-python](skills-zarr-python-scan.md) | K-Dense-AI | Yes | 0 | SAFE |
+| 1324 | [zotero](zotero-scan.md) | clawhub.ai | Yes | 0 | SAFE |
+| 1325 | [zustand-store-ts](github-skills-zustand-store-ts-scan.md) | microsoft | Yes | 0 | SAFE |
 
 ---
 
@@ -1707,6 +1729,28 @@ The following skills were flagged by the scanner but have been manually reviewed
 - gitlab-cli-skills
 - google-gemini-media
 - google-imagen-3-hyperrealistic-landscape
+- govisit-get-category-overview
+- govisit-get-category-section
+- govisit-get-collection-overview
+- govisit-get-collection-section
+- govisit-get-destination-overview
+- govisit-get-destination-section
+- govisit-get-documentation-page
+- govisit-get-page-faq
+- govisit-get-place-overview
+- govisit-get-place-section
+- govisit-get-place-visit-facts
+- govisit-get-statistics
+- govisit-list-category-places
+- govisit-list-collection-places
+- govisit-list-destination-activities
+- govisit-list-destination-categories
+- govisit-list-destination-highlights
+- govisit-list-destination-places
+- govisit-list-related-places
+- govisit-search-destinations
+- govisit-search-documentation
+- govisit-search-places
 - gtars
 - guidelines-advisor
 - hackernews
@@ -1942,7 +1986,7 @@ The following skills were flagged by the scanner but have been manually reviewed
 
 - **Scanner:** cisco-ai-skill-scanner 2.3.1
 - **Analyzers:** behavioral_analyzer, bytecode, correlation, llm_analyzer, meta_analyzer, pipeline, static_analyzer, trigger_analyzer
-- **Scan Date:** 2026-10-22T14:35:50.937456
+- **Scan Date:** 2026-11-11T15:47:23.574887
 
 ### Limitations
 
