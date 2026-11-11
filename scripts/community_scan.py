@@ -8,6 +8,7 @@ for posting back to the GitHub issue.
 """
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -101,12 +102,50 @@ def check_repo_size(repo_metadata: dict, max_mb: int, repo_slug: str) -> None:
     logger.info("Repo size: %.1f MB (limit: %d MB)", size_mb, max_mb)
 
 
+def dedupe_identical_skill_dirs(skill_dirs: list[Path], repo_dir: Path) -> tuple[list[Path], dict[Path, Path]]:
+    """Keep one of each set of byte-identical skill directories in a repo.
+
+    Repos that ship a canonical skills/ tree plus per-plugin copies of the same
+    directories (inhotel-io/govisit-toolkit, microsoft/azure-skills) would
+    otherwise get one scan, one result file, and one site page per copy. The
+    shallowest path is kept, ties broken alphabetically, so skills/x wins over
+    plugins/p/skills/x. Two directories are identical when they have the same
+    directory name and the same relative file paths with the same bytes; the
+    name is part of the key so two distinct skills that happen to share files
+    are both scanned, matching how the site groups copies.
+
+    Returns the kept directories in their original order and a copy -> kept map.
+    """
+    def fingerprint(d: Path) -> str:
+        h = hashlib.sha256(d.name.encode())
+        for f in sorted(x for x in d.rglob("*") if x.is_file()):
+            h.update(f.relative_to(d).as_posix().encode())
+            h.update(b"\0")
+            h.update(hashlib.sha256(f.read_bytes()).digest())
+        return h.hexdigest()
+
+    def rank(d: Path) -> tuple[int, str]:
+        rel = d.relative_to(repo_dir)
+        return (len(rel.parts), rel.as_posix())
+
+    primary: dict[str, Path] = {}
+    copies: dict[Path, Path] = {}
+    for d in sorted(skill_dirs, key=rank):
+        fp = fingerprint(d)
+        if fp in primary:
+            copies[d] = primary[fp]
+        else:
+            primary[fp] = d
+    return [d for d in skill_dirs if d not in copies], copies
+
+
 def run_community_scan(
     repo_slug: str,
     skills_dir: Path,
     output_dir: Path,
     use_llm: bool = False,
     enable_meta: bool = False,
+    skipped_copies: dict[str, str] | None = None,
 ) -> list[dict]:
     """
     Clone and scan all skills in a repository.
@@ -129,10 +168,17 @@ def run_community_scan(
 
     logger.info("Found %d skill(s) in %s", len(skill_files), repo_slug)
 
+    skill_dirs, copies = dedupe_identical_skill_dirs([f.parent for f in skill_files], repo_dir)
+    if copies:
+        logger.info("Skipping %d byte-identical copies of %d skill(s)", len(copies), len({v for v in copies.values()}))
+        if skipped_copies is not None:
+            skipped_copies.update({
+                c.relative_to(repo_dir).as_posix(): k.relative_to(repo_dir).as_posix() for c, k in copies.items()
+            })
+
     # Output file stem for each skill directory.
     names: dict[Path, str] = {}
-    for skill_md in skill_files:
-        skill_path = skill_md.parent
+    for skill_path in skill_dirs:
         rel_path = skill_path.relative_to(repo_dir)
         if rel_path == Path("."):
             skill_name = repo_to_dirname(repo_slug)
@@ -175,7 +221,7 @@ def run_community_scan(
     return results
 
 
-def format_results_comment(repo_slug: str, results: list[dict]) -> str:
+def format_results_comment(repo_slug: str, results: list[dict], skipped_copies: dict[str, str] | None = None) -> str:
     """
     Format scan results as a GitHub-flavored markdown comment.
 
@@ -226,6 +272,20 @@ def format_results_comment(repo_slug: str, results: list[dict]) -> str:
             severity = r.get("max_severity", "UNKNOWN")
             lines.append(f"| {name} | {safe_str} | {count} | {severity} |")
 
+        lines.append("")
+
+    if skipped_copies:
+        kept = sorted({v for v in skipped_copies.values()})
+        lines.append(f"### Skipped {len(skipped_copies)} byte-identical copies of {len(kept)} skill(s)")
+        lines.append("")
+        lines.append("Each copy below has the same files as the scanned directory it points to, so one scan covers it.")
+        lines.append("")
+        lines.append("<details><summary>Copies</summary>")
+        lines.append("")
+        for copy, primary in sorted(skipped_copies.items()):
+            lines.append(f"- `{copy}` → `{primary}`")
+        lines.append("")
+        lines.append("</details>")
         lines.append("")
 
     # Show findings detail for skills with issues
@@ -316,16 +376,18 @@ def main():
     logger.info("Static analysis only (LLM disabled for community scans)")
 
     # 5. Run the scan
+    skipped_copies: dict[str, str] = {}
     results = run_community_scan(
         repo_slug=repo_slug,
         skills_dir=args.skills_dir,
         output_dir=args.output_dir,
         use_llm=False,
         enable_meta=False,
+        skipped_copies=skipped_copies,
     )
 
     # 6. Format and write comment
-    comment = format_results_comment(repo_slug, results)
+    comment = format_results_comment(repo_slug, results, skipped_copies)
     COMMENT_OUTPUT.write_text(comment)
     logger.info("Results written to %s", COMMENT_OUTPUT)
 

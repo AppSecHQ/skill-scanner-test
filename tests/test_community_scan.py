@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from community_scan import (
+    dedupe_identical_skill_dirs,
     check_repo_size,
     format_results_comment,
     validate_repo,
@@ -258,3 +259,58 @@ class TestRunCommunityScan:
 
         assert len(results) == 2
         assert mock_scan.call_count == 2
+
+
+# --- byte-identical copies within one repo ---
+
+
+class TestDedupeIdenticalSkillDirs:
+    def _skill(self, d, body="# x", extra=None):
+        d.mkdir(parents=True)
+        (d / "SKILL.md").write_text(body)
+        if extra:
+            (d / "references").mkdir()
+            (d / "references" / "contract.json").write_text(extra)
+        return d
+
+    def test_shallowest_identical_dir_wins(self, tmp_path):
+        repo = tmp_path / "repo"
+        canon = self._skill(repo / "skills" / "a", extra="{}")
+        copy1 = self._skill(repo / "plugins" / "p1" / "skills" / "a", extra="{}")
+        copy2 = self._skill(repo / "plugins" / "p2" / "skills" / "a", extra="{}")
+        other = self._skill(repo / "skills" / "b", body="# different")
+        kept, copies = dedupe_identical_skill_dirs([copy1, canon, copy2, other], repo)
+        assert kept == [canon, other]  # original order, copies dropped
+        assert copies == {copy1: canon, copy2: canon}
+
+    def test_same_files_under_different_names_are_distinct_skills(self, tmp_path):
+        repo = tmp_path / "repo"
+        a = self._skill(repo / "skills" / "a")
+        b = self._skill(repo / "skills" / "b")
+        kept, copies = dedupe_identical_skill_dirs([a, b], repo)
+        assert kept == [a, b] and copies == {}
+
+    def test_same_skill_md_but_different_reference_is_not_a_copy(self, tmp_path):
+        repo = tmp_path / "repo"
+        a = self._skill(repo / "skills" / "a", extra='{"v": 1}')
+        b = self._skill(repo / "plugins" / "p" / "skills" / "a", extra='{"v": 2}')
+        kept, copies = dedupe_identical_skill_dirs([a, b], repo)
+        assert kept == [a, b] and copies == {}
+
+    @patch("community_scan.run_batch_scan")
+    @patch("community_scan.clone_repo", return_value=True)
+    def test_run_community_scan_scans_once_and_reports_copies(self, _clone, mock_batch, tmp_path):
+        repo = tmp_path / "skills" / "owner-repo"
+        self._skill(repo / "skills" / "a")
+        self._skill(repo / "plugins" / "p" / "skills" / "a")
+        mock_batch.return_value = {"skills-a": {"skill_name": "skills-a", "is_safe": True, "findings_count": 0,
+                                               "findings": [], "max_severity": "SAFE"}}
+        skipped = {}
+        results = run_community_scan("owner/repo", skills_dir=tmp_path / "skills", output_dir=tmp_path / "out",
+                                     skipped_copies=skipped)
+        assert [r["skill_name"] for r in results] == ["skills-a"]
+        assert set(mock_batch.call_args.kwargs["names"].values()) == {"skills-a"}
+        assert skipped == {"plugins/p/skills/a": "skills/a"}
+        comment = format_results_comment("owner/repo", results, skipped)
+        assert "Skipped 1 byte-identical copies of 1 skill(s)" in comment
+        assert "`plugins/p/skills/a` → `skills/a`" in comment
