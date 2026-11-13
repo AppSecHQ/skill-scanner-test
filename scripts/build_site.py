@@ -2,7 +2,7 @@
 """Generate the static skillscan.io site into docs/.
 
 Inputs:  docs/data/summary.json, docs/data/scans/*.json, docs-src/data/categories.json,
-         docs/notes.json, docs-src/content/**/*.md, docs-src/static/*
+         docs-src/data/notes.json, docs-src/content/**/*.md, docs-src/static/*
 Outputs: HTML pages with real URLs, sitemap.xml, robots.txt, feed.xml, 404.html,
          badge/<slug>.svg, data/slugs.json, data/redirects.json
 
@@ -287,7 +287,7 @@ class SiteBuilder:
         self.duplicate_copies = link_identical_copies(self.skills)
         self.categories = load_categories(self.data, self.summary)
         self.cat_by_key = {c["key"]: c for c in self.categories}
-        self.notes = load_notes(self.docs)
+        self.notes = load_notes(self.src / "data")
         self.content = load_content(self.src / "content")
         for f in (f for s in self.skills for f in s.findings):
             f["severity_rank"] = SEVERITY_ORDER.get((f.get("severity") or "").upper(), -1)

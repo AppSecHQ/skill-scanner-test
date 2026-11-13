@@ -1,9 +1,10 @@
 """Regenerating from results/ must reproduce the attribution the live site uses.
 
-``docs/data/summary.json`` is the committed authority for each skill's
-``source`` and ``repo_url``; skill URLs are derived from it. A local run of
-``aggregate_results`` with the default arguments must match it exactly, so a
-stale local inventory can never rename a live page (see WHATS-NEXT defect 5).
+``results/summary-report.json`` is the committed authority for each skill's
+``source`` and ``repo_url``; the site build copies it to ``docs/data/summary.json``
+and derives skill URLs from it. A local run of ``aggregate_results`` with the
+default arguments must match it exactly, so a stale local inventory can never
+rename a live page (see WHATS-NEXT defect 5).
 """
 import json
 import sys
@@ -17,7 +18,7 @@ from generate_report import aggregate_results  # noqa: E402
 
 ROOT = Path(__file__).parent.parent
 RESULTS = ROOT / "results"
-SUMMARY = ROOT / "docs" / "data" / "summary.json"
+SUMMARY = ROOT / "results" / "summary-report.json"
 
 
 @pytest.mark.skipif(not SUMMARY.exists() or not RESULTS.exists(), reason="needs the repo's results and summary")

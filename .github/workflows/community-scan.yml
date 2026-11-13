@@ -172,7 +172,7 @@ jobs:
               body: body.substring(0, 65000)
             });
 
-      - name: Regenerate reports and update site
+      - name: Regenerate reports
         if: success()
         working-directory: scripts
         run: |
@@ -186,7 +186,6 @@ jobs:
           generate_json_summary(findings, results_dir / 'summary-report.json')
           update_readme(findings, Path('../README.md'))
           "
-          bash build-site.sh
 
       - name: Create branch, commit, and open PR
         if: success()
@@ -197,7 +196,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add results/ docs/data/ README.md
+          git add results/ README.md
           if git diff --cached --quiet; then
             echo "No changes to commit"
             exit 0
@@ -208,7 +207,7 @@ jobs:
           git push -u origin "$BRANCH"
           gh pr create \
             --title "Add scan results for $REPO_SLUG" \
-            --body "Scan results from community request #${ISSUE_NUMBER}. Merge to publish to the dashboard." \
+            --body "Scan results from community request #${ISSUE_NUMBER}. Merging publishes the site through the Deploy site workflow." \
             --base main \
             --head "$BRANCH"
 

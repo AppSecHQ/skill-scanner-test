@@ -1,0 +1,66 @@
+name: Deploy site
+
+# Builds skillscan.io from results/ and docs-src/ and publishes it to GitHub Pages.
+# docs/ is build output: it is regenerated here on every push to main and is not tracked.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "results/**"
+      - "docs-src/**"
+      - "scripts/**"
+      - ".github/workflows/deploy-site.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Queued runs collapse to the newest, but a run that has started deploying is
+# allowed to finish so an uploaded artifact is never left un-activated.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Build site
+        run: bash scripts/build-site.sh
+
+      - name: Sanity-check the build output
+        run: |
+          test -f docs/CNAME
+          test -f docs/index.html
+          test -f docs/data/summary.json
+          test -f docs/sitemap.xml
+          echo "CNAME: $(cat docs/CNAME)"
+          echo "sitemap URLs: $(grep -o '<loc>' docs/sitemap.xml | wc -l)"
+          echo "files: $(find docs -type f | wc -l)"
+          du -sh docs
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

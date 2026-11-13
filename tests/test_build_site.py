@@ -133,7 +133,9 @@ def site_root(tmp_path: Path) -> Path:
         "_meta": {}, "categories": [
             {"slug": "data_exfiltration", "name": "Data Exfiltration", "ast10_id": "AST01", "ast10_title": "Malicious Skills", "secondary_ast10": ["AST03"], "definition": "Sends data out of the skill to somewhere the user did not ask for.", "check_yourself": "Grep for URLs."},
         ]}))
-    (docs / "notes.json").write_text(json.dumps([
+    src_data = tmp_path / "docs-src" / "data"
+    src_data.mkdir(parents=True)
+    (src_data / "notes.json").write_text(json.dumps([
         {"id": "clawhavoc-validation", "date": "2026-02-12", "title": "ClawHavoc", "tags": ["incident"], "excerpt": "Validation of the ClawHavoc incident findings.", "body": "<p>body</p>"},
     ]))
     content = tmp_path / "docs-src" / "content"
@@ -155,6 +157,7 @@ def site_root(tmp_path: Path) -> Path:
     static.mkdir()
     for name in ("theme.css", "site.js", "og-default.png", "favicon.svg", "favicon.ico", "apple-touch-icon.png", "icon-512.png"):
         (static / name).write_text("/* static */")
+    (static / "CNAME").write_text("example.test")
     (static / "fonts").mkdir()
     for font in ("newsreader-latin.woff2", "jetbrainsmono-latin.woff2"):
         (static / "fonts" / font).write_bytes(b"wOF2")
@@ -400,7 +403,6 @@ def test_summary_sentence_safe_and_unsafe():
 # ----------------------------------------------------------------- taxonomy source; legacy /app/ retired
 def test_taxonomy_copied_from_docs_src_and_no_legacy_app(site_root):
     src_data = site_root / "docs-src" / "data"
-    src_data.mkdir(parents=True, exist_ok=True)
     (src_data / "categories.json").write_text(json.dumps({"_meta": {}, "categories": [
         {"slug": "prompt_injection", "name": "Prompt Injection (from source)", "ast10_id": "AST05",
          "ast10_title": "Untrusted External Instructions", "secondary_ast10": [], "definition": "d", "check_yourself": "c"},
@@ -432,3 +434,14 @@ def test_taxonomy_copied_from_docs_src_and_no_legacy_app(site_root):
     SiteBuilder(site_root, base_url="https://example.test").build()
     assert not (docs / "app" / "stale.txt").exists() and (docs / "app" / "index.html").exists()
     assert (docs / "data" / "scans").exists()
+
+
+# ----------------------------------------------------------------- inputs live outside docs/ (Pages deploys from Actions)
+def test_cname_and_notes_come_from_docs_src(site_root):
+    docs = site_root / "docs"
+    assert not (docs / "CNAME").exists() and not (docs / "notes.json").exists()
+    SiteBuilder(site_root, base_url="https://example.test").build()
+    # docs-src/static/CNAME is copied verbatim so the Pages artifact carries the custom domain
+    assert (docs / "CNAME").read_text() == "example.test"
+    # research notes are read from docs-src/data/notes.json, not from docs/
+    assert (docs / "research" / "2026" / "clawhavoc-validation" / "index.html").exists()
