@@ -82,7 +82,7 @@ Create `results/summary-report.md` containing:
 
 ## Important Notes
 
-- **Internal docs go in `design-plan/`**: Save all design documents, implementation plans, security reviews, and other internal/private planning artifacts to the `design-plan/` directory. This directory is gitignored and will not be published or committed. Never place internal docs in `docs/` — that directory is the GitHub Pages publish root and everything in it is served publicly.
+- **Internal docs go in `design-plan/`**: Save all design documents, implementation plans, security reviews, and other internal/private planning artifacts to the `design-plan/` directory. This directory is gitignored and will not be published or committed. Never place internal docs in `docs/` or `docs-src/`: `docs/` is gitignored build output that the Deploy site workflow regenerates and publishes to GitHub Pages on every push to main, and `docs-src/` is its source, so everything under either is served publicly.
 - If API keys are required for LLM analysis, use static analysis only
 - Document any rate limiting or access issues
 - Note any unavailable/private repos and proceed with others
