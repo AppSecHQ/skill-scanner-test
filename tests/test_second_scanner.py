@@ -186,3 +186,32 @@ class TestSiteSummary:
         row = got["github-skills-x"]
         assert row["recommendation"] == "DO_NOT_INSTALL" and row["issue_count"] == 3
         assert row["top_categories"] == ["Tool Misuse", "Privilege Escalation"] and row["version"] == "2.12.0"
+
+
+class TestPartialCorpus:
+    """State between a Cisco-only request PR and its SkillSpector re-run, and the
+    results-side summary that CI uses now that docs/ is untracked build output."""
+
+    def test_stem_without_skillspector_result_is_omitted_not_an_error(self, tmp_path):
+        results = tmp_path / "results"
+        (results / "skillspector").mkdir(parents=True)
+        (results / "summary-report.json").write_text(json.dumps({"skills": [
+            {"scan_file": "a-scan.md", "source": "obra"}, {"scan_file": "new-scan.md", "source": "inhotel-io"}]}))
+        (results / "a-scan.json").write_text(json.dumps({"skill_name": "a", "is_safe": True, "max_severity": "SAFE", "findings_count": 0, "findings": []}))
+        (results / "skillspector" / "a-skillspector.json").write_text(json.dumps({"risk_assessment": {"score": 0, "recommendation": "SAFE", "severity": "LOW"}, "issues": [], "metadata": {}}))
+        (results / "new-scan.json").write_text(json.dumps({"skill_name": "new", "is_safe": True, "max_severity": "SAFE", "findings_count": 0, "findings": []}))
+        pairs = compare_scanners.load_pairs(results)
+        assert [p["name"] for p in pairs] == ["a"] and pairs[0]["source"] == "obra"
+        assert set(compare_scanners.skill_summary(results)) == {"a"}
+
+    def test_source_index_prefers_results_summary_over_docs_copy(self, tmp_path):
+        results = tmp_path / "results"
+        results.mkdir()
+        (results / "summary-report.json").write_text(json.dumps({"skills": [{"scan_file": "a-scan.md", "source": "from-results"}]}))
+        (tmp_path / "docs" / "data").mkdir(parents=True)
+        (tmp_path / "docs" / "data" / "summary.json").write_text(json.dumps([{"scan_file": "a-scan.md", "source": "from-docs"}]))
+        assert compare_scanners._source_index(results) == {"a": "from-results"}
+        (results / "summary-report.json").unlink()
+        assert compare_scanners._source_index(results) == {"a": "from-docs"}
+        (tmp_path / "docs" / "data" / "summary.json").unlink()
+        assert compare_scanners._source_index(results) == {}

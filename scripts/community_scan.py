@@ -12,12 +12,15 @@ import hashlib
 import json
 import logging
 import os
+import shutil
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import requests
 
 from pipeline_utils import LOG_FORMAT, LOG_DATE_FORMAT
+from run_skillspector import scan_one
 from run_scans import (
     run_batch_scan,
     clone_repo,
@@ -31,6 +34,12 @@ logger = logging.getLogger(__name__)
 
 COMMENT_OUTPUT = Path("/tmp/scan-comment.md")
 MAX_COMMENT_LENGTH = 60000  # GitHub comment limit is 65536
+# SkillSpector runs after the Cisco batch on the kept skill directories. Above this many
+# skills it is skipped so one large request cannot push the job past its 30-minute limit
+# (the corpus run did about 57 scans a minute at 4 workers).
+SECOND_SCANNER_MAX_SKILLS = 300
+SECOND_SCANNER_WORKERS = 4
+SECOND_SCANNER_POST = "https://skillscan.io/research/2026/two-scanners-one-corpus/"
 
 
 def validate_repo(repo_slug: str) -> dict:
@@ -146,9 +155,14 @@ def run_community_scan(
     use_llm: bool = False,
     enable_meta: bool = False,
     skipped_copies: dict[str, str] | None = None,
+    kept_skills: dict[Path, str] | None = None,
 ) -> list[dict]:
     """
     Clone and scan all skills in a repository.
+
+    ``skipped_copies`` and ``kept_skills``, when given, are filled with the
+    byte-identical copies that were not scanned and the scanned directory -> result
+    stem map, so the caller can run a second scanner over the same directories.
 
     Returns:
         List of scan result dicts
@@ -185,6 +199,8 @@ def run_community_scan(
         else:
             skill_name = str(rel_path).replace("/", "-").lstrip(".")
         names[skill_path] = sanitize_filename(skill_name)
+    if kept_skills is not None:
+        kept_skills.update(names)
 
     # One scanner process for the whole repo. Per-skill processes cost ~4s of
     # startup each, which pushed a 177-skill repo past the CI time limit.
@@ -221,13 +237,90 @@ def run_community_scan(
     return results
 
 
-def format_results_comment(repo_slug: str, results: list[dict], skipped_copies: dict[str, str] | None = None) -> str:
+def run_second_scanner(
+    names: dict[Path, str],
+    output_dir: Path,
+    skillspector: str | None = None,
+    max_skills: int = SECOND_SCANNER_MAX_SKILLS,
+) -> dict:
+    """Run NVIDIA SkillSpector (static, ``--no-llm``) over the kept skill directories.
+
+    Writes ``<output_dir>/skillspector/<stem>-skillspector.json`` next to each Cisco
+    result, in the same shape ``run_skillspector.py`` produces for the corpus, so
+    ``compare_scanners.py`` picks the new verdicts up unchanged.
+
+    Fails open: a missing executable, an over-budget repo, or a crash in one scan
+    never fails the Cisco scan or the PR. Returns ``{"rows": {stem: slim_row},
+    "note": str | None, "version": str | None}``; ``rows`` is empty when the
+    scanner did not run and ``note`` says why, in a sentence fit for the comment.
+    """
+    exe = skillspector or shutil.which("skillspector")
+    if not exe:
+        logger.warning("skillspector not found on PATH; second-scanner verdicts skipped")
+        return {"rows": {}, "note": "SkillSpector was not available in this run, so only Cisco verdicts are shown.", "version": None}
+    if len(names) > max_skills:
+        logger.warning("%d kept skills exceed the %d-skill SkillSpector budget; skipped", len(names), max_skills)
+        return {"rows": {}, "note": f"SkillSpector was skipped: {len(names)} skills exceed the {max_skills}-skill budget for one request.", "version": None}
+
+    ss_dir = output_dir / "skillspector"
+    ss_dir.mkdir(parents=True, exist_ok=True)
+
+    def one(item: tuple[Path, str]) -> tuple[str, dict]:
+        skill_path, stem = item
+        out_file = ss_dir / f"{stem}-skillspector.json"
+        # SkillSpector writes nothing on a failed run and scan_one treats an existing
+        # output file as success, so a stale report from an earlier request must go first.
+        out_file.unlink(missing_ok=True)
+        try:
+            return stem, scan_one(exe, skill_path, out_file, output_dir / f"{stem}-scan.json")
+        except Exception as e:  # noqa: BLE001 - one bad scan must not sink the batch
+            return stem, {"name": out_file.stem, "error": f"{type(e).__name__}: {e}"[:500]}
+
+    rows: dict[str, dict] = {}
+    with ThreadPoolExecutor(max_workers=SECOND_SCANNER_WORKERS) as pool:
+        for stem, row in pool.map(one, names.items()):
+            rows[stem] = row
+
+    version = None
+    for stem in rows:
+        out_file = ss_dir / f"{stem}-skillspector.json"
+        if "error" not in rows[stem] and out_file.exists():
+            try:
+                version = (json.loads(out_file.read_text()).get("metadata") or {}).get("skillspector_version")
+            except (OSError, ValueError):
+                version = None
+            if version:
+                break
+    errors = sum(1 for r in rows.values() if "error" in r)
+    logger.info("SkillSpector: %d scanned, %d errors (version %s)", len(rows) - errors, errors, version or "unknown")
+    return {"rows": rows, "note": None, "version": version}
+
+
+def _second_cell(row: dict | None) -> str:
+    if row is None:
+        return "—"
+    if "error" in row:
+        return "error"
+    return f"{row.get('recommendation') or 'UNKNOWN'} {row.get('score') if row.get('score') is not None else '?'}"
+
+
+def format_results_comment(
+    repo_slug: str,
+    results: list[dict],
+    skipped_copies: dict[str, str] | None = None,
+    second: dict | None = None,
+) -> str:
     """
     Format scan results as a GitHub-flavored markdown comment.
 
     Args:
         repo_slug: The scanned repository
         results: List of scan result dicts
+        skipped_copies: byte-identical directories that were not scanned -> the one that was
+        second: ``run_second_scanner`` output. When present and it has rows, the per-skill
+            table gains a SkillSpector column and the metrics gain two rows. Only the
+            recommendation and score are rendered, never finding text, because the comment
+            is public. ``None`` leaves the comment exactly as before.
 
     Returns:
         Markdown string for the issue comment
@@ -239,6 +332,12 @@ def format_results_comment(repo_slug: str, results: list[dict], skipped_copies: 
 
     total_findings = sum(r.get("findings_count", 0) for r in results)
 
+    ss_rows: dict[str, dict] = (second or {}).get("rows") or {}
+    # Score-0 CAUTION is SkillSpector's fail-closed "could not finish analysis" verdict,
+    # which the site reports as "not fully inspected", not as a finding.
+    ss_flagged = sum(1 for r in ss_rows.values() if "error" not in r and r.get("recommendation") != "SAFE" and (r.get("score") or 0) > 0)
+    ss_partial = sum(1 for r in ss_rows.values() if "error" not in r and r.get("recommendation") != "SAFE" and (r.get("score") or 0) == 0)
+
     lines = [
         f"## Scan Results for `{repo_slug}`",
         "",
@@ -249,15 +348,22 @@ def format_results_comment(repo_slug: str, results: list[dict], skipped_copies: 
         f"| Issues Found | {unsafe} |",
         f"| Errors | {errors} |",
         f"| Total Findings | {total_findings} |",
-        "",
     ]
+    if ss_rows:
+        lines.append(f"| SkillSpector flagged | {ss_flagged} |")
+        lines.append(f"| SkillSpector not fully inspected | {ss_partial} |")
+    lines.append("")
 
     # Per-skill breakdown
     if total > 0:
         lines.append("### Per-Skill Results")
         lines.append("")
-        lines.append("| Skill | Safe | Findings | Max Severity |")
-        lines.append("|-------|------|----------|--------------|")
+        if ss_rows:
+            lines.append("| Skill | Safe | Findings | Max Severity | SkillSpector |")
+            lines.append("|-------|------|----------|--------------|--------------|")
+        else:
+            lines.append("| Skill | Safe | Findings | Max Severity |")
+            lines.append("|-------|------|----------|--------------|")
 
         for r in sorted(results, key=lambda x: -x.get("findings_count", 0)):
             name = r.get("skill_name", "unknown")
@@ -270,9 +376,22 @@ def format_results_comment(repo_slug: str, results: list[dict], skipped_copies: 
                 safe_str = "Error"
             count = r.get("findings_count", 0)
             severity = r.get("max_severity", "UNKNOWN")
-            lines.append(f"| {name} | {safe_str} | {count} | {severity} |")
+            if ss_rows:
+                lines.append(f"| {name} | {safe_str} | {count} | {severity} | {_second_cell(ss_rows.get(name))} |")
+            else:
+                lines.append(f"| {name} | {safe_str} | {count} | {severity} |")
 
         lines.append("")
+
+    if second is not None:
+        if ss_rows:
+            version = second.get("version") or "2.12.0"
+            lines.append(f"SkillSpector {version}, static mode (`--no-llm`); recommendation and risk score shown. "
+                         f"Verdicts and the agreement with Cisco are explained in [Two scanners, one corpus]({SECOND_SCANNER_POST}).")
+            lines.append("")
+        if second.get("note"):
+            lines.append(second["note"])
+            lines.append("")
 
     if skipped_copies:
         kept = sorted({v for v in skipped_copies.values()})
@@ -351,6 +470,8 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=Path("results"))
     parser.add_argument("--skills-dir", type=Path, default=Path("skills"))
     parser.add_argument("--max-repo-size-mb", type=int, default=500)
+    parser.add_argument("--second-scanner", choices=["skillspector", "none"], default="skillspector",
+                        help="Also run NVIDIA SkillSpector (static) on each kept skill directory")
     args = parser.parse_args()
 
     # 1. Parse and validate repo format
@@ -377,6 +498,7 @@ def main():
 
     # 5. Run the scan
     skipped_copies: dict[str, str] = {}
+    kept_skills: dict[Path, str] = {}
     results = run_community_scan(
         repo_slug=repo_slug,
         skills_dir=args.skills_dir,
@@ -384,10 +506,14 @@ def main():
         use_llm=False,
         enable_meta=False,
         skipped_copies=skipped_copies,
+        kept_skills=kept_skills,
     )
 
+    # 5b. Second scanner over the same directories (static only; fails open).
+    second = run_second_scanner(kept_skills, args.output_dir) if args.second_scanner == "skillspector" else None
+
     # 6. Format and write comment
-    comment = format_results_comment(repo_slug, results, skipped_copies)
+    comment = format_results_comment(repo_slug, results, skipped_copies, second)
     COMMENT_OUTPUT.write_text(comment)
     logger.info("Results written to %s", COMMENT_OUTPUT)
 

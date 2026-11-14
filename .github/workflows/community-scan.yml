@@ -125,6 +125,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
+      # Second scanner. Pinned to the commit that scanned the corpus; if the install
+      # breaks upstream the scan still runs Cisco-only and the comment says so.
+      - name: Install SkillSpector
+        continue-on-error: true
+        run: |
+          pip install -r scripts/requirements-skillspector.txt
+          skillspector --version
+
       - name: Run community scan
         id: scan
         env:
@@ -134,7 +142,8 @@ jobs:
             --repo "$REPO_SLUG" \
             --output-dir ../results \
             --skills-dir ../skills \
-            --max-repo-size-mb 500
+            --max-repo-size-mb 500 \
+            --second-scanner skillspector
         timeout-minutes: 30
 
       - name: Post scan results comment
@@ -186,6 +195,7 @@ jobs:
           generate_json_summary(findings, results_dir / 'summary-report.json')
           update_readme(findings, Path('../README.md'))
           "
+          python compare_scanners.py --results ../results
 
       - name: Create branch, commit, and open PR
         if: success()

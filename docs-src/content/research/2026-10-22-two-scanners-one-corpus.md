@@ -14,7 +14,7 @@ The short version: the two scanners agree on the extreme cases and disagree on n
 
 | | Cisco skill-scanner | NVIDIA SkillSpector |
 |---|---|---|
-| Version | 2.3.1 | 2.12.0 |
+| Version | 2.3.1 | 2.12.0 (commit `11c8b48e`, main as of 2026-10-20; the `v2.12.0` tag is older code with the same version string) |
 | Mode | Static, behavioral, trigger; LLM and meta layers on the older full-scan runs | Static only (`--no-llm`) |
 | Verdict scale | `is_safe` plus a max severity: INFO, LOW, MEDIUM, HIGH, CRITICAL | Score 0 to 100, banded into SAFE (0 to 20), CAUTION (21 to 50), DO_NOT_INSTALL (51 and up) |
 | Skills compared | 1,302 | 1,302 |

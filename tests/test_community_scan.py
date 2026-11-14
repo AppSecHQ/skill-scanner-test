@@ -8,6 +8,7 @@ import pytest
 
 from community_scan import (
     dedupe_identical_skill_dirs,
+    run_second_scanner,
     check_repo_size,
     format_results_comment,
     validate_repo,
@@ -314,3 +315,124 @@ class TestDedupeIdenticalSkillDirs:
         comment = format_results_comment("owner/repo", results, skipped)
         assert "Skipped 1 byte-identical copies of 1 skill(s)" in comment
         assert "`plugins/p/skills/a` → `skills/a`" in comment
+
+
+# --- second scanner (NVIDIA SkillSpector) ---
+
+
+def _row(stem, recommendation="SAFE", score=0):
+    return {"name": f"{stem}-skillspector", "score": score, "severity": "LOW", "recommendation": recommendation, "issues": 0}
+
+
+def _cisco(name, safe=True):
+    return {"skill_name": name, "is_safe": safe, "findings_count": 0 if safe else 1, "findings": [],
+            "max_severity": "SAFE" if safe else "HIGH"}
+
+
+class TestRunSecondScanner:
+    def _names(self, tmp_path, n=2):
+        names = {}
+        for i in range(n):
+            d = tmp_path / "repo" / "skills" / f"s{i}"
+            d.mkdir(parents=True)
+            (d / "SKILL.md").write_text("# s")
+            names[d] = f"skills-s{i}"
+        return names
+
+    @patch("community_scan.scan_one")
+    def test_scans_each_kept_dir_once_with_matching_paths(self, mock_scan, tmp_path):
+        names = self._names(tmp_path)
+        out = tmp_path / "results"
+        mock_scan.side_effect = lambda exe, d, o, c: _row(o.stem[: -len("-skillspector")])
+        got = run_second_scanner(names, out, skillspector="/opt/bin/skillspector")
+        assert mock_scan.call_count == 2 and got["note"] is None
+        for (exe, skill_dir, out_file, cisco_file), _ in [c for c in mock_scan.call_args_list]:
+            stem = names[skill_dir]
+            assert exe == "/opt/bin/skillspector"
+            assert out_file == out / "skillspector" / f"{stem}-skillspector.json"
+            assert cisco_file == out / f"{stem}-scan.json"
+        assert set(got["rows"]) == {"skills-s0", "skills-s1"}
+        assert got["rows"]["skills-s1"]["recommendation"] == "SAFE"
+
+    @patch("community_scan.scan_one")
+    def test_stale_output_is_unlinked_before_scan(self, mock_scan, tmp_path):
+        names = self._names(tmp_path, n=1)
+        out = tmp_path / "results"
+        stale = out / "skillspector" / "skills-s0-skillspector.json"
+        stale.parent.mkdir(parents=True)
+        stale.write_text("{\"risk_assessment\": {\"recommendation\": \"SAFE\"}}")
+
+        def fake(exe, d, o, c):
+            assert not o.exists(), "stale report must be removed before SkillSpector runs"
+            return {"name": o.stem, "error": "rc=2"}
+        mock_scan.side_effect = fake
+        got = run_second_scanner(names, out, skillspector="skillspector")
+        assert got["rows"]["skills-s0"]["error"] == "rc=2"
+
+    @patch("community_scan.scan_one", side_effect=RuntimeError("boom"))
+    def test_crash_in_one_scan_becomes_an_error_row(self, _scan, tmp_path):
+        names = self._names(tmp_path, n=1)
+        got = run_second_scanner(names, tmp_path / "results", skillspector="skillspector")
+        assert got["rows"]["skills-s0"]["error"].startswith("RuntimeError")
+
+    @patch("community_scan.scan_one")
+    @patch("community_scan.shutil.which", return_value=None)
+    def test_missing_executable_fails_open(self, _which, mock_scan, tmp_path):
+        got = run_second_scanner(self._names(tmp_path), tmp_path / "results")
+        assert got["rows"] == {} and "not available" in got["note"]
+        mock_scan.assert_not_called()
+        comment = format_results_comment("o/r", [_cisco("skills-s0")], None, got)
+        assert "SkillSpector was not available" in comment and "| SkillSpector |" not in comment
+
+    @pytest.mark.parametrize("limit", [1, 3])
+    @patch("community_scan.scan_one")
+    def test_over_budget_repo_is_skipped_with_note(self, mock_scan, tmp_path, limit):
+        names = self._names(tmp_path, n=limit + 1)
+        got = run_second_scanner(names, tmp_path / "results", skillspector="skillspector", max_skills=limit)
+        assert got["rows"] == {} and f"exceed the {limit}-skill budget" in got["note"]
+        mock_scan.assert_not_called()
+
+    @patch("community_scan.scan_one")
+    def test_version_is_read_from_a_written_report(self, mock_scan, tmp_path):
+        names = self._names(tmp_path, n=1)
+        out = tmp_path / "results"
+
+        def fake(exe, d, o, c):
+            o.parent.mkdir(parents=True, exist_ok=True)
+            o.write_text(json.dumps({"metadata": {"skillspector_version": "2.12.0"}, "risk_assessment": {"recommendation": "SAFE", "score": 0}}))
+            return _row("skills-s0")
+        mock_scan.side_effect = fake
+        assert run_second_scanner(names, out, skillspector="skillspector")["version"] == "2.12.0"
+
+
+class TestSecondScannerComment:
+    def test_column_and_metrics_render_and_caution_zero_is_not_flagged(self):
+        results = [_cisco("a"), _cisco("b"), _cisco("c", safe=False), _cisco("d")]
+        second = {"version": "2.12.0", "note": None, "rows": {
+            "a": _row("a", "SAFE", 0),
+            "b": _row("b", "CAUTION", 0),            # fail-closed: not fully inspected
+            "c": _row("c", "DO_NOT_INSTALL", 100),   # flagged
+            "d": {"name": "d-skillspector", "error": "timeout"},
+        }}
+        comment = format_results_comment("o/r", results, None, second)
+        assert "| SkillSpector flagged | 1 |" in comment
+        assert "| SkillSpector not fully inspected | 1 |" in comment
+        assert "| Skill | Safe | Findings | Max Severity | SkillSpector |" in comment
+        assert "| a | Yes | 0 | SAFE | SAFE 0 |" in comment
+        assert "| b | Yes | 0 | SAFE | CAUTION 0 |" in comment
+        assert "| c | **No** | 1 | HIGH | DO_NOT_INSTALL 100 |" in comment
+        assert "| d | Yes | 0 | SAFE | error |" in comment
+        assert "SkillSpector 2.12.0, static mode" in comment
+        assert "two-scanners-one-corpus" in comment
+        # Only the recommendation and score are public; no second-scanner finding text.
+        assert "issues" not in comment.lower().split("skillspector 2.12.0")[1].split("---")[0]
+
+    def test_without_second_scanner_the_comment_is_unchanged(self, safe_scan_result):
+        before = format_results_comment("o/r", [safe_scan_result], {"plugins/x": "skills/x"})
+        after = format_results_comment("o/r", [safe_scan_result], {"plugins/x": "skills/x"}, None)
+        assert before == after and "SkillSpector" not in before
+
+    def test_skill_missing_from_second_rows_shows_a_dash(self):
+        second = {"version": None, "note": None, "rows": {"a": _row("a")}}
+        comment = format_results_comment("o/r", [_cisco("a"), _cisco("zz")], None, second)
+        assert "| zz | Yes | 0 | SAFE | — |" in comment

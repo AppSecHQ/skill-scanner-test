@@ -28,11 +28,15 @@ def _source_index(results: Path) -> dict[str, str]:
     """Map scan-file stems to the source attribution the published site uses.
 
     Older Cisco results do not carry ``source``; the site derives it at report
-    time. ``docs/data/summary.json`` (one row per published scan) is the
-    authority, keyed by its ``scan_file`` (``<stem>-scan.md``).
+    time. ``results/summary-report.json`` (one row per published scan, written
+    by generate_report.py and copied to ``docs/data/summary.json`` at build
+    time) is the authority, keyed by its ``scan_file`` (``<stem>-scan.md``).
+    The ``docs/`` copy is only a fallback: since 2026-11-13 ``docs/`` is
+    untracked build output and does not exist in CI.
     """
-    summary = results.parent / "docs" / "data" / "summary.json"
-    if not summary.exists():
+    candidates = [results / "summary-report.json", results.parent / "docs" / "data" / "summary.json"]
+    summary = next((c for c in candidates if c.exists()), None)
+    if summary is None:
         return {}
     rows = json.loads(summary.read_text())
     rows = rows if isinstance(rows, list) else rows.get("skills", [])
