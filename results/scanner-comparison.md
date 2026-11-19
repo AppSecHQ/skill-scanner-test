@@ -1,24 +1,24 @@
 # Scanner comparison: Cisco skill-scanner vs NVIDIA SkillSpector (static)
 
-Skills compared: 1302. Both scanners ran without an LLM.
+Skills compared: 1324. Both scanners ran without an LLM.
 
 ### Loose tier: Cisco any finding vs SkillSpector CAUTION or DO_NOT_INSTALL
 
 | | SkillSpector flagged | SkillSpector not flagged |
 |---|---|---|
 | Cisco flagged | 189 | 22 |
-| Cisco not flagged | 795 | 296 |
+| Cisco not flagged | 817 | 296 |
 
-Agreement 37.2%, Cohen's kappa 0.07
+Agreement 36.6%, Cohen's kappa 0.06
 
 ### Strict tier: Cisco HIGH/CRITICAL vs SkillSpector DO_NOT_INSTALL
 
 | | SkillSpector flagged | SkillSpector not flagged |
 |---|---|---|
 | Cisco flagged | 82 | 129 |
-| Cisco not flagged | 135 | 956 |
+| Cisco not flagged | 135 | 978 |
 
-Agreement 79.7%, Cohen's kappa 0.26
+Agreement 80.1%, Cohen's kappa 0.26
 
 ## By source (loose tier)
 
@@ -38,6 +38,7 @@ Agreement 79.7%, Cohen's kappa 0.26
 | open.feishu.cn | 28 | 0 | 0 | 28 | 0 |
 | heygen-com | 26 | 8 | 0 | 18 | 0 |
 | hoodini | 26 | 1 | 1 | 21 | 3 |
+| inhotel-io | 22 | 0 | 0 | 22 | 0 |
 | huggingface | 9 | 2 | 0 | 6 | 1 |
 | cloudflare | 6 | 0 | 0 | 6 | 0 |
 | zxkane | 5 | 0 | 0 | 4 | 1 |
