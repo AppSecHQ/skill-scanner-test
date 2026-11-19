@@ -208,10 +208,13 @@ def run_community_scan(
     origin = {"source": owner, "repo_url": f"https://github.com/{repo_slug}"}
     batch = run_batch_scan(repo_dir=repo_dir, output_dir=output_dir, names=names, origin=origin)
 
+    # Each row carries ``result_stem`` (the result-file stem, also the key the second
+    # scanner uses) because ``skill_name`` is the name declared in SKILL.md and the two
+    # differ as soon as the skill sits in a subdirectory (``skills-foo`` vs ``foo``).
     results = []
     for skill_path, safe_name in names.items():
         if batch is not None and safe_name in batch:
-            results.append(batch[safe_name])
+            results.append({**batch[safe_name], "result_stem": safe_name})
             continue
         if batch is None:
             # Whole batch failed: fall back to the slower per-skill path.
@@ -224,10 +227,11 @@ def run_community_scan(
                 origin=origin,
             )
             if result:
-                results.append(result)
+                results.append({**result, "result_stem": safe_name})
                 continue
         results.append({
             "skill_name": safe_name,
+            "result_stem": safe_name,
             "is_safe": None,
             "error": "Scan failed",
             "findings_count": 0,
@@ -377,7 +381,8 @@ def format_results_comment(
             count = r.get("findings_count", 0)
             severity = r.get("max_severity", "UNKNOWN")
             if ss_rows:
-                lines.append(f"| {name} | {safe_str} | {count} | {severity} | {_second_cell(ss_rows.get(name))} |")
+                ss_row = ss_rows.get(r.get("result_stem") or name)
+                lines.append(f"| {name} | {safe_str} | {count} | {severity} | {_second_cell(ss_row)} |")
             else:
                 lines.append(f"| {name} | {safe_str} | {count} | {severity} |")
 
@@ -388,6 +393,9 @@ def format_results_comment(
             version = second.get("version") or "2.12.0"
             lines.append(f"SkillSpector {version}, static mode (`--no-llm`); recommendation and risk score shown. "
                          f"Verdicts and the agreement with Cisco are explained in [Two scanners, one corpus]({SECOND_SCANNER_POST}).")
+            if ss_partial:
+                lines.append("`CAUTION 0` means SkillSpector could not finish its analysis of that skill (usually a "
+                             "referenced file it could not resolve) and is counted as not fully inspected, not as a finding.")
             lines.append("")
         if second.get("note"):
             lines.append(second["note"])

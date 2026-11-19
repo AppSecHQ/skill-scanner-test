@@ -310,6 +310,7 @@ class TestDedupeIdenticalSkillDirs:
         results = run_community_scan("owner/repo", skills_dir=tmp_path / "skills", output_dir=tmp_path / "out",
                                      skipped_copies=skipped)
         assert [r["skill_name"] for r in results] == ["skills-a"]
+        assert [r["result_stem"] for r in results] == ["skills-a"]
         assert set(mock_batch.call_args.kwargs["names"].values()) == {"skills-a"}
         assert skipped == {"plugins/p/skills/a": "skills/a"}
         comment = format_results_comment("owner/repo", results, skipped)
@@ -431,6 +432,16 @@ class TestSecondScannerComment:
         before = format_results_comment("o/r", [safe_scan_result], {"plugins/x": "skills/x"})
         after = format_results_comment("o/r", [safe_scan_result], {"plugins/x": "skills/x"}, None)
         assert before == after and "SkillSpector" not in before
+
+    def test_rows_join_on_result_stem_not_declared_skill_name(self):
+        # Real case (issue #12): Cisco rows say skill_name "govisit-search-places" while every
+        # result file, and therefore every SkillSpector row, is keyed "skills-govisit-search-places".
+        results = [{**_cisco("govisit-search-places"), "result_stem": "skills-govisit-search-places"}]
+        second = {"version": "2.12.0", "note": None, "rows": {"skills-govisit-search-places": _row("skills-govisit-search-places", "CAUTION", 0)}}
+        comment = format_results_comment("inhotel-io/govisit-toolkit", results, None, second)
+        assert "| govisit-search-places | Yes | 0 | SAFE | CAUTION 0 |" in comment
+        assert "| SkillSpector not fully inspected | 1 |" in comment
+        assert "`CAUTION 0` means SkillSpector could not finish" in comment
 
     def test_skill_missing_from_second_rows_shows_a_dash(self):
         second = {"version": None, "note": None, "rows": {"a": _row("a")}}
